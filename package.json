@@ -12,7 +12,8 @@
     "lint:strict": "eslint --max-warnings=0 src",
     "format": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "format:check": "prettier -c */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "check-types:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
