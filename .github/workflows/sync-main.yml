@@ -1,0 +1,31 @@
+name: Push to personal main repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    name: Sync with personal main repo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Add personal main repo as remote
+        run: |
+          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+
+      - name: Push changes to personal main repo
+        run: |
+          git push -f personal-repo main
+
+      - name: Remove remote
+        run: |
+          git remote remove personal-repo

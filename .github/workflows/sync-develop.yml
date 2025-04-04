@@ -1,0 +1,31 @@
+name: Push to personal develop repo
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  sync:
+    name: Sync with personal develop repo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out develop branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+          ref: develop
+
+      - name: Add remote personal develop repo
+        run: |
+          git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
+
+      - name: Push changes to personal develop repo
+        run: |
+          git push -f personal-repo develop
+
+      - name: Remove remote
+        run: |
+          git remote remove personal-repo
