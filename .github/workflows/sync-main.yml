@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Add personal main repo as remote
+      - name: Add remote personal main repo
         run: |
           git remote add personal-repo https://the-edu:${{ secrets.PERSONAL_REPO_TOKEN }}@github.com/the-edu/the-edu-project.git
 
