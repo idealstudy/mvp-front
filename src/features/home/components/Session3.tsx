@@ -12,7 +12,7 @@ export default function Session3() {
       <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center md:flex-row">
         <Image
           src={subTitle02}
-          alt="sub title 그림"
+          alt="서브 타이틀 그림"
           width={48}
           height={56}
           className="mt-[50px] mr-[26px]"
@@ -37,36 +37,67 @@ export default function Session3() {
 }
 
 const TabSection = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  type TabIndex = 0 | 1 | 2 | 3;
 
-  const tabs: string[] = [
-    '스터디 보드',
-    '실시간 수업',
-    'VOD 예습·복습',
-    '빠른 자료 찾기',
-  ];
+  const [activeTab, setActiveTab] = useState<TabIndex>(0);
+
+  const tabs = [
+    {
+      label: '스터디 보드',
+      content: <StudyBoardContent />,
+    },
+    {
+      label: '실시간 수업',
+      content: <LiveClassContent />,
+    },
+    {
+      label: 'VOD 예습·복습',
+      content: <VodContent />,
+    },
+    {
+      label: '빠른 자료 찾기',
+      content: <QuickMaterialsContent />,
+    },
+  ] as const;
 
   return (
     <div className="w-full max-w-[1344px] bg-white">
       <div className="flex gap-2">
-        {tabs.map((label, index) => (
+        {tabs.map((tab, index) => (
           <button
             key={index}
-            onClick={() => setActiveTab(index)}
-            className={`border-[2px] border-b-0 border-black px-4 py-2 text-sm font-semibold transition ${
+            onClick={() => setActiveTab(index as TabIndex)}
+            className={`cursor-pointer border-[2px] border-b-0 border-black px-4 py-2 text-sm font-semibold transition ${
               activeTab === index
                 ? 'bg-[#FF4500] text-white'
-                : 'bg-white text-black hover:bg-gray-100'
+                : 'hover:bg-gray-100'
             }`}
           >
-            {label}
+            {tab.label}
           </button>
         ))}
       </div>
 
       <div className="flex h-[650px] w-full max-w-[1344px] items-center justify-center border-[2px] bg-[#F4F1F1]">
-        <p className="text-lg text-gray-500">{tabs[activeTab]} 콘텐츠</p>
+        <div className="text-lg text-gray-500">{tabs[activeTab].content}</div>
       </div>
     </div>
   );
+};
+
+// 예시 콘텐츠 컴포넌트
+const StudyBoardContent = () => {
+  return <div>스터디 보드 관련 콘텐츠</div>;
+};
+
+const LiveClassContent = () => {
+  return <div>라이브 관련 콘텐츠</div>;
+};
+
+const VodContent = () => {
+  return <div>비디오 관련 콘텐츠</div>;
+};
+
+const QuickMaterialsContent = () => {
+  return <div>빠른 자료 찾기 콘텐츠</div>;
 };
