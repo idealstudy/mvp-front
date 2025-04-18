@@ -4,15 +4,8 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
+import { LoginFormValues, loginSchema } from '@/schema/login';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const loginSchema = z.object({
-  email: z.string().email('올바른 이메일 형식이 아닙니다'),
-  password: z.string().min(6, '비밀번호는 최소 6자 이상이어야 합니다'),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-[138px] pt-[42px]',
