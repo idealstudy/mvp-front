@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import Link from 'next/link';
+
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -15,8 +15,12 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginFormtwStyles = {
-  label: 'mb-1 block text-sm font-semibold',
-  input: 'w-full rounded border px-3 py-2',
+  wrapper: 'space-y-10 pb-[138px] pt-[42px]',
+  label: 'mb-2 block text-xl font-medium text-[#111111]',
+  input: 'w-full rounded border px-6 py-[18.5px]',
+  submit:
+    'mt-[6px] w-full cursor-pointer rounded bg-[#FF4805] py-5 text-white transition-opacity hover:opacity-90 font-bold',
+  link: 'text-orange-600 underline mx-auto w-fit',
 };
 
 export default function LoginForm() {
@@ -28,18 +32,14 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const queryClient = useQueryClient();
-  const [serverError, setServerError] = useState<string | null>(null);
-
   const onSubmit = async (data: LoginFormValues) => {
     console.log(data);
   };
 
   return (
     <form
-      // action={}
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4"
+      className={LoginFormtwStyles.wrapper}
     >
       <div>
         <label className={LoginFormtwStyles.label}>이메일</label>
@@ -65,15 +65,16 @@ export default function LoginForm() {
         )}
       </div>
 
-      {serverError && <p className="text-sm text-red-500">{serverError}</p>}
-
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full cursor-pointer rounded bg-orange-500 py-2 text-white transition-opacity hover:opacity-90"
+        className={LoginFormtwStyles.submit}
       >
-        {isSubmitting ? '로딩 중...' : '로그인'}
+        {isSubmitting ? '로딩 중...' : '계속'}
       </button>
+      <div className={LoginFormtwStyles.link}>
+        <Link href={'#'}>로그인이 안되시나요?</Link>
+      </div>
     </form>
   );
 }
