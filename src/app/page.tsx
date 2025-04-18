@@ -1,7 +1,9 @@
-export default function Home() {
+import HomePage from '@/features/home';
+
+export default function home() {
   return (
-    <main className="flex h-dvh items-center justify-center text-3xl font-bold">
-      The Edu
+    <main className="flex flex-col items-center">
+      <HomePage />
     </main>
   );
 }
