@@ -4,7 +4,7 @@ import landing01 from '@/../public/img_landing_01.svg';
 import landing02 from '@/../public/img_landing_02.svg';
 import landing03 from '@/../public/img_landing_03.svg';
 
-const data = [
+const problemCards = [
   {
     src: landing01,
     alt: '캐릭터1',
@@ -37,7 +37,7 @@ export default function Session2() {
       </div>
 
       <div className="mx-auto mt-[58px] mr-[223px] mb-[138px] ml-[182px] flex flex-wrap justify-center gap-[100px]">
-        {data.map((item, index) => (
+        {problemCards.map((item, index) => (
           <div
             key={index}
             className="flex flex-col items-center"
