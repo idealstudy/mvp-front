@@ -24,13 +24,13 @@ const data = [
 
 export default function Session2() {
   return (
-    <section className="w-full bg-[#1A1A1A] px-6 py-[80px] text-white">
-      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between gap-[80px] md:flex-row">
+    <section className="w-full bg-[#1A1A1A] px-6 py-20 text-white">
+      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between gap-20 md:flex-row">
         <div className="mt-[119px] space-y-2 tracking-[-0.05em]">
-          <p className="text-[24px] leading-[36px] font-normal">
+          <p className="text-2xl leading-9 font-normal">
             수업만 듣고 관리는 어려운 과외?
           </p>
-          <p className="mt-[18px] text-[48px] leading-[36px] font-bold tracking-[-0.05em]">
+          <p className="mt-[18px] text-5xl leading-9 font-bold tracking-[-0.05em]">
             이런 과외 이제 그만!
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function Session2() {
                 height={180}
               />
             </div>
-            <div className="mt-[21px] space-y-2 text-center text-[18px] leading-[22px] font-normal tracking-[-0.05em]">
+            <div className="mt-[21px] space-y-2 text-center text-lg leading-[22px] font-normal tracking-[-0.05em]">
               {item.texts.map((text, i) => (
                 <p key={i}>{text}</p>
               ))}

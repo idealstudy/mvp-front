@@ -18,11 +18,11 @@ export default function Session3() {
           className="mt-[50px] mr-[26px]"
         />
         <div className="space-y-2 tracking-[-0.05em]">
-          <p className="mb-[20px] text-[24px] leading-[36px] font-normal">
+          <p className="mb-5 text-2xl leading-9 font-normal">
             디에듀와 함께라면?
           </p>
           <div className="flex">
-            <p className="text-[48px] leading-[36px] font-bold tracking-[-0.05em]">
+            <p className="text-5xl leading-9 font-bold tracking-[-0.05em]">
               일정, 자료, 커뮤니케이션을 한 곳에서
             </p>
           </div>

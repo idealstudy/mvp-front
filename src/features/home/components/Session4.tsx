@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 export default function Session4() {
   return (
-    <section className="mt-[72px] w-full">
+    <section className="mt-18 mb-[162px] w-full">
       <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between md:flex-row">
         <div className="flex">
           <Image
@@ -20,7 +20,7 @@ export default function Session4() {
             height={56}
           />
 
-          <p className="mt-[18px] ml-[26px] text-[48px] leading-[36px] font-bold tracking-[-0.05em]">
+          <p className="mt-[18px] ml-[26px] text-5xl leading-9 font-bold tracking-[-0.05em]">
             자주 묻는 질문
           </p>
         </div>
@@ -29,7 +29,6 @@ export default function Session4() {
       <div className="mt-[45px] flex items-center justify-center">
         <FAQAccordion />
       </div>
-      <div className="mx-auto mt-[117px] h-[1px] w-full max-w-[1344px] bg-gray-200" />
     </section>
   );
 }
@@ -51,7 +50,7 @@ const FAQAccordion = () => {
   ];
 
   return (
-    <div className="w-full max-w-[1344px] cursor-auto bg-white">
+    <div className="mr-[36px] w-full max-w-[1344px] cursor-auto bg-white">
       {/* 질문 목록 */}
       <div className="flex flex-col gap-2">
         {tabs.map((item, index) => (
@@ -62,13 +61,13 @@ const FAQAccordion = () => {
             <div
               onClick={() => setActiveTab(activeTab === index ? null : index)}
               className={cn(
-                'flex h-[88px] cursor-pointer items-center justify-between border-[1px] px-10 py-8 transition-colors',
+                'flex h-[88px] items-center justify-between border-[1px] px-10 py-8 transition-colors',
                 'hover:bg-[rgb(255,69,0)] hover:text-[#1A1A1A]'
               )}
             >
-              <span className="text-[20px] leading-[36px] font-bold tracking-[-0.05em]">
+              <p className="text-xl leading-9 font-bold tracking-[-0.05em]">
                 {item.question}
-              </span>
+              </p>
               <Image
                 src={arrow}
                 alt="화살표"
@@ -84,7 +83,7 @@ const FAQAccordion = () => {
             {/* 답변 */}
             {activeTab === index && (
               <div className="border-x-[1px] border-t border-b-[1px] border-t-[#E0E0E0] px-10 py-8 text-[#1A1A1A]">
-                <p className="text-[16px] leading-[27px] font-normal tracking-[-0.05em]">
+                <p className="text-base leading-[27px] font-normal tracking-[-0.05em]">
                   {Array.isArray(item.answer)
                     ? item.answer.map((line, i) => (
                         <span key={i}>
