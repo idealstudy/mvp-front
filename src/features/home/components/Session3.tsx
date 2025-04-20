@@ -37,20 +37,23 @@ export function Session3() {
 }
 
 const TabSection = () => {
-  type TabIndex = 0 | 1 | 2 | 3;
+  type TabValue = (typeof tabs)[number]['value'];
 
-  const [activeTab, setActiveTab] = useState<TabIndex>(0);
+  const [activeTab, setActiveTab] = useState<TabValue>('study');
 
   const tabs = [
     {
+      value: 'study',
       label: '스터디 보드',
       content: <StudyBoardContent />,
     },
     {
+      value: 'live',
       label: '실시간 수업',
       content: <LiveClassContent />,
     },
     {
+      value: 'vod',
       label: 'VOD 예습·복습',
       content: <VodContent />,
     },
@@ -64,12 +67,12 @@ const TabSection = () => {
   return (
     <div className="w-full max-w-[1344px] bg-white">
       <div className="flex gap-2">
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <button
-            key={index}
-            onClick={() => setActiveTab(index as TabIndex)}
+            key={tab.value}
+            onClick={() => setActiveTab(tab.value)}
             className={`cursor-pointer border-[2px] border-b-0 border-black px-4 py-2 text-sm font-semibold transition ${
-              activeTab === index
+              activeTab === tab.value
                 ? 'bg-[#FF4500] text-white'
                 : 'hover:bg-gray-100'
             }`}
@@ -80,7 +83,9 @@ const TabSection = () => {
       </div>
 
       <div className="flex h-[650px] w-full max-w-[1344px] items-center justify-center border-[2px] bg-[#F4F1F1]">
-        <div className="text-lg text-gray-500">{tabs[activeTab].content}</div>
+        <div className="text-lg text-gray-500">
+          {tabs.find((tab) => tab.value === activeTab)?.content}
+        </div>
       </div>
     </div>
   );

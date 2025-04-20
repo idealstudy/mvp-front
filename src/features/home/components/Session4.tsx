@@ -83,13 +83,13 @@ const FAQAccordion = () => {
             {/* 답변 */}
             {activeTab === index && (
               <div className="border-x-[1px] border-t border-b-[1px] border-t-[#E0E0E0] px-10 py-8 text-[#1A1A1A]">
-                <p className="text-base leading-[27px] font-normal tracking-[-0.05em]">
+                <div className="text-base leading-[27px] font-normal tracking-[-0.05em]">
                   {Array.isArray(item.answer) ? (
                     item.answer.map((line, i) => <p key={i}>{line}</p>)
                   ) : (
                     <p>{item.answer}</p>
                   )}
-                </p>
+                </div>
               </div>
             )}
           </div>
