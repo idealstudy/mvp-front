@@ -6,10 +6,10 @@ import Image from 'next/image';
 
 import subTitle02 from '@/../public/img_landing_subtitle_02.svg';
 
-export default function Session3() {
+export function Session3() {
   return (
-    <section className="mt-[179px] w-full">
-      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center md:flex-row">
+    <section className="mt-[179px] mr-[36px] w-full max-w-[1344px]">
+      <div className="mx-auto flex items-center">
         <Image
           src={subTitle02}
           alt="서브 타이틀 그림"
@@ -28,10 +28,10 @@ export default function Session3() {
           </div>
         </div>
       </div>
-      <div className="mt-[77px] mr-[36px] flex justify-center">
+      <div className="mt-[77px] flex justify-center">
         <TabSection />
       </div>
-      <div className="mx-auto mt-[117px] h-[1px] w-full max-w-[1344px] bg-gray-200" />
+      <div className="mx-auto mt-[117px] h-[1px] w-full bg-gray-200" />
     </section>
   );
 }
@@ -55,6 +55,7 @@ const TabSection = () => {
       content: <VodContent />,
     },
     {
+      value: 'quick',
       label: '빠른 자료 찾기',
       content: <QuickMaterialsContent />,
     },

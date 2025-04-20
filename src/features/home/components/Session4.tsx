@@ -8,10 +8,10 @@ import arrow from '@/../public/ic_arrow_right.svg';
 import subTitle03 from '@/../public/img_landing_subtitle_03.svg';
 import { cn } from '@/lib/utils';
 
-export default function Session4() {
+export function Session4() {
   return (
-    <section className="mt-18 mb-[162px] w-full">
-      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between md:flex-row">
+    <section className="mt-18 mr-[36px] mb-[162px] w-full max-w-[1344px]">
+      <div className="mx-auto flex-col-reverse items-center justify-between">
         <div className="flex">
           <Image
             src={subTitle03}
@@ -50,7 +50,7 @@ const FAQAccordion = () => {
   ];
 
   return (
-    <div className="mr-[36px] w-full max-w-[1344px] cursor-auto bg-white">
+    <div className="w-full max-w-[1344px] cursor-auto bg-white">
       {/* 질문 목록 */}
       <div className="flex flex-col gap-2">
         {tabs.map((item, index) => (
@@ -58,10 +58,10 @@ const FAQAccordion = () => {
             key={index}
             className="cursor-pointer"
           >
-            <div
+            <button
               onClick={() => setActiveTab(activeTab === index ? null : index)}
               className={cn(
-                'flex h-[88px] items-center justify-between border-[1px] px-10 py-8 transition-colors',
+                'flex h-[88px] w-full cursor-pointer items-center justify-between border-[1px] px-10 py-8 transition-colors',
                 'hover:bg-[rgb(255,69,0)] hover:text-[#1A1A1A]'
               )}
             >
@@ -78,20 +78,17 @@ const FAQAccordion = () => {
                   activeTab === index && 'rotate-90'
                 )}
               />
-            </div>
+            </button>
 
             {/* 답변 */}
             {activeTab === index && (
               <div className="border-x-[1px] border-t border-b-[1px] border-t-[#E0E0E0] px-10 py-8 text-[#1A1A1A]">
                 <p className="text-base leading-[27px] font-normal tracking-[-0.05em]">
-                  {Array.isArray(item.answer)
-                    ? item.answer.map((line, i) => (
-                        <span key={i}>
-                          {line}
-                          <br />
-                        </span>
-                      ))
-                    : item.answer}
+                  {Array.isArray(item.answer) ? (
+                    item.answer.map((line, i) => <p key={i}>{line}</p>)
+                  ) : (
+                    <p>{item.answer}</p>
+                  )}
                 </p>
               </div>
             )}

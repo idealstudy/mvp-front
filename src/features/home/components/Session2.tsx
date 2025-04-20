@@ -22,10 +22,10 @@ const problemCards = [
   },
 ];
 
-export default function Session2() {
+export function Session2() {
   return (
     <section className="w-full bg-[#1A1A1A] px-6 py-20 text-white">
-      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between gap-20 md:flex-row">
+      <div className="mx-auto flex max-w-[1385px] flex-col-reverse items-center justify-between gap-20">
         <div className="mt-[119px] space-y-2 tracking-[-0.05em]">
           <p className="text-2xl leading-9 font-normal">
             수업만 듣고 관리는 어려운 과외?
