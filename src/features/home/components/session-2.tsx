@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
-import landing01 from '@/../public/img_landing_01.svg';
-import landing02 from '@/../public/img_landing_02.svg';
-import landing03 from '@/../public/img_landing_03.svg';
+import landing01 from '@/../public/home/landing_01.svg';
+import landing02 from '@/../public/home/landing_02.svg';
+import landing03 from '@/../public/home/landing_03.svg';
 
 const problemCards = [
   {

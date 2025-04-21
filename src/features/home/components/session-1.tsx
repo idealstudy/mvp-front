@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import landing from '@/../public/img_landing_main.svg';
+import landing from '@/../public/home/landing_main.svg';
 import { ROUTE } from '@/constants/route';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
