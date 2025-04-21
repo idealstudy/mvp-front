@@ -34,7 +34,6 @@ export default function Error({
   useEffect(() => {
     if (parsedError?.statusCode === 401 || parsedError?.statusCode === 403) {
       fetch('/api/logout', { method: 'POST' }).then(() => {
-        queryClient.cancelQueries({ queryKey: sessionQueryKey });
         queryClient.setQueryData(sessionQueryKey, null);
         router.replace('/login');
       });
