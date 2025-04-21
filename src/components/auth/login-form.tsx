@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
+import { useLoginMutation } from '@/features/auth/services/query';
 import { LoginFormValues, loginSchema } from '@/schema/login';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -25,8 +26,10 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
+  const { mutate } = useLoginMutation();
+
   const onSubmit = async (data: LoginFormValues) => {
-    console.log(data);
+    mutate(data);
   };
 
   return (
@@ -65,9 +68,10 @@ export default function LoginForm() {
       >
         {isSubmitting ? '로딩 중...' : '계속'}
       </button>
-      <div className={LoginFormtwStyles.link}>
-        <Link href={'#'}>로그인이 안되시나요?</Link>
-      </div>
+
+      <Link href={'#'}>
+        <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
+      </Link>
     </form>
   );
 }
