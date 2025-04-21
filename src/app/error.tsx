@@ -4,7 +4,14 @@ import { useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { AuthError, ForbiddenError } from '@/lib/error';
+import { sessionQueryKey } from '@/features/auth/services/query-options';
+import { useQueryClient } from '@tanstack/react-query';
+
+interface ParsedError {
+  statusCode: number;
+  name: string;
+  message: string;
+}
 
 export default function Error({
   error,
@@ -14,28 +21,39 @@ export default function Error({
   reset: () => void;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  let parsedError: ParsedError | null = null;
+
+  try {
+    parsedError = JSON.parse(error.message);
+  } catch {
+    parsedError = null;
+  }
 
   useEffect(() => {
-    if (error instanceof AuthError || error instanceof ForbiddenError) {
+    if (parsedError?.statusCode === 401 || parsedError?.statusCode === 403) {
       fetch('/api/logout', { method: 'POST' }).then(() => {
+        queryClient.cancelQueries({ queryKey: sessionQueryKey });
+        queryClient.setQueryData(sessionQueryKey, null);
         router.replace('/login');
       });
     }
-  }, [error, router]);
+  }, [router, queryClient, parsedError?.statusCode]);
 
   return (
     <div className="flex h-dvh flex-col items-center justify-center space-y-2 p-8 text-center text-red-500">
       <h2 className="text-xl font-semibold">에러 발생 😢</h2>
       <p className="mt-2">
         {process.env.NODE_ENV === 'development'
-          ? error.message
+          ? parsedError?.message || error.message
           : '페이지를 표시하는 중 문제가 발생했습니다.'}
       </p>
       {error.digest && (
         <p className="mt-1 text-sm text-gray-500">에러 코드: {error.digest}</p>
       )}
       <button
-        onClick={() => reset()}
+        onClick={reset}
         className="mt-4 rounded bg-red-100 px-4 py-2 hover:bg-red-200"
       >
         다시 시도
