@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const AuthBanner = () => {
+export default function AuthBanner() {
   return (
     <section className="relative h-[276px]">
       <svg
@@ -36,6 +36,4 @@ const AuthBanner = () => {
       </div>
     </section>
   );
-};
-
-export default AuthBanner;
+}
