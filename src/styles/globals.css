@@ -1,1 +1,51 @@
 @import 'tailwindcss';
+
+:root {
+  --color-dedu-orange: #ff4805;
+  --color-dedu-orange-hover: #e54005;
+  --color-red: #ff3d3d;
+  --color-dedu-black: #1a1a1a;
+  --color-dark-gray-01: #333333;
+  --color-dark-gray-02: #666666;
+  --color-dark-gray-03: #999999;
+  --color-light-gray-01: #f5f5f5;
+  --color-light-gray-02: #e0e0e0;
+  --color-light-gray-03: #c8c8c8;
+}
+
+@theme {
+  /* 폰트 */
+  --font-pretendard: var(--font-pretendard);
+
+  /* 색상 */
+  --color-dedu-orange: var(--color-dedu-orange);
+  --color-dedu-orange-hover: var(--color-dedu-orange-hover);
+  --color-red: var(--color-red);
+  --color-dedu-black: var(--color-dedu-black);
+  --color-dark-gray-01: var(--color-dark-gray-01);
+  --color-dark-gray-02: var(--color-dark-gray-02);
+  --color-dark-gray-03: var(--color-dark-gray-03);
+  --color-light-gray-01: var(--color-light-gray-01);
+  --color-light-gray-02: var(--color-light-gray-02);
+  --color-light-gray-03: var(--color-light-gray-03);
+
+  --color-background: var(--color-white);
+  --color-ring: var(--color-dedu-orange);
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    @apply ring-ring ring-2 ring-offset-2 ring-offset-white outline-hidden;
+  }
+}
+
+@layer base {
+  body {
+    @apply text-dedu-black bg-background;
+  }
+
+  button,
+  a {
+    @apply focus-visible:focus-ring;
+  }
+}
