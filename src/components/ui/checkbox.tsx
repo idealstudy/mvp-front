@@ -3,12 +3,13 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Checkbox as CheckboxPrimitives, Label } from 'radix-ui';
 
-type CheckboxProps = CheckboxPrimitives.CheckboxProps;
+type CheckboxProps = React.ComponentProps<typeof CheckboxPrimitives.Root>;
 
-const CheckboxImpl = React.forwardRef<
-  React.ComponentRef<typeof CheckboxPrimitives.Root>,
-  CheckboxProps
->(({ className, ['aria-invalid']: ariaInvalid, ...props }, forwardedRef) => {
+const CheckboxImpl = ({
+  className,
+  ['aria-invalid']: ariaInvalid,
+  ...props
+}: CheckboxProps) => {
   return (
     <CheckboxPrimitives.Root
       className={cn(
@@ -18,7 +19,6 @@ const CheckboxImpl = React.forwardRef<
         ariaInvalid && '',
         className
       )}
-      ref={forwardedRef}
       aria-invalid={ariaInvalid}
       {...props}
     >
@@ -27,8 +27,7 @@ const CheckboxImpl = React.forwardRef<
       </CheckboxPrimitives.Indicator>
     </CheckboxPrimitives.Root>
   );
-});
-CheckboxImpl.displayName = CheckboxPrimitives.Root.displayName;
+};
 
 const CheckIcon = () => {
   return (
@@ -49,23 +48,22 @@ const CheckIcon = () => {
   );
 };
 
-type CheckboxLabelProps = Label.LabelProps;
+type CheckboxLabelProps = React.ComponentProps<typeof Label.Root>;
 
-const CheckboxLabel = React.forwardRef<
-  React.ComponentRef<typeof Label.Root>,
-  CheckboxLabelProps
->(({ className, children, ...props }, forwardedRef) => {
+const CheckboxLabel = ({
+  className,
+  children,
+  ...props
+}: CheckboxLabelProps) => {
   return (
     <Label.Root
       className={cn('flex items-center gap-4', className)}
-      ref={forwardedRef}
       {...props}
     >
       {children}
     </Label.Root>
   );
-});
-CheckboxLabel.displayName = Label.Root.displayName;
+};
 
 type CheckboxGroupProps = React.ComponentPropsWithRef<'div'>;
 
