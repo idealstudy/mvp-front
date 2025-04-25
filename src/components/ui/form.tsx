@@ -12,26 +12,21 @@ export const Form = ({ children, ...props }: FormProps) => {
   return <form {...props}>{children}</form>;
 };
 
-type FormLabelProps = Label.LabelProps;
+type FormLabelProps = React.ComponentProps<typeof Label.Root>;
 
-const FormLabel = React.forwardRef<
-  React.ComponentRef<typeof Label.Root>,
-  FormLabelProps
->(({ className, children, ...props }, forwardedRef) => {
+const FormLabel = ({ className, children, ...props }: FormLabelProps) => {
   const { id } = useFormItemContext();
 
   return (
     <Label.Root
       htmlFor={id}
       className={cn('mb-2 w-fit text-[20px] font-medium', className)}
-      ref={forwardedRef}
       {...props}
     >
       {children}
     </Label.Root>
   );
-});
-FormLabel.displayName = Label.Root.displayName;
+};
 
 type FormDescriptionProps = React.ComponentPropsWithoutRef<'p'>;
 
