@@ -24,7 +24,6 @@ export const Header = () => {
             width={79}
             height={22}
             className="cursor-pointer"
-            role="button"
           />
         </Link>
         {isLoggedIn ? (
@@ -38,14 +37,12 @@ export const Header = () => {
         ) : (
           <div className="flex gap-5">
             <Link
-              role="button"
               href={ROUTE.LOGIN}
               className={buttonBase}
             >
               로그인
             </Link>
             <Link
-              role="button"
               href={ROUTE.SIGNUP.HOME}
               className={`${buttonBase} bg-[#ff4500] hover:bg-[#e64500]`}
             >

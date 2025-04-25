@@ -47,7 +47,6 @@ export function Session1() {
           <div className="mt-[282px] flex gap-3">
             <Link
               href={ROUTE.LOGIN}
-              role="button"
               className={cn(
                 buttonVariants({ variant: 'default', size: 'default' }),
                 'text-white'
@@ -58,7 +57,6 @@ export function Session1() {
 
             <Link
               href={ROUTE.BIZ}
-              role="button"
               className={buttonVariants({ variant: 'biz', size: 'biz' })}
             >
               비즈니스 문의

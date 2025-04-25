@@ -15,7 +15,6 @@ export const Footer = () => {
             width={79}
             height={22}
             className="cursor-pointer"
-            role="button"
           />
         </Link>
 

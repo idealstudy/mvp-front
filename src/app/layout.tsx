@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import { Footer } from '@/constants/layout/footer';
-import { Header } from '@/constants/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { Header } from '@/components/layout/header';
 import { GlobalProvider } from '@/providers/global-provider';
 import '@/styles/globals.css';
 
