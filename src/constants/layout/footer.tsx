@@ -1,26 +1,23 @@
-'use client';
-
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
 
 export const Footer = () => {
-  const router = useRouter();
-
   return (
     <footer className="w-full bg-[#2E2E2E] px-5 py-[68px] text-sm text-white">
       <div className="mx-auto max-w-7xl space-y-4">
-        <Image
-          src={logo}
-          alt="THE EDU 로고"
-          width={79}
-          height={22}
-          className="cursor-pointer"
-          role="button"
-          onClick={() => router.push(ROUTE.HOME)}
-        />
+        <Link href={ROUTE.HOME}>
+          <Image
+            src={logo}
+            alt="THE EDU 로고"
+            width={79}
+            height={22}
+            className="cursor-pointer"
+            role="button"
+          />
+        </Link>
 
         <p className="mt-[31px]">
           <span className="font-semibold">팀 디에듀</span> | 조성진 강이규
