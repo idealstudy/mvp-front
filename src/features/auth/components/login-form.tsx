@@ -15,8 +15,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-[138px] pt-[42px]',
-  label: 'mb-2 block text-xl font-medium text-[#111111]',
-  input: 'w-full rounded border px-6 py-[18.5px]',
   link: 'text-dedu-orange underline mx-auto w-fit',
 };
 
@@ -60,11 +58,10 @@ export default function LoginForm() {
       className={LoginFormtwStyles.wrapper}
     >
       <Form.Item error={!!errors.email}>
-        <Form.Label className={LoginFormtwStyles.label}>이메일</Form.Label>
+        <Form.Label>이메일</Form.Label>
         <Form.Control>
           <Input
             type="email"
-            className={LoginFormtwStyles.input}
             {...register('email')}
           />
         </Form.Control>
@@ -72,11 +69,10 @@ export default function LoginForm() {
       </Form.Item>
 
       <Form.Item error={!!errors.password}>
-        <Form.Label className={LoginFormtwStyles.label}>비밀번호</Form.Label>
+        <Form.Label>비밀번호</Form.Label>
         <Form.Control>
           <Input
             type="password"
-            className={LoginFormtwStyles.input}
             {...register('password')}
           />
         </Form.Control>
