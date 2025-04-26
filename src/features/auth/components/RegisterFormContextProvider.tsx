@@ -4,17 +4,37 @@ import { useForm } from 'react-hook-form';
 
 import { useSearchParams } from 'next/navigation';
 
+import { useCheckboxGroup } from '@/hooks/use-checkbox-group';
 import { createContextFactory } from '@/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { CredentialForm, ProfileForm } from '../schemas/register';
+
+const TERMS = [
+  {
+    value: 'terms',
+    required: true,
+  },
+  {
+    value: 'privacy',
+    required: true,
+  },
+  {
+    value: 'marketing',
+    required: false,
+  },
+] as const;
 
 const INVITATION_CODE_KEY = 'code';
 
 type RegisterFormContextValue = {
   credentialForm: ReturnType<typeof useForm<CredentialForm>>;
   profileForm: ReturnType<typeof useForm<ProfileForm>>;
+  termsCheckboxGroup: ReturnType<
+    typeof useCheckboxGroup<(typeof TERMS)[number]['value']>
+  >;
   invitationCodeFromLink: string | null;
+  isAllRequiredTermsChecked: boolean;
 };
 
 const [RegisterFormContext, useRegisterFormContext] =
@@ -26,6 +46,8 @@ export const RegisterFormContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
+
   const searchParams = useSearchParams();
   const invitationCodeFromLink = searchParams.get(INVITATION_CODE_KEY);
 
@@ -41,15 +63,25 @@ export const RegisterFormContextProvider = ({
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(ProfileForm),
     defaultValues: {
-      role: '',
+      role: 'ROLE_TEACHER',
       name: '',
       invitationCode: invitationCodeFromLink ?? '',
     },
   });
 
+  const isAllRequiredTermsChecked = TERMS.filter((term) => term.required).every(
+    (term) => termsCheckboxGroup.checkedItems.includes(term.value)
+  );
+
   return (
     <RegisterFormContext
-      value={{ credentialForm, profileForm, invitationCodeFromLink }}
+      value={{
+        termsCheckboxGroup,
+        credentialForm,
+        profileForm,
+        invitationCodeFromLink,
+        isAllRequiredTermsChecked,
+      }}
     >
       {children}
     </RegisterFormContext>

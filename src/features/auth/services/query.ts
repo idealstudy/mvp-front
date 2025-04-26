@@ -6,7 +6,7 @@ import { decodeToken } from '@/lib/utils';
 import { LoginFormValues } from '@/schema/login';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { login, logout } from './api';
+import { authApi, login, logout } from './api';
 import { sessionQueryKey, sessionQueryOption } from './query-options';
 
 export const useSessionQuery = () => {
@@ -50,5 +50,23 @@ export const useLogoutMutation = () => {
     onError: (error) => {
       console.error('Logout failed:', error);
     },
+  });
+};
+
+export const useSignUp = () => {
+  return useMutation({
+    mutationFn: authApi.signUp,
+  });
+};
+
+export const useSendVerificationCode = () => {
+  return useMutation({
+    mutationFn: authApi.sendVerificationCode,
+  });
+};
+
+export const useVerifyCode = () => {
+  return useMutation({
+    mutationFn: authApi.verifyCode,
   });
 };

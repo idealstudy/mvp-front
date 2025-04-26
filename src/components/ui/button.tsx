@@ -50,7 +50,7 @@ export const Button = ({
   return (
     <Component
       type={asChild ? undefined : 'button'}
-      className={buttonVariants({ variant, size, className })}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     >
       {children}
