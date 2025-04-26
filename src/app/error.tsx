@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { sessionQueryKey } from '@/features/auth/services/query-options';
+import { parseJson } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface ParsedError {
+export interface ParsedError {
   statusCode: number;
   name: string;
   message: string;
@@ -22,14 +23,7 @@ export default function Error({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  let parsedError: ParsedError | null = null;
-
-  try {
-    parsedError = JSON.parse(error.message);
-  } catch {
-    parsedError = null;
-  }
+  const parsedError = parseJson<ParsedError>(error.message);
 
   useEffect(() => {
     if (parsedError?.statusCode === 401 || parsedError?.statusCode === 403) {

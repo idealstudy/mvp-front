@@ -11,8 +11,8 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.status === 401) throw new AuthError();
-    if (error.status === 403) throw new ForbiddenError();
+    if (error.status === 401) throw new AuthError(error.response.data);
+    if (error.status === 403) throw new ForbiddenError(error.response.data);
     return Promise.reject(error);
   }
 );

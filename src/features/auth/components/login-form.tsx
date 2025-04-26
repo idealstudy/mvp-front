@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
+import { ParsedError } from '@/app/error';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/features/auth/services/query';
+import { parseJson } from '@/lib/utils';
 import { LoginFormValues, loginSchema } from '@/schema/login';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -12,66 +17,83 @@ const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-[138px] pt-[42px]',
   label: 'mb-2 block text-xl font-medium text-[#111111]',
   input: 'w-full rounded border px-6 py-[18.5px]',
-  submit:
-    'mt-[6px] w-full cursor-pointer rounded bg-[#FF4805] py-5 text-white transition-opacity hover:opacity-90 font-bold',
-  link: 'text-orange-600 underline mx-auto w-fit',
+  link: 'text-dedu-orange underline mx-auto w-fit',
 };
 
 export default function LoginForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
   });
 
-  const { mutate } = useLoginMutation();
+  const { mutate, isPending } = useLoginMutation();
 
   const onSubmit = async (data: LoginFormValues) => {
-    mutate(data);
+    mutate(data, {
+      onError: (error) => {
+        const parsedError = parseJson<ParsedError>(error.message, {
+          name: 'Server Error',
+          statusCode: 500,
+          message: '서버에서 오류가 발생하였습니다.',
+        });
+        const errorMsg = parsedError?.message;
+
+        setError('password', {
+          type: 'server',
+          message: errorMsg,
+        });
+      },
+    });
   };
 
+  const isLoading = isPending || isSubmitting;
+  const isInValid = Object.keys(errors).length > 0;
+
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(onSubmit)}
       className={LoginFormtwStyles.wrapper}
     >
-      <div>
-        <label className={LoginFormtwStyles.label}>이메일</label>
-        <input
-          type="email"
-          {...register('email')}
-          className={LoginFormtwStyles.input}
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-        )}
-      </div>
+      <Form.Item error={!!errors.email}>
+        <Form.Label className={LoginFormtwStyles.label}>이메일</Form.Label>
+        <Form.Control>
+          <Input
+            type="email"
+            className={LoginFormtwStyles.input}
+            {...register('email')}
+          />
+        </Form.Control>
+        <Form.ErrorMessage>{errors.email?.message}</Form.ErrorMessage>
+      </Form.Item>
 
-      <div>
-        <label className={LoginFormtwStyles.label}>비밀번호</label>
-        <input
-          type="password"
-          {...register('password')}
-          className={LoginFormtwStyles.input}
-        />
-        {errors.password && (
-          <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
-        )}
-      </div>
+      <Form.Item error={!!errors.password}>
+        <Form.Label className={LoginFormtwStyles.label}>비밀번호</Form.Label>
+        <Form.Control>
+          <Input
+            type="password"
+            className={LoginFormtwStyles.input}
+            {...register('password')}
+          />
+        </Form.Control>
+        <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
+      </Form.Item>
 
-      <button
+      <Button
         type="submit"
-        disabled={isSubmitting}
-        className={LoginFormtwStyles.submit}
+        disabled={isLoading || isInValid}
+        className="w-full"
       >
-        {isSubmitting ? '로딩 중...' : '계속'}
-      </button>
+        {isLoading ? '로그인 중...' : '계속'}
+      </Button>
 
       <Link href={'#'}>
         <p className={LoginFormtwStyles.link}>로그인이 안되시나요?</p>
       </Link>
-    </form>
+    </Form>
   );
 }
