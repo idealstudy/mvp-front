@@ -8,7 +8,7 @@ import { useCheckboxGroup } from '@/hooks/use-checkbox-group';
 import { createContextFactory } from '@/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { CredentialForm, ProfileForm } from '../schemas/register';
+import { CredentialForm, EmailForm, ProfileForm } from '../schemas/register';
 
 const TERMS = [
   {
@@ -28,6 +28,7 @@ const TERMS = [
 const INVITATION_CODE_KEY = 'code';
 
 type RegisterFormContextValue = {
+  emailForm: ReturnType<typeof useForm<EmailForm>>;
   credentialForm: ReturnType<typeof useForm<CredentialForm>>;
   profileForm: ReturnType<typeof useForm<ProfileForm>>;
   termsCheckboxGroup: ReturnType<
@@ -50,6 +51,13 @@ export const RegisterFormContextProvider = ({
 
   const searchParams = useSearchParams();
   const invitationCodeFromLink = searchParams.get(INVITATION_CODE_KEY);
+
+  const emailForm = useForm<EmailForm>({
+    resolver: zodResolver(EmailForm),
+    defaultValues: {
+      email: 'dev.nonon@gmail.com',
+    },
+  });
 
   const credentialForm = useForm<CredentialForm>({
     resolver: zodResolver(CredentialForm),
@@ -76,9 +84,10 @@ export const RegisterFormContextProvider = ({
   return (
     <RegisterFormContext
       value={{
-        termsCheckboxGroup,
+        emailForm,
         credentialForm,
         profileForm,
+        termsCheckboxGroup,
         invitationCodeFromLink,
         isAllRequiredTermsChecked,
       }}

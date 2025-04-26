@@ -34,6 +34,7 @@ export const CredentialForm = () => {
 
   const {
     credentialForm: form,
+    emailForm,
     invitationCodeFromLink,
     termsCheckboxGroup,
     isAllRequiredTermsChecked,
@@ -54,7 +55,7 @@ export const CredentialForm = () => {
 
     sendVerificationCode(
       {
-        email: form.getValues('email'),
+        email: emailForm.getValues('email'),
       },
       {
         onSuccess: () => {
@@ -70,7 +71,7 @@ export const CredentialForm = () => {
 
     verifyCode(
       {
-        email: form.getValues('email'),
+        email: emailForm.getValues('email'),
         code: form.getValues('verificationCode'),
       },
       {
@@ -95,16 +96,14 @@ export const CredentialForm = () => {
       className="mx-auto mt-8 flex max-w-[570px] flex-col gap-8 px-4"
       onSubmit={onSubmit}
     >
-      <Form.Item error={!!form.formState.errors.email}>
+      <Form.Item>
         <Form.Label>이메일</Form.Label>
         <div className="flex">
           <Form.Control>
             <Input
               className="border-r-0"
-              defaultValue="dev.nonon@gmail.com"
-              placeholder="example@dedu.kr"
+              defaultValue={emailForm.getValues('email')}
               readOnly
-              {...form.register('email')}
             />
           </Form.Control>
           <Button

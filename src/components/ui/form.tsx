@@ -111,7 +111,7 @@ const FormErrorMessage = ({
     <p
       ref={refCallback}
       id={errorMessageId}
-      className={cn('text-red mt-2 text-[12px]', className)}
+      className={cn('text-red mt-2', className)}
       {...props}
     >
       {children}

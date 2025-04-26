@@ -1,9 +1,9 @@
-import { CredentialForm } from '@/features/auth/components/CredentialForm';
+import { EmailForm } from '@/features/auth/components/EmailForm';
 
 export default function RegisterCredentialFormPage() {
   return (
     <main>
-      <CredentialForm />
+      <EmailForm />
     </main>
   );
 }

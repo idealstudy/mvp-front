@@ -17,6 +17,7 @@ export const ProfileForm = () => {
   const {
     profileForm,
     credentialForm,
+    emailForm,
     termsCheckboxGroup,
     invitationCodeFromLink,
   } = useRegisterFormContext();
@@ -28,7 +29,7 @@ export const ProfileForm = () => {
   const onSubmit = profileForm.handleSubmit(() => {
     signUp(
       {
-        email: credentialForm.getValues('email'),
+        email: emailForm.getValues('email'),
         password: credentialForm.getValues('password'),
         verificationCode: credentialForm.getValues('verificationCode'),
         acceptOptionalTerm:
