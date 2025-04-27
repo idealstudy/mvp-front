@@ -1,10 +1,21 @@
 import axios, { AxiosInstance } from 'axios';
 
+import { AuthError, ForbiddenError } from './error';
+
 const BASE_URL = 'http://13.125.112.205:8080/api';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.status === 401) throw new AuthError(error.response.data);
+    if (error.status === 403) throw new ForbiddenError(error.response.data);
+    return Promise.reject(error);
+  }
+);
 
 export const api = {
   get: async <TResponse = unknown>(
