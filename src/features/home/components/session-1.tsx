@@ -46,7 +46,7 @@ export function Session1() {
 
           <div className="mt-[282px] flex gap-3">
             <Link
-              href={ROUTE.LOGIN}
+              href={ROUTE.SIGNUP}
               className={cn(
                 buttonVariants({ variant: 'default', size: 'default' }),
                 'text-white'

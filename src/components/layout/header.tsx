@@ -43,7 +43,7 @@ export const Header = () => {
               로그인
             </Link>
             <Link
-              href={ROUTE.SIGNUP.HOME}
+              href={ROUTE.SIGNUP}
               className={`${buttonBase} bg-[#ff4500] hover:bg-[#e64500]`}
             >
               디에듀 시작하기

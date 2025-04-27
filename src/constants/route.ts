@@ -1,9 +1,6 @@
 export const ROUTE = {
   HOME: '/',
   LOGIN: '/login',
-  SIGNUP: {
-    HOME: '/register',
-    PROFILE: '/register/profile',
-  },
+  SIGNUP: '/register',
   BIZ: '/biz',
 } as const;
