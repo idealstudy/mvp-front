@@ -1,9 +1,5 @@
-import { ProfileForm } from '@/features/auth/components/ProfileForm';
+import { ProfileForm } from '@/features/auth/components/profile-form';
 
 export default function RegisterProfileFormPage() {
-  return (
-    <main>
-      <ProfileForm />
-    </main>
-  );
+  return <ProfileForm />;
 }

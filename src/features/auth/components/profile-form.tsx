@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ROUTE } from '@/constants/route';
-import { useRegisterFormContext } from '@/features/auth/components/RegisterFormContextProvider';
+import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
 
 import { useSignUp } from '../services/query';
-import { RoleRadioGroup } from './RoleRadioGroup';
+import { RoleRadioGroup } from './role-radio-group';
 
 export const ProfileForm = () => {
   const {
@@ -49,7 +49,7 @@ export const ProfileForm = () => {
 
   return (
     <Form
-      className="mx-auto mt-8 flex max-w-[570px] flex-col gap-8 px-4"
+      className="flex flex-col gap-8"
       onSubmit={onSubmit}
     >
       <Form.Item>

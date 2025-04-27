@@ -8,7 +8,7 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ROUTE } from '@/constants/route';
 
-import { useRegisterFormContext } from './RegisterFormContextProvider';
+import { useRegisterFormContext } from './register-form-context-provider';
 
 export const EmailForm = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ export const EmailForm = () => {
 
   return (
     <Form
-      className="mx-auto flex max-w-[570px] flex-col gap-[52px] px-4"
+      className="flex flex-col gap-[52px]"
       onSubmit={onSubmit}
     >
       <Form.Item error={!!form.formState.errors.email}>
