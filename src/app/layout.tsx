@@ -25,9 +25,11 @@ export default function RootLayout({
       className={`${pretendard.variable} font-pretendard`}
     >
       <body className="antialiased">
-        <Header />
         <Suspense fallback={null}>
-          <GlobalProvider>{children}</GlobalProvider>
+          <GlobalProvider>
+            <Header />
+            {children}
+          </GlobalProvider>
         </Suspense>
         <Footer />
       </body>

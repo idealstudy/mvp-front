@@ -56,7 +56,7 @@ export function Session1() {
             </Link>
 
             <Link
-              href={ROUTE.BIZ}
+              href={'#'}
               className={buttonVariants({ variant: 'biz', size: 'biz' })}
             >
               비즈니스 문의

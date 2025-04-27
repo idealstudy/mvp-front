@@ -6,10 +6,10 @@ import Link from 'next/link';
 import profile from '@/../public/header-profile.svg';
 import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
+import { useSessionQuery } from '@/features/auth/services/query';
 
 export const Header = () => {
-  // 로그인 여부 확인 수정 예정
-  const isLoggedIn = false;
+  const { data: session } = useSessionQuery();
 
   const buttonBase =
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
@@ -26,7 +26,7 @@ export const Header = () => {
             className="cursor-pointer"
           />
         </Link>
-        {isLoggedIn ? (
+        {session ? (
           <Image
             src={profile}
             alt="프로필 사진"
