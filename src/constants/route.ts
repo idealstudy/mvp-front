@@ -2,5 +2,5 @@ export const ROUTE = {
   HOME: '/',
   LOGIN: '/login',
   SIGNUP: '/register',
-  BIZ: '/biz',
+  BIZ: '#',
 } as const;
