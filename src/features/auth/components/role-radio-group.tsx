@@ -7,7 +7,7 @@ import { UserRole } from '../services/api';
 
 type RoleRadioGroupItemProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Item>,
-  'value'
+  'value' | 'onValueChange'
 > & {
   value: UserRole;
 };
@@ -15,7 +15,6 @@ type RoleRadioGroupItemProps = Omit<
 const RoleRadioGroupItem = ({
   className,
   children,
-
   ...props
 }: RoleRadioGroupItemProps) => {
   return (
@@ -32,17 +31,22 @@ const RoleRadioGroupItem = ({
   );
 };
 
-type RoleRadioGroupProps = React.ComponentProps<
-  typeof RadioGroupPrimitives.Root
->;
+type RoleRadioGroupProps = Omit<
+  React.ComponentProps<typeof RadioGroupPrimitives.Root>,
+  'onValueChange' | 'onChange'
+> & {
+  onChange: (value: UserRole) => void;
+};
 
 export const RoleRadioGroup = ({
   className,
+  onChange,
   ...props
 }: RoleRadioGroupProps) => {
   return (
     <RadioGroupPrimitives.Root
       className={cn('flex gap-6', className)}
+      onValueChange={onChange}
       {...props}
     >
       <RoleRadioGroupItem value="ROLE_TEACHER">

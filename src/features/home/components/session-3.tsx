@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import subTitle02 from '@/../public/home/landing_subtitle_02.svg';
+import subTitle02 from '@/../public/home/landing-subtitle-02.svg';
 
 export function Session3() {
   return (

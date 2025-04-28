@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import subTitle03 from '@/../public/home/landing_subtitle_03.svg';
-import arrow from '@/../public/ic_arrow_right.svg';
+import subTitle03 from '@/../public/home/landing-subtitle-03.svg';
+import arrow from '@/../public/ic-arrow-right.svg';
 import { cn } from '@/lib/utils';
 
 export function Session4() {

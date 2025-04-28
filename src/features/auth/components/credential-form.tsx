@@ -3,23 +3,25 @@
 import { useState } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { link } from '@/constants/link';
-import { ROUTE } from '@/constants/route';
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
 import { useCountdown } from '@/hooks/use-countdown';
 
 import { useSendVerificationCode, useVerifyCode } from '../services/query';
 
-const RESEND_COUNTDOWN = 3;
+const RESEND_COUNTDOWN = 30;
 const VERIFICATION_CODE_LENGTH = 6;
 
-export const CredentialForm = () => {
+type CredentialFormProps = {
+  onNext: () => void;
+};
+
+export const CredentialForm = ({ onNext }: CredentialFormProps) => {
   const [emailCodeVerified, setEmailCodeVerified] = useState(false);
 
   const { countdown: resendCountdown, startCountdown } =
@@ -35,19 +37,12 @@ export const CredentialForm = () => {
   const {
     credentialForm: form,
     emailForm,
-    invitationCodeFromLink,
     termsCheckboxGroup,
     isAllRequiredTermsChecked,
   } = useRegisterFormContext();
 
-  const router = useRouter();
-
   const onSubmit = form.handleSubmit(() => {
-    if (invitationCodeFromLink) {
-      router.push(`${ROUTE.SIGNUP.PROFILE}?code=${invitationCodeFromLink}`);
-    } else {
-      router.push(ROUTE.SIGNUP.PROFILE);
-    }
+    onNext();
   });
 
   const onSendButtonClick = () => {

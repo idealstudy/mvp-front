@@ -53,6 +53,12 @@ export const useLogoutMutation = () => {
   });
 };
 
+export const useCheckEmailDuplicate = () => {
+  return useMutation({
+    mutationFn: authApi.checkEmailDuplicate,
+  });
+};
+
 export const useSignUp = () => {
   return useMutation({
     mutationFn: authApi.signUp,

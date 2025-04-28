@@ -32,19 +32,26 @@ export const USER_ROLES = [
 ] as const;
 
 export const authApi = {
-  sendVerificationCode: async (body: SendVerificationCodeBody) => {
+  checkEmailDuplicate: async (body: CheckEmailDuplicateBody) => {
     return body;
-    // return api.post('/public/email-verifications', body);
+    // return api.post('/public/email-verifications/check-duplicate', body);
+  },
+  sendVerificationCode: async (body: SendVerificationCodeBody) => {
+    // return body;
+    return api.post('/public/email-verifications', body);
   },
   verifyCode: async (body: VerifyCodeBody) => {
     // throw new Error('Verification code is invalid');
-
     return body;
     // return api.patch('/public/email-verifications', body);
   },
   signUp: async (body: SignUpBody) => {
     return api.post('/auth/sign-up', body);
   },
+};
+
+type CheckEmailDuplicateBody = {
+  email: string;
 };
 
 type SendVerificationCodeBody = {

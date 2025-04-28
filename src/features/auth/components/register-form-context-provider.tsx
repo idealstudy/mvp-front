@@ -55,7 +55,7 @@ export const RegisterFormContextProvider = ({
   const emailForm = useForm<EmailForm>({
     resolver: zodResolver(EmailForm),
     defaultValues: {
-      email: 'dev.nonon@gmail.com',
+      email: '',
     },
   });
 

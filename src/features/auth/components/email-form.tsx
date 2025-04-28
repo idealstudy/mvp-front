@@ -1,23 +1,41 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ROUTE } from '@/constants/route';
 
+import { useCheckEmailDuplicate } from '../services/query';
 import { useRegisterFormContext } from './register-form-context-provider';
 
-export const EmailForm = () => {
-  const router = useRouter();
+type EmailFormProps = {
+  onNext: () => void;
+};
+
+export const EmailForm = ({ onNext }: EmailFormProps) => {
   const { emailForm: form } = useRegisterFormContext();
 
-  const onSubmit = form.handleSubmit(() => {
-    // 중복 검사
+  const { mutate: checkEmailDuplicate, isPending } = useCheckEmailDuplicate();
 
-    router.push(ROUTE.SIGNUP.CREDENTIAL);
+  const onSubmit = form.handleSubmit((data) => {
+    if (isPending) return;
+
+    checkEmailDuplicate(
+      { email: data.email },
+      {
+        onSuccess: () => {
+          onNext();
+        },
+        onError: () => {
+          form.setError('email', {
+            type: 'server',
+            message: '이미 사용중인 이메일입니다.',
+          });
+        },
+      }
+    );
   });
 
   return (
@@ -29,7 +47,6 @@ export const EmailForm = () => {
         <Form.Label>이메일</Form.Label>
         <Form.Control>
           <Input
-            type="email"
             placeholder="이메일을 입력해주세요."
             {...form.register('email')}
           />

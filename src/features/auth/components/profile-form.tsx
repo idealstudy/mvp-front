@@ -24,9 +24,11 @@ export const ProfileForm = () => {
 
   const router = useRouter();
 
-  const { mutate: signUp } = useSignUp();
+  const { mutate: signUp, isPending } = useSignUp();
 
-  const onSubmit = profileForm.handleSubmit(() => {
+  const onSubmit = profileForm.handleSubmit((data) => {
+    if (isPending) return;
+
     signUp(
       {
         email: emailForm.getValues('email'),
@@ -34,10 +36,9 @@ export const ProfileForm = () => {
         verificationCode: credentialForm.getValues('verificationCode'),
         acceptOptionalTerm:
           termsCheckboxGroup.checkedItems.includes('marketing'),
-        name: profileForm.getValues('name'),
-        role: profileForm.getValues('role'),
-        invitationCode:
-          invitationCodeFromLink ?? profileForm.getValues('invitationCode'),
+        name: data.name,
+        role: data.role,
+        invitationCode: invitationCodeFromLink ?? data.invitationCode,
       },
       {
         onSuccess: () => {

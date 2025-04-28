@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import landing from '@/../public/home/landing_main.svg';
+import landing from '@/../public/home/landing-main.svg';
 import { ROUTE } from '@/constants/route';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
@@ -12,9 +12,9 @@ const buttonVariants = cva('flex items-center justify-center text-center', {
   variants: {
     variant: {
       default:
-        'bg-[#ff4500] text-lg font-bold text-white px-6 py-3 border border-[#1A1A1A]  hover:bg-[#e64500] hover:cursor-pointer',
+        'bg-[#ff4500] text-lg font-bold text-white px-6 py-3 border border-[#1A1A1A]  hover:bg-[#e64500] cursor-pointer',
 
-      biz: 'bg-white text-lg font-normal text-[#1A1A1A] px-6 py-3 border border-[#CFCFCF] hover:bg-gray-100 hover:cursor-pointer',
+      biz: 'bg-white text-lg font-normal text-[#1A1A1A] px-6 py-3 border border-[#CFCFCF] hover:bg-gray-100 cursor-pointer',
     },
     size: {
       default: 'w-[270px] h-[70px]',
@@ -46,8 +46,7 @@ export function Session1() {
 
           <div className="mt-[282px] flex gap-3">
             <Link
-              href={ROUTE.LOGIN}
-              role="button"
+              href={ROUTE.SIGNUP}
               className={cn(
                 buttonVariants({ variant: 'default', size: 'default' }),
                 'text-white'
@@ -58,7 +57,6 @@ export function Session1() {
 
             <Link
               href={ROUTE.BIZ}
-              role="button"
               className={buttonVariants({ variant: 'biz', size: 'biz' })}
             >
               비즈니스 문의
@@ -72,6 +70,7 @@ export function Session1() {
             alt="Session 1 이미지"
             width={785}
             height={608}
+            priority
           />
         </div>
       </div>
