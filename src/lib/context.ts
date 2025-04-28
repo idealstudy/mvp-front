@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
 export const createContextFactory = <TContextValue>(name?: string) => {
   const Context = React.createContext<TContextValue | null>(null);
@@ -10,7 +10,7 @@ export const createContextFactory = <TContextValue>(name?: string) => {
 
     if (!context) {
       throw new Error(
-        `use${name}Context는 ${name}ContextProvider 컴포넌트 안에서만 사용할 수 있습니다.`,
+        `use${name}Context는 ${name}ContextProvider 컴포넌트 안에서만 사용할 수 있습니다.`
       );
     }
 
