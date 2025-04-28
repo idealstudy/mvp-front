@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 import { USER_ROLES } from '../services/api';
 
+// 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자 포함
+const PASSWORD_REGEX =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
+
 export type EmailForm = z.infer<typeof EmailForm>;
 export const EmailForm = z.object({
   email: z
@@ -14,9 +18,15 @@ export type CredentialForm = z.infer<typeof CredentialForm>;
 export const CredentialForm = z
   .object({
     verificationCode: z.string(),
-    password: z.string().min(1, {
-      message: '비밀번호를 입력해주세요.',
-    }),
+    password: z
+      .string()
+      .min(1, {
+        message: '비밀번호를 입력해주세요.',
+      })
+      .regex(PASSWORD_REGEX, {
+        message:
+          '비밀번호는 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자를 포함해야 합니다.',
+      }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
