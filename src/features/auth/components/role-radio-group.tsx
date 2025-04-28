@@ -3,13 +3,13 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { RadioGroup as RadioGroupPrimitives } from 'radix-ui';
 
-import { UserRole } from '../services/api';
+import { Role } from '../type';
 
 type RoleRadioGroupItemProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Item>,
   'value' | 'onValueChange'
 > & {
-  value: UserRole;
+  value: Role;
 };
 
 const RoleRadioGroupItem = ({
@@ -35,7 +35,7 @@ type RoleRadioGroupProps = Omit<
   React.ComponentProps<typeof RadioGroupPrimitives.Root>,
   'onValueChange' | 'onChange'
 > & {
-  onChange: (value: UserRole) => void;
+  onChange: (value: Role) => void;
 };
 
 export const RoleRadioGroup = ({

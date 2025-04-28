@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { USER_ROLES } from '../services/api';
+import { ROLES } from '../type';
 
 // 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자 포함
 const PASSWORD_REGEX =
@@ -36,7 +36,7 @@ export const CredentialForm = z
 
 export type ProfileForm = z.infer<typeof ProfileForm>;
 export const ProfileForm = z.object({
-  role: z.enum(USER_ROLES),
+  role: z.enum(ROLES),
   name: z.string().min(1, { message: '이름을 입력해주세요.' }),
   invitationCode: z.string(),
 });
