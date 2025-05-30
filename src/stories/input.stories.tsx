@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,27 @@ export const Invalid: Story = {
   render: () => {
     return <Input aria-invalid />;
   },
+};
+
+export const Controlled: Story = {
+  render: () => {
+    return <ControlledExample />;
+  },
+};
+
+const ControlledExample = () => {
+  const [value, setValue] = useState('');
+
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    setValue(event.target.value);
+  };
+
+  return (
+    <Input
+      value={value}
+      onChange={onChange}
+    />
+  );
 };
 
 export const WithForm: Story = {

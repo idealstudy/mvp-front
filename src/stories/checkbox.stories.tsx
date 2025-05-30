@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -57,4 +59,21 @@ export const Grouped: Story = {
       </Checkbox.Group>
     );
   },
+};
+
+export const Controlled: Story = {
+  render: () => {
+    return <ControlledExample />;
+  },
+};
+
+const ControlledExample = () => {
+  const [checked, setChecked] = useState<boolean | 'indeterminate'>(false);
+
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={setChecked}
+    />
+  );
 };
