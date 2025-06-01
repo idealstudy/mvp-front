@@ -72,6 +72,7 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
       {
         onSuccess: () => {
           setEmailCodeVerified(true);
+          form.clearErrors('verificationCode');
         },
         onError: () => {
           form.setError('verificationCode', {
