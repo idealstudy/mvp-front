@@ -1,4 +1,4 @@
-name: PR CI – Lint & Build
+name: CI
 
 on:
   pull_request:
@@ -7,17 +7,18 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint and Test
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
         with:
-          node-version: '18'
-      - run: npm install
+          node-version: '20'
+      - run: npm ci
       - run: npm run lint
       - run: npm run check-types
+      - run: npm run test:ci
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -26,6 +27,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
         with:
-          node-version: '18'
-      - run: npm install
+          node-version: '20'
+      - run: npm ci
       - run: npm run build

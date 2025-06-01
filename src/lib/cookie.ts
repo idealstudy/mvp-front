@@ -68,7 +68,7 @@ export const decodedJWTCookie = async () => {
   try {
     const user = decodeToken(token);
     return user;
-  } catch (err) {
+  } catch {
     throw new Error('Cookie Decoded Error!');
   }
 };

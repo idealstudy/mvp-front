@@ -27,9 +27,6 @@ export const useLoginMutation = () => {
       queryClient.setQueryData(sessionQueryKey, decodeToken(data.token));
       router.replace('/');
     },
-    onError: (error) => {
-      console.error('Login failed:', error);
-    },
   });
 };
 
@@ -46,9 +43,6 @@ export const useLogoutMutation = () => {
       await deleteJwtCookies();
       queryClient.setQueryData(sessionQueryKey, null);
       router.replace('/');
-    },
-    onError: (error) => {
-      console.error('Logout failed:', error);
     },
   });
 };
