@@ -2,8 +2,6 @@
 
 import { useForm } from 'react-hook-form';
 
-import { useSearchParams } from 'next/navigation';
-
 import { useCheckboxGroup } from '@/hooks/use-checkbox-group';
 import { createContextFactory } from '@/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,8 +23,6 @@ const TERMS = [
   },
 ] as const;
 
-const INVITATION_CODE_KEY = 'code';
-
 type RegisterFormContextValue = {
   emailForm: ReturnType<typeof useForm<EmailForm>>;
   credentialForm: ReturnType<typeof useForm<CredentialForm>>;
@@ -34,7 +30,6 @@ type RegisterFormContextValue = {
   termsCheckboxGroup: ReturnType<
     typeof useCheckboxGroup<(typeof TERMS)[number]['value']>
   >;
-  invitationCodeFromLink: string | null;
   isAllRequiredTermsChecked: boolean;
 };
 
@@ -48,9 +43,6 @@ export const RegisterFormContextProvider = ({
   children: React.ReactNode;
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
-
-  const searchParams = useSearchParams();
-  const invitationCodeFromLink = searchParams.get(INVITATION_CODE_KEY);
 
   const emailForm = useForm<EmailForm>({
     resolver: zodResolver(EmailForm),
@@ -73,7 +65,6 @@ export const RegisterFormContextProvider = ({
     defaultValues: {
       role: 'ROLE_TEACHER',
       name: '',
-      invitationCode: invitationCodeFromLink ?? '',
     },
   });
 
@@ -88,7 +79,6 @@ export const RegisterFormContextProvider = ({
         credentialForm,
         profileForm,
         termsCheckboxGroup,
-        invitationCodeFromLink,
         isAllRequiredTermsChecked,
       }}
     >

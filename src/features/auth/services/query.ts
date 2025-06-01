@@ -59,12 +59,6 @@ export const useSignUp = () => {
   });
 };
 
-export const useSendVerificationCode = () => {
-  return useMutation({
-    mutationFn: authApi.sendVerificationCode,
-  });
-};
-
 export const useVerifyCode = () => {
   return useMutation({
     mutationFn: authApi.verifyCode,

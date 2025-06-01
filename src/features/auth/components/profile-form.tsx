@@ -14,13 +14,8 @@ import { useSignUp } from '../services/query';
 import { RoleRadioGroup } from './role-radio-group';
 
 export const ProfileForm = () => {
-  const {
-    profileForm,
-    credentialForm,
-    emailForm,
-    termsCheckboxGroup,
-    invitationCodeFromLink,
-  } = useRegisterFormContext();
+  const { profileForm, credentialForm, emailForm, termsCheckboxGroup } =
+    useRegisterFormContext();
 
   const router = useRouter();
 
@@ -33,12 +28,10 @@ export const ProfileForm = () => {
       {
         email: emailForm.getValues('email'),
         password: credentialForm.getValues('password'),
-        verificationCode: credentialForm.getValues('verificationCode'),
         acceptOptionalTerm:
           termsCheckboxGroup.checkedItems.includes('marketing'),
         name: data.name,
         role: data.role,
-        invitationCode: invitationCodeFromLink ?? data.invitationCode,
       },
       {
         onSuccess: () => {
@@ -69,16 +62,6 @@ export const ProfileForm = () => {
           <Input
             placeholder="수업에 사용할 실명"
             {...profileForm.register('name')}
-          />
-        </Form.Control>
-      </Form.Item>
-      <Form.Item error={!!profileForm.formState.errors.invitationCode}>
-        <Form.Label>선생님 초대 코드</Form.Label>
-        <Form.Control>
-          <Input
-            {...profileForm.register('invitationCode')}
-            placeholder="티쳐백"
-            readOnly={!!invitationCodeFromLink}
           />
         </Form.Control>
       </Form.Item>

@@ -38,5 +38,4 @@ export type ProfileForm = z.infer<typeof ProfileForm>;
 export const ProfileForm = z.object({
   role: z.enum(ROLES),
   name: z.string().min(1, { message: '이름을 입력해주세요.' }),
-  invitationCode: z.string(),
 });

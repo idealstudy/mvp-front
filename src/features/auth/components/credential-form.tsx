@@ -12,7 +12,7 @@ import { link } from '@/constants/link';
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
 import { useCountdown } from '@/hooks/use-countdown';
 
-import { useSendVerificationCode, useVerifyCode } from '../services/query';
+import { useCheckEmailDuplicate, useVerifyCode } from '../services/query';
 
 const RESEND_COUNTDOWN = 30;
 const VERIFICATION_CODE_LENGTH = 6;
@@ -27,8 +27,8 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
   const { countdown: resendCountdown, startCountdown } =
     useCountdown(RESEND_COUNTDOWN);
 
-  const { mutate: sendVerificationCode, isPending: isSendingVerificationCode } =
-    useSendVerificationCode();
+  const { mutate: checkEmailDuplicate, isPending: isCheckingEmailDuplicate } =
+    useCheckEmailDuplicate();
 
   const { mutate: verifyCode, isPending: isVerifyingCode } = useVerifyCode();
 
@@ -46,9 +46,9 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
   });
 
   const onSendButtonClick = () => {
-    if (isSendingVerificationCode) return;
+    if (isCheckingEmailDuplicate) return;
 
-    sendVerificationCode(
+    checkEmailDuplicate(
       {
         email: emailForm.getValues('email'),
       },

@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 import { AuthError, ForbiddenError } from './error';
 
-export const BASE_URL = 'http://13.125.112.205:8080/api';
+export const BASE_URL = 'https://dev.the-edu.site/api';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

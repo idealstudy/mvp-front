@@ -30,10 +30,8 @@ export type VerifyCodeBody = {
 
 export type SignUpBody = {
   email: string;
-  verificationCode: string;
   password: string;
   name: string;
   acceptOptionalTerm: boolean;
   role: Role;
-  invitationCode: string;
 };
