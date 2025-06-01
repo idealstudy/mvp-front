@@ -38,7 +38,12 @@ const eslintConfig = [
   },
 
   {
-    ignores: ['.next/**/*', 'tailwind.config.ts', '.lintstagedrc.js'],
+    ignores: [
+      '.next/**/*',
+      'tailwind.config.ts',
+      '.lintstagedrc.js',
+      '**/*.stories.tsx',
+    ],
   },
 ];
 

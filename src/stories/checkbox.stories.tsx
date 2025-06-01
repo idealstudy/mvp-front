@@ -63,17 +63,13 @@ export const Grouped: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    return <ControlledExample />;
+    const [checked, setChecked] = useState<boolean | 'indeterminate'>(false);
+
+    return (
+      <Checkbox
+        checked={checked}
+        onCheckedChange={setChecked}
+      />
+    );
   },
-};
-
-const ControlledExample = () => {
-  const [checked, setChecked] = useState<boolean | 'indeterminate'>(false);
-
-  return (
-    <Checkbox
-      checked={checked}
-      onCheckedChange={setChecked}
-    />
-  );
 };

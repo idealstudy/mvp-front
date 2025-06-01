@@ -49,27 +49,23 @@ export const WithPlaceholder: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    return <ControlledExample />;
+    const [value, setValue] = useState('1');
+
+    return (
+      <Select
+        value={value}
+        onValueChange={setValue}
+      >
+        <Select.Trigger
+          className="w-[240px]"
+          placeholder="항목을 선택해주세요"
+        />
+        <Select.Content>
+          <Select.Option value="1">항목 1</Select.Option>
+          <Select.Option value="2">항목 2</Select.Option>
+          <Select.Option value="3">항목 3</Select.Option>
+        </Select.Content>
+      </Select>
+    );
   },
-};
-
-const ControlledExample = () => {
-  const [value, setValue] = useState('1');
-
-  return (
-    <Select
-      value={value}
-      onValueChange={setValue}
-    >
-      <Select.Trigger
-        className="w-[240px]"
-        placeholder="항목을 선택해주세요"
-      />
-      <Select.Content>
-        <Select.Option value="1">항목 1</Select.Option>
-        <Select.Option value="2">항목 2</Select.Option>
-        <Select.Option value="3">항목 3</Select.Option>
-      </Select.Content>
-    </Select>
-  );
 };

@@ -58,30 +58,26 @@ export const Alert: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    return <ControlledExample />;
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <Prompt
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+      >
+        <Prompt.Trigger asChild>
+          <Button>열기</Button>
+        </Prompt.Trigger>
+        <Prompt.Content>
+          <Prompt.Header>
+            <Prompt.Title>연결 요청을 거절하시겠습니까?</Prompt.Title>
+          </Prompt.Header>
+          <Prompt.Footer>
+            <Prompt.Cancel>취소</Prompt.Cancel>
+            <Prompt.Action>확인</Prompt.Action>
+          </Prompt.Footer>
+        </Prompt.Content>
+      </Prompt>
+    );
   },
-};
-
-const ControlledExample = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <Prompt
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-    >
-      <Prompt.Trigger asChild>
-        <Button>열기</Button>
-      </Prompt.Trigger>
-      <Prompt.Content>
-        <Prompt.Header>
-          <Prompt.Title>연결 요청을 거절하시겠습니까?</Prompt.Title>
-        </Prompt.Header>
-        <Prompt.Footer>
-          <Prompt.Cancel>취소</Prompt.Cancel>
-          <Prompt.Action>확인</Prompt.Action>
-        </Prompt.Footer>
-      </Prompt.Content>
-    </Prompt>
-  );
 };

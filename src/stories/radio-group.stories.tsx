@@ -72,21 +72,17 @@ export const ItemDisabled: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    return <ControlledExample />;
+    const [value, setValue] = useState('1');
+
+    return (
+      <RadioGroup
+        value={value}
+        onValueChange={setValue}
+      >
+        <RadioGroup.Option value="1">라디오 옵션 1</RadioGroup.Option>
+        <RadioGroup.Option value="2">라디오 옵션 2</RadioGroup.Option>
+        <RadioGroup.Option value="3">라디오 옵션 3</RadioGroup.Option>
+      </RadioGroup>
+    );
   },
-};
-
-const ControlledExample = () => {
-  const [value, setValue] = useState('1');
-
-  return (
-    <RadioGroup
-      value={value}
-      onValueChange={setValue}
-    >
-      <RadioGroup.Option value="1">라디오 옵션 1</RadioGroup.Option>
-      <RadioGroup.Option value="2">라디오 옵션 2</RadioGroup.Option>
-      <RadioGroup.Option value="3">라디오 옵션 3</RadioGroup.Option>
-    </RadioGroup>
-  );
 };
