@@ -19,13 +19,12 @@ export const useLoginMutation = () => {
 
   return useMutation({
     mutationFn: async (data: LoginFormValues) => {
-      const response = await login(data);
-      return response;
+      return await login(data);
     },
     onSuccess: async (data: LoginResponse) => {
       await setJwtCookies(data.token);
       queryClient.setQueryData(sessionQueryKey, decodeToken(data.token));
-      router.replace('/');
+      router.replace('/dashboard');
     },
   });
 };
@@ -36,8 +35,7 @@ export const useLogoutMutation = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await logout();
-      return response;
+      return await logout();
     },
     onSuccess: async () => {
       await deleteJwtCookies();
