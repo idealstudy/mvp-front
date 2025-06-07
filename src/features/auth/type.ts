@@ -1,3 +1,6 @@
+import { ApiResponse } from '@/lib/api';
+import { z } from 'zod';
+
 export type Role = (typeof ROLES)[number];
 export const ROLES = ['ROLE_STUDENT', 'ROLE_TEACHER', 'ROLE_PARENT'] as const;
 
@@ -11,9 +14,13 @@ export type LoginBody = {
   email: string;
   password: string;
 };
-export interface LoginResponse {
-  token: string;
-}
+
+export type LoginResponse = z.infer<typeof LoginResponse>;
+export const LoginResponse = ApiResponse(
+  z.object({
+    token: z.string(),
+  })
+);
 
 export type CheckEmailDuplicateBody = {
   email: string;
