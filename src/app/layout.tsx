@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
@@ -25,13 +23,13 @@ export default function RootLayout({
       className={`${pretendard.variable} font-pretendard`}
     >
       <body className="antialiased">
-        <Suspense fallback={null}>
-          <GlobalProvider>
-            <Header />
+        <GlobalProvider>
+          <Header />
+          <div className="flex min-h-[calc(100dvh-var(--spacing-header-height))] flex-col">
             {children}
-          </GlobalProvider>
-        </Suspense>
-        <Footer />
+          </div>
+          <Footer />
+        </GlobalProvider>
       </body>
     </html>
   );
