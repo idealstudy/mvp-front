@@ -13,10 +13,6 @@
     "test": "vitest",
     "test:ci": "vitest run",
     "prepare": "husky",
-    "lint:fix": "eslint src --fix && npm run format",
-    "lint:strict": "eslint --max-warnings=0 src",
-    "format": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
-    "format:check": "prettier -c */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "check-types": "tsc --noEmit",
     "check-types:watch": "tsc --noEmit --watch"
   },
