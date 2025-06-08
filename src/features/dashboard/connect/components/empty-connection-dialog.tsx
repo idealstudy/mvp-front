@@ -1,0 +1,75 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
+import { useSessionQuery } from '@/features/auth/services/query';
+import { translateModalMessage } from '@/lib/message';
+
+import { useConnectionList } from '../services/query';
+
+const DialogTwStyles = {
+  content: 'w-[480px] rounded-2xl p-0',
+  header: 'flex items-center justify-center pt-[73px]',
+  title: 'text-[24px] leading-[160%] font-bold tracking-[-4%]',
+  body: 'mx-auto mt-4 max-w-[298px] pb-[52px] text-center leading-[160%] tracking-[-4%]',
+  footer: 'flex h-[85px] items-center gap-0',
+  closeButton: 'h-full flex-1',
+  cancelButton: 'bg-dark-gray-01 text-white hover:bg-dark-gray-01/80',
+};
+
+export const EmptyConnectionDialog = () => {
+  const session = useSessionQuery();
+  const { data } = useConnectionList({
+    state: 'PENDING',
+  });
+
+  const hasConnections =
+    Array.isArray(data?.connectionList) && data.connectionList.length > 0;
+  const auth = session.data?.auth;
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (hasConnections && auth) {
+      setIsOpen(true);
+    }
+  }, [auth, hasConnections]);
+
+  if (!auth || !hasConnections) return null;
+
+  return (
+    <Dialog
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+      }}
+    >
+      <Dialog.Content className={DialogTwStyles.content}>
+        <Dialog.Header className={DialogTwStyles.header}>
+          <Dialog.Title className={DialogTwStyles.title}>
+            {translateModalMessage(auth ?? 'ROLE_STUDENT').title}
+          </Dialog.Title>
+        </Dialog.Header>
+        <Dialog.Body className={DialogTwStyles.body}>
+          {translateModalMessage(auth ?? 'ROLE_STUDENT').content}
+        </Dialog.Body>
+        <Dialog.Footer className={DialogTwStyles.footer}>
+          <Dialog.Close
+            className={DialogTwStyles.closeButton}
+            asChild
+          >
+            <Button className={DialogTwStyles.cancelButton}>나중에</Button>
+          </Dialog.Close>
+          <Dialog.Close
+            className={DialogTwStyles.closeButton}
+            asChild
+          >
+            <Button>연결하기</Button>
+          </Dialog.Close>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
+  );
+};

@@ -6,7 +6,7 @@ import { decodeToken } from '@/lib/utils';
 import { LoginFormValues } from '@/schema/login';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { authApi, login, logout } from './api';
+import { authApi, login } from './api';
 import { sessionQueryKey, sessionQueryOption } from './query-options';
 
 export const useSessionQuery = () => {
@@ -35,7 +35,7 @@ export const useLogoutMutation = () => {
 
   return useMutation({
     mutationFn: async () => {
-      return await logout();
+      return await authApi.logout();
     },
     onSuccess: async () => {
       await deleteJwtCookies();

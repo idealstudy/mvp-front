@@ -8,6 +8,17 @@ export const apiClient = axios.create({
   baseURL: BASE_URL,
 });
 
+apiClient.interceptors.request.use(async (config) => {
+  const res = await axios.get('/api/get-token');
+  const accessToken = res.data?.accessToken;
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
