@@ -11,11 +11,11 @@ export const Sidebar = () => {
   return (
     <aside className="bg-background flex w-[260px] flex-col border-r border-[#D9D9D9]">
       <nav className="relative flex flex-1 flex-col">
-        <SidebarItem href="/logs">
+        <SidebarItem href="/dashboard/logs">
           <BookTextIcon />
           <SidebarItemText>수업 로그</SidebarItemText>
         </SidebarItem>
-        <SidebarItem href="/connections">
+        <SidebarItem href="/dashboard/connections">
           <LinkIcon />
           <SidebarItemText>
             연결 관리
@@ -23,7 +23,7 @@ export const Sidebar = () => {
           </SidebarItemText>
         </SidebarItem>
         <div className="absolute bottom-0 flex w-full flex-col">
-          <SidebarItem href="/settings">
+          <SidebarItem href="/dashboard/settings">
             <SettingsIcon />
             <SidebarItemText>설정</SidebarItemText>
           </SidebarItem>
