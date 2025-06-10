@@ -4,12 +4,10 @@ import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
 
-import { ParsedError } from '@/app/error';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/features/auth/services/query';
-import { parseJson } from '@/lib/utils';
 import { LoginFormValues, loginSchema } from '@/schema/login';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -34,16 +32,10 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     mutate(data, {
       onError: (error) => {
-        const parsedError = parseJson<ParsedError>(error.message, {
-          name: 'Server Error',
-          statusCode: 500,
-          message: '서버에서 오류가 발생하였습니다.',
-        });
-        const errorMsg = parsedError?.message;
-
+        const errorMsg = JSON.parse(error.message);
         setError('password', {
           type: 'server',
-          message: errorMsg,
+          message: errorMsg.message,
         });
       },
     });

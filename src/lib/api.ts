@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { z } from 'zod';
 
 import { AuthError, ForbiddenError } from './error';
+import { getLocalStorage } from './localStorage';
 
 export const BASE_URL = 'https://dev.the-edu.site/api';
 
@@ -9,9 +10,8 @@ export const apiClient = axios.create({
   baseURL: BASE_URL,
 });
 
-apiClient.interceptors.request.use(async (config) => {
-  const res = await axios.get('/api/get-token');
-  const accessToken = res.data?.accessToken;
+apiClient.interceptors.request.use((config) => {
+  const accessToken = getLocalStorage('accessToken') || null;
 
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -23,7 +23,7 @@ apiClient.interceptors.request.use(async (config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.status === 401) throw new AuthError(error.response.data);
+    if (error.status === 401) throw new AuthError(error.response.data.message);
     if (error.status === 403) throw new ForbiddenError(error.response.data);
     return Promise.reject(error);
   }

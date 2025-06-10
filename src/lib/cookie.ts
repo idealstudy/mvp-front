@@ -59,16 +59,3 @@ export const setJwtCookies = async (accessToken: string) => {
 export const deleteJwtCookies = async () => {
   await deleteCookie('accessToken');
 };
-
-export const decodedJWTCookie = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('accessToken')?.value;
-  if (!token) return null;
-
-  try {
-    const user = decodeToken(token);
-    return user;
-  } catch {
-    throw new Error('Cookie Decoded Error!');
-  }
-};

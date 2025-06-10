@@ -49,11 +49,11 @@ export const EmptyConnectionDialog = () => {
       <Dialog.Content className={DialogTwStyles.content}>
         <Dialog.Header className={DialogTwStyles.header}>
           <Dialog.Title className={DialogTwStyles.title}>
-            {translateModalMessage(auth ?? 'ROLE_STUDENT').title}
+            {translateModalMessage(auth).title}
           </Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className={DialogTwStyles.body}>
-          {translateModalMessage(auth ?? 'ROLE_STUDENT').content}
+          {translateModalMessage(auth).content}
         </Dialog.Body>
         <Dialog.Footer className={DialogTwStyles.footer}>
           <Dialog.Close

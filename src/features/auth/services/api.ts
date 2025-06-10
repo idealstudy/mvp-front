@@ -1,7 +1,6 @@
 import {
   CheckEmailDuplicateBody,
   LoginBody,
-  LoginResponse,
   SignUpBody,
   VerifyCodeBody,
 } from '@/features/auth/type';
@@ -9,8 +8,8 @@ import { api } from '@/lib/api';
 
 export const authApi = {
   login: async (body: LoginBody) => {
-    const response = await api.post('/auth/login', body);
-    return LoginResponse.parse(response);
+    const response: { token: string } = await api.post('/auth/login', body);
+    return response;
   },
   logout: async () => {
     return api.post('/auth/logout');

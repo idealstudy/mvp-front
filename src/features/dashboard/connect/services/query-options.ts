@@ -14,10 +14,6 @@ export const connectionQueryKey = {
 export const connectionQueryOption = (params: ConnectionListRequestParams) =>
   queryOptions({
     queryKey: connectionQueryKey.list(params),
-    queryFn: async ({ queryKey }) => {
-      return await getConnectionList(
-        queryKey[2] as ConnectionListRequestParams
-      );
-    },
+    queryFn: () => getConnectionList(params),
     retry: false,
   });

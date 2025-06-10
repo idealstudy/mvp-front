@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 
-import { deleteJwtCookies, setJwtCookies } from '@/lib/cookie';
+import { removeLocalStorage, setLocalStorage } from '@/lib/localStorage';
 import { decodeToken } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -17,8 +17,8 @@ export const useLoginMutation = () => {
 
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: async ({ result }) => {
-      await setJwtCookies(result.token);
+    onSuccess: (result) => {
+      setLocalStorage('accessToken', result.token);
       queryClient.setQueryData(sessionQueryKey, decodeToken(result.token));
       router.replace('/dashboard');
     },
@@ -32,7 +32,7 @@ export const useLogoutMutation = () => {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: async () => {
-      await deleteJwtCookies();
+      removeLocalStorage('accessToken');
       queryClient.setQueryData(sessionQueryKey, null);
       router.replace('/');
     },
