@@ -15,8 +15,8 @@ export const Header = () => {
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
 
   return (
-    <header className="border-b border-gray-200 bg-[#1A1A1A] px-4 py-3">
-      <div className="mx-auto flex max-w-[1385px] items-center justify-between">
+    <header className="h-header-height flex items-center border-b border-gray-200 bg-[#1A1A1A] px-4">
+      <div className="mx-auto flex w-full max-w-[1385px] items-center justify-between">
         <Link href={ROUTE.HOME}>
           <Image
             src={logo}

@@ -31,11 +31,13 @@
 
   --color-background: var(--color-white);
   --color-ring: var(--color-dedu-orange);
+
+  --spacing-header-height: 76px;
 }
 
 @utility focus-ring {
   &:focus-visible {
-    @apply ring-ring outline-hidden ring-2 ring-offset-2 ring-offset-white;
+    @apply ring-ring ring-2 ring-offset-2 ring-offset-white outline-hidden;
   }
 }
 

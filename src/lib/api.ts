@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { z } from 'zod';
 
 import { AuthError, ForbiddenError } from './error';
 
@@ -61,3 +62,16 @@ export const api = {
     return response.data;
   },
 };
+
+export type ApiResponse<TData> = {
+  status: number;
+  message: string;
+  result: TData;
+};
+
+export const ApiResponse = <TData extends z.ZodType>(result: TData) =>
+  z.object({
+    status: z.number(),
+    message: z.string(),
+    result: result,
+  });

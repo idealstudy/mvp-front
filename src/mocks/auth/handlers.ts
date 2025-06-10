@@ -11,7 +11,13 @@ export const VALID_VERIFICATION_CODE = '123456';
 
 export const authHandlers = [
   http.post(BASE_URL + '/auth/login', () => {
-    return HttpResponse.json<LoginResponse>({ token: mockToken });
+    return HttpResponse.json<LoginResponse>({
+      message: 'OK',
+      status: 200,
+      result: {
+        token: mockToken,
+      },
+    });
   }),
   http.post<never, CheckEmailDuplicateBody>(
     BASE_URL + '/public/email-verifications/check-duplicate',
