@@ -17,11 +17,11 @@ import { useCheckEmailDuplicate, useVerifyCode } from '../services/query';
 const RESEND_COUNTDOWN = 30;
 const VERIFICATION_CODE_LENGTH = 6;
 
-type CredentialFormProps = {
+type CredentialStepProps = {
   onNext: () => void;
 };
 
-export const CredentialForm = ({ onNext }: CredentialFormProps) => {
+export const CredentialStep = ({ onNext }: CredentialStepProps) => {
   const [emailCodeVerified, setEmailCodeVerified] = useState(false);
 
   const { countdown: resendCountdown, startCountdown } =
@@ -34,23 +34,15 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
 
   const canResend = resendCountdown === null;
 
-  const {
-    credentialForm: form,
-    emailForm,
-    termsCheckboxGroup,
-    isAllRequiredTermsChecked,
-  } = useRegisterFormContext();
-
-  const onSubmit = form.handleSubmit(() => {
-    onNext();
-  });
+  const { form, termsCheckboxGroup, isAllRequiredTermsChecked } =
+    useRegisterFormContext();
 
   const onSendButtonClick = () => {
     if (isCheckingEmailDuplicate) return;
 
     checkEmailDuplicate(
       {
-        email: emailForm.getValues('email'),
+        email: form.getValues('email'),
       },
       {
         onSuccess: () => {
@@ -66,7 +58,7 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
 
     verifyCode(
       {
-        email: emailForm.getValues('email'),
+        email: form.getValues('email'),
         code: form.getValues('verificationCode'),
       },
       {
@@ -83,22 +75,27 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
     );
   };
 
-  const canSubmit = isAllRequiredTermsChecked && emailCodeVerified;
+  const onNextButtonClick = async () => {
+    const isValid = await form.trigger(['password', 'confirmPassword']);
+
+    if (isValid) {
+      onNext();
+    }
+  };
+
+  const canMoveToNext = isAllRequiredTermsChecked && emailCodeVerified;
 
   const verificationCodeInputValue = form.watch('verificationCode');
 
   return (
-    <Form
-      className="flex flex-col gap-8"
-      onSubmit={onSubmit}
-    >
+    <div className="flex flex-col gap-8">
       <Form.Item>
         <Form.Label>이메일</Form.Label>
         <div className="flex">
           <Form.Control>
             <Input
               className="border-r-0"
-              defaultValue={emailForm.getValues('email')}
+              defaultValue={form.getValues('email')}
               readOnly
             />
           </Form.Control>
@@ -217,12 +214,12 @@ export const CredentialForm = ({ onNext }: CredentialFormProps) => {
         </div>
       </Checkbox.Group>
       <Button
-        type="submit"
-        disabled={!canSubmit}
+        onClick={onNextButtonClick}
+        disabled={!canMoveToNext}
       >
         계속
       </Button>
-    </Form>
+    </div>
   );
 };
 
