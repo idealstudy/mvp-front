@@ -6,7 +6,7 @@ import Link from 'next/link';
 import profile from '@/../public/header-profile.svg';
 import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
-import { useSession } from '@/features/auth/services/query';
+import { useSession } from '@/features/auth/hooks/use-session';
 
 export const Header = () => {
   const { data: session } = useSession();

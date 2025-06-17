@@ -1,15 +1,10 @@
 import { useRouter } from 'next/navigation';
 
 import { ROUTE } from '@/constants/route';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { useAuth } from '../hooks/use-auth';
 import { authApi } from './api';
-import { sessionQueryOption } from './query-options';
-
-export const useSession = () => {
-  return useQuery(sessionQueryOption);
-};
 
 export const useLoginMutation = () => {
   const router = useRouter();

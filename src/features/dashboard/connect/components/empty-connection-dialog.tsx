@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { useSession } from '@/features/auth/services/query';
+import { useSession } from '@/features/auth/hooks/use-session';
 import { translateModalMessage } from '@/lib/message';
 
 import { useConnectionList } from '../services/query';
