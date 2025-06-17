@@ -1,23 +1,13 @@
 export class AuthError extends Error {
-  constructor(message = 'Unauthorized') {
-    super(
-      JSON.stringify({
-        statusCode: 401,
-        message,
-      })
-    );
+  constructor(message: string) {
+    super(message);
     this.name = 'AuthError';
   }
 }
 
 export class ForbiddenError extends Error {
-  constructor(message = 'Forbidden') {
-    super(
-      JSON.stringify({
-        statusCode: 403,
-        message,
-      })
-    );
+  constructor(message: string) {
+    super(message);
     this.name = 'ForbiddenError';
   }
 }

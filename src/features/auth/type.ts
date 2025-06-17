@@ -1,14 +1,13 @@
-import { ApiResponse } from '@/lib/api';
 import { z } from 'zod';
 
-export type Role = (typeof ROLES)[number];
 export const ROLES = ['ROLE_STUDENT', 'ROLE_TEACHER', 'ROLE_PARENT'] as const;
+export type Role = (typeof ROLES)[number];
+export const Role = z.enum(ROLES);
 
-export type JWT = {
-  auth: Role;
-  exp: number;
-  sub: string;
-};
+export type Session = z.infer<typeof Session>;
+export const Session = z.object({
+  auth: Role,
+});
 
 export type LoginBody = {
   email: string;
@@ -16,11 +15,9 @@ export type LoginBody = {
 };
 
 export type LoginResponse = z.infer<typeof LoginResponse>;
-export const LoginResponse = ApiResponse(
-  z.object({
-    token: z.string(),
-  })
-);
+export const LoginResponse = z.object({
+  token: z.string(),
+});
 
 export type CheckEmailDuplicateBody = {
   email: string;

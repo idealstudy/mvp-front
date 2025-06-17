@@ -32,10 +32,9 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     mutate(data, {
       onError: (error) => {
-        const errorMsg = JSON.parse(error.message);
         setError('password', {
           type: 'server',
-          message: errorMsg.message,
+          message: error.message,
         });
       },
     });

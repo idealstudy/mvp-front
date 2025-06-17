@@ -1,40 +1,39 @@
 import { useRouter } from 'next/navigation';
 
-import { removeLocalStorage, setLocalStorage } from '@/lib/localStorage';
-import { decodeToken } from '@/lib/utils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ROUTE } from '@/constants/route';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { useAuth } from '../hooks/use-auth';
 import { authApi } from './api';
-import { sessionQueryKey, sessionQueryOption } from './query-options';
+import { sessionQueryOption } from './query-options';
 
-export const useSessionQuery = () => {
+export const useSession = () => {
   return useQuery(sessionQueryOption);
 };
 
 export const useLoginMutation = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  const auth = useAuth();
 
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: (result) => {
-      setLocalStorage('accessToken', result.token);
-      queryClient.setQueryData(sessionQueryKey, decodeToken(result.token));
-      router.replace('/dashboard');
+    onSuccess: (data) => {
+      auth.login(data.token);
+      router.replace(ROUTE.DASHBOARD.HOME);
     },
   });
 };
 
 export const useLogoutMutation = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
+
+  const auth = useAuth();
 
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: async () => {
-      removeLocalStorage('accessToken');
-      queryClient.setQueryData(sessionQueryKey, null);
-      router.replace('/');
+      auth.logout();
+      router.replace(ROUTE.HOME);
     },
   });
 };

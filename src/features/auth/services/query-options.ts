@@ -1,9 +1,10 @@
-import { decodedJWTStorage } from '@/lib/localStorage';
+import { queryKey } from '@/constants/query-key';
 import { queryOptions } from '@tanstack/react-query';
 
-export const sessionQueryKey = ['session-info'];
+import { getSession } from './session';
+
 export const sessionQueryOption = queryOptions({
-  queryKey: sessionQueryKey,
-  queryFn: decodedJWTStorage,
+  queryKey: queryKey.session,
+  queryFn: getSession,
   retry: false,
 });

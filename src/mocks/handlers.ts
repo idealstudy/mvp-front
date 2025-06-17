@@ -5,11 +5,7 @@ import { HttpResponse, http } from 'msw';
 export const handlers = [
   http.post(BASE_URL + '/auth/login', () => {
     return HttpResponse.json<LoginResponse>({
-      result: {
-        token: mockToken,
-      },
-      status: 200,
-      message: '성공',
+      token: mockToken,
     });
   }),
 ];

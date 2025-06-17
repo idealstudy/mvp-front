@@ -1,8 +1,8 @@
+import { getSessionToken } from '@/features/auth/services/session-token';
 import axios, { AxiosInstance } from 'axios';
 import { z } from 'zod';
 
 import { AuthError, ForbiddenError } from './error';
-import { getLocalStorage } from './localStorage';
 
 export const BASE_URL = 'https://dev.the-edu.site/api';
 
@@ -11,10 +11,10 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const accessToken = getLocalStorage('accessToken') || null;
+  const sessionToken = getSessionToken();
 
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  if (sessionToken) {
+    config.headers.Authorization = `Bearer ${sessionToken}`;
   }
 
   return config;
@@ -23,8 +23,14 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.status === 401) throw new AuthError(error.response.data.message);
-    if (error.status === 403) throw new ForbiddenError(error.response.data);
+    if (error.status === 401) {
+      throw new AuthError(error.response.data.message);
+    }
+
+    if (error.status === 403) {
+      throw new ForbiddenError(error.response.data.message);
+    }
+
     return Promise.reject(error);
   }
 );

@@ -6,10 +6,10 @@ import Link from 'next/link';
 import profile from '@/../public/header-profile.svg';
 import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
-import { useSessionQuery } from '@/features/auth/services/query';
+import { useSession } from '@/features/auth/services/query';
 
 export const Header = () => {
-  const { data: session } = useSessionQuery();
+  const { data: session } = useSession();
 
   const buttonBase =
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
@@ -26,7 +26,7 @@ export const Header = () => {
             className="cursor-pointer"
           />
         </Link>
-        {session ? (
+        {session && (
           <Image
             src={profile}
             alt="프로필 사진"
@@ -34,7 +34,8 @@ export const Header = () => {
             height={48}
             className="rounded-full"
           />
-        ) : (
+        )}
+        {session === null && (
           <div className="flex gap-5">
             <Link
               href={ROUTE.LOGIN}
