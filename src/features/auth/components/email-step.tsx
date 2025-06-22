@@ -10,20 +10,24 @@ import { ROUTE } from '@/constants/route';
 import { useCheckEmailDuplicate } from '../services/query';
 import { useRegisterFormContext } from './register-form-context-provider';
 
-type EmailFormProps = {
+type EmailStepProps = {
   onNext: () => void;
 };
 
-export const EmailForm = ({ onNext }: EmailFormProps) => {
-  const { emailForm: form } = useRegisterFormContext();
+export const EmailStep = ({ onNext }: EmailStepProps) => {
+  const { form } = useRegisterFormContext();
 
   const { mutate: checkEmailDuplicate, isPending } = useCheckEmailDuplicate();
 
-  const onSubmit = form.handleSubmit((data) => {
+  const onNextButtonClick = async () => {
     if (isPending) return;
 
+    const isValid = await form.trigger(['email']);
+
+    if (!isValid) return;
+
     checkEmailDuplicate(
-      { email: data.email },
+      { email: form.getValues('email') },
       {
         onSuccess: () => {
           onNext();
@@ -36,13 +40,10 @@ export const EmailForm = ({ onNext }: EmailFormProps) => {
         },
       }
     );
-  });
+  };
 
   return (
-    <Form
-      className="flex flex-col gap-[52px]"
-      onSubmit={onSubmit}
-    >
+    <div className="flex flex-col gap-[52px]">
       <Form.Item error={!!form.formState.errors.email}>
         <Form.Label>이메일</Form.Label>
         <Form.Control>
@@ -55,7 +56,7 @@ export const EmailForm = ({ onNext }: EmailFormProps) => {
           {form.formState.errors.email?.message}
         </Form.ErrorMessage>
       </Form.Item>
-      <Button type="submit">계속</Button>
+      <Button onClick={onNextButtonClick}>계속</Button>
       <Link
         className="flex w-fit gap-2 self-center"
         href={ROUTE.LOGIN}
@@ -63,6 +64,6 @@ export const EmailForm = ({ onNext }: EmailFormProps) => {
         <span className="text-dark-gray-02 underline">이미 가입 하셨나요?</span>
         로그인
       </Link>
-    </Form>
+    </div>
   );
 };

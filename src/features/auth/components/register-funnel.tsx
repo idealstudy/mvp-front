@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { CredentialForm } from './credential-form';
-import { EmailForm } from './email-form';
-import { ProfileForm } from './profile-form';
+import { CredentialStep } from './credential-step';
+import { EmailStep } from './email-step';
+import { ProfileStep } from './profile-step';
 import { RegisterFormContextProvider } from './register-form-context-provider';
 
 type Step = 'email' | 'credential' | 'profile';
@@ -14,11 +14,11 @@ export const RegisterFunnel = () => {
 
   return (
     <RegisterFormContextProvider>
-      {step === 'email' && <EmailForm onNext={() => setStep('credential')} />}
+      {step === 'email' && <EmailStep onNext={() => setStep('credential')} />}
       {step === 'credential' && (
-        <CredentialForm onNext={() => setStep('profile')} />
+        <CredentialStep onNext={() => setStep('profile')} />
       )}
-      {step === 'profile' && <ProfileForm />}
+      {step === 'profile' && <ProfileStep />}
     </RegisterFormContextProvider>
   );
 };
