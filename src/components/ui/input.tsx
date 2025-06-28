@@ -4,6 +4,13 @@ import { cn } from '@/lib/utils';
 
 type InputProps = React.ComponentPropsWithRef<'input'>;
 
+export const InputStyles = cn(
+  'border-dark-gray-03 placeholder:text-dark-gray-03 h-[56px] w-full border px-[24px] outline-none',
+  'focus-visible:border-dedu-black',
+  'disabled:border-light-gray-30 disabled:bg-light-gray-01 disabled:text-dark-gray-03',
+  'read-only:border-light-gray-30 read-only:bg-light-gray-01 read-only:text-dark-gray-03'
+);
+
 export const Input = ({
   className,
   ['aria-invalid']: ariaInvalid,
@@ -12,10 +19,7 @@ export const Input = ({
   return (
     <input
       className={cn(
-        'border-dark-gray-03 placeholder:text-dark-gray-03 h-[56px] w-full border px-[24px] outline-none',
-        'focus-visible:border-dedu-black',
-        'disabled:border-light-gray-30 disabled:bg-light-gray-01 disabled:text-dark-gray-03',
-        'read-only:border-light-gray-30 read-only:bg-light-gray-01 read-only:text-dark-gray-03',
+        InputStyles,
         ariaInvalid && 'border-red focus-visible:border-red',
         className
       )}
