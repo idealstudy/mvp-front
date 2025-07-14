@@ -4,12 +4,11 @@ export const ROUTE = {
   SIGNUP: '/register',
   DASHBOARD: {
     HOME: '/dashboard',
-    CONNECTIONS: {
-      LIST: '/dashboard/connections',
+    STUDY_ROOM: {
+      DETAIL: (id: string) => `/dashboard/study-rooms/${id}`,
     },
-    LOGS: {
-      LIST: '/dashboard/logs',
-      DETAIL: (id: string) => `/dashboard/logs/${id}`,
+    QUESTIONS: {
+      LIST: '/dashboard/questions',
     },
     SETTINGS: '/dashboard/settings',
   },
