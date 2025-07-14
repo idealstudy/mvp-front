@@ -10,27 +10,34 @@ const SHOW_BADGE = true;
 
 export const Sidebar = () => {
   return (
-    <aside className="bg-system-background-alt flex w-[260px] flex-col border-r border-[#D9D9D9]">
-      <nav className="relative flex flex-1 flex-col">
-        <SidebarItem href={ROUTE.DASHBOARD.LOGS.LIST}>
-          <BookTextIcon />
-          <SidebarItemText>수업 로그</SidebarItemText>
-        </SidebarItem>
-        <SidebarItem href={ROUTE.DASHBOARD.CONNECTIONS.LIST}>
-          <LinkIcon />
-          <SidebarItemText>
-            연결 관리
-            {SHOW_BADGE && <SidebarBadge />}
-          </SidebarItemText>
-        </SidebarItem>
-        <div className="absolute bottom-0 flex w-full flex-col">
-          <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
-            <SettingsIcon />
-            <SidebarItemText>설정</SidebarItemText>
+    <div
+      className={cn(
+        'top-header-height fixed left-0 hidden h-[calc(100dvh-var(--spacing-header-height))] flex-col py-3',
+        'desktop:flex'
+      )}
+    >
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9]">
+        <nav className="flex flex-1 flex-col">
+          <SidebarItem href={ROUTE.DASHBOARD.LOGS.LIST}>
+            <BookTextIcon />
+            <SidebarItemText>수업 로그</SidebarItemText>
           </SidebarItem>
-        </div>
-      </nav>
-    </aside>
+          <SidebarItem href={ROUTE.DASHBOARD.CONNECTIONS.LIST}>
+            <LinkIcon />
+            <SidebarItemText>
+              연결 관리
+              {SHOW_BADGE && <SidebarBadge />}
+            </SidebarItemText>
+          </SidebarItem>
+          <div className="absolute bottom-0 flex w-full flex-col">
+            <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
+              <SettingsIcon />
+              <SidebarItemText>설정</SidebarItemText>
+            </SidebarItem>
+          </div>
+        </nav>
+      </aside>
+    </div>
   );
 };
 

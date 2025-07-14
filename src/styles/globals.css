@@ -104,10 +104,15 @@
   --color-ring: var(--orange-scale-orange-50);
 
   --spacing-header-height: 76px;
+  --spacing-sidebar-width: 260px;
+  --spacing-grid-margin: 20px;
 
-  /* 타이포그래피 */
+  /* 브레이크포인트 */
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1280px;
 }
 
+/* 타이포그래피 */
 @utility font-title-heading {
   font-weight: 700;
   font-size: 32px;
@@ -207,4 +212,13 @@
   a {
     @apply focus-visible:focus-ring;
   }
+}
+
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

@@ -7,6 +7,7 @@ import profile from '@/../public/header-profile.svg';
 import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { cn } from '@/lib/utils';
 
 export const Header = () => {
   const { data: session } = useSession();
@@ -15,7 +16,12 @@ export const Header = () => {
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
 
   return (
-    <header className="h-header-height flex items-center border-b border-gray-200 bg-[#1A1A1A] px-4">
+    <header
+      className={cn(
+        'fixed top-0 right-0 left-0 z-10',
+        'h-header-height flex items-center border-b border-gray-200 bg-[#1A1A1A] px-4'
+      )}
+    >
       <div className="mx-auto flex w-full max-w-[1385px] items-center justify-between">
         <Link href={ROUTE.HOME}>
           <Image
