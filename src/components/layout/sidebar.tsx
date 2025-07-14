@@ -10,7 +10,7 @@ const SHOW_BADGE = true;
 
 export const Sidebar = () => {
   return (
-    <aside className="bg-background flex w-[260px] flex-col border-r border-[#D9D9D9]">
+    <aside className="bg-system-background-alt flex w-[260px] flex-col border-r border-[#D9D9D9]">
       <nav className="relative flex flex-1 flex-col">
         <SidebarItem href={ROUTE.DASHBOARD.LOGS.LIST}>
           <BookTextIcon />
@@ -63,7 +63,7 @@ const SidebarItemText = ({ children }: { children: React.ReactNode }) => {
 
 const SidebarBadge = () => {
   return (
-    <span className="bg-dedu-orange absolute top-0 -right-[13px] size-[5px] rounded-full" />
+    <span className="bg-key-color-primary absolute top-0 -right-[13px] size-[5px] rounded-full" />
   );
 };
 

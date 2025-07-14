@@ -13,9 +13,9 @@ const CheckboxImpl = ({
   return (
     <CheckboxPrimitives.Root
       className={cn(
-        'border-dedu-black flex size-[24px] cursor-pointer items-center justify-center border',
-        'data-[state=checked]:bg-dedu-orange',
-        'disabled:border-light-gray-03 disabled:data-[state=checked]:bg-light-gray-02 disabled:data-[state=checked]:border-light-gray-02 disabled:pointer-events-none',
+        'border-line-line3 flex size-[24px] cursor-pointer items-center justify-center border',
+        'data-[state=checked]:bg-key-color-primary',
+        'disabled:border-gray-scale-gray-10 disabled:data-[state=checked]:bg-gray-scale-gray-10 disabled:data-[state=checked]:border-line-line1 disabled:pointer-events-none',
         ariaInvalid && '',
         className
       )}

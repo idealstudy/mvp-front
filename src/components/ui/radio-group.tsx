@@ -38,8 +38,8 @@ const RadioGroupItem = ({ className, ...props }: RadioGroupItemProps) => {
     <RadioGroupPrimitives.Item
       id={id}
       className={cn(
-        'border-dedu-black flex size-[24px] cursor-pointer items-center justify-center rounded-full border',
-        'disabled:border-light-gray-03',
+        'border-line-line3 flex size-[24px] cursor-pointer items-center justify-center rounded-full border',
+        'disabled:border-gray-scale-gray-10',
         ariaInvalid && '',
 
         className
@@ -48,8 +48,8 @@ const RadioGroupItem = ({ className, ...props }: RadioGroupItemProps) => {
     >
       <RadioGroupPrimitives.Indicator
         className={cn(
-          'bg-dedu-orange size-[12px] rounded-full',
-          'data-disabled:bg-light-gray-03'
+          'bg-key-color-primary size-[12px] rounded-full',
+          'data-disabled:bg-gray-scale-gray-10'
         )}
       />
     </RadioGroupPrimitives.Item>

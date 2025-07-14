@@ -18,12 +18,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: cn(
-          'bg-dedu-orange text-white border border-black hover:bg-dedu-orange-hover font-bold',
+          'bg-key-color-primary text-white border border-black hover:bg-orange-scale-orange-60 font-bold',
           'disabled:bg-gray-200 disabled:text-[#B3B3B3] disabled:border-[#CDCDCD]'
         ),
         secondary: cn(
-          'bg-white text-dedu-black font-normal border border-dark-gray-03 hover:bg-[#EEEEEE]',
-          'disabled:border-light-gray-03 disabled:text-light-gray-03'
+          'bg-white text-text-main font-normal border border-gray-scale-gray-50 hover:bg-[#EEEEEE]',
+          'disabled:border-gray-scale-gray-10 disabled:text-text-reversed-sub2'
         ),
       },
       size: {

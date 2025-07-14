@@ -14,7 +14,7 @@ import { LoginFormValues, loginSchema } from '../schemas/login';
 
 const LoginFormtwStyles = {
   wrapper: 'space-y-10 pb-[138px] pt-[42px]',
-  link: 'text-dedu-orange underline mx-auto w-fit',
+  link: 'text-key-color-primary underline mx-auto w-fit',
 };
 
 export default function LoginForm() {

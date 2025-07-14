@@ -12,11 +12,12 @@ export const Input = ({
   return (
     <input
       className={cn(
-        'border-dark-gray-03 placeholder:text-dark-gray-03 h-[56px] w-full border px-[24px] outline-none',
-        'focus-visible:border-dedu-black',
-        'disabled:border-light-gray-30 disabled:bg-light-gray-01 disabled:text-dark-gray-03',
-        'read-only:border-light-gray-30 read-only:bg-light-gray-01 read-only:text-dark-gray-03',
-        ariaInvalid && 'border-red focus-visible:border-red',
+        'border-gray-scale-gray-50 placeholder:text-gray-scale-gray-50 h-[56px] w-full border px-[24px] outline-none',
+        'focus-visible:border-line-line3',
+        'disabled:border-light-gray-30 disabled:bg-gray-scale-gray-5 disabled:text-gray-scale-gray-50',
+        'read-only:border-light-gray-30 read-only:gray-scale-gray-5 read-only:text-gray-scale-gray-50',
+        ariaInvalid &&
+          'border-system-warning focus-visible:border-system-warning',
         className
       )}
       aria-invalid={ariaInvalid}

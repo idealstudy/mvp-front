@@ -165,7 +165,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           {form.formState.errors.confirmPassword?.message}
         </Form.ErrorMessage>
       </Form.Item>
-      <Checkbox.Group className="border-light-gray-02 flex flex-col gap-6 border-y py-6">
+      <Checkbox.Group className="border-line-line1 flex flex-col gap-6 border-y py-6">
         <Checkbox.Label className="flex-1">
           <Checkbox
             checked={termsCheckboxGroup.isAllChecked}

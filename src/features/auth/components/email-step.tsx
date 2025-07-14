@@ -61,7 +61,9 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
         className="flex w-fit gap-2 self-center"
         href={ROUTE.LOGIN}
       >
-        <span className="text-dark-gray-02 underline">이미 가입 하셨나요?</span>
+        <span className="text-gray-scale-gray-70 underline">
+          이미 가입 하셨나요?
+        </span>
         로그인
       </Link>
     </div>
