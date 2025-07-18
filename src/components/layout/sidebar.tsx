@@ -105,9 +105,9 @@ type SidebarItemProps = {
 
 const SidebarItem = ({ href, children }: SidebarItemProps) => {
   const pathname = usePathname();
+  const isNoneActive = href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE;
 
-  const isActive =
-    href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE ? false : pathname === href;
+  const isActive = pathname === href;
 
   return (
     <Link
@@ -115,8 +115,7 @@ const SidebarItem = ({ href, children }: SidebarItemProps) => {
       className={cn(
         'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold hover:bg-[#F5F5F5]',
         isActive && 'text-key-color-primary bg-[#FFF4F1]',
-        href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE &&
-          'h-[36px] w-[36px] justify-center px-0'
+        isNoneActive && 'h-[36px] w-[36px] justify-center px-0'
       )}
     >
       {children}
