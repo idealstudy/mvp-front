@@ -22,7 +22,7 @@ export default function AuthBanner() {
         <h1 className="text-[32px] leading-[160%] font-normal tracking-[-0.04em]">
           깔끔한 공부 디에듀, <br />
           <strong>
-            <span className="text-dedu-orange">시작</span>해볼까요?
+            <span className="text-key-color-primary">시작</span>해볼까요?
           </strong>
         </h1>
         <Image

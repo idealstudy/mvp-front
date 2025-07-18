@@ -43,10 +43,10 @@ const SelectTrigger = ({
   return (
     <SelectPrimitives.Trigger
       className={cn(
-        'border-light-gray-03 relative flex h-[56px] w-full items-center justify-between border bg-white pr-12 pl-6 text-start outline-hidden',
-        'data-placeholder:text-dark-gray-03',
+        'border-gray-scale-gray-10 relative flex h-[56px] w-full items-center justify-between border bg-white pr-12 pl-6 text-start outline-hidden',
+        'data-placeholder:text-gray-scale-gray-50',
         '[&>span]:min-w-0',
-        'placeholder-text-dark-gray-03',
+        'placeholder-text-gray-scale-gray-50',
         //   'disabled:bg-background-100 disabled:pointer-events-none disabled:opacity-50',
         ariaInvalid && '',
         className
@@ -78,7 +78,7 @@ const SelectContent = ({
     <SelectPrimitives.Portal>
       <SelectPrimitives.Content
         className={cn(
-          'border-light-gray-03 text-main relative z-50 max-w-[calc(100vw-12px)] overflow-hidden border border-t-0 bg-white',
+          'border-gray-scale-gray-10 text-main relative z-50 max-w-[calc(100vw-12px)] overflow-hidden border border-t-0 bg-white',
           'max-h-[var(--radix-select-content-available-height)]',
           position === 'popper' &&
             'w-full min-w-[var(--radix-select-trigger-width)]',
@@ -91,7 +91,7 @@ const SelectContent = ({
       >
         <SelectPrimitives.Viewport
           className={cn(
-            'divide-light-gray-03 divide-y',
+            'divide-gray-scale-gray-10 divide-y',
             position === 'popper' && 'h-[var(--radix-select-trigger-height)]'
           )}
         >
@@ -111,8 +111,8 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
     <SelectPrimitives.Item
       className={cn(
         'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
-        'focus:bg-light-gray-01',
-        'data-[state=checked]:text-dedu-orange data-[state=checked]:font-semibold',
+        'focus:bg-gray-scale-gray-5',
+        'data-[state=checked]:text-key-color-primary data-[state=checked]:font-semibold',
         'data-disabled:pointer-events-none',
 
         className

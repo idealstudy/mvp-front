@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
-import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { GlobalProvider } from '@/providers/global-provider';
 import '@/styles/globals.css';
@@ -25,10 +24,7 @@ export default function RootLayout({
       <body className="antialiased">
         <GlobalProvider>
           <Header />
-          <div className="flex min-h-[calc(100dvh-var(--spacing-header-height))] flex-col">
-            {children}
-          </div>
-          <Footer />
+          <div className="mt-header-height flex flex-col">{children}</div>
         </GlobalProvider>
       </body>
     </html>

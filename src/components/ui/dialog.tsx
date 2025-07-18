@@ -54,7 +54,7 @@ const DialogContent = ({
       <DialogPrimitives.Content
         aria-modal
         className={cn(
-          'bg-background fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-full max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-[40px]',
+          'bg-system-background-alt fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-full max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-[40px]',
           className
         )}
         {...props}

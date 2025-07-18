@@ -27,7 +27,7 @@ export const Sidebar = () => {
   ];
 
   return (
-    <aside className="bg-background my-3 flex w-[260px] flex-col rounded-[12px] rounded-l-none border border-[#D9D9D9] p-3">
+    <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9]">
       <nav className="relative flex flex-1 flex-col">
         <SidebarItem href={ROUTE.DASHBOARD.HOME}>
           <HomeTextIcon />
