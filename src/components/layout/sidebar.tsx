@@ -33,14 +33,14 @@ export const Sidebar = () => {
         'desktop:flex'
       )}
     >
-      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9]">
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9] p-4">
         <nav className="flex flex-1 flex-col">
           <SidebarItem href={ROUTE.DASHBOARD.HOME}>
             <HomeTextIcon />
             <SidebarItemText>홈</SidebarItemText>
           </SidebarItem>
 
-          <div className="flex w-full items-center justify-between px-4">
+          <div className="flex h-[58px] w-full items-center justify-between pr-[10px] pl-5">
             <div className="flex items-center gap-2">
               <StudyTextIcon
                 className={cn(isStudyRoomActive && 'text-key-color-primary')}
@@ -54,7 +54,7 @@ export const Sidebar = () => {
                 스터디룸
               </p>
             </div>
-            <SidebarItem active={isStudyRoomActive}>
+            <SidebarItem href={ROUTE.DASHBOARD.STUDY_ROOM.CREATE}>
               <StudyRoomPlusIcon />
             </SidebarItem>
           </div>
@@ -99,23 +99,24 @@ export const Sidebar = () => {
 };
 
 type SidebarItemProps = {
-  href?: string;
+  href: string;
   children: React.ReactNode;
-  active?: boolean;
 };
 
-const SidebarItem = ({ href = '#', children, active }: SidebarItemProps) => {
+const SidebarItem = ({ href, children }: SidebarItemProps) => {
   const pathname = usePathname();
 
-  const isActive = pathname === href;
+  const isActive =
+    href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE ? false : pathname === href;
 
   return (
     <Link
-      href={href ?? '#'}
+      href={href}
       className={cn(
-        'flex h-[58px] items-center gap-2 rounded-lg px-4 font-bold hover:bg-[#F5F5F5]',
+        'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold hover:bg-[#F5F5F5]',
         isActive && 'text-key-color-primary bg-[#FFF4F1]',
-        active && 'text-key-color-primary'
+        href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE &&
+          'h-[36px] w-[36px] justify-center px-0'
       )}
     >
       {children}
