@@ -21,7 +21,7 @@ export const Header = () => {
     },
     ROLE_TEACHER: {
       label: '선생님',
-      className: 'border-dedu-orange text-dedu-orange',
+      className: 'border-key-color-primary text-key-color-primary',
     },
   } as const;
 
@@ -62,14 +62,14 @@ export const Header = () => {
               alt="프로필 사진"
               width={48}
               height={48}
-              className="mr-4 hidden cursor-pointer rounded-full lg:flex"
+              className="desktop:flex mr-4 hidden cursor-pointer rounded-full"
             />
-            <p className="mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white lg:flex">
+            <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
             </p>
             <div
               className={cn(
-                'hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff] lg:flex',
+                'desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]',
                 roleMetaMap[session.auth]?.className ??
                   'border-white text-white'
               )}
@@ -81,7 +81,7 @@ export const Header = () => {
               alt="햄버거 메뉴 아이콘"
               width={24}
               height={24}
-              className="mr-4 cursor-pointer lg:hidden"
+              className="desktop:hidden mr-4 flex cursor-pointer"
             />
           </div>
         )}
