@@ -54,7 +54,7 @@ export const Sidebar = () => {
                 스터디룸
               </p>
             </div>
-            <SidebarItem href={ROUTE.DASHBOARD.STUDY_ROOMS.CREATE}>
+            <SidebarItem href={ROUTE.DASHBOARD.STUDYROOM.CREATE}>
               <StudyRoomPlusIcon />
             </SidebarItem>
           </div>
@@ -62,7 +62,7 @@ export const Sidebar = () => {
           {studyRoomList.map((item) => (
             <SidebarItem
               key={item.id}
-              href={ROUTE.DASHBOARD.STUDY_ROOMS.DETAIL(item.id.toString())}
+              href={ROUTE.DASHBOARD.STUDYROOM.DETAIL(item.id.toString())}
             >
               <StudyRoomListIcon className="ml-2 shrink-0" />
               <SidebarItemText className="max-w-[164px] truncate font-[400]">
@@ -78,7 +78,7 @@ export const Sidebar = () => {
             <SettingsIcon />
             <SidebarItemText>설정</SidebarItemText>
           </SidebarItem>
-          <div className="absolute bottom-3 flex w-full flex-col items-end">
+          <div className="absolute right-0 bottom-0 p-4">
             <Link
               href={ROUTE.DASHBOARD.SETTINGS}
               className="flex items-center gap-2 rounded-lg text-[14px] font-semibold text-[#999999] hover:bg-[#F5F5F5]"
@@ -105,7 +105,7 @@ type SidebarItemProps = {
 
 const SidebarItem = ({ href, children }: SidebarItemProps) => {
   const pathname = usePathname();
-  const isCreatePage = href === ROUTE.DASHBOARD.STUDY_ROOMS.CREATE;
+  const isCreatePage = href === ROUTE.DASHBOARD.STUDYROOM.CREATE;
 
   const isActive = pathname === href;
 

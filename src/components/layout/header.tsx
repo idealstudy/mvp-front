@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 import { ROUTE } from '@/constants/route';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { cn } from '@/lib/utils';
 
 export const Header = () => {
   const { data: session } = useSession();
@@ -67,14 +66,8 @@ export const Header = () => {
             <p className="desktop:flex mr-2 hidden items-center gap-2 text-[14px] font-[600] text-white">
               {session.nickname}
             </p>
-            <div
-              className={cn(
-                'desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]',
-                roleMetaMap[session.auth]?.className ??
-                  'border-white text-white'
-              )}
-            >
-              {roleMetaMap[session.auth]?.label ?? ''}
+            <div className="desktop:flex hidden items-center gap-2 rounded-[40px] border px-2 py-[2px] text-[12px] font-[400px] text-[#ffffff]">
+              {roleMetaMap[session.auth].label}
             </div>
             <Image
               src={'/ic_hamburger.svg'}
