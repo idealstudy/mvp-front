@@ -16,7 +16,7 @@ export const Header = () => {
       className: 'border-white text-white',
     },
     ROLE_PARENT: {
-      label: '부모',
+      label: '보호자',
       className: 'border-orange-scale-orange-20 text-orange-scale-orange-20',
     },
     ROLE_TEACHER: {
