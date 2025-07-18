@@ -54,7 +54,7 @@ export const Sidebar = () => {
                 스터디룸
               </p>
             </div>
-            <SidebarItem href={ROUTE.DASHBOARD.STUDY_ROOM.CREATE}>
+            <SidebarItem href={ROUTE.DASHBOARD.STUDY_ROOMS.CREATE}>
               <StudyRoomPlusIcon />
             </SidebarItem>
           </div>
@@ -62,7 +62,7 @@ export const Sidebar = () => {
           {studyRoomList.map((item) => (
             <SidebarItem
               key={item.id}
-              href={ROUTE.DASHBOARD.STUDY_ROOM.DETAIL(item.id.toString())}
+              href={ROUTE.DASHBOARD.STUDY_ROOMS.DETAIL(item.id.toString())}
             >
               <StudyRoomListIcon className="ml-2 shrink-0" />
               <SidebarItemText className="max-w-[164px] truncate font-[400]">
@@ -105,7 +105,7 @@ type SidebarItemProps = {
 
 const SidebarItem = ({ href, children }: SidebarItemProps) => {
   const pathname = usePathname();
-  const isNoneActive = href === ROUTE.DASHBOARD.STUDY_ROOM.CREATE;
+  const isNoneActive = href === ROUTE.DASHBOARD.STUDY_ROOMS.CREATE;
 
   const isActive = pathname === href;
 

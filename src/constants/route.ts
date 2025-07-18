@@ -4,7 +4,7 @@ export const ROUTE = {
   SIGNUP: '/register',
   DASHBOARD: {
     HOME: '/dashboard',
-    STUDY_ROOM: {
+    STUDY_ROOMS: {
       DETAIL: (id: string) => `/dashboard/study-rooms/${id}`,
       CREATE: '/dashboard/study-rooms/create',
     },
