@@ -29,7 +29,7 @@ export const Header = () => {
     'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
 
   return (
-    <header className="h-header-height flex items-center border-b border-gray-200 bg-[#1A1A1A] px-4">
+    <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-4">
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={ROUTE.HOME}>
@@ -95,7 +95,7 @@ export const Header = () => {
             </Link>
             <Link
               href={ROUTE.SIGNUP}
-              className={`${buttonBase} bg-[#ff4500] hover:bg-[#e64500]`}
+              className={`${buttonBase} bg-key-color-primary hover:bg-key-color-secondary`}
             >
               디에듀 시작하기
             </Link>

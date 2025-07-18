@@ -27,54 +27,74 @@ export const Sidebar = () => {
   ];
 
   return (
-    <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9]">
-      <nav className="relative flex flex-1 flex-col">
-        <SidebarItem href={ROUTE.DASHBOARD.HOME}>
-          <HomeTextIcon />
-          <SidebarItemText>홈</SidebarItemText>
-        </SidebarItem>
-        <SidebarItem active={isStudyRoomActive}>
-          <StudyTextIcon />
-          <div className="flex w-full items-center justify-between">
-            <SidebarItemText>스터디룸</SidebarItemText>
-            <StudyRoomPlusIcon />
-          </div>
-        </SidebarItem>
-        {studyRoomList.map((item) => (
-          <SidebarItem
-            key={item.id}
-            href={ROUTE.DASHBOARD.STUDY_ROOM.DETAIL(item.id.toString())}
-          >
-            <StudyRoomListIcon className="ml-2 shrink-0" />
-            <SidebarItemText className="truncate font-[400]">
-              {item.text}
-            </SidebarItemText>
+    <div
+      className={cn(
+        'top-header-height fixed left-0 hidden h-[calc(100dvh-var(--spacing-header-height))] flex-col py-3',
+        'desktop:flex'
+      )}
+    >
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9]">
+        <nav className="flex flex-1 flex-col">
+          <SidebarItem href={ROUTE.DASHBOARD.HOME}>
+            <HomeTextIcon />
+            <SidebarItemText>홈</SidebarItemText>
           </SidebarItem>
-        ))}
-        <SidebarItem href={ROUTE.DASHBOARD.QUESTIONS.LIST}>
-          <StudyTextIcon />
-          <SidebarItemText>학생 질문보기</SidebarItemText>
-        </SidebarItem>
-        <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
-          <SettingsIcon />
-          <SidebarItemText>설정</SidebarItemText>
-        </SidebarItem>
-        <div className="absolute bottom-3 flex w-full flex-col items-end">
-          <Link
-            href={ROUTE.DASHBOARD.SETTINGS}
-            className="flex items-center gap-2 rounded-lg text-[14px] font-semibold text-[#999999] hover:bg-[#F5F5F5]"
-          >
-            <SidebarItemText>디에듀에 문의하기</SidebarItemText>
-            <Image
-              src="/ic_question_mark.svg"
-              alt="디에듀에 문의하기 아이콘"
-              width={16}
-              height={16}
-            />
-          </Link>
-        </div>
-      </nav>
-    </aside>
+
+          <div className="flex w-full items-center justify-between px-4">
+            <div className="flex items-center gap-2">
+              <StudyTextIcon
+                className={cn(isStudyRoomActive && 'text-key-color-primary')}
+              />
+              <p
+                className={cn(
+                  'pointer-events-none select-none',
+                  isStudyRoomActive && 'text-key-color-primary'
+                )}
+              >
+                스터디룸
+              </p>
+            </div>
+            <SidebarItem active={isStudyRoomActive}>
+              <StudyRoomPlusIcon />
+            </SidebarItem>
+          </div>
+
+          {studyRoomList.map((item) => (
+            <SidebarItem
+              key={item.id}
+              href={ROUTE.DASHBOARD.STUDY_ROOM.DETAIL(item.id.toString())}
+            >
+              <StudyRoomListIcon className="ml-2 shrink-0" />
+              <SidebarItemText className="max-w-[164px] truncate font-[400]">
+                {item.text}
+              </SidebarItemText>
+            </SidebarItem>
+          ))}
+          <SidebarItem href={ROUTE.DASHBOARD.QUESTIONS.LIST}>
+            <StudyTextIcon />
+            <SidebarItemText>학생 질문보기</SidebarItemText>
+          </SidebarItem>
+          <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
+            <SettingsIcon />
+            <SidebarItemText>설정</SidebarItemText>
+          </SidebarItem>
+          <div className="absolute bottom-3 flex w-full flex-col items-end">
+            <Link
+              href={ROUTE.DASHBOARD.SETTINGS}
+              className="flex items-center gap-2 rounded-lg text-[14px] font-semibold text-[#999999] hover:bg-[#F5F5F5]"
+            >
+              <SidebarItemText>디에듀에 문의하기</SidebarItemText>
+              <Image
+                src="/ic_question_mark.svg"
+                alt="디에듀에 문의하기 아이콘"
+                width={16}
+                height={16}
+              />
+            </Link>
+          </div>
+        </nav>
+      </aside>
+    </div>
   );
 };
 
@@ -94,8 +114,8 @@ const SidebarItem = ({ href = '#', children, active }: SidebarItemProps) => {
       href={href ?? '#'}
       className={cn(
         'flex h-[58px] items-center gap-2 rounded-lg px-4 font-bold hover:bg-[#F5F5F5]',
-        isActive && 'text-dedu-orange bg-[#FFF4F1]',
-        active && 'text-dedu-orange'
+        isActive && 'text-key-color-primary bg-[#FFF4F1]',
+        active && 'text-key-color-primary'
       )}
     >
       {children}
@@ -133,7 +153,7 @@ const HomeTextIcon = () => {
   );
 };
 
-const StudyTextIcon = () => {
+const StudyTextIcon = ({ className }: { className?: string }) => {
   return (
     <svg
       width="24"
@@ -143,6 +163,7 @@ const StudyTextIcon = () => {
       stroke="currentColor"
       strokeWidth="2"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M12 2L20.6603 7V17L12 22L3.33975 17V7L12 2Z"
