@@ -115,7 +115,7 @@ const SidebarItem = ({ href, children }: SidebarItemProps) => {
       className={cn(
         'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold hover:bg-[#F5F5F5]',
         isActive && 'text-key-color-primary bg-[#FFF4F1]',
-        isCreatePage && 'h-[36px] w-[36px] justify-center px-0'
+        isCreatePage && 'h-[36px] w-[36px] justify-center bg-transparent px-0'
       )}
     >
       {children}
