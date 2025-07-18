@@ -17,7 +17,7 @@ export const Header = () => {
     },
     ROLE_PARENT: {
       label: '부모',
-      className: 'border-[#FFBAA9] text-[#FFBAA9]',
+      className: 'border-orange-scale-orange-20 text-orange-scale-orange-20',
     },
     ROLE_TEACHER: {
       label: '선생님',
