@@ -128,7 +128,7 @@ Select.Trigger = SelectTrigger;
 Select.Content = SelectContent;
 Select.Option = SelectOption;
 
-const ChevronDownIcon = ({ className }: { className: string }) => {
+export const ChevronDownIcon = ({ className }: { className: string }) => {
   return (
     <svg
       className={className}
