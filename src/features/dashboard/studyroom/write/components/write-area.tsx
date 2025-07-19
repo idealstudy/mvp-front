@@ -2,6 +2,8 @@ import Image from 'next/image';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 
+import WriteForm from './write-form';
+
 const WriteArea = () => {
   return (
     <ColumnLayout.Right className="desktop:max-w-[740px] border-line-line1 h-fit w-full rounded-xl border bg-white px-8 py-10">
@@ -21,6 +23,7 @@ const WriteArea = () => {
           height={151}
         />
       </div>
+      <WriteForm />
     </ColumnLayout.Right>
   );
 };
