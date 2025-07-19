@@ -1,7 +1,7 @@
 import { ColumnLayout } from '@/components/layout/column-layout';
-import BackLink from '@/features/dashboard/studyroom/components/back-link';
-import SelectArea from '@/features/dashboard/studyroom/write/components/select-area';
-import WriteArea from '@/features/dashboard/studyroom/write/components/write-area';
+import BackLink from '@/features/dashboard/studynote/components/back-link';
+import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
+import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
 
 export default function SettingsPage() {
   return (
