@@ -72,9 +72,9 @@ export default function TagInput({
                 {selected.map((student) => (
                   <div
                     key={student.id}
-                    className="flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-sm"
+                    className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
                   >
-                    <span className="font-medium">{student.name}</span>
+                    <span className="text-base text-black">{student.name}</span>
                     {student.guardian && (
                       <>
                         <span className="text-key-color-primary">•</span>
