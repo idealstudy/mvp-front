@@ -145,6 +145,14 @@ const WriteForm = () => {
         )}
       </Form.Item>
 
+      <hr
+        style={{
+          borderImage:
+            'repeating-linear-gradient(to right, gray 0, gray 4px, transparent 4px, transparent 8px)',
+          borderImageSlice: 1,
+        }}
+      />
+
       <Form.Item>
         <Form.Label>
           공개 범위
@@ -216,7 +224,7 @@ const WriteForm = () => {
           type="submit"
           onClick={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          className="w-[200px] rounded-[1px]"
+          className="w-[200px] rounded-sm"
         >
           {isSubmitting ? '저장 중...' : '저장하기'}
         </Button>
