@@ -38,7 +38,7 @@ export const TextEditor = ({
     editorProps: {
       attributes: {
         class: cn(
-          'outline-none min-h-[264px] max-h-[500px] overflow-y-auto px-5 py-4 w-full',
+          'outline-none min-h-[310px] max-h-[500px] overflow-y-auto px-5 py-4 w-full',
           className
         ),
       },
