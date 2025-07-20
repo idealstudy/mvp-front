@@ -73,7 +73,7 @@ const TabSection = () => {
             onClick={() => setActiveTab(tab.value)}
             className={`cursor-pointer border-[2px] border-b-0 border-black px-4 py-2 text-sm font-semibold transition ${
               activeTab === tab.value
-                ? 'bg-[#FF4500] text-white'
+                ? 'bg-key-color-primary text-white'
                 : 'hover:bg-gray-100'
             }`}
           >

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
 import { Header } from '@/components/layout/header';
+import '@/features/editor/styles/text-editor.css';
 import { GlobalProvider } from '@/providers/global-provider';
 import '@/styles/globals.css';
 

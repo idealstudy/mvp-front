@@ -10,6 +10,9 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import TagInput from '@/features/dashboard/studynote/write/components/tag-input';
+import { TextEditor } from '@/features/editor/components/text-editor';
+
+// 또는 TextEditor에서 export한 타입
 
 const RequiredMark = () => {
   return <span className="text-key-color-primary"> *</span>;
@@ -45,7 +48,7 @@ const WriteForm = () => {
       classTarget: '',
       classDate: new Date().toISOString().split('T')[0],
       students: [],
-      content: '',
+      content: {},
       visibility: 'me',
       guardianVisible: false,
     },
@@ -130,12 +133,17 @@ const WriteForm = () => {
           <RequiredMark />
         </Form.Label>
         <Form.Control>
-          <textarea
-            {...register('content', {
-              required: '수업 내용을 입력해주세요.',
-            })}
-            className="border-text-sub2 focus:ring-key-color-primary h-[300px] w-full resize-none rounded-xl border bg-slate-50 p-4 focus:ring-2 focus:outline-none"
-            placeholder="수업 내용을 입력해주세요..."
+          <Controller
+            name="content"
+            control={control}
+            rules={{ required: '수업 내용을 입력해주세요.' }}
+            render={({ field }) => (
+              <TextEditor
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="수업 내용을 입력해주세요..."
+              />
+            )}
           />
         </Form.Control>
         {errors.content && (
