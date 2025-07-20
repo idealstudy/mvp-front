@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import TagInput from '@/components/ui/tag-input';
+import TagInput from '@/features/dashboard/studynote/write/components/tag-input';
 
 const RequiredMark = () => {
   return <span className="text-key-color-primary"> *</span>;
