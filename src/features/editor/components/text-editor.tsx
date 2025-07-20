@@ -2,28 +2,17 @@ import { useMemo } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Placeholder } from '@tiptap/extensions';
-import { EditorContent, JSONContent, useEditor } from '@tiptap/react';
-import StarterKitExtension from '@tiptap/starter-kit';
+import { EditorContent, useEditor } from '@tiptap/react';
 
-import styles from './text-editor.module.css';
+import { TextEditorValue } from '../utils';
+import { defaultExtensions } from '../utils/extensions';
 import { Toolbar } from './toolbar';
-
-export type EditorValue = JSONContent;
 
 type TextEditorProps = {
   className?: string;
-  value: EditorValue;
-  onChange: (value: EditorValue) => void;
+  value: TextEditorValue;
+  onChange: (value: TextEditorValue) => void;
   placeholder?: string;
-};
-
-export const initialTextEditorValue: EditorValue = {
-  type: 'doc',
-  content: [
-    {
-      type: 'paragraph',
-    },
-  ],
 };
 
 export const TextEditor = ({
@@ -34,12 +23,9 @@ export const TextEditor = ({
 }: TextEditorProps) => {
   const extensions = useMemo(
     () => [
-      StarterKitExtension.configure({
-        gapcursor: false,
-      }),
+      ...defaultExtensions,
       Placeholder.configure({
         placeholder,
-        showOnlyWhenEditable: true,
       }),
     ],
     [placeholder]
@@ -52,8 +38,7 @@ export const TextEditor = ({
     editorProps: {
       attributes: {
         class: cn(
-          'outline-none min-h-[264px] max-h-[500px] px-5 py-4',
-          styles['tiptap'],
+          'outline-none min-h-[264px] max-h-[500px] overflow-y-auto px-5 py-4 w-full',
           className
         ),
       },
@@ -66,7 +51,7 @@ export const TextEditor = ({
   }
 
   return (
-    <div className="border-line-line2 flex flex-col rounded-[4px] border">
+    <div className="border-line-line2 flex w-full flex-col rounded-[4px] border">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
     </div>
