@@ -24,3 +24,43 @@ export const Secondary: Story = {
     return <Button variant="secondary">버튼</Button>;
   },
 };
+
+export const Outlined: Story = {
+  render: () => {
+    return <Button variant="outlined">버튼</Button>;
+  },
+};
+
+export const Disabled: Story = {
+  render: () => {
+    return <Button disabled>버튼</Button>;
+  },
+};
+
+export const Small: Story = {
+  render: () => {
+    return (
+      <div className="flex gap-2">
+        <Button size="small">버튼</Button>
+        <Button
+          size="small"
+          variant="secondary"
+        >
+          버튼
+        </Button>
+        <Button
+          size="small"
+          variant="outlined"
+        >
+          버튼
+        </Button>
+        <Button
+          size="small"
+          disabled
+        >
+          버튼
+        </Button>
+      </div>
+    );
+  },
+};

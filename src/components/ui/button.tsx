@@ -11,23 +11,29 @@ export type ButtonProps = React.ComponentPropsWithRef<'button'> &
 
 const buttonVariants = cva(
   cn(
-    'inline-flex justify-center items-center cursor-pointer whitespace-nowrap',
-    'disabled:pointer-events-none'
+    'inline-flex justify-center items-center cursor-pointer whitespace-nowrap rounded-[4px] font-normal',
+    'disabled:bg-background-inactive disabled:text-text-inactive disabled:border-line-line2 disabled:pointer-events-none'
   ),
   {
     variants: {
       variant: {
         primary: cn(
-          'bg-key-color-primary text-white border border-black hover:bg-orange-scale-orange-60 font-bold',
-          'disabled:bg-gray-200 disabled:text-[#B3B3B3] disabled:border-[#CDCDCD]'
+          'bg-key-color-primary text-white border border-gray-scale-gray-90',
+          'hover:bg-orange-scale-orange-60'
         ),
         secondary: cn(
-          'bg-white text-text-main font-normal border border-gray-scale-gray-50 hover:bg-[#EEEEEE]',
-          'disabled:border-gray-scale-gray-10 disabled:text-text-reversed-sub2'
+          'bg-gray-scale-white text-key-color-primary border border-key-color-primary',
+          'hover:bg-orange-scale-orange-10'
+        ),
+        outlined: cn(
+          'bg-gray-scale-white text-text-main border border-line-line2',
+          'hover:bg-gray-scale-gray-5',
+          'active:bg-gray-scale-gray-10'
         ),
       },
       size: {
         large: 'h-[64px] px-[26px] text-[20px]',
+        small: 'h-[40px] px-[16px] text-[16px]',
       },
     },
     defaultVariants: {
