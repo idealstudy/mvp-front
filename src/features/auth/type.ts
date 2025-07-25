@@ -7,7 +7,7 @@ export const Role = z.enum(ROLES);
 export type Session = z.infer<typeof Session>;
 export const Session = z.object({
   auth: Role,
-  nickname: z.string(),
+  nickname: z.string().optional(),
 });
 
 export type LoginBody = {

@@ -12,9 +12,7 @@ export const useAuth = () => {
 
   const login = (token: string) => {
     const session = parseSession(token);
-
     queryClient.setQueryData(queryKey.session, session);
-
     saveSessionToken(token);
   };
 

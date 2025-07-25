@@ -35,7 +35,7 @@ export default function LoginForm() {
       onError: (error) => {
         setError('password', {
           type: 'server',
-          message: error.message,
+          message: error.message || '서버에서 에러가 발생하였습니다.',
         });
       },
     });

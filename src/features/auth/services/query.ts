@@ -21,7 +21,6 @@ export const useLoginMutation = () => {
 
 export const useLogoutMutation = () => {
   const router = useRouter();
-
   const auth = useAuth();
 
   return useMutation({
