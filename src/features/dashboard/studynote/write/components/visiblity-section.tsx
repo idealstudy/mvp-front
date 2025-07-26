@@ -10,6 +10,7 @@ import { Select } from '@/components/ui/select';
 import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
 
 import { StudyNoteForm } from '../schemas/note';
+import { useWriteStudyNoteMutation } from '../services/query';
 import { RequiredMark } from './form-provider';
 
 const VisiblitySection = () => {
@@ -24,6 +25,8 @@ const VisiblitySection = () => {
   const showParent =
     visibility === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
     visibility === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY;
+
+  const { isPending } = useWriteStudyNoteMutation();
 
   return (
     <Form.Item error={!!errors.visibility}>
@@ -40,6 +43,7 @@ const VisiblitySection = () => {
             render={({ field }) => (
               <Select
                 value={field.value}
+                disabled={isPending}
                 onValueChange={(val) => {
                   field.onChange(val);
 
@@ -91,6 +95,7 @@ const VisiblitySection = () => {
                     id="parentOnly"
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled={isPending}
                   />
                   보호자에게 공개
                 </Checkbox.Label>

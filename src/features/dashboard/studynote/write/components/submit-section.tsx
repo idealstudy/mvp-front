@@ -6,9 +6,35 @@ import { Button } from '@/components/ui/button';
 import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
 
 import { StudyNoteForm } from '../schemas/note';
+import { useWriteStudyNoteMutation } from '../services/query';
 import { StudyNoteVisibility } from '../type';
 
-export function transformVisibility(
+const SubmitSection = () => {
+  const { handleSubmit } = useFormContext<StudyNoteForm>();
+  const { mutate, isPending } = useWriteStudyNoteMutation();
+
+  const onSubmit = async (data: StudyNoteForm) => {
+    const parsingData = transformFormDataToServerFormat(data);
+    mutate(parsingData);
+  };
+
+  return (
+    <div className="flex justify-end">
+      <Button
+        type="submit"
+        onClick={handleSubmit(onSubmit)}
+        disabled={isPending}
+        className="w-[200px] rounded-sm"
+      >
+        {isPending ? '저장 중...' : '저장하기'}
+      </Button>
+    </div>
+  );
+};
+
+export default SubmitSection;
+
+function transformVisibility(
   visibility: StudyNoteVisibility,
   isAddParent: boolean
 ): StudyNoteVisibility {
@@ -41,35 +67,3 @@ function transformFormDataToServerFormat(formData: StudyNoteForm) {
     studentIds: formData.studentIds.map((student) => student.id),
   };
 }
-
-const SubmitSection = () => {
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useFormContext<StudyNoteForm>();
-
-  const onSubmit = async (data: StudyNoteForm) => {
-    const serverData = transformFormDataToServerFormat(data);
-
-    return serverData;
-    // console.log('원본 폼 데이터:', data);
-    // console.log('서버로 전송할 데이터:', serverData);
-
-    // await api.post('/notes', serverData);
-  };
-
-  return (
-    <div className="flex justify-end">
-      <Button
-        type="submit"
-        onClick={handleSubmit(onSubmit)}
-        disabled={isSubmitting}
-        className="w-[200px] rounded-sm"
-      >
-        {isSubmitting ? '저장 중...' : '저장하기'}
-      </Button>
-    </div>
-  );
-};
-
-export default SubmitSection;

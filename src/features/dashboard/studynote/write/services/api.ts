@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api';
 
-import { CommonResponse, ConnectedMember, StudyRoom } from '../type';
+import { CommonResponse, ConnectedMember, StudyNote, StudyRoom } from '../type';
 
 export const getStudyRooms = async () => {
   const response = (
@@ -23,4 +23,8 @@ export const getConnectMembers = async (roomId: number) => {
   ).data;
 
   return response.data.members;
+};
+
+export const writeStudyNote = async (data: StudyNote) => {
+  await apiClient.post('/teacher/teaching-notes', data);
 };

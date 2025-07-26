@@ -18,6 +18,7 @@ type TagInputProps = {
   selected: ConnectedMember[];
   onChange: (selected: ConnectedMember[]) => void;
   error?: boolean;
+  disabled?: boolean;
 };
 
 export default function TagInput({
@@ -25,6 +26,7 @@ export default function TagInput({
   selected,
   onChange,
   error,
+  disabled,
 }: TagInputProps) {
   const [input, setInput] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -59,9 +61,15 @@ export default function TagInput({
             className={cn(
               'border-gray-scale-gray-50 text-gray-scale-gray-40 flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-sm border px-6 py-[15px]',
               open ? 'border-line-line3' : '',
-              error ? 'border-system-warning' : ''
+              error ? 'border-system-warning' : '',
+              disabled
+                ? 'border-light-gray-30 bg-gray-scale-gray-5 text-gray-scale-gray-50'
+                : ''
             )}
-            onClick={handleTriggerClick}
+            onClick={() => {
+              if (disabled) return;
+              handleTriggerClick();
+            }}
           >
             {selected.length <= 0 ? (
               '이 수업을 들은 학생을 선택해 주세요'

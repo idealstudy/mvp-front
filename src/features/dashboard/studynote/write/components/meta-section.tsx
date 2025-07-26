@@ -7,7 +7,10 @@ import { Input } from '@/components/ui/input';
 import { TextEditor } from '@/features/editor/components/text-editor';
 
 import { StudyNoteForm } from '../schemas/note';
-import { useConnectMembers } from '../services/query';
+import {
+  useConnectMembers,
+  useWriteStudyNoteMutation,
+} from '../services/query';
 import { RequiredMark } from './form-provider';
 import TagInput from './tag-input';
 
@@ -22,6 +25,8 @@ const MetaSection = () => {
   const roomId = watch('studyRoomId');
   const { data: connectedMembers } = useConnectMembers(roomId);
 
+  const { isPending } = useWriteStudyNoteMutation();
+
   return (
     <>
       {/* 제목 */}
@@ -35,6 +40,7 @@ const MetaSection = () => {
             {...register('title')}
             type="text"
             placeholder="수업 노트의 제목을 입력해주세요."
+            disabled={isPending}
           />
         </Form.Control>
         <Form.ErrorMessage className="text-system-warning text-sm">
@@ -60,6 +66,7 @@ const MetaSection = () => {
                   selected={field.value}
                   onChange={field.onChange}
                   error={!!errors.studentIds}
+                  disabled={isPending}
                 />
               );
             }}
@@ -82,6 +89,7 @@ const MetaSection = () => {
           <Input
             {...register('taughtAt')}
             type="date"
+            disabled={isPending}
           />
         </Form.Control>
         {errors.taughtAt && (
