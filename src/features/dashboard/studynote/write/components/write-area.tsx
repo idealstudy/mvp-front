@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ColumnLayout } from '@/components/layout/column-layout';
 
 import MetaSection from './meta-section';
+import SubmitSection from './submit-section';
 import VisiblitySection from './visiblity-section';
 
 const WriteArea = () => {
@@ -36,6 +37,7 @@ const WriteArea = () => {
           }}
         />
         <VisiblitySection />
+        <SubmitSection />
       </div>
     </ColumnLayout.Right>
   );

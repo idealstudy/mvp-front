@@ -93,7 +93,7 @@ const VisiblitySection = () => {
       </Form.Control>
 
       {errors.visibility && (
-        <Form.ErrorMessage className="text-sm text-red-500">
+        <Form.ErrorMessage className="text-system-warning text-sm">
           {errors.visibility.message}
         </Form.ErrorMessage>
       )}

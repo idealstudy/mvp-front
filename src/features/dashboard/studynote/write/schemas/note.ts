@@ -27,7 +27,7 @@ export const StudyNoteSchema = z.object({
     .string()
     .min(1, '수업 노트 제목을 작성해 주세요!')
     .max(30, '수업노트 제목은 30자 이하로 입력해주세요'),
-  studyRoomId: z.number({ required_error: '스터디 그룹을 선택해 주세요!' }),
+  studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;
