@@ -11,22 +11,20 @@ import {
   PopoverTrigger,
 } from '@radix-ui/react-popover';
 
-type Student = {
-  id: string;
-  name: string;
-  guardian?: string;
-};
+import { ConnectedMember } from '../type';
 
 type TagInputProps = {
-  students: Student[];
-  selected: Student[];
-  onChange: (selected: Student[]) => void;
+  students: ConnectedMember[];
+  selected: ConnectedMember[];
+  onChange: (selected: ConnectedMember[]) => void;
+  error?: boolean;
 };
 
 export default function TagInput({
   students,
   selected,
   onChange,
+  error,
 }: TagInputProps) {
   const [input, setInput] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -36,7 +34,7 @@ export default function TagInput({
     s.name.toLowerCase().includes(input.toLowerCase())
   );
 
-  const toggleSelect = (student: Student) => {
+  const toggleSelect = (student: ConnectedMember) => {
     const exists = selected.find((s) => s.id === student.id);
     if (exists) {
       onChange(selected.filter((s) => s.id !== student.id));
@@ -60,7 +58,8 @@ export default function TagInput({
           <div
             className={cn(
               'border-gray-scale-gray-50 text-gray-scale-gray-40 flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-sm border px-6 py-[15px]',
-              open ? 'border-line-line3' : ''
+              open ? 'border-line-line3' : '',
+              error ? 'border-system-warning' : ''
             )}
             onClick={handleTriggerClick}
           >
@@ -75,12 +74,10 @@ export default function TagInput({
                     className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
                   >
                     <span className="text-base text-black">{student.name}</span>
-                    {student.guardian && (
+                    {student.role === 'ROLE_PARENT' && (
                       <>
                         <span className="text-key-color-primary">•</span>
-                        <span className="text-key-color-primary">
-                          {student.guardian}
-                        </span>
+                        <span className="text-key-color-primary">보호자</span>
                       </>
                     )}
                     <button
@@ -154,7 +151,7 @@ export default function TagInput({
                       <span className="truncate font-medium">
                         {student.name}
                       </span>
-                      {student.guardian && (
+                      {student.role === 'ROLE_PARENT' && (
                         <>
                           <span
                             className={cn(
@@ -174,7 +171,7 @@ export default function TagInput({
                                 : 'text-text-sub1'
                             )}
                           >
-                            {student.guardian}
+                            보호자
                           </span>
                         </>
                       )}
