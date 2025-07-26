@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Select } from '@/components/ui/select';
+import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
 
 import { StudyNoteForm } from '../schemas/note';
 import { RequiredMark } from './form-provider';
@@ -20,9 +21,9 @@ const VisiblitySection = () => {
   } = useFormContext<StudyNoteForm>();
 
   const visibility = watch('visibility');
-  const showParentOnly =
-    visibility === 'SPECIFIC_STUDENTS_AND_PARENTS' ||
-    visibility === 'SPECIFIC_STUDENTS_ONLY';
+  const showParent =
+    visibility === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
+    visibility === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY;
 
   return (
     <Form.Item error={!!errors.visibility}>
@@ -42,13 +43,12 @@ const VisiblitySection = () => {
                 onValueChange={(val) => {
                   field.onChange(val);
 
-                  // visibility가 바뀌면 조건에 맞지 않으면 parentOnly false 초기화
                   const shouldShowParentOnly =
-                    val === 'SPECIFIC_STUDENTS_AND_PARENTS' ||
-                    val === 'SPECIFIC_STUDENTS_ONLY';
+                    val === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
+                    val === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY;
 
                   if (!shouldShowParentOnly) {
-                    setValue('parentOnly', false);
+                    setValue('isAddParent', false);
                   }
                 }}
               >
@@ -57,22 +57,30 @@ const VisiblitySection = () => {
                   className="w-1/2"
                 />
                 <Select.Content>
-                  <Select.Option value="TEACHER_ONLY">나만 보기</Select.Option>
-                  <Select.Option value="SPECIFIC_STUDENTS_ONLY">
+                  <Select.Option value={STUDY_NOTE_VISIBILITY.TEACHER_ONLY}>
+                    나만 보기
+                  </Select.Option>
+                  <Select.Option
+                    value={STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY}
+                  >
                     수업 대상 학생
                   </Select.Option>
-                  <Select.Option value="SPECIFIC_STUDENTS_AND_PARENTS">
+                  <Select.Option
+                    value={STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY}
+                  >
                     스터디 룸
                   </Select.Option>
-                  <Select.Option value="PUBLIC">전체 공개</Select.Option>
+                  <Select.Option value={STUDY_NOTE_VISIBILITY.PUBLIC}>
+                    전체 공개
+                  </Select.Option>
                 </Select.Content>
               </Select>
             )}
           />
 
-          {showParentOnly && (
+          {showParent && (
             <Controller
-              name="parentOnly"
+              name="isAddParent"
               control={control}
               render={({ field }) => (
                 <Checkbox.Label
@@ -98,7 +106,7 @@ const VisiblitySection = () => {
         </Form.ErrorMessage>
       )}
 
-      {showParentOnly && (
+      {showParent && (
         <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
           <Image
             src="/common/info.svg"
@@ -107,7 +115,7 @@ const VisiblitySection = () => {
             height={16}
           />
           {
-            "'보호자 공개' 선택시, 수업 대상 학생과 연결된 보호자도 이 수업노트를 볼 수 있습니다."
+            '보호자 공개 선택 시, 수업 대상 학생과 연결된 보호자도 이 수업노트를 볼 수 있습니다.'
           }
         </Form.Description>
       )}

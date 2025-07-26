@@ -47,7 +47,7 @@ export const StudyNoteSchema = z.object({
     }
   }),
   visibility: z.string().min(1, '공개 범위를 설정해 주세요'),
-  parentOnly: z.boolean().optional(),
+  isAddParent: z.boolean().optional(),
   taughtAt: z.string().min(1, '날짜를 선택해 주세요'),
   studentIds: z
     .array(z.custom<ConnectedMember>())

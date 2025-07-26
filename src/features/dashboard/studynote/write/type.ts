@@ -1,3 +1,5 @@
+import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
+
 export type CommonResponse<T> = {
   status: number;
   message: string;
@@ -33,3 +35,6 @@ export interface StudyRoom {
   startDate: string;
   endDate: string;
 }
+
+export type StudyNoteVisibility =
+  (typeof STUDY_NOTE_VISIBILITY)[keyof typeof STUDY_NOTE_VISIBILITY];
