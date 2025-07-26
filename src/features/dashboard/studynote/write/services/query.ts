@@ -17,7 +17,6 @@ export const useWriteStudyNoteMutation = () => {
   return useMutation({
     mutationFn: (data: StudyNote) => writeStudyNote(data),
     onSuccess: () => {
-      alert('성공!');
       router.replace(ROUTE.DASHBOARD.HOME);
     },
   });
