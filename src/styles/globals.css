@@ -110,6 +110,9 @@
   /* 브레이크포인트 */
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1280px;
+
+  /* 애니메이션 */
+  --ease-out-quart: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* 타이포그래피 */

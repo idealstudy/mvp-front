@@ -18,18 +18,6 @@ export const Default: Story = {
   render: () => {
     return (
       <RadioGroup defaultValue="1">
-        <RadioGroup.Item value="1" />
-        <RadioGroup.Item value="2" />
-        <RadioGroup.Item value="3" />
-      </RadioGroup>
-    );
-  },
-};
-
-export const WithLabel: Story = {
-  render: () => {
-    return (
-      <RadioGroup defaultValue="1">
         <RadioGroup.Option value="1">라디오 옵션 1</RadioGroup.Option>
         <RadioGroup.Option value="2">라디오 옵션 2</RadioGroup.Option>
         <RadioGroup.Option value="3">라디오 옵션 3</RadioGroup.Option>

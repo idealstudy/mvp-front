@@ -15,7 +15,7 @@ export const SelectChevronDownIcon = ({
   return (
     <ChevronDownIcon
       className={cn(
-        'pointer-events-none absolute top-1/2 right-4 shrink-0 -translate-y-1/2',
+        'pointer-events-none absolute top-1/2 right-6 size-4 shrink-0 -translate-y-1/2',
         className
       )}
     />
@@ -36,17 +36,18 @@ type SelectTriggerProps = React.ComponentPropsWithRef<
 
 const SelectTrigger = ({
   className,
-  ['aria-invalid']: ariaInvalid,
+  'aria-invalid': ariaInvalid,
   placeholder,
   ...props
 }: SelectTriggerProps) => {
   return (
     <SelectPrimitives.Trigger
       className={cn(
-        'border-gray-scale-gray-10 relative flex h-[56px] w-full items-center justify-between border bg-white pr-12 pl-6 text-start outline-hidden',
+        'border-gray-scale-gray-10 bg-gray-scale-white relative flex h-[56px] w-full items-center justify-between rounded-[4px] border pr-14 pl-6 text-start outline-hidden',
         'data-placeholder:text-gray-scale-gray-50',
         '[&>span]:min-w-0',
         'placeholder-text-gray-scale-gray-50',
+        'cursor-pointer',
         //   'disabled:bg-background-100 disabled:pointer-events-none disabled:opacity-50',
         ariaInvalid && '',
         className
@@ -78,7 +79,7 @@ const SelectContent = ({
     <SelectPrimitives.Portal>
       <SelectPrimitives.Content
         className={cn(
-          'border-gray-scale-gray-10 text-main relative z-50 max-w-[calc(100vw-12px)] overflow-hidden border border-t-0 bg-white',
+          'border-gray-scale-gray-10 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[4px] border',
           'max-h-[var(--radix-select-content-available-height)]',
           position === 'popper' &&
             'w-full min-w-[var(--radix-select-trigger-width)]',
@@ -86,7 +87,7 @@ const SelectContent = ({
         )}
         position={position}
         alignOffset={0}
-        sideOffset={0}
+        sideOffset={4}
         {...props}
       >
         <SelectPrimitives.Viewport
@@ -112,7 +113,7 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
       className={cn(
         'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
         'focus:bg-gray-scale-gray-5',
-        'data-[state=checked]:text-key-color-primary data-[state=checked]:font-semibold',
+        'data-[state=checked]:text-key-color-primary',
         'data-disabled:pointer-events-none',
 
         className

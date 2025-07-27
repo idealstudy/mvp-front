@@ -7,15 +7,15 @@ type CheckboxProps = React.ComponentProps<typeof CheckboxPrimitives.Root>;
 
 const CheckboxImpl = ({
   className,
-  ['aria-invalid']: ariaInvalid,
+  'aria-invalid': ariaInvalid,
   ...props
 }: CheckboxProps) => {
   return (
     <CheckboxPrimitives.Root
       className={cn(
-        'border-line-line3 flex size-[24px] cursor-pointer items-center justify-center border',
-        'data-[state=checked]:bg-key-color-primary',
-        'disabled:border-gray-scale-gray-10 disabled:data-[state=checked]:bg-gray-scale-gray-10 disabled:data-[state=checked]:border-line-line1 disabled:pointer-events-none',
+        'border-line-line3 flex size-[24px] cursor-pointer items-center justify-center rounded-[4px] border',
+        'data-[state=checked]:bg-key-color-primary data-[state=checked]:text-gray-scale-white',
+        'disabled:border-line-line2 disabled:data-[state=checked]:bg-line-line2 disabled:data-[state=checked]:border-line-line2 disabled:text-line-line1 disabled:pointer-events-none',
         ariaInvalid && '',
         className
       )}
@@ -32,17 +32,18 @@ const CheckboxImpl = ({
 const CheckIcon = () => {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="11"
-      viewBox="0 0 15 11"
+      width="17"
+      height="12"
+      viewBox="0 0 17 12"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
     >
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M14.172 0L4.72409 9.44793L5.4312 10.155L14.8791 0.707107L14.172 0ZM0 4.72388L4.72397 9.44784L5.43107 8.74074L0.707107 4.01677L0 4.72388Z"
-        fill="white"
+        d="M1.5 5.5L6.5 10.5L15.5 1.5"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -57,7 +58,7 @@ const CheckboxLabel = ({
 }: CheckboxLabelProps) => {
   return (
     <Label.Root
-      className={cn('flex items-center gap-4', className)}
+      className={cn('flex items-center gap-2', className)}
       {...props}
     >
       {children}

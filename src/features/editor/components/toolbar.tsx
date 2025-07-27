@@ -113,8 +113,9 @@ const ToolbarButton = ({
     <button
       type="button"
       className={cn(
-        'flex size-5 cursor-pointer items-center justify-center',
-        active && 'bg-gray-scale-gray-5',
+        'flex size-5 cursor-pointer items-center justify-center rounded-[4px]',
+        'hover:bg-background-gray',
+        active && 'bg-background-orange hover:bg-orange-scale-orange-5',
         className
       )}
       {...props}

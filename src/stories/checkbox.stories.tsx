@@ -24,8 +24,27 @@ export const Checked: Story = {
 };
 
 export const Disabled: Story = {
-  args: {
-    disabled: true,
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox disabled />
+        스타일 구현 안됨
+      </Checkbox.Label>
+    );
+  },
+};
+
+export const DisabledChecked: Story = {
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox
+          checked
+          disabled
+        />
+        스타일 구현 안됨
+      </Checkbox.Label>
+    );
   },
 };
 
@@ -34,7 +53,7 @@ export const WithLabel: Story = {
     return (
       <Checkbox.Label>
         <Checkbox />
-        서비스 이용 약관에 동의합니다.
+        체크박스 텍스트
       </Checkbox.Label>
     );
   },
