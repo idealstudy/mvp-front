@@ -18,7 +18,7 @@ const EditorComponent = () => {
   const textEditor = useTextEditor();
 
   return (
-    <div className="w-[400px]">
+    <div className="w-[600px]">
       <TextEditor
         value={textEditor.value}
         onChange={textEditor.onChange}
