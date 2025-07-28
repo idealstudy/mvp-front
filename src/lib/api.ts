@@ -92,3 +92,9 @@ export const ApiResponse = <TData extends z.ZodType>(result: TData) =>
     message: z.string(),
     result: result,
   });
+
+export type CommonResponse<T> = {
+  status: number;
+  message: string;
+  data: T;
+};

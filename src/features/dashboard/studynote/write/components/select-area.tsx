@@ -69,20 +69,20 @@ const SelectArea = () => {
                         style={{ width: 'var(--radix-popover-trigger-width)' }}
                       >
                         {rooms?.map((room) => (
-                          <div
+                          <Popover.Close
                             key={room.id}
                             onClick={() => {
                               field.onChange(room.id);
                               setOpen(false);
                             }}
                             className={cn(
-                              'cursor-pointer px-4 py-2 transition-colors hover:bg-gray-100',
+                              'w-full cursor-pointer px-4 py-2 text-left transition-colors hover:bg-gray-100',
                               field.value === room.id &&
                                 'bg-gray-200 font-semibold'
                             )}
                           >
                             {room.name}
-                          </div>
+                          </Popover.Close>
                         ))}
                       </Popover.Content>
                     </Popover.Portal>

@@ -1,6 +1,3 @@
-import { useRouter } from 'next/navigation';
-
-import { ROUTE } from '@/constants/route';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { StudyNote } from '../type';
@@ -12,13 +9,8 @@ export const useConnectMembers = (roomId: number) => {
 };
 
 export const useWriteStudyNoteMutation = () => {
-  const router = useRouter();
-
   return useMutation({
     mutationFn: (data: StudyNote) => writeStudyNote(data),
-    onSuccess: () => {
-      router.replace(ROUTE.DASHBOARD.HOME);
-    },
   });
 };
 

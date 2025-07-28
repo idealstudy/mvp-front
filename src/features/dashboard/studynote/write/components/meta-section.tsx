@@ -23,7 +23,7 @@ const MetaSection = () => {
   } = useFormContext<StudyNoteForm>();
 
   const roomId = watch('studyRoomId');
-  const { data: connectedMembers } = useConnectMembers(roomId);
+  const { data } = useConnectMembers(roomId);
 
   const { isPending } = useWriteStudyNoteMutation();
 
@@ -44,7 +44,7 @@ const MetaSection = () => {
           />
         </Form.Control>
         <Form.ErrorMessage className="text-system-warning text-sm">
-          {errors?.title?.message || ''}
+          {errors.title?.message}
         </Form.ErrorMessage>
       </Form.Item>
 
@@ -62,7 +62,7 @@ const MetaSection = () => {
             render={({ field, formState: { errors } }) => {
               return (
                 <TagInput
-                  students={connectedMembers || []}
+                  students={data?.members || []}
                   selected={field.value}
                   onChange={field.onChange}
                   error={!!errors.studentIds}

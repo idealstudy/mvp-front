@@ -3,6 +3,7 @@ import BackLink from '@/features/dashboard/studynote/components/back-link';
 import StudyNoteFormProvider from '@/features/dashboard/studynote/write/components/form-provider';
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
 import WriteArea from '@/features/dashboard/studynote/write/components/write-area';
+import WriteForm from '@/features/dashboard/studynote/write/components/write-form';
 
 export default function SettingsPage() {
   return (
@@ -15,10 +16,12 @@ export default function SettingsPage() {
       </div>
 
       <StudyNoteFormProvider>
-        <ColumnLayout className="pt-[10px] pb-10">
-          <SelectArea />
-          <WriteArea />
-        </ColumnLayout>
+        <WriteForm>
+          <ColumnLayout className="pt-[10px] pb-10">
+            <SelectArea />
+            <WriteArea />
+          </ColumnLayout>
+        </WriteForm>
       </StudyNoteFormProvider>
     </>
   );

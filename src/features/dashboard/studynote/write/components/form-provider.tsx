@@ -2,10 +2,9 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Form } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { StudyNoteForm, StudyNoteSchema } from '../schemas/note';
+import { StudyNoteForm, studyNoteFormSchema } from '../schemas/note';
 
 export const RequiredMark = () => {
   return <span className="text-key-color-primary"> *</span>;
@@ -13,22 +12,17 @@ export const RequiredMark = () => {
 
 const StudyNoteFormProvider = ({ children }: { children: React.ReactNode }) => {
   const methods = useForm<StudyNoteForm>({
-    resolver: zodResolver(StudyNoteSchema),
+    resolver: zodResolver(studyNoteFormSchema),
     defaultValues: {
       title: '',
       content: {},
       studentIds: [],
       studyRoomId: undefined,
       taughtAt: new Date().toISOString().split('T')[0],
-      visibility: '',
     },
   });
 
-  return (
-    <FormProvider {...methods}>
-      <Form>{children}</Form>
-    </FormProvider>
-  );
+  return <FormProvider {...methods}>{children}</FormProvider>;
 };
 
 export default StudyNoteFormProvider;

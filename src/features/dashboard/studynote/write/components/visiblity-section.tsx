@@ -7,13 +7,13 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Select } from '@/components/ui/select';
-import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
 
+import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
 import { RequiredMark } from './form-provider';
 
-const VisiblitySection = () => {
+const VisibilitySection = () => {
   const {
     control,
     setValue,
@@ -22,11 +22,15 @@ const VisiblitySection = () => {
   } = useFormContext<StudyNoteForm>();
 
   const visibility = watch('visibility');
-  const showParent =
-    visibility === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
-    visibility === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY;
-
   const { isPending } = useWriteStudyNoteMutation();
+
+  const isGuardianSelectable = isGuardianVisibilityAllowed(visibility);
+
+  const handleVisibilityChange = (val: string) => {
+    if (!isGuardianVisibilityAllowed(val)) {
+      setValue('isGuardianVisible', false);
+    }
+  };
 
   return (
     <Form.Item error={!!errors.visibility}>
@@ -34,6 +38,7 @@ const VisiblitySection = () => {
         공개 범위
         <RequiredMark />
       </Form.Label>
+
       <Form.Control>
         <div className="flex gap-x-5">
           <Controller
@@ -46,14 +51,7 @@ const VisiblitySection = () => {
                 disabled={isPending}
                 onValueChange={(val) => {
                   field.onChange(val);
-
-                  const shouldShowParentOnly =
-                    val === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
-                    val === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY;
-
-                  if (!shouldShowParentOnly) {
-                    setValue('isAddParent', false);
-                  }
+                  handleVisibilityChange(val);
                 }}
               >
                 <Select.Trigger
@@ -82,17 +80,17 @@ const VisiblitySection = () => {
             )}
           />
 
-          {showParent && (
+          {isGuardianSelectable && (
             <Controller
-              name="isAddParent"
+              name="isGuardianVisible"
               control={control}
               render={({ field }) => (
                 <Checkbox.Label
-                  htmlFor="parentOnly"
+                  htmlFor="guardian-visible"
                   className="gap-x-2"
                 >
                   <Checkbox
-                    id="parentOnly"
+                    id="guardian-visible"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                     disabled={isPending}
@@ -111,21 +109,27 @@ const VisiblitySection = () => {
         </Form.ErrorMessage>
       )}
 
-      {showParent && (
+      {isGuardianSelectable && (
         <Form.Description className="text-text-sub2 flex gap-x-[3px] text-sm">
           <Image
             src="/common/info.svg"
-            alt="info-svg"
+            alt="info-icon"
             width={16}
             height={16}
           />
-          {
-            '보호자 공개 선택 시, 수업 대상 학생과 연결된 보호자도 이 수업노트를 볼 수 있습니다.'
-          }
+          보호자 공개 선택 시, 수업 대상 학생과 연결된 보호자도 이 수업노트를 볼
+          수 있습니다.
         </Form.Description>
       )}
     </Form.Item>
   );
 };
 
-export default VisiblitySection;
+export default VisibilitySection;
+
+function isGuardianVisibilityAllowed(visibility: string): boolean {
+  return (
+    visibility === STUDY_NOTE_VISIBILITY.SPECIFIC_STUDENTS_ONLY ||
+    visibility === STUDY_NOTE_VISIBILITY.STUDY_ROOM_STUDENTS_ONLY
+  );
+}

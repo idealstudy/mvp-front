@@ -6,7 +6,7 @@ import { ColumnLayout } from '@/components/layout/column-layout';
 
 import MetaSection from './meta-section';
 import SubmitSection from './submit-section';
-import VisiblitySection from './visiblity-section';
+import VisibilitySection from './visiblity-section';
 
 const WriteArea = () => {
   return (
@@ -36,7 +36,7 @@ const WriteArea = () => {
             borderImageSlice: 1,
           }}
         />
-        <VisiblitySection />
+        <VisibilitySection />
         <SubmitSection />
       </div>
     </ColumnLayout.Right>

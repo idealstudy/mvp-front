@@ -1,10 +1,7 @@
-import { STUDY_NOTE_VISIBILITY } from '@/constants/value';
+import { Role } from '@/features/auth/type';
+import { z } from 'zod';
 
-export type CommonResponse<T> = {
-  status: number;
-  message: string;
-  data: T;
-};
+import { StudyNoteVisibility } from './schemas/note';
 
 export interface StudyNote {
   studyRoomId: number;
@@ -16,7 +13,7 @@ export interface StudyNote {
 }
 
 export interface ConnectedMember {
-  role: 'ROLE_STUDENT' | 'ROLE_TEACHER' | 'ROLE_PARENT';
+  role: Role;
   id: number;
   name: string;
   email: string;
@@ -36,5 +33,4 @@ export interface StudyRoom {
   endDate: string;
 }
 
-export type StudyNoteVisibility =
-  (typeof STUDY_NOTE_VISIBILITY)[keyof typeof STUDY_NOTE_VISIBILITY];
+export type StudyNoteVisibility = z.infer<typeof StudyNoteVisibility>;

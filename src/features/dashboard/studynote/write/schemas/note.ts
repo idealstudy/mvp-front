@@ -3,6 +3,18 @@ import { z } from 'zod';
 
 import { ConnectedMember } from '../type';
 
+export const StudyNoteVisibility = z.enum(
+  [
+    'TEACHER_ONLY',
+    'SPECIFIC_STUDENTS_ONLY',
+    'SPECIFIC_STUDENTS_AND_PARENTS',
+    'STUDY_ROOM_STUDENTS_ONLY',
+    'STUDY_ROOM_STUDENTS_AND_PARENTS',
+    'PUBLIC',
+  ],
+  { message: '공개 범위를 선택해 주세요.' }
+);
+
 const extractTextFromTiptapJSON = (doc: JSONContent): string => {
   if (!doc || !doc.content) return '';
 
@@ -22,11 +34,11 @@ const extractTextFromTiptapJSON = (doc: JSONContent): string => {
   return text;
 };
 
-export const StudyNoteSchema = z.object({
+export const studyNoteFormSchema = z.object({
   title: z
     .string()
     .min(1, '수업 노트 제목을 작성해 주세요!')
-    .max(30, '수업노트 제목은 30자 이하로 입력해주세요'),
+    .max(30, '수업노트 제목은 30자 이하로 입력해주세요.'),
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
   content: z.custom<JSONContent>().superRefine((val, ctx) => {
     const plainText = extractTextFromTiptapJSON(val);
@@ -46,12 +58,12 @@ export const StudyNoteSchema = z.object({
       });
     }
   }),
-  visibility: z.string().min(1, '공개 범위를 설정해 주세요'),
-  isAddParent: z.boolean().optional(),
-  taughtAt: z.string().min(1, '날짜를 선택해 주세요'),
+  visibility: StudyNoteVisibility,
+  isGuardianVisible: z.boolean().optional(),
+  taughtAt: z.string().min(1, '날짜를 선택해 주세요.'),
   studentIds: z
     .array(z.custom<ConnectedMember>())
-    .nonempty('수업에 참여한 학생들을 입력해 주세요'),
+    .nonempty('수업에 참여한 학생들을 입력해 주세요.'),
 });
 
-export type StudyNoteForm = z.infer<typeof StudyNoteSchema>;
+export type StudyNoteForm = z.infer<typeof studyNoteFormSchema>;
