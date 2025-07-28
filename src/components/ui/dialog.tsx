@@ -31,7 +31,10 @@ const DialogOverlay = ({
 }: DialogOverlayProps) => {
   return (
     <DialogPrimitives.Overlay
-      className={cn('fixed inset-0 z-50 bg-black/70', className)}
+      className={cn(
+        'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm',
+        className
+      )}
       {...props}
     >
       {children}
@@ -54,7 +57,7 @@ const DialogContent = ({
       <DialogPrimitives.Content
         aria-modal
         className={cn(
-          'bg-system-background-alt fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-full max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-[40px]',
+          'bg-system-background-alt border-line-line1 fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100%-4rem)] w-full max-w-[calc(100%-4rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[16px] border p-9',
           className
         )}
         {...props}
@@ -112,7 +115,7 @@ type DialogTitleProps = React.ComponentPropsWithRef<
 const DialogTitle = ({ className, children, ...props }: DialogTitleProps) => {
   return (
     <DialogPrimitives.Title
-      className={cn('text-center text-[20px]', className)}
+      className={cn('font-headline1-heading', className)}
       {...props}
     >
       {children}
@@ -157,7 +160,7 @@ const DialogTrigger = ({ children, ...props }: DialogTriggerProps) => {
 const DialogClose = () => {
   return (
     <DialogPrimitives.Close
-      className="absolute top-[47px] right-[38px] flex size-[24px] cursor-pointer items-center justify-center"
+      className="absolute top-9 right-9 flex size-[24px] cursor-pointer items-center justify-center"
       aria-label="닫기"
     >
       <XIcon />

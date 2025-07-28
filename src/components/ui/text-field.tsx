@@ -79,7 +79,7 @@ const TextField = ({
           {children}
         </div>
         {(description || (error && errorMessage)) && (
-          <div className="mt-1 flex justify-end gap-3">
+          <div className="mt-2 flex justify-end gap-3">
             <div className="flex-1">
               {description && description}
               {error && errorMessage}
@@ -189,7 +189,7 @@ const TextFieldDescription = ({
     <p
       id={descriptionId}
       ref={refCallback}
-      className={cn('text-text-sub2 flex-1 text-[14px]', className)}
+      className={cn('text-text-sub2 font-label-normal flex-1', className)}
       {...props}
     >
       {children}
