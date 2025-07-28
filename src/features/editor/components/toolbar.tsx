@@ -489,7 +489,7 @@ const FontSizeSelect = ({
         )}
         {...props}
       >
-        <SelectPrimitives.Value>{value}</SelectPrimitives.Value>
+        <SelectPrimitives.Value>{value.slice(0, -2)}pt</SelectPrimitives.Value>
         <SelectPrimitives.Icon asChild>
           <ChevronDownIcon />
         </SelectPrimitives.Icon>
