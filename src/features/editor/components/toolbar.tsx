@@ -80,7 +80,13 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
       </ToolbarItemGroup>
       <ToolbarDivider />
       <ToolbarItemGroup>
-        <button className="flex cursor-pointer items-center justify-center gap-[6px] text-xs">
+        <button
+          className={cn(
+            'flex cursor-pointer items-center justify-center gap-[6px] text-xs',
+            'disabled:opacity-50'
+          )}
+          disabled
+        >
           글자색
           <span className="size-4 rounded-full bg-black" />
         </button>
@@ -138,22 +144,24 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
         <ToolbarButton
           active={editorState.isBulletList}
           onClick={toggleBulletList}
+          disabled
         >
           <BulletListIcon />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isOrderedList}
           onClick={toggleOrderedList}
+          disabled
         >
           <ListIcon />
         </ToolbarButton>
       </ToolbarItemGroup>
       <ToolbarDivider />
       <ToolbarItemGroup>
-        <ToolbarButton>
+        <ToolbarButton disabled>
           <ImageIcon />
         </ToolbarButton>
-        <ToolbarButton>
+        <ToolbarButton disabled>
           <LinkIcon />
         </ToolbarButton>
       </ToolbarItemGroup>
@@ -185,6 +193,7 @@ const ToolbarButton = ({
       className={cn(
         'flex size-5 cursor-pointer items-center justify-center rounded-[4px]',
         'hover:bg-background-gray',
+        'disabled:pointer-events-none disabled:opacity-50',
         active && 'bg-background-orange hover:bg-orange-scale-orange-5',
         className
       )}
