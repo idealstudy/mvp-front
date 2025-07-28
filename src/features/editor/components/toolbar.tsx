@@ -1,9 +1,12 @@
 import { cn } from '@/lib/utils';
 import { Editor, useEditorState } from '@tiptap/react';
+import { Select as SelectPrimitives } from 'radix-ui';
 
 type ToolbarProps = {
   editor: Editor;
 };
+
+const FONT_SIZE_OPTIONS = [12, 14, 16] as const;
 
 export const Toolbar = ({ editor }: ToolbarProps) => {
   const editorState = useEditorState({
@@ -56,27 +59,23 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
     editor.chain().focus().toggleTextAlign(alignment).run();
   };
 
-  const fontSizeOptions = [12, 14, 16];
-
   return (
     <div className="border-line-line2 flex h-[46px] items-center overflow-x-auto border-b">
       <ToolbarItemGroup>
         <div className="relative flex items-center gap-1">
-          <select
-            className="focus-visible:focus-ring flex cursor-pointer appearance-none pr-4 text-sm"
+          <FontSizeSelect
             value={editorState.fontSize}
-            onChange={(e) => changeFontSize(e.target.value)}
+            onValueChange={changeFontSize}
           >
-            {fontSizeOptions.map((size) => (
-              <option
+            {FONT_SIZE_OPTIONS.map((size) => (
+              <FontSizeSelect.Option
                 key={size}
                 value={`${size}px`}
               >
-                {size}pt
-              </option>
+                {size}
+              </FontSizeSelect.Option>
             ))}
-          </select>
-          <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-1 size-2 -translate-y-1/2" />
+          </FontSizeSelect>
         </div>
       </ToolbarItemGroup>
       <ToolbarDivider />
@@ -456,3 +455,73 @@ const LinkIcon = (props: React.SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
+
+type FontSizeSelectProps = SelectPrimitives.SelectTriggerProps & {
+  value: string;
+  onValueChange: (value: string) => void;
+};
+
+const FontSizeSelect = ({
+  className,
+  children,
+  value,
+  onValueChange,
+  ...props
+}: FontSizeSelectProps) => {
+  return (
+    <SelectPrimitives.Root
+      value={value}
+      onValueChange={onValueChange}
+    >
+      <SelectPrimitives.Trigger
+        className={cn(
+          'focus-visible:focus-ring flex cursor-pointer items-center gap-1 text-sm',
+          className
+        )}
+        {...props}
+      >
+        <SelectPrimitives.Value>{value}</SelectPrimitives.Value>
+        <SelectPrimitives.Icon asChild>
+          <ChevronDownIcon />
+        </SelectPrimitives.Icon>
+      </SelectPrimitives.Trigger>
+      <SelectPrimitives.Portal>
+        <SelectPrimitives.Content
+          className="border-line-line1 bg-gray-scale-white flex flex-col rounded-[4px] border"
+          position="popper"
+          align="center"
+          sideOffset={4}
+          onCloseAutoFocus={(e) => e.preventDefault()}
+        >
+          <SelectPrimitives.Viewport>{children}</SelectPrimitives.Viewport>
+        </SelectPrimitives.Content>
+      </SelectPrimitives.Portal>
+    </SelectPrimitives.Root>
+  );
+};
+
+type FontSizeSelectOptionProps = SelectPrimitives.SelectItemProps;
+
+const FontSizeSelectOption = ({
+  className,
+  children,
+  ...props
+}: FontSizeSelectOptionProps) => {
+  return (
+    <SelectPrimitives.Item
+      className={cn(
+        'font-label-normal text-text-main flex h-[26px] w-[52px] cursor-pointer items-center justify-center outline-none',
+        'focus:bg-background-gray',
+        'data-[state=checked]:bg-background-orange data-[state=checked]:text-key-color-primary',
+        className
+      )}
+      {...props}
+    >
+      <SelectPrimitives.ItemText className="pointer-events-none">
+        {children}pt
+      </SelectPrimitives.ItemText>
+    </SelectPrimitives.Item>
+  );
+};
+
+FontSizeSelect.Option = FontSizeSelectOption;
