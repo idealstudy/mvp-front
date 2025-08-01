@@ -23,8 +23,7 @@ const MetaSection = () => {
   } = useFormContext<StudyNoteForm>();
 
   const roomId = watch('studyRoomId');
-  const { data } = useConnectMembers(roomId);
-
+  const { data: members } = useConnectMembers(roomId);
   const { isPending } = useWriteStudyNoteMutation();
 
   return (
@@ -62,7 +61,7 @@ const MetaSection = () => {
             render={({ field, formState: { errors } }) => {
               return (
                 <TagInput
-                  students={data?.members || []}
+                  students={members || []}
                   selected={field.value}
                   onChange={field.onChange}
                   error={!!errors.studentIds}

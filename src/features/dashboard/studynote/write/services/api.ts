@@ -13,11 +13,14 @@ export const getConnectMembers = async (roomId: number) => {
   const response = (
     await apiClient.get<
       CommonResponse<{
-        members: ConnectedMember[];
         pageNumber: number;
         size: number;
         totalElements: number;
         totalPages: number;
+        members: {
+          studentInfo: ConnectedMember;
+          parentInfo: ConnectedMember;
+        }[];
       }>
     >(`/teacher/study-rooms/${roomId}/members`)
   ).data;

@@ -21,6 +21,12 @@ export const getConnectMembersOption = (roomId: number) => {
   return queryOptions({
     queryKey: StudyNoteQueryKey.students(roomId),
     queryFn: () => getConnectMembers(roomId),
+    select(data) {
+      const flatMembers = data.members.flatMap(
+        ({ studentInfo, parentInfo }) => [studentInfo, parentInfo]
+      );
+      return flatMembers;
+    },
     enabled: !!roomId,
   });
 };
