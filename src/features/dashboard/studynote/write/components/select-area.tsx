@@ -7,15 +7,17 @@ import Image from 'next/image';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { Form } from '@/components/ui/form';
-import { ChevronDownIcon } from '@/components/ui/select';
+import { ChevronDownIcon, Select } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Popover } from 'radix-ui';
 
 import { StudyNoteForm } from '../schemas/note';
-import { useStudyRoomsQuery } from '../services/query';
+import { useStudyNoteGroupsQuery, useStudyRoomsQuery } from '../services/query';
 
 const SelectArea = () => {
   const { data: rooms } = useStudyRoomsQuery();
+  const { data: studyNoteGroups } = useStudyNoteGroupsQuery();
+
   const [open, setOpen] = useState(false);
 
   const {
@@ -99,9 +101,7 @@ const SelectArea = () => {
         </Form.Item>
       </div>
 
-      {/* api 개발 이후 작업 */}
-
-      {/* <Form.Item error={!!errors.title}>
+      <Form.Item error={!!errors.title}>
         <Form.Label className="text-text-sub2 text-base font-semibold">
           수업노트 그룹
         </Form.Label>
@@ -120,12 +120,12 @@ const SelectArea = () => {
                   className="mt-[9px]"
                 />
                 <Select.Content>
-                  {rooms?.map((room) => (
+                  {studyNoteGroups?.content.map((group) => (
                     <Select.Option
-                      key={room.id}
-                      value={room.id + ''}
+                      key={group.id}
+                      value={group.id + ''}
                     >
-                      {room.name}
+                      {group.title}
                     </Select.Option>
                   ))}
                 </Select.Content>
@@ -138,7 +138,7 @@ const SelectArea = () => {
             {errors.studyRoomId.message}
           </Form.ErrorMessage>
         )}
-      </Form.Item> */}
+      </Form.Item>
     </ColumnLayout.Left>
   );
 };
