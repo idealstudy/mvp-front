@@ -87,7 +87,7 @@ const VisibilitySection = () => {
               render={({ field }) => (
                 <Checkbox.Label
                   htmlFor="guardian-visible"
-                  className="gap-x-2"
+                  className="gap-x-1"
                 >
                   <Checkbox
                     id="guardian-visible"
