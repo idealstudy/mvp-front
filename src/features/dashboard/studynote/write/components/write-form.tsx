@@ -9,9 +9,9 @@ import { Form } from '@/components/ui/form';
 import { ROUTE } from '@/constants/route';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
+import { StudyNoteVisibility } from '../../type';
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
-import { StudyNoteVisibility } from '../type';
 
 const WriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();

@@ -106,10 +106,14 @@ export interface Sort {
 }
 
 export interface Pageable {
-  offset: number;
-  sort: Sort;
-  paged: boolean;
+  page: number;
+  size: number;
+  sort: string[];
+}
+
+export interface PaginationMeta {
   pageNumber: number;
-  pageSize: number;
-  unpaged: boolean;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 }

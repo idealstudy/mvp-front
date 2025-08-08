@@ -22,6 +22,16 @@ export const useWriteStudyNoteMutation = () => {
   });
 };
 
+// export const useStudyNoteListByStudyRoomQuery = ({
+//   roomId,
+//   pageble,
+// }: {
+//   roomId: number;
+//   pageble: Pageable;
+// }) => {
+//   return useQuery(getStudyNoteListByStudyRoomOption({ roomId, pageble }));
+// };
+
 // 임시로 작성된 스터디 룸 Query
 export const useStudyRoomsQuery = () => {
   return useQuery(getStudyRoomsOption());

@@ -1,8 +1,5 @@
 import { Role } from '@/features/auth/type';
-import { Pageable, Sort } from '@/lib/api';
-import { z } from 'zod';
-
-import { StudyNoteVisibility } from './schemas/note';
+import { Sort } from '@/lib/api';
 
 export interface StudyNote {
   studyRoomId: number;
@@ -20,6 +17,8 @@ export interface ConnectedMember {
   email: string;
   joinDate: string | null;
 }
+
+// 스터디 노트 그룹
 
 export interface Teacher {
   id: number;
@@ -77,7 +76,14 @@ export interface StudyNoteGroupResponse {
   number: number;
   numberOfElements: number;
   sort: Sort;
-  pageable: Pageable;
+  pageable: {
+    offset: number;
+    sort: Sort;
+    paged: boolean;
+    pageNumber: number;
+    pageSize: number;
+    unpaged: boolean;
+  };
   first: boolean;
   last: boolean;
   empty: boolean;
@@ -96,5 +102,3 @@ export interface StudyRoom {
   startDate: string;
   endDate: string;
 }
-
-export type StudyNoteVisibility = z.infer<typeof StudyNoteVisibility>;
