@@ -81,7 +81,7 @@ export const Sidebar = () => {
           <div className="absolute right-0 bottom-0 p-4">
             <Link
               href={ROUTE.DASHBOARD.SETTINGS}
-              className="flex items-center gap-2 rounded-lg text-[14px] font-semibold text-[#999999] hover:bg-[#F5F5F5]"
+              className="text-gray-scale-gray-50 hover:bg-gray-scale-gray-5 flex items-center gap-2 rounded-lg text-[14px] font-semibold"
             >
               <SidebarItemText>디에듀에 문의하기</SidebarItemText>
               <Image
@@ -113,8 +113,10 @@ const SidebarItem = ({ href, children }: SidebarItemProps) => {
     <Link
       href={href}
       className={cn(
-        'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold hover:bg-[#F5F5F5]',
-        isActive && 'text-key-color-primary bg-[#FFF4F1]',
+        'flex h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
+        isActive
+          ? 'text-key-color-primary bg-[#FFF4F1]'
+          : 'hover:bg-gray-scale-gray-5',
         isCreatePage && 'h-[36px] w-[36px] justify-center bg-transparent px-0'
       )}
     >
