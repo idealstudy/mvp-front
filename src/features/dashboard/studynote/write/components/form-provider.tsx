@@ -20,6 +20,7 @@ const StudyNoteFormProvider = ({ children }: { children: React.ReactNode }) => {
       studyRoomId: undefined,
       taughtAt: new Date().toISOString().split('T')[0],
     },
+    mode: 'onChange',
   });
 
   return <FormProvider {...methods}>{children}</FormProvider>;
