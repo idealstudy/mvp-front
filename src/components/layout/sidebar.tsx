@@ -11,6 +11,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
   const isStudyRoomActive = pathname?.startsWith('/dashboard/study-rooms');
 
+  /* 더미 데이터: 실제에선 서버/쿼리로 대체 */
   const studyRoomList = [
     {
       id: 1,
@@ -20,10 +21,7 @@ export const Sidebar = () => {
       id: 2,
       text: '은광여고 여름방학 특강반나의 첫 스터디룸나의 첫 스터디룸나의 첫 스터디룸나의 첫 스터디룸나의 첫 스터디룸',
     },
-    {
-      id: 3,
-      text: '경기고 여름방학 특강반',
-    },
+    { id: 3, text: '오버플로우 확인용 오버플로우 확인용' },
   ];
 
   return (
@@ -33,13 +31,15 @@ export const Sidebar = () => {
         'desktop:flex'
       )}
     >
-      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9] p-4">
-        <nav className="flex flex-1 flex-col">
+      <aside className="bg-system-background-alt w-sidebar-width relative flex-1 flex-col overflow-y-auto rounded-r-[12px] border-y border-r border-[#D9D9D9] p-3">
+        <nav className="flex h-full flex-1 flex-col">
+          {/* 홈 */}
           <SidebarItem href={ROUTE.DASHBOARD.HOME}>
             <HomeTextIcon />
             <SidebarItemText>홈</SidebarItemText>
           </SidebarItem>
 
+          {/* 스터디룸 헤더 + 생성 버튼 */}
           <div className="flex h-[58px] w-full items-center justify-between pr-[10px] pl-5">
             <div className="flex items-center gap-2">
               <StudyTextIcon
@@ -47,37 +47,64 @@ export const Sidebar = () => {
               />
               <p
                 className={cn(
-                  'pointer-events-none select-none',
+                  'pointer-events-none font-bold select-none',
                   isStudyRoomActive && 'text-key-color-primary'
                 )}
               >
                 스터디룸
               </p>
             </div>
-            <SidebarItem href={ROUTE.DASHBOARD.STUDYROOM.CREATE}>
+            <SidebarItem
+              href={ROUTE.DASHBOARD.STUDYROOM.CREATE}
+              className="h-[36px] w-[36px] justify-center bg-transparent px-0"
+            >
               <StudyRoomPlusIcon />
+              <span className="sr-only">스터디룸 생성</span>
             </SidebarItem>
           </div>
 
-          {studyRoomList.map((item) => (
-            <SidebarItem
-              key={item.id}
-              href={ROUTE.DASHBOARD.STUDYROOM.DETAIL(item.id.toString())}
-            >
-              <StudyRoomListIcon className="ml-2 shrink-0" />
-              <SidebarItemText className="max-w-[164px] truncate font-[400]">
-                {item.text}
-              </SidebarItemText>
-            </SidebarItem>
-          ))}
+          {/* 스터디룸 리스트 */}
+          <ul className="flex flex-col">
+            {studyRoomList.map((item) => {
+              const detailHref = ROUTE.DASHBOARD.STUDYROOM.DETAIL(
+                item.id.toString()
+              );
+              const isActive = pathname === detailHref;
+
+              return (
+                <li key={item.id}>
+                  <SidebarItem
+                    href={detailHref}
+                    className="h-[48px] items-center justify-start gap-[2px]"
+                  >
+                    <StudyRoomListIcon
+                      className={cn(
+                        'ml-[2px] shrink-0',
+                        isActive && 'text-key-color-primary'
+                      )}
+                    />
+                    <SidebarItemText className="font-body2-normal max-w-[173px] shrink-0 truncate text-left">
+                      <span title={item.text}>{item.text}</span>
+                    </SidebarItemText>
+                  </SidebarItem>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* 학생 질문보기 */}
           <SidebarItem href={ROUTE.DASHBOARD.QUESTIONS.LIST}>
             <StudyTextIcon />
             <SidebarItemText>학생 질문보기</SidebarItemText>
           </SidebarItem>
+
+          {/* 환경설정 */}
           <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
             <SettingsIcon />
-            <SidebarItemText>설정</SidebarItemText>
+            <SidebarItemText>환경설정</SidebarItemText>
           </SidebarItem>
+
+          {/* 하단 고정: 문의하기 */}
           <div className="absolute right-0 bottom-0 p-4">
             <Link
               href={ROUTE.DASHBOARD.SETTINGS}
@@ -101,13 +128,14 @@ export const Sidebar = () => {
 type SidebarItemProps = {
   href: string;
   children: React.ReactNode;
+  className?: string;
 };
 
-const SidebarItem = ({ href, children }: SidebarItemProps) => {
+const SidebarItem = ({ href, children, className }: SidebarItemProps) => {
   const pathname = usePathname();
-  const isCreatePage = href === ROUTE.DASHBOARD.STUDYROOM.CREATE;
-
   const isActive = pathname === href;
+
+  const isCreatePage = href === ROUTE.DASHBOARD.STUDYROOM.CREATE;
 
   return (
     <Link
@@ -117,8 +145,11 @@ const SidebarItem = ({ href, children }: SidebarItemProps) => {
         isActive
           ? 'text-key-color-primary bg-[#FFF4F1]'
           : 'hover:bg-gray-scale-gray-5',
-        isCreatePage && 'h-[36px] w-[36px] justify-center bg-transparent px-0'
+        isCreatePage &&
+          'h-[36px] w-[36px] justify-center gap-0 bg-transparent px-0',
+        className
       )}
+      aria-current={isActive ? 'page' : undefined}
     >
       {children}
     </Link>
@@ -194,7 +225,7 @@ const StudyRoomListIcon = ({ className }: { className?: string }) => {
         cx="8"
         cy="8"
         r="2"
-        fill="#1A1A1A"
+        fill="currentColor"
       />
     </svg>
   );
