@@ -1,15 +1,16 @@
 import { ColumnLayout } from '@/components/layout/column-layout';
 import StudyNoteDetailMetaSection from '@/features/dashboard/studynote/detail/components/meta-section';
 
-export default async function SettingsPage({
+export default async function StudyNotePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const resolvedParams = await params;
+
   return (
     <ColumnLayout className="h-dvh">
-      <StudyNoteDetailMetaSection id={params.id} />
-      {/* <StudyNoteDetailContentsSection id={params.id} /> */}
+      <StudyNoteDetailMetaSection id={resolvedParams.id} />
     </ColumnLayout>
   );
 }
