@@ -5,7 +5,7 @@ export const ROUTE = {
   DASHBOARD: {
     HOME: '/dashboard',
     STUDYROOM: {
-      DETAIL: (id: string) => `/dashboard/study-rooms/${id}`,
+      DETAIL: (id: number) => `/dashboard/study-rooms/${id}`,
       CREATE: '/dashboard/study-rooms/create',
     },
     QUESTIONS: {

@@ -66,9 +66,7 @@ export const Sidebar = () => {
           {/* 스터디룸 리스트 */}
           <ul className="flex flex-col">
             {studyRoomList.map((item) => {
-              const detailHref = ROUTE.DASHBOARD.STUDYROOM.DETAIL(
-                item.id.toString()
-              );
+              const detailHref = ROUTE.DASHBOARD.STUDYROOM.DETAIL(item.id);
               const isActive = pathname === detailHref;
 
               return (
