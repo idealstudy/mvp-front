@@ -56,7 +56,7 @@ export const Sidebar = () => {
             </div>
             <SidebarItem
               href={ROUTE.DASHBOARD.STUDYROOM.CREATE}
-              className="h-[36px] w-[36px] justify-center bg-transparent px-0"
+              className="h-9 w-9 justify-center bg-transparent px-0"
             >
               <StudyRoomPlusIcon />
               <span className="sr-only">스터디룸 생성</span>
@@ -73,7 +73,7 @@ export const Sidebar = () => {
                 <li key={item.id}>
                   <SidebarItem
                     href={detailHref}
-                    className="h-[48px] items-center justify-start gap-[2px]"
+                    className="h-12 items-center justify-start gap-[2px]"
                   >
                     <StudyRoomListIcon
                       className={cn(
@@ -143,8 +143,7 @@ const SidebarItem = ({ href, children, className }: SidebarItemProps) => {
         isActive
           ? 'text-key-color-primary bg-[#FFF4F1]'
           : 'hover:bg-gray-scale-gray-5',
-        isCreatePage &&
-          'h-[36px] w-[36px] justify-center gap-0 bg-transparent px-0',
+        isCreatePage && 'h-9 w-9 justify-center gap-0 bg-transparent px-0',
         className
       )}
       aria-current={isActive ? 'page' : undefined}
