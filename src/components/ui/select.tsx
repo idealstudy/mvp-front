@@ -48,6 +48,7 @@ const SelectTrigger = ({
         '[&>span]:min-w-0',
         'placeholder-text-gray-scale-gray-50',
         'cursor-pointer',
+        'data-[state=open]:[&>svg]:rotate-180',
         //   'disabled:bg-background-100 disabled:pointer-events-none disabled:opacity-50',
         ariaInvalid && '',
         className
@@ -58,7 +59,10 @@ const SelectTrigger = ({
       <span className="truncate">
         <SelectPrimitives.Value placeholder={placeholder} />
       </span>
-      <SelectPrimitives.Icon asChild>
+      <SelectPrimitives.Icon
+        className="transition-transform"
+        asChild
+      >
         <SelectChevronDownIcon />
       </SelectPrimitives.Icon>
     </SelectPrimitives.Trigger>
@@ -115,7 +119,6 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
         'focus:bg-gray-scale-gray-5',
         'data-[state=checked]:text-key-color-primary',
         'data-disabled:pointer-events-none',
-
         className
       )}
       {...props}
