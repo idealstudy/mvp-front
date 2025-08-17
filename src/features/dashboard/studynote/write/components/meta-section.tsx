@@ -57,7 +57,6 @@ const MetaSection = () => {
           <Controller
             name="studentIds"
             control={control}
-            rules={{ required: '수업 대상 학생을 선택해주세요.' }}
             render={({ field, formState: { errors } }) => {
               return (
                 <TagInput
