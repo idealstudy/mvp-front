@@ -193,8 +193,15 @@
   letter-spacing: -4%;
 }
 
-@utility font-caption {
+@utility font-caption-normal {
   font-weight: 400;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: normal;
+}
+
+@utility font-caption-heading {
+  font-weight: 500;
   font-size: 12px;
   line-height: 130%;
   letter-spacing: normal;

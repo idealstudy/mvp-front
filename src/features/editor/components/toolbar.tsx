@@ -1,12 +1,32 @@
 import { cn } from '@/lib/utils';
 import { Editor, useEditorState } from '@tiptap/react';
-import { Select as SelectPrimitives } from 'radix-ui';
+import {
+  Popover as PopoverPrimitives,
+  Select as SelectPrimitives,
+} from 'radix-ui';
 
 type ToolbarProps = {
   editor: Editor;
 };
 
-const FONT_SIZE_OPTIONS = [12, 14, 16] as const;
+const FONT_SIZE_OPTIONS = [12, 14, 16, 20, 24] as const;
+const DEFAULT_FONT_SIZE = 16;
+
+const TEXT_COLOR_OPTIONS = [
+  '#1A1A1A',
+  '#7C7C7C',
+  '#BCBCBC',
+  '#FF4040',
+  '#FF824C',
+  '#FFA425',
+  '#4D9F43',
+  '#3D81FF',
+  '#8F4EFF',
+  '#EE38FF',
+  '#A1785B',
+  '#11C0C0',
+] as const;
+const DEFAULT_TEXT_COLOR = TEXT_COLOR_OPTIONS[0];
 
 export const Toolbar = ({ editor }: ToolbarProps) => {
   const editorState = useEditorState({
@@ -17,12 +37,16 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
         isItalic: ctx.editor.isActive('italic'),
         isUnderline: ctx.editor.isActive('underline'),
         isStrikethrough: ctx.editor.isActive('strike'),
-        fontSize: ctx.editor.getAttributes('textStyle').fontSize || '16px',
+        fontSize:
+          ctx.editor.getAttributes('textStyle').fontSize ||
+          `${DEFAULT_FONT_SIZE}px`,
         isOrderedList: ctx.editor.isActive('orderedList'),
         isBulletList: ctx.editor.isActive('bulletList'),
         isTextAlignLeft: ctx.editor.isActive({ textAlign: 'left' }),
         isTextAlignCenter: ctx.editor.isActive({ textAlign: 'center' }),
         isTextAlignRight: ctx.editor.isActive({ textAlign: 'right' }),
+        color:
+          ctx.editor.getAttributes('textStyle').color || DEFAULT_TEXT_COLOR,
       };
     },
   });
@@ -59,9 +83,13 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
     editor.chain().focus().toggleTextAlign(alignment).run();
   };
 
+  const changeTextColor = (color: string) => {
+    editor.chain().focus().setColor(color).run();
+  };
+
   return (
-    <div className="border-line-line2 flex h-[46px] items-center overflow-x-auto border-b">
-      <ToolbarItemGroup>
+    <div className="border-line-line2 flex flex-wrap items-center gap-x-3 overflow-x-auto border-b px-3">
+      <ToolbarItem>
         <div className="relative flex items-center gap-1">
           <FontSizeSelect
             value={editorState.fontSize}
@@ -77,70 +105,74 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
             ))}
           </FontSizeSelect>
         </div>
-      </ToolbarItemGroup>
+      </ToolbarItem>
       <ToolbarDivider />
-      <ToolbarItemGroup>
-        <button
-          className={cn(
-            'flex cursor-pointer items-center justify-center gap-[6px] text-xs',
-            'disabled:opacity-50'
-          )}
-          disabled
-        >
-          글자색
-          <span className="size-4 rounded-full bg-black" />
-        </button>
-      </ToolbarItemGroup>
+      <ToolbarItem>
+        <TextColorPopover
+          value={editorState.color}
+          onValueChange={changeTextColor}
+        />
+      </ToolbarItem>
       <ToolbarDivider />
-      <ToolbarItemGroup>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isBold}
           onClick={toggleBold}
         >
           <BoldIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isItalic}
           onClick={toggleItalic}
         >
           <ItalicIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isUnderline}
           onClick={toggleUnderline}
         >
           <UnderlineIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isStrikethrough}
           onClick={toggleStrikethrough}
         >
           <StrikethroughIcon />
         </ToolbarButton>
-      </ToolbarItemGroup>
+      </ToolbarItem>
       <ToolbarDivider />
-      <ToolbarItemGroup>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isTextAlignLeft}
           onClick={() => toggleTextAlignment('left')}
         >
           <AlignLeftIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isTextAlignCenter}
           onClick={() => toggleTextAlignment('center')}
         >
           <AlignCenterIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isTextAlignRight}
           onClick={() => toggleTextAlignment('right')}
         >
           <AlignRightIcon />
         </ToolbarButton>
-      </ToolbarItemGroup>
+      </ToolbarItem>
       <ToolbarDivider />
-      <ToolbarItemGroup>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isBulletList}
           onClick={toggleBulletList}
@@ -148,6 +180,8 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
         >
           <BulletListIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton
           active={editorState.isOrderedList}
           onClick={toggleOrderedList}
@@ -155,26 +189,30 @@ export const Toolbar = ({ editor }: ToolbarProps) => {
         >
           <ListIcon />
         </ToolbarButton>
-      </ToolbarItemGroup>
+      </ToolbarItem>
       <ToolbarDivider />
-      <ToolbarItemGroup>
+      <ToolbarItem>
         <ToolbarButton disabled>
           <ImageIcon />
         </ToolbarButton>
+      </ToolbarItem>
+      <ToolbarItem>
         <ToolbarButton disabled>
           <LinkIcon />
         </ToolbarButton>
-      </ToolbarItemGroup>
+      </ToolbarItem>
     </div>
   );
 };
 
-const ToolbarDivider = () => {
-  return <div className="bg-line-line1 h-full w-[1px]" />;
+const ToolbarItem = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="flex h-[46px] items-center justify-center">{children}</div>
+  );
 };
 
-const ToolbarItemGroup = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex items-center gap-3 px-3">{children}</div>;
+const ToolbarDivider = () => {
+  return <div className="bg-line-line1 h-4 w-[1px]" />;
 };
 
 type ToolbarButtonProps = React.ComponentPropsWithRef<'button'> & {
@@ -194,7 +232,8 @@ const ToolbarButton = ({
         'flex size-5 cursor-pointer items-center justify-center rounded-[4px]',
         'hover:bg-background-gray',
         'disabled:pointer-events-none disabled:opacity-50',
-        active && 'bg-background-orange hover:bg-orange-scale-orange-5',
+        active &&
+          'bg-background-orange text-key-color-primary hover:bg-orange-scale-orange-5',
         className
       )}
       {...props}
@@ -477,6 +516,8 @@ const FontSizeSelect = ({
   onValueChange,
   ...props
 }: FontSizeSelectProps) => {
+  const isNotDefaultFontSize = value !== `${DEFAULT_FONT_SIZE}px`;
+
   return (
     <SelectPrimitives.Root
       value={value}
@@ -484,13 +525,20 @@ const FontSizeSelect = ({
     >
       <SelectPrimitives.Trigger
         className={cn(
-          'focus-visible:focus-ring flex cursor-pointer items-center gap-1 text-sm',
+          'group focus-visible:focus-ring flex w-[51px] cursor-pointer items-center justify-center gap-1 text-sm',
+          isNotDefaultFontSize && 'font-label-heading',
           className
         )}
         {...props}
       >
         <SelectPrimitives.Value>{value.slice(0, -2)}pt</SelectPrimitives.Value>
-        <SelectPrimitives.Icon asChild>
+        <SelectPrimitives.Icon
+          className={cn(
+            'group-hover:bg-gray-scale-gray-5 flex size-3 items-center justify-center rounded-[2px] group-data-[state=open]:rotate-180',
+            isNotDefaultFontSize &&
+              'bg-background-orange text-key-color-primary group-hover:bg-orange-scale-orange-5'
+          )}
+        >
           <ChevronDownIcon />
         </SelectPrimitives.Icon>
       </SelectPrimitives.Trigger>
@@ -534,3 +582,61 @@ const FontSizeSelectOption = ({
 };
 
 FontSizeSelect.Option = FontSizeSelectOption;
+
+type TextColorPopoverProps = {
+  value: string;
+  onValueChange: (value: string) => void;
+};
+
+const TextColorPopover = ({ value, onValueChange }: TextColorPopoverProps) => {
+  const isNotDefaultColor = value !== DEFAULT_TEXT_COLOR;
+
+  return (
+    <PopoverPrimitives.Root>
+      <PopoverPrimitives.Trigger
+        className={cn(
+          'group font-caption-normal flex cursor-pointer items-center justify-center gap-[6px] text-xs',
+          'hover:font-caption-heading'
+        )}
+      >
+        글자색
+        <span
+          className={cn(
+            'group-hover:bg-gray-scale-gray-5 flex size-5 items-center justify-center rounded-[4px]',
+            isNotDefaultColor &&
+              'bg-background-orange text-key-color-primary group-hover:bg-orange-scale-orange-5'
+          )}
+        >
+          <span
+            className={cn(
+              'size-4 rounded-full',
+              isNotDefaultColor && 'border-line-line3 border'
+            )}
+            style={{ backgroundColor: value }}
+          />
+        </span>
+      </PopoverPrimitives.Trigger>
+      <PopoverPrimitives.Content className="border-line-line1 z-10 grid grid-cols-3 gap-1 rounded-[4px] border bg-white p-1">
+        {TEXT_COLOR_OPTIONS.map((color) => (
+          <PopoverPrimitives.Close
+            key={color}
+            className={cn(
+              'hover:bg-background-gray flex size-5 cursor-pointer items-center justify-center rounded-[4px]'
+            )}
+            onClick={() => onValueChange(color)}
+          >
+            <span
+              className={cn(
+                'flex size-4 rounded-full',
+                value === color && 'border-line-line3 border'
+              )}
+              style={{
+                backgroundColor: color,
+              }}
+            />
+          </PopoverPrimitives.Close>
+        ))}
+      </PopoverPrimitives.Content>
+    </PopoverPrimitives.Root>
+  );
+};

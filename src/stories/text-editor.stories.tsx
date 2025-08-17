@@ -32,6 +32,23 @@ export const Editor: Story = {
   render: () => <EditorComponent />,
 };
 
+// 좁은 넓이
+export const NarrowWidth: Story = {
+  render: () => {
+    const textEditor = useTextEditor();
+
+    return (
+      <div className="w-[340px]">
+        <TextEditor
+          value={textEditor.value}
+          onChange={textEditor.onChange}
+          placeholder="수업 내용을 작성해보세요."
+        />
+      </div>
+    );
+  },
+};
+
 export const Viewer: Story = {
   render: () => {
     return <TextViewer value={DUMMY_TEXT_EDITOR_VALUE} />;
