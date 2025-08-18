@@ -595,8 +595,8 @@ const TextColorPopover = ({ value, onValueChange }: TextColorPopoverProps) => {
     <PopoverPrimitives.Root>
       <PopoverPrimitives.Trigger
         className={cn(
-          'group font-caption-normal flex cursor-pointer items-center justify-center gap-[6px] text-xs',
-          'hover:font-caption-heading'
+          'group flex cursor-pointer items-center justify-center gap-[6px] text-xs font-normal',
+          'hover:font-medium'
         )}
       >
         글자색
