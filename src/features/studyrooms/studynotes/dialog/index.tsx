@@ -1,8 +1,12 @@
-import type { DialogAction, DialogState } from '../hook/dialog-reducer';
-import { DeleteDialog } from './dialog/delete-dialog';
-import { GroupMoveDialog } from './dialog/group-move-dialog';
-import { OnConfirmDialog } from './dialog/on-confirm-dialog';
-import { RenameDialog } from './dialog/rename-dialog';
+import type {
+  DialogAction,
+  DialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
+
+import { DeleteDialog } from './delete-dialog';
+import { GroupMoveDialog } from './group-move-dialog';
+import { OnConfirmDialog } from './on-confirm-dialog';
+import { RenameDialog } from './rename-dialog';
 
 export const StudyNotesDialog = ({
   state,
@@ -11,9 +15,11 @@ export const StudyNotesDialog = ({
   state: DialogState;
   dispatch: (action: DialogAction) => void;
 }) => {
+  if (state.status !== 'open') return null;
+
   return (
     <>
-      {state.type === 'rename' && (
+      {state.scope === 'note' && state.kind === 'rename' && (
         <RenameDialog
           open
           state={state}
@@ -21,14 +27,14 @@ export const StudyNotesDialog = ({
         />
       )}
 
-      {state.type === 'group-move' && (
+      {state.scope === 'note' && state.kind === 'group-move' && (
         <GroupMoveDialog
           open
           dispatch={dispatch}
         />
       )}
 
-      {state.type === 'delete' && (
+      {state.scope === 'note' && state.kind === 'delete' && (
         <DeleteDialog
           open
           onCancel={() => dispatch({ type: 'CLOSE' })}
@@ -37,7 +43,7 @@ export const StudyNotesDialog = ({
         />
       )}
 
-      {state.type === 'onConfirm' && (
+      {state.scope === 'note' && state.kind === 'onConfirm' && (
         <OnConfirmDialog
           open
           dispatch={dispatch}

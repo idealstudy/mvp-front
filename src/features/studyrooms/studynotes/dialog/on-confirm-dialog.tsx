@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 
-import { DialogAction } from '../../hook/dialog-reducer';
+import { DialogAction } from '../../hooks/useDialogReducer';
 
 export const OnConfirmDialog = ({
   open,

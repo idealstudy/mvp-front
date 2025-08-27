@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Select } from '@/components/ui/select';
 
-import { DialogAction } from '../../hook/dialog-reducer';
+import { DialogAction } from '../../hooks/useDialogReducer';
 
 const data = [
   {

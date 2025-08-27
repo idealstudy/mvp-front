@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 
-import { dialogReducer, initialDialogState } from '../hook/dialog-reducer';
+import { dialogReducer, initialDialogState } from '../hooks/useDialogReducer';
 import { StudyNotesDialog } from './dialog';
 
 export const StudyNotesDropdown = ({
@@ -53,8 +53,12 @@ export const StudyNotesDropdown = ({
           <DropdownMenu.Item
             onClick={() =>
               dispatch({
-                type: 'OPEN_RENAME',
-                initialTitle: item.title,
+                type: 'OPEN',
+                scope: 'note',
+                kind: 'rename',
+                payload: {
+                  initialTitle: item.title,
+                },
               })
             }
             className="justify-center"
@@ -62,7 +66,16 @@ export const StudyNotesDropdown = ({
             <p>제목수정</p>
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onClick={() => dispatch({ type: 'OPEN_GROUP_MOVE' })}
+            onClick={() =>
+              dispatch({
+                type: 'OPEN',
+                scope: 'note',
+                kind: 'group-move',
+                payload: {
+                  noteId: item.id.toString(),
+                },
+              })
+            }
             className="justify-center px-[12px]"
           >
             그룹이동하기
@@ -86,9 +99,12 @@ export const StudyNotesDropdown = ({
             className="justify-center"
             onClick={() =>
               dispatch({
-                type: 'OPEN_DELETE',
-                noteId: item.id.toString(),
-                title: item.title,
+                type: 'OPEN',
+                scope: 'note',
+                kind: 'delete',
+                payload: {
+                  noteId: item.id.toString(),
+                },
               })
             }
           >

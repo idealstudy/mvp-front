@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TextField } from '@/components/ui/text-field';
 
-import { DialogAction, DialogState } from '../../hook/dialog-reducer';
+import { DialogAction, DialogState } from '../../hooks/useDialogReducer';
 
 export const RenameDialog = ({
   open,
@@ -40,13 +40,13 @@ export const RenameDialog = ({
           <TextField>
             <TextField.Input
               placeholder={
-                state.type === 'rename'
-                  ? state.initialTitle
+                state.status === 'open' && state.payload?.initialTitle
+                  ? state.payload.initialTitle
                   : '제목을 입력해주세요.'
               }
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              maxLength={15}
+              maxLength={30}
             />
           </TextField>
         </Dialog.Body>

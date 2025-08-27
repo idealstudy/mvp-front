@@ -41,6 +41,7 @@ export const StudyNote = () => {
           ref={inputRef}
           className="desktop:w-[504px] border-line-line1 h-[56px] px-6 py-[18px]"
           placeholder="수업노트 제목을 입력해주세요."
+          maxLength={30}
         />
         <Button
           type="submit"
