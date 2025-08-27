@@ -7,15 +7,18 @@ import { Select as SelectPrimitives } from 'radix-ui';
 
 type SelectChevronDownIconProps = {
   className?: string;
+  'data-position'?: string;
 };
 
 export const SelectChevronDownIcon = ({
   className,
+  ...props
 }: SelectChevronDownIconProps) => {
   return (
     <ChevronDownIcon
       className={cn(
-        'pointer-events-none absolute top-1/2 right-6 size-4 shrink-0 -translate-y-1/2',
+        'pointer-events-none absolute top-1/2 size-4 shrink-0 -translate-y-1/2 text-gray-400',
+        props['data-position'],
         className
       )}
     />
@@ -31,6 +34,7 @@ const Select = ({ children, ...props }: SelectProps) => {
 type SelectTriggerProps = React.ComponentPropsWithRef<
   typeof SelectPrimitives.Trigger
 > & {
+  'data-position'?: string;
   placeholder?: string;
 };
 
@@ -63,7 +67,7 @@ const SelectTrigger = ({
         className="transition-transform"
         asChild
       >
-        <SelectChevronDownIcon />
+        <SelectChevronDownIcon data-position={props['data-position']} />
       </SelectPrimitives.Icon>
     </SelectPrimitives.Trigger>
   );
@@ -145,7 +149,7 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
       <g clipPath="url(#clip0_89_1012)">
         <path
           d="M14.772 6.27197L8.27197 12.772L1.77197 6.27197"
-          stroke="#1A1A1A"
+          stroke="currentColor"
         />
       </g>
       <defs>
