@@ -16,18 +16,22 @@ export const StudyNotes = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handlePageChange = (page: number) => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setCurrentPage(page);
   };
 
   const handleSearch = (value: string) => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setSearch(value);
   };
 
   const handleSortChange = (e: string) => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setSort(e as 'recent' | 'old' | 'alphabetical' | 'date');
   };
 
   const handleLimitChange = (e: number) => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setLimit(Number(e) as 20 | 30);
   };
 

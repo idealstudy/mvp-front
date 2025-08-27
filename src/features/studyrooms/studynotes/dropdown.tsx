@@ -25,6 +25,10 @@ export const StudyNotesDropdown = ({
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
+  const handleCopy = () => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
+  };
+
   return (
     <>
       <StudyNotesDialog
@@ -73,7 +77,7 @@ export const StudyNotesDropdown = ({
           </DropdownMenu.Item>
           <DropdownMenu.Item
             className="justify-center"
-            // onClick={() => setOpenDialog('copy')}
+            onClick={handleCopy}
           >
             복제하기
           </DropdownMenu.Item>

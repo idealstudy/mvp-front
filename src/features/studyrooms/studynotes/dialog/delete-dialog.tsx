@@ -13,6 +13,7 @@ export const DeleteDialog = ({
   onOpenChange: (open: boolean) => void;
 }) => {
   const handleDelete = () => {
+    // TODO: API 호출이나 상태 업데이트 로직 넣기
     onConfirm();
   };
 
