@@ -28,6 +28,13 @@ const LIMIT_OPTIONS = [
   { value: '30', label: '30개씩' },
 ];
 
+const SELECT_STYLES = {
+  trigger:
+    'desktop:w-[110px] h-9 w-full pl-3 pr-8 font-label-normal text-gray-scale-gray-50 border-line-line1 focus:border-black data-[state=open]:border-black',
+  option: 'font-body2-normal h-8 justify-center border-none p-0',
+  content: 'w-[110px]',
+};
+
 export const SearchFilterBar = ({
   search,
   sort,
@@ -46,7 +53,7 @@ export const SearchFilterBar = ({
           onValueChange={onSortChange}
         >
           <Select.Trigger
-            className="desktop:w-[110px] font-label-normal text-gray-scale-gray-50 h-9 w-full pr-8 pl-3 focus:border-black data-[state=open]:border-black"
+            className={SELECT_STYLES.trigger}
             placeholder="최근 편집순"
             data-position="right-2"
           />
@@ -55,7 +62,7 @@ export const SearchFilterBar = ({
               <Select.Option
                 key={option.value}
                 value={option.value}
-                className="font-body2-normal h-8 justify-center border-none p-0"
+                className={SELECT_STYLES.option}
               >
                 {option.label}
               </Select.Option>
@@ -67,7 +74,7 @@ export const SearchFilterBar = ({
           onValueChange={(value) => onLimitChange(Number(value))}
         >
           <Select.Trigger
-            className="desktop:w-[110px] font-label-normal text-gray-scale-gray-50 h-9 w-full pr-8 pl-3 focus:border-black data-[state=open]:border-black"
+            className={SELECT_STYLES.trigger}
             placeholder="20개씩"
             data-position="right-2"
           />
@@ -76,7 +83,7 @@ export const SearchFilterBar = ({
               <Select.Option
                 key={option.value}
                 value={option.value}
-                className="font-body2-normal h-8 justify-center border-none p-0"
+                className={SELECT_STYLES.option}
               >
                 {option.label}
               </Select.Option>
