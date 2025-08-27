@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 import { getRelativeTimeString } from '@/lib/utils';
 
-import { StudyNotesDropdown } from './dialog';
+import { StudyNotesDropdown } from './dropdown';
 
 const data = [
   {
