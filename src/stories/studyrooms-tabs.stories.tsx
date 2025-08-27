@@ -1,8 +1,11 @@
-import { useState } from 'react';
-
 import { Meta, StoryObj } from '@storybook/react';
 
-import { NotebookIcon, PersonIcon, QuestionIcon, Tabs } from './tabs';
+import {
+  NotebookIcon,
+  PersonIcon,
+  QuestionIcon,
+  Tabs,
+} from '../features/studyrooms/components/common/tabs';
 
 const meta = {
   title: 'studyroom/Tabs',

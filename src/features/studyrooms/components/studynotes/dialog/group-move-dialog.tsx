@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { Select } from '@/app/(dashboard)/dashboard/study-rooms/_components/select';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 
 const data = [

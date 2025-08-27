@@ -3,7 +3,7 @@ import {
   PersonIcon,
   QuestionIcon,
   Tabs,
-} from '@/app/(dashboard)/dashboard/study-rooms/_components/tabs';
+} from '@/features/studyrooms/components/common/tabs';
 
 import { StudyNote } from './study-note';
 

@@ -1,8 +1,5 @@
-import { useState } from 'react';
-
+import { Select } from '@/features/studyrooms/components/common/select';
 import { Meta, StoryObj } from '@storybook/react';
-
-import { Select } from './select';
 
 const meta = {
   title: 'studyroom/Select',
@@ -48,13 +45,8 @@ export const WithPlaceholder: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState('1');
-
     return (
-      <Select
-        value={value}
-        onValueChange={setValue}
-      >
+      <Select defaultValue="1">
         <Select.Trigger />
         <Select.Content>
           <Select.Option value="1">20개씩</Select.Option>
