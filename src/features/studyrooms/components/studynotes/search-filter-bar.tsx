@@ -32,7 +32,6 @@ const SELECT_STYLES = {
   trigger:
     'desktop:w-[110px] h-9 w-full pl-3 pr-8 font-label-normal text-gray-scale-gray-50 border-line-line1 focus:border-black data-[state=open]:border-black',
   option: 'font-body2-normal h-8 justify-center border-none p-0',
-  content: 'w-[110px]',
 };
 
 export const SearchFilterBar = ({
