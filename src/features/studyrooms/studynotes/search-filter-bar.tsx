@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 
 import { Input } from '@/components/ui/input';
@@ -9,10 +11,22 @@ type Props = {
   search: string;
   sort: string;
   limit: number;
-  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearch: (value: string) => void;
   onSortChange: (value: string) => void;
   onLimitChange: (value: number) => void;
 };
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: '최근 편집순' },
+  { value: 'old', label: '오래된순' },
+  { value: 'alphabetical', label: '가나다순' },
+  { value: 'date', label: '수업일자순' },
+];
+
+const LIMIT_OPTIONS = [
+  { value: '20', label: '20개씩' },
+  { value: '30', label: '30개씩' },
+];
 
 export const SearchFilterBar = ({
   search,
@@ -22,6 +36,8 @@ export const SearchFilterBar = ({
   onSortChange,
   onLimitChange,
 }: Props) => {
+  const [localSearch, setLocalSearch] = useState(search);
+
   return (
     <div className="items-cente flex justify-between gap-4">
       <div className="flex gap-[10px]">
@@ -35,30 +51,15 @@ export const SearchFilterBar = ({
             data-position="right-2"
           />
           <Select.Content className="w-[110px]">
-            <Select.Option
-              value="recent"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              최근 편집순
-            </Select.Option>
-            <Select.Option
-              value="old"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              오래된순
-            </Select.Option>
-            <Select.Option
-              value="alphabetical"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              가나다순
-            </Select.Option>
-            <Select.Option
-              value="date"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              수업일자순
-            </Select.Option>
+            {SORT_OPTIONS.map((option) => (
+              <Select.Option
+                key={option.value}
+                value={option.value}
+                className="font-body2-normal h-8 justify-center border-none p-0"
+              >
+                {option.label}
+              </Select.Option>
+            ))}
           </Select.Content>
         </Select>
         <Select
@@ -71,18 +72,15 @@ export const SearchFilterBar = ({
             data-position="right-2"
           />
           <Select.Content className="w-[110px]">
-            <Select.Option
-              value="20"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              20개씩
-            </Select.Option>
-            <Select.Option
-              value="30"
-              className="font-body2-normal h-8 justify-center border-none p-0"
-            >
-              30개씩
-            </Select.Option>
+            {LIMIT_OPTIONS.map((option) => (
+              <Select.Option
+                key={option.value}
+                value={option.value}
+                className="font-body2-normal h-8 justify-center border-none p-0"
+              >
+                {option.label}
+              </Select.Option>
+            ))}
           </Select.Content>
         </Select>
       </div>
@@ -90,8 +88,14 @@ export const SearchFilterBar = ({
         <Input
           className="desktop:max-w-[234px] border-line-line1 h-12 w-full pr-12"
           placeholder="검색어를 입력하세요"
-          value={search}
-          onChange={onSearch}
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onSearch(e.currentTarget.value);
+            }
+          }}
         />
         <Image
           src="/studynotes/search.png"

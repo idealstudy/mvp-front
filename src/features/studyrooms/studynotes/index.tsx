@@ -19,8 +19,8 @@ export const StudyNotes = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+  const handleSearch = (value: string) => {
+    setSearch(value);
   };
 
   const handleSortChange = (e: string) => {
