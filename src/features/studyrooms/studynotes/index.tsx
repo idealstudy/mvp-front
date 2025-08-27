@@ -24,7 +24,7 @@ export const StudyNotes = () => {
           <div className="flex gap-[10px]">
             <Select defaultValue="1">
               <Select.Trigger
-                className="desktop:max-w-[110px] font-label-normal text-gray-scale-gray-50 h-9 pr-8 pl-3 focus:border-black data-[state=open]:border-black"
+                className="desktop:w-[110px] font-label-normal text-gray-scale-gray-50 h-9 w-full pr-8 pl-3 focus:border-black data-[state=open]:border-black"
                 placeholder="최근 편집순"
                 data-position="right-2"
               />
@@ -57,7 +57,7 @@ export const StudyNotes = () => {
             </Select>
             <Select defaultValue="1">
               <Select.Trigger
-                className="desktop:max-w-[110px] font-label-normal text-gray-scale-gray-50 h-9 pr-8 pl-3 focus:border-black data-[state=open]:border-black"
+                className="desktop:w-[110px] font-label-normal text-gray-scale-gray-50 h-9 w-full pr-8 pl-3 focus:border-black data-[state=open]:border-black"
                 placeholder="20개씩"
                 data-position="right-2"
               />
@@ -79,7 +79,7 @@ export const StudyNotes = () => {
           </div>
           <div className="relative">
             <Input
-              className="desktop:max-w-[234px] h-12 w-full pr-12"
+              className="desktop:max-w-[234px] border-line-line1 h-12 w-full pr-12"
               placeholder="검색어를 입력하세요"
             />
             <Image
@@ -95,7 +95,7 @@ export const StudyNotes = () => {
       </div>
       <Pagination
         page={currentPage}
-        totalPages={140}
+        totalPages={2}
         onPageChange={handlePageChange}
       />
     </div>
