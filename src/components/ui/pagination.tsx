@@ -21,7 +21,7 @@ const LeftSortIcon = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-      className={cn(active && 'text-black')}
+      className={cn(active && 'text-black', 'mr-2 cursor-pointer')}
       onClick={onClick}
     >
       <path
@@ -50,7 +50,7 @@ const RightSortIcon = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-      className={cn(active && 'text-black')}
+      className={cn(active && 'text-black', 'ml-2 cursor-pointer')}
       onClick={onClick}
     >
       <path
