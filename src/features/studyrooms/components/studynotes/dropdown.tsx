@@ -4,8 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { dialogReducer, initialDialogState } from '../hooks/useDialogReducer';
 import { StudyNotesDialog } from './dialog';
 
 export const StudyNotesDropdown = ({

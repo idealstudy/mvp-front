@@ -5,26 +5,6 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Select as SelectPrimitives } from 'radix-ui';
 
-type SelectChevronDownIconProps = {
-  className?: string;
-  'data-position'?: string;
-};
-
-export const SelectChevronDownIcon = ({
-  className,
-  ...props
-}: SelectChevronDownIconProps) => {
-  return (
-    <ChevronDownIcon
-      className={cn(
-        'pointer-events-none absolute top-1/2 size-4 shrink-0 -translate-y-1/2 text-gray-400',
-        props['data-position'],
-        className
-      )}
-    />
-  );
-};
-
 type SelectProps = React.ComponentPropsWithRef<typeof SelectPrimitives.Root>;
 
 const Select = ({ children, ...props }: SelectProps) => {
@@ -34,30 +14,26 @@ const Select = ({ children, ...props }: SelectProps) => {
 type SelectTriggerProps = React.ComponentPropsWithRef<
   typeof SelectPrimitives.Trigger
 > & {
-  'data-position'?: string;
   placeholder?: string;
 };
 
 const SelectTrigger = ({
   className,
-  'aria-invalid': ariaInvalid,
   placeholder,
   ...props
 }: SelectTriggerProps) => {
   return (
     <SelectPrimitives.Trigger
       className={cn(
-        'border-gray-scale-gray-10 bg-gray-scale-white relative flex h-[56px] w-full items-center justify-between rounded-[4px] border pr-14 pl-6 text-start outline-hidden',
-        'data-placeholder:text-gray-scale-gray-50',
+        'border-line-line3 bg-gray-scale-white relative flex h-[36px] items-center justify-between rounded-[8px] border pr-11 pl-3 text-start text-sm outline-hidden',
+        'min-w-[110px]',
+        'data-placeholder:text-text-sub2',
         '[&>span]:min-w-0',
-        'placeholder-text-gray-scale-gray-50',
+        'placeholder-text-text-sub2',
         'cursor-pointer',
         'data-[state=open]:[&>svg]:rotate-180',
-        //   'disabled:bg-background-100 disabled:pointer-events-none disabled:opacity-50',
-        ariaInvalid && '',
         className
       )}
-      aria-invalid={ariaInvalid}
       {...props}
     >
       <span className="truncate">
@@ -67,7 +43,7 @@ const SelectTrigger = ({
         className="transition-transform"
         asChild
       >
-        <SelectChevronDownIcon data-position={props['data-position']} />
+        <SelectChevronDownIcon />
       </SelectPrimitives.Icon>
     </SelectPrimitives.Trigger>
   );
@@ -87,7 +63,7 @@ const SelectContent = ({
     <SelectPrimitives.Portal>
       <SelectPrimitives.Content
         className={cn(
-          'border-gray-scale-gray-10 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[4px] border',
+          'border-line-line2 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[6px] border',
           'max-h-[var(--radix-select-content-available-height)]',
           position === 'popper' &&
             'w-full min-w-[var(--radix-select-trigger-width)]',
@@ -100,7 +76,6 @@ const SelectContent = ({
       >
         <SelectPrimitives.Viewport
           className={cn(
-            'divide-gray-scale-gray-10 divide-y',
             position === 'popper' && 'h-[var(--radix-select-trigger-height)]'
           )}
         >
@@ -119,7 +94,7 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
   return (
     <SelectPrimitives.Item
       className={cn(
-        'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
+        'relative flex h-[32px] cursor-pointer items-center justify-center px-3 outline-hidden select-none',
         'focus:bg-gray-scale-gray-5',
         'data-[state=checked]:text-key-color-primary',
         'data-disabled:pointer-events-none',
@@ -145,12 +120,10 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
       height="17"
       viewBox="0 0 16 17"
       fill="none"
+      stroke="currentColor"
     >
       <g clipPath="url(#clip0_89_1012)">
-        <path
-          d="M14.772 6.27197L8.27197 12.772L1.77197 6.27197"
-          stroke="currentColor"
-        />
+        <path d="M14.772 6.27197L8.27197 12.772L1.77197 6.27197" />
       </g>
       <defs>
         <clipPath id="clip0_89_1012">
@@ -163,6 +136,23 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
         </clipPath>
       </defs>
     </svg>
+  );
+};
+
+type SelectChevronDownIconProps = {
+  className?: string;
+};
+
+export const SelectChevronDownIcon = ({
+  className,
+}: SelectChevronDownIconProps) => {
+  return (
+    <ChevronDownIcon
+      className={cn(
+        'text-line-line2 pointer-events-none absolute top-1/2 right-3 size-4 shrink-0 -translate-y-1/2',
+        className
+      )}
+    />
   );
 };
 

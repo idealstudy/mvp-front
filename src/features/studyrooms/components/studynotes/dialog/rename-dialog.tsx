@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { TextField } from '@/components/ui/text-field';
-
-import { DialogAction, DialogState } from '../../hooks/useDialogReducer';
+import {
+  DialogAction,
+  DialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
 
 export const RenameDialog = ({
   open,

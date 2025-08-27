@@ -1,6 +1,6 @@
 import { ColumnLayout } from '@/components/layout/column-layout';
-import { StudyNotes } from '@/features/studyrooms/studynotes';
-import { StudyRoomTabs } from '@/features/studyrooms/taps';
+import { StudyNotes } from '@/features/studyrooms/components/studynotes';
+import { StudyRoomTabs } from '@/features/studyrooms/components/taps';
 
 export default async function StudyRoomDetailPage() {
   return (
