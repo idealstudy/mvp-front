@@ -18,7 +18,7 @@ export const objectToQueryString = (obj: object): string => {
   ).toString();
 };
 
-export function getRelativeTimeString(date: Date | string): string {
+export const getRelativeTimeString = (date: Date | string): string => {
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
   const diffInMs = now.getTime() - targetDate.getTime();
@@ -48,4 +48,4 @@ export function getRelativeTimeString(date: Date | string): string {
       day: 'numeric',
     });
   }
-}
+};
