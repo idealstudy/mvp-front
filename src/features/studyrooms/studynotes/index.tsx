@@ -15,8 +15,6 @@ export const StudyNotes = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // 여기에 페이지 변경 시 필요한 로직을 추가할 수 있습니다
-    // 예: API 호출, 데이터 새로고침 등
   };
 
   return (
@@ -97,7 +95,7 @@ export const StudyNotes = () => {
       </div>
       <Pagination
         page={currentPage}
-        totalPages={10}
+        totalPages={140}
         onPageChange={handlePageChange}
       />
     </div>
