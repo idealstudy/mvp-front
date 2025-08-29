@@ -142,7 +142,6 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
       viewBox="0 0 16 17"
       fill="none"
     >
-      <title>Chevron down</title>
       <g clipPath="url(#clip0_89_1012)">
         <path
           d="M14.772 6.27197L8.27197 12.772L1.77197 6.27197"
