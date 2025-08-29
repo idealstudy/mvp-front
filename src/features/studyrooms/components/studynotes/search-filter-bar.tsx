@@ -30,8 +30,11 @@ const LIMIT_OPTIONS = [
 
 const SELECT_STYLES = {
   trigger:
-    'desktop:w-[110px] h-9 w-full pl-3 pr-8 font-label-normal text-gray-scale-gray-50 border-line-line1 focus:border-black data-[state=open]:border-black',
-  option: 'font-body2-normal h-8 justify-center border-none p-0',
+    'border-line-line3 bg-gray-scale-white relative flex h-[36px] items-center justify-between rounded-[8px] border pr-11 pl-3 text-start text-sm outline-hidden min-w-[110px] data-placeholder:text-text-sub2 placeholder-text-text-sub2',
+  content:
+    'w-[110px] border-line-line2 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[6px] border',
+  option:
+    'relative flex h-[32px] cursor-pointer items-center justify-center px-3 outline-hidden select-none',
 };
 
 export const SearchFilterBar = ({
@@ -56,7 +59,7 @@ export const SearchFilterBar = ({
             placeholder="최근 편집순"
             data-position="right-2"
           />
-          <Select.Content className="w-[110px]">
+          <Select.Content className={SELECT_STYLES.content}>
             {SORT_OPTIONS.map((option) => (
               <Select.Option
                 key={option.value}
