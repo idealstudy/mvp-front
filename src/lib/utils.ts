@@ -49,3 +49,10 @@ export const getRelativeTimeString = (date: Date | string): string => {
     });
   }
 };
+
+export const formatMMDDWeekday = (date: Date | string): string => {
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+
+  const weekday = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${targetDate.getMonth() + 1}/${targetDate.getDate()} ${weekday[targetDate.getDay()]}`;
+};

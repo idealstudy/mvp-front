@@ -17,10 +17,10 @@ type Props = {
 };
 
 const SORT_OPTIONS = [
-  { value: 'recent', label: '최근 편집순' },
-  { value: 'old', label: '오래된순' },
-  { value: 'alphabetical', label: '가나다순' },
-  { value: 'date', label: '수업일자순' },
+  { value: 'LATEST_EDITED', label: '최근 편집순' },
+  { value: 'OLDEST_EDITED', label: '오래된순' },
+  { value: 'TITLE_ASC', label: '가나다순' },
+  { value: 'TAUGHT_AT_ASC', label: '수업일자순' },
 ];
 
 const LIMIT_OPTIONS = [

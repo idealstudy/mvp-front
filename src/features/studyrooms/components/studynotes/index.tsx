@@ -1,39 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Pagination } from '@/components/ui/pagination';
 
 import { StudyNotesList } from './list';
 import { SearchFilterBar } from './search-filter-bar';
+import { useStudyNotesQuery } from './services/query';
 
 export const StudyNotes = () => {
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'recent' | 'old' | 'alphabetical' | 'date'>(
-    'recent'
-  );
+  const [sort, setSort] = useState<
+    'LATEST_EDITED' | 'OLDEST_EDITED' | 'TITLE_ASC' | 'TAUGHT_AT_ASC'
+  >('LATEST_EDITED');
   const [limit, setLimit] = useState<20 | 30>(20);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const pageable: { page: number; size: number; sortKey: string } = {
+    page: currentPage,
+    size: limit,
+    sortKey: sort,
+  };
+
+  const { data } = useStudyNotesQuery({
+    studyRoomId: 1,
+    pageable: pageable,
+    keyword: search,
+  });
+
   const handlePageChange = (page: number) => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setCurrentPage(page);
   };
 
   const handleSearch = (value: string) => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setSearch(value);
   };
 
   const handleSortChange = (e: string) => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
-    setSort(e as 'recent' | 'old' | 'alphabetical' | 'date');
+    setSort(
+      e as 'LATEST_EDITED' | 'OLDEST_EDITED' | 'TITLE_ASC' | 'TAUGHT_AT_ASC'
+    );
   };
 
   const handleLimitChange = (e: number) => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
     setLimit(Number(e) as 20 | 30);
   };
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [search, sort, limit]);
 
   return (
     <div className="border-line-line1 flex flex-col gap-6 rounded-[12px] border bg-white px-8 py-6">
@@ -46,11 +61,11 @@ export const StudyNotes = () => {
           onSortChange={handleSortChange}
           onLimitChange={handleLimitChange}
         />
-        <StudyNotesList />
+        <StudyNotesList data={data?.content || []} />
       </div>
       <Pagination
         page={currentPage}
-        totalPages={2}
+        totalPages={data?.totalPages || 0}
         onPageChange={handlePageChange}
       />
     </div>

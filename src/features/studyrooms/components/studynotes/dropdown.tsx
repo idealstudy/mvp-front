@@ -21,9 +21,9 @@ export const StudyNotesDropdown = ({
   item: {
     id: number;
     title: string;
-    group?: string;
+    groupName?: string;
     groupId?: number;
-    option: string;
+    visibility: string;
   };
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
