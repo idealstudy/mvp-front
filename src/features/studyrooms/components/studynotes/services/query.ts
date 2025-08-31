@@ -4,6 +4,7 @@ import { deleteStudyNoteGroup, updateStudyNoteGroup } from './api';
 import {
   StudyNoteGroupQueryKey,
   StudyNotesQueryKey,
+  getStudyNoteDetailsOption,
   getStudyNotesOption,
 } from './query-options';
 
@@ -26,7 +27,6 @@ export const useDeleteStudyNoteGroup = (args: {
   return useMutation({
     mutationFn: () => deleteStudyNoteGroup(args),
     onSuccess: () => {
-      // 스터디 노트 리스트와 그룹 리스트를 다시 조회
       queryClient.invalidateQueries({
         queryKey: StudyNotesQueryKey.studyNotes({
           studyRoomId: args.studyRoomId,
@@ -70,5 +70,24 @@ export const useUpdateStudyNoteGroup = (args: {
         }),
       });
     },
+  });
+};
+
+export const useStudyNoteDetailsQuery = (args: { teachingNoteId: number }) => {
+  return useQuery(getStudyNoteDetailsOption(args));
+};
+
+export const useUpdateStudyNote = (args: {
+  teachingNoteId: number;
+  studyRoomId: number;
+  teachingNoteGroupId: number;
+  title: string;
+  content: string;
+  visibility: string;
+  taughtAt: string;
+  studentIds: number[];
+}) => {
+  return useMutation({
+    mutationFn: () => updateStudyNoteGroup(args),
   });
 };

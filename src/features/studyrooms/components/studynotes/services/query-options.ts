@@ -2,7 +2,12 @@ import { Pageable, PaginationMeta } from '@/lib/api';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { StudyNoteGroup } from '../type';
-import { getStudyNoteGroup, getStudyNotes, updateStudyNoteGroup } from './api';
+import {
+  getStudyNoteDetail,
+  getStudyNoteGroup,
+  getStudyNotes,
+  updateStudyNote,
+} from './api';
 
 export const StudyNotesQueryKey = {
   all: ['studyNotes'],
@@ -39,6 +44,40 @@ export const UpdateStudyNoteGroupQueryKey = {
     'updateStudyNoteGroup',
     args.teachingNoteId,
     args.teachingNoteGroupId,
+  ],
+};
+
+export const StudyNoteDetailsQueryKey = {
+  all: ['studyNoteDetails'],
+  studyNoteDetails: (args: { teachingNoteId: number }) => [
+    ...StudyNoteDetailsQueryKey.all,
+    'studyNoteDetails',
+    args.teachingNoteId,
+  ],
+};
+
+export const UpdateStudyNoteQueryKey = {
+  all: ['updateStudyNote'],
+  updateStudyNote: (args: {
+    teachingNoteId: number;
+    studyRoomId: number;
+    teachingNoteGroupId: number;
+    title: string;
+    content: string;
+    visibility: string;
+    taughtAt: string;
+    studentIds: number[];
+  }) => [
+    ...UpdateStudyNoteQueryKey.all,
+    'updateStudyNote',
+    args.teachingNoteId,
+    args.studyRoomId,
+    args.teachingNoteGroupId,
+    args.title,
+    args.content,
+    args.visibility,
+    args.taughtAt,
+    args.studentIds,
   ],
 };
 
@@ -84,28 +123,25 @@ export const getStudyNoteGroupInfiniteOption = (args: {
   });
 };
 
-export const postStudyNoteGroupOption = (args: {
-  teachingNoteId: number;
-  teachingNoteGroupId: number;
-}) => {
+export const getStudyNoteDetailsOption = (args: { teachingNoteId: number }) => {
   return queryOptions({
-    queryKey: UpdateStudyNoteGroupQueryKey.updateStudyNoteGroup(args),
-    queryFn: () => updateStudyNoteGroup(args),
+    queryKey: StudyNoteDetailsQueryKey.studyNoteDetails(args),
+    queryFn: () => getStudyNoteDetail(args),
   });
 };
 
-// export const moveStudyNoteToGroupOption = (args: {
-//   studyNoteId: number;
-//   groupId: number | null;
-//   studyRoomId: number;
-// }) => {
-//   return queryOptions({
-//     queryKey: [
-//       'moveStudyNoteToGroup',
-//       args.studyNoteId,
-//       args.groupId,
-//       args.studyRoomId,
-//     ],
-//     queryFn: () => moveStudyNoteToGroup(args),
-//   });
-// };
+export const getUpdateStudyNoteOption = (args: {
+  teachingNoteId: number;
+  studyRoomId: number;
+  teachingNoteGroupId: number;
+  title: string;
+  content: string;
+  visibility: string;
+  taughtAt: string;
+  studentIds: number[];
+}) => {
+  return queryOptions({
+    queryKey: UpdateStudyNoteQueryKey.updateStudyNote(args),
+    queryFn: () => updateStudyNote(args),
+  });
+};

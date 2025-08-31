@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -10,19 +10,44 @@ import {
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
+import {
+  useStudyNoteDetailsQuery,
+  useUpdateStudyNote,
+} from '../services/query';
+
 export const RenameDialog = ({
   open,
   state,
   dispatch,
+  studyNoteId,
 }: {
   open: boolean;
   state: DialogState;
   dispatch: (action: DialogAction) => void;
+  studyNoteId: number;
 }) => {
   const [title, setTitle] = useState('');
 
+  const { data: studyNoteDetails } = useStudyNoteDetailsQuery({
+    teachingNoteId: studyNoteId,
+  });
+
+  const { mutate: updateStudyNote } = useUpdateStudyNote({
+    teachingNoteId: studyNoteId,
+    studyRoomId: studyNoteDetails?.data?.studyRoomId || 0,
+    teachingNoteGroupId: 1, // 기본값으로 수정
+    title: title,
+    content: studyNoteDetails?.data?.content || '',
+    visibility: 'PUBLIC', // 기본값으로 PUBLIC 설정
+    taughtAt: studyNoteDetails?.data?.taughtAt || '',
+    studentIds:
+      studyNoteDetails?.data?.studentInfos?.map(
+        (info: { studentId: number }) => info.studentId
+      ) || [],
+  });
+
   const handleSave = () => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
+    updateStudyNote();
     dispatch({ type: 'CLOSE' });
   };
 

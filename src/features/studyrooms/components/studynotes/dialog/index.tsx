@@ -32,6 +32,7 @@ export const StudyNotesDialog = ({
           open
           state={state}
           dispatch={dispatch}
+          studyNoteId={studyNoteId}
         />
       )}
 

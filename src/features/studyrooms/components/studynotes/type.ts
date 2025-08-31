@@ -13,3 +13,18 @@ export interface StudyNoteGroup {
   id: number;
   title: string;
 }
+
+export interface StudyNoteDetails {
+  id: number;
+  studyRoomId: number;
+  studyRoomName: string;
+  title: string;
+  content: string;
+  taughtAt: string;
+  studentInfos: [
+    {
+      studentId: number;
+      studentName: string;
+    }[],
+  ];
+}

@@ -16,7 +16,6 @@ export const StudyNotesDropdown = ({
   open,
   handleOpen,
   item,
-  studyNoteId,
   pageable,
   keyword,
 }: {
@@ -30,7 +29,6 @@ export const StudyNotesDropdown = ({
     groupId?: number;
     visibility: string;
   };
-  studyNoteId: number;
   pageable: { page: number; size: number; sortKey: string };
   keyword: string;
 }) => {
@@ -46,9 +44,9 @@ export const StudyNotesDropdown = ({
         state={dialog}
         dispatch={dispatch}
         studyRoomId={studyRoomId}
-        studyNoteId={studyNoteId}
         pageable={pageable}
         keyword={keyword}
+        studyNoteId={item.id}
       />
       <DropdownMenu
         open={open === item.id}

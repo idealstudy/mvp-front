@@ -77,3 +77,35 @@ export const updateStudyNoteGroup = async (args: {
   );
   return response.data;
 };
+
+export const getStudyNoteDetail = async (args: { teachingNoteId: number }) => {
+  const response = await apiClient.get(
+    `/public/teaching-notes/${args.teachingNoteId}`
+  );
+  return response.data;
+};
+
+export const updateStudyNote = async (args: {
+  teachingNoteId: number;
+  studyRoomId: number;
+  teachingNoteGroupId: number;
+  title: string;
+  content: string;
+  visibility: string;
+  taughtAt: string;
+  studentIds: number[];
+}) => {
+  const response = await apiClient.put(
+    `/teacher/teaching-notes/${args.teachingNoteId}`,
+    {
+      studyRoomId: args.studyRoomId,
+      teachingNoteGroupId: args.teachingNoteGroupId,
+      title: args.title,
+      content: args.content,
+      visibility: args.visibility,
+      taughtAt: args.taughtAt,
+      studentIds: args.studentIds,
+    }
+  );
+  return response.data;
+};

@@ -90,7 +90,6 @@ export const StudyNotesList = ({
           handleOpen={handleOpen}
           item={item}
           studyRoomId={studyRoomId}
-          studyNoteId={item.id}
           pageable={pageable}
           keyword={keyword}
         />
