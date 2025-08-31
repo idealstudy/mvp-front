@@ -21,7 +21,10 @@ export const objectToQueryString = (obj: object): string => {
 export const getRelativeTimeString = (date: Date | string): string => {
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
-  const diffInMs = now.getTime() - targetDate.getTime();
+
+  const koreanTime = new Date(targetDate.getTime() + 9 * 60 * 60 * 1000);
+
+  const diffInMs = now.getTime() - koreanTime.getTime();
 
   // 1초 = 1000ms
   const diffInSeconds = Math.floor(diffInMs / 1000);
@@ -42,7 +45,7 @@ export const getRelativeTimeString = (date: Date | string): string => {
     return `${diffInWeeks}주 전`;
   } else {
     // 30일 이상 지난 경우 절대 날짜 반환
-    return targetDate.toLocaleDateString('ko-KR', {
+    return koreanTime.toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -53,6 +56,8 @@ export const getRelativeTimeString = (date: Date | string): string => {
 export const formatMMDDWeekday = (date: Date | string): string => {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
 
+  const koreanTime = new Date(targetDate.getTime() + 9 * 60 * 60 * 1000);
+
   const weekday = ['일', '월', '화', '수', '목', '금', '토'];
-  return `${targetDate.getMonth() + 1}/${targetDate.getDate()} ${weekday[targetDate.getDay()]}`;
+  return `${koreanTime.getMonth() + 1}/${koreanTime.getDate()} ${weekday[koreanTime.getDay()]}`;
 };

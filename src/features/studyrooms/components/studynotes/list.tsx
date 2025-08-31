@@ -10,7 +10,13 @@ import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
 import { StudyNotesDropdown } from './dropdown';
 import { StudyNote } from './type';
 
-export const StudyNotesList = ({ data }: { data: StudyNote[] }) => {
+export const StudyNotesList = ({
+  data,
+  studyRoomId,
+}: {
+  data: StudyNote[];
+  studyRoomId: number;
+}) => {
   const [open, setOpen] = useState(0);
 
   const handleOpen = (id: number) => {
@@ -77,6 +83,8 @@ export const StudyNotesList = ({ data }: { data: StudyNote[] }) => {
           open={open}
           handleOpen={handleOpen}
           item={item}
+          studyRoomId={studyRoomId}
+          studyNoteId={item.id}
         />
       </div>
     </Link>

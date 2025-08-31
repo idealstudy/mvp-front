@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { deleteStudyNoteGroup } from './api';
 import { getStudyNotesOption } from './query-options';
 
 export const useStudyNotesQuery = (args: {
@@ -8,4 +9,10 @@ export const useStudyNotesQuery = (args: {
   keyword: string;
 }) => {
   return useQuery(getStudyNotesOption(args));
+};
+
+export const useDeleteStudyNoteGroup = (args: { studyNoteId: number }) => {
+  return useMutation({
+    mutationFn: () => deleteStudyNoteGroup(args),
+  });
 };

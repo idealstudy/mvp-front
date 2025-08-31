@@ -1,10 +1,7 @@
+import { Pageable } from '@/lib/api';
 import { queryOptions } from '@tanstack/react-query';
 
-// import { queryOptions } from '@tanstack/react-query';
-
-import { getStudyNotes } from './api';
-
-// import { getConnectMembers, getStudyNoteGroups, getStudyRooms } from './api';
+import { getStudyNoteGroup, getStudyNotes } from './api';
 
 export const StudyNotesQueryKey = {
   all: ['studyNotes'],
@@ -21,6 +18,16 @@ export const StudyNotesQueryKey = {
   ],
 };
 
+export const StudyNoteGroupQueryKey = {
+  all: ['studyNoteGroups'],
+  studyNoteGroups: (args: { studyRoomId: number; pageable: Pageable }) => [
+    ...StudyNoteGroupQueryKey.all,
+    'studyNoteGroups',
+    args.studyRoomId,
+    args.pageable,
+  ],
+};
+
 export const getStudyNotesOption = (args: {
   studyRoomId: number;
   pageable: { page: number; size: number; sortKey: string };
@@ -31,3 +38,29 @@ export const getStudyNotesOption = (args: {
     queryFn: () => getStudyNotes(args),
   });
 };
+
+export const getStudyNoteGroupOption = (args: {
+  studyRoomId: number;
+  pageable: Pageable;
+}) => {
+  return queryOptions({
+    queryKey: StudyNoteGroupQueryKey.studyNoteGroups(args),
+    queryFn: () => getStudyNoteGroup(args),
+  });
+};
+
+// export const moveStudyNoteToGroupOption = (args: {
+//   studyNoteId: number;
+//   groupId: number | null;
+//   studyRoomId: number;
+// }) => {
+//   return queryOptions({
+//     queryKey: [
+//       'moveStudyNoteToGroup',
+//       args.studyNoteId,
+//       args.groupId,
+//       args.studyRoomId,
+//     ],
+//     queryFn: () => moveStudyNoteToGroup(args),
+//   });
+// };

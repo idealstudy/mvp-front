@@ -12,10 +12,13 @@ import {
 import { StudyNotesDialog } from './dialog';
 
 export const StudyNotesDropdown = ({
+  studyRoomId,
   open,
   handleOpen,
   item,
+  studyNoteId,
 }: {
+  studyRoomId: number;
   open: number;
   handleOpen: (id: number) => void;
   item: {
@@ -25,6 +28,7 @@ export const StudyNotesDropdown = ({
     groupId?: number;
     visibility: string;
   };
+  studyNoteId: number;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
@@ -37,6 +41,8 @@ export const StudyNotesDropdown = ({
       <StudyNotesDialog
         state={dialog}
         dispatch={dispatch}
+        studyRoomId={studyRoomId}
+        studyNoteId={studyNoteId}
       />
       <DropdownMenu
         open={open === item.id}

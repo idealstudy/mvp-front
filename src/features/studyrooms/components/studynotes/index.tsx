@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { useParams } from 'next/navigation';
+
 import { Pagination } from '@/components/ui/pagination';
 
 import { StudyNotesList } from './list';
@@ -15,6 +17,8 @@ export const StudyNotes = () => {
   >('LATEST_EDITED');
   const [limit, setLimit] = useState<20 | 30>(20);
   const [currentPage, setCurrentPage] = useState(0);
+  const { id } = useParams();
+  const studyRoomId = Number(id);
 
   const pageable: { page: number; size: number; sortKey: string } = {
     page: currentPage,
@@ -23,7 +27,7 @@ export const StudyNotes = () => {
   };
 
   const { data } = useStudyNotesQuery({
-    studyRoomId: 1,
+    studyRoomId: studyRoomId,
     pageable: pageable,
     keyword: search,
   });
@@ -61,7 +65,10 @@ export const StudyNotes = () => {
           onSortChange={handleSortChange}
           onLimitChange={handleLimitChange}
         />
-        <StudyNotesList data={data?.content || []} />
+        <StudyNotesList
+          data={data?.content || []}
+          studyRoomId={Number(studyRoomId)}
+        />
       </div>
       <Pagination
         page={currentPage}

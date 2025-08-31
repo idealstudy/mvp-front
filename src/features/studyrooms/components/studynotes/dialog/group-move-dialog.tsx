@@ -4,39 +4,43 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
+import { useQuery } from '@tanstack/react-query';
 
-const data = [
-  {
-    id: 0,
-    name: '없음',
-  },
-  {
-    id: 1,
-    name: '그룹 1',
-  },
-  {
-    id: 2,
-    name: '그룹 2',
-  },
-
-  {
-    id: 3,
-    name: '그룹 3',
-  },
-];
+import { useDeleteStudyNoteGroup } from '../services/query';
+import { getStudyNoteGroupOption } from '../services/query-options';
 
 export const GroupMoveDialog = ({
   open,
   dispatch,
+  studyRoomId,
+  studyNoteId,
 }: {
   open: boolean;
   dispatch: (action: DialogAction) => void;
+  studyRoomId: number;
+  studyNoteId: number;
 }) => {
-  const [selectedGroup, setSelectedGroup] = useState<number>(0);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
+
+  const { data: studyNoteGroups } = useQuery({
+    ...getStudyNoteGroupOption({
+      studyRoomId: studyRoomId,
+      pageable: { page: 0, size: 10, sort: ['desc'] },
+    }),
+  });
+
+  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteGroup({
+    studyNoteId: studyNoteId,
+  });
 
   const handleSave = () => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
-    dispatch({ type: 'CLOSE' });
+    if (selectedGroup === null || selectedGroup === 'none') {
+      removeStudyNoteGroup();
+    } else {
+      // TODO: 선택한 그룹으로 이동하는 API 호출
+      // moveStudyNoteToGroup({ studyNoteId, groupId: Number(selectedGroup) });
+      dispatch({ type: 'CLOSE' });
+    }
   };
 
   return (
@@ -53,20 +57,24 @@ export const GroupMoveDialog = ({
             이동할 그룹
           </Dialog.Description>
           <Select
-            value={selectedGroup.toString()}
-            onValueChange={(value) => setSelectedGroup(Number(value))}
+            value={selectedGroup ?? ''}
+            onValueChange={(value) =>
+              setSelectedGroup(value === 'none' ? null : value)
+            }
           >
             <Select.Trigger
               className="w-full px-6"
               data-position="right-6 text-black"
+              placeholder="그룹을 선택하세요"
             />
             <Select.Content>
-              {data.map((item) => (
+              <Select.Option value="none">없음</Select.Option>
+              {studyNoteGroups?.content?.map((item) => (
                 <Select.Option
                   key={item.id}
                   value={item.id.toString()}
                 >
-                  {item.name}
+                  {item.title}
                 </Select.Option>
               ))}
             </Select.Content>

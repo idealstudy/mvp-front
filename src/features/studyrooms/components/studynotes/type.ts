@@ -8,3 +8,8 @@ export interface StudyNote {
   taughtAt: string;
   updatedAt: string;
 }
+
+export interface StudyNoteGroup {
+  id: number;
+  title: string;
+}

@@ -11,9 +11,13 @@ import { RenameDialog } from './rename-dialog';
 export const StudyNotesDialog = ({
   state,
   dispatch,
+  studyRoomId,
+  studyNoteId,
 }: {
   state: DialogState;
   dispatch: (action: DialogAction) => void;
+  studyRoomId: number;
+  studyNoteId: number;
 }) => {
   if (state.status !== 'open') return null;
 
@@ -31,6 +35,8 @@ export const StudyNotesDialog = ({
         <GroupMoveDialog
           open
           dispatch={dispatch}
+          studyRoomId={studyRoomId}
+          studyNoteId={studyNoteId}
         />
       )}
 
