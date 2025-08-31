@@ -30,11 +30,9 @@ const LIMIT_OPTIONS = [
 
 const SELECT_STYLES = {
   trigger:
-    'border-line-line3 bg-gray-scale-white relative flex h-[36px] items-center justify-between rounded-[8px] border pr-11 pl-3 text-start text-sm outline-hidden min-w-[110px] data-placeholder:text-text-sub2 placeholder-text-text-sub2',
-  content:
-    'w-[110px] border-line-line2 text-main bg-gray-scale-white relative z-50 max-w-[calc(100vw-12px)] overflow-hidden rounded-[6px] border',
+    'border-line-line2 h-[36px] rounded-[8px] pr-8 pl-2 text-sm min-w-[110px] text-[var(--color-text-sub2)] whitespace-nowrap data-[state=open]:border-line-line3 focus:ring-0 focus:outline-none px-3 font-label-normal',
   option:
-    'relative flex h-[32px] cursor-pointer items-center justify-center px-3 outline-hidden select-none',
+    'flex h-[32px] border-b-0 text-center w-full font-body2-normal justify-center items-center',
 };
 
 export const SearchFilterBar = ({
@@ -59,7 +57,7 @@ export const SearchFilterBar = ({
             placeholder="최근 편집순"
             data-position="right-2"
           />
-          <Select.Content className={SELECT_STYLES.content}>
+          <Select.Content>
             {SORT_OPTIONS.map((option) => (
               <Select.Option
                 key={option.value}
@@ -80,7 +78,7 @@ export const SearchFilterBar = ({
             placeholder="20개씩"
             data-position="right-2"
           />
-          <Select.Content className="w-[110px]">
+          <Select.Content>
             {LIMIT_OPTIONS.map((option) => (
               <Select.Option
                 key={option.value}
