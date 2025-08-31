@@ -13,9 +13,13 @@ import { StudyNote } from './type';
 export const StudyNotesList = ({
   data,
   studyRoomId,
+  pageable,
+  keyword,
 }: {
   data: StudyNote[];
   studyRoomId: number;
+  pageable: { page: number; size: number; sortKey: string };
+  keyword: string;
 }) => {
   const [open, setOpen] = useState(0);
 
@@ -85,6 +89,8 @@ export const StudyNotesList = ({
           item={item}
           studyRoomId={studyRoomId}
           studyNoteId={item.id}
+          pageable={pageable}
+          keyword={keyword}
         />
       </div>
     </Link>

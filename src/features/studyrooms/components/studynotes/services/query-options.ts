@@ -1,7 +1,7 @@
 import { Pageable } from '@/lib/api';
 import { queryOptions } from '@tanstack/react-query';
 
-import { getStudyNoteGroup, getStudyNotes } from './api';
+import { getStudyNoteGroup, getStudyNotes, updateStudyNoteGroup } from './api';
 
 export const StudyNotesQueryKey = {
   all: ['studyNotes'],
@@ -28,6 +28,19 @@ export const StudyNoteGroupQueryKey = {
   ],
 };
 
+export const UpdateStudyNoteGroupQueryKey = {
+  all: ['updateStudyNoteGroup'],
+  updateStudyNoteGroup: (args: {
+    teachingNoteId: number;
+    teachingNoteGroupId: number;
+  }) => [
+    ...UpdateStudyNoteGroupQueryKey.all,
+    'updateStudyNoteGroup',
+    args.teachingNoteId,
+    args.teachingNoteGroupId,
+  ],
+};
+
 export const getStudyNotesOption = (args: {
   studyRoomId: number;
   pageable: { page: number; size: number; sortKey: string };
@@ -46,6 +59,16 @@ export const getStudyNoteGroupOption = (args: {
   return queryOptions({
     queryKey: StudyNoteGroupQueryKey.studyNoteGroups(args),
     queryFn: () => getStudyNoteGroup(args),
+  });
+};
+
+export const postStudyNoteGroupOption = (args: {
+  teachingNoteId: number;
+  teachingNoteGroupId: number;
+}) => {
+  return queryOptions({
+    queryKey: UpdateStudyNoteGroupQueryKey.updateStudyNoteGroup(args),
+    queryFn: () => updateStudyNoteGroup(args),
   });
 };
 

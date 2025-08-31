@@ -68,6 +68,8 @@ export const StudyNotes = () => {
         <StudyNotesList
           data={data?.content || []}
           studyRoomId={Number(studyRoomId)}
+          pageable={pageable}
+          keyword={search}
         />
       </div>
       <Pagination

@@ -6,7 +6,10 @@ import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { useQuery } from '@tanstack/react-query';
 
-import { useDeleteStudyNoteGroup } from '../services/query';
+import {
+  useDeleteStudyNoteGroup,
+  useUpdateStudyNoteGroup,
+} from '../services/query';
 import { getStudyNoteGroupOption } from '../services/query-options';
 
 export const GroupMoveDialog = ({
@@ -14,11 +17,15 @@ export const GroupMoveDialog = ({
   dispatch,
   studyRoomId,
   studyNoteId,
+  pageable,
+  keyword,
 }: {
   open: boolean;
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   studyNoteId: number;
+  pageable: { page: number; size: number; sortKey: string };
+  keyword: string;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
 
@@ -31,14 +38,24 @@ export const GroupMoveDialog = ({
 
   const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteGroup({
     studyNoteId: studyNoteId,
+    studyRoomId,
+    pageable,
+    keyword,
+  });
+
+  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup({
+    teachingNoteId: studyNoteId,
+    teachingNoteGroupId: Number(selectedGroup),
+    studyRoomId,
+    pageable,
+    keyword,
   });
 
   const handleSave = () => {
     if (selectedGroup === null || selectedGroup === 'none') {
       removeStudyNoteGroup();
     } else {
-      // TODO: 선택한 그룹으로 이동하는 API 호출
-      // moveStudyNoteToGroup({ studyNoteId, groupId: Number(selectedGroup) });
+      updateStudyNoteGroup();
       dispatch({ type: 'CLOSE' });
     }
   };

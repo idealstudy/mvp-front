@@ -64,3 +64,16 @@ export const moveStudyNoteToGroup = async (args: {
   );
   return response.data;
 };
+
+export const updateStudyNoteGroup = async (args: {
+  teachingNoteId: number;
+  teachingNoteGroupId: number;
+}) => {
+  const response = await apiClient.put(
+    `/teacher/teaching-notes/${args.teachingNoteId}/teaching-note-groups`,
+    {
+      teachingNoteGroupId: args.teachingNoteGroupId,
+    }
+  );
+  return response.data;
+};

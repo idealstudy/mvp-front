@@ -13,11 +13,15 @@ export const StudyNotesDialog = ({
   dispatch,
   studyRoomId,
   studyNoteId,
+  pageable,
+  keyword,
 }: {
   state: DialogState;
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   studyNoteId: number;
+  pageable: { page: number; size: number; sortKey: string };
+  keyword: string;
 }) => {
   if (state.status !== 'open') return null;
 
@@ -37,6 +41,8 @@ export const StudyNotesDialog = ({
           dispatch={dispatch}
           studyRoomId={studyRoomId}
           studyNoteId={studyNoteId}
+          pageable={pageable}
+          keyword={keyword}
         />
       )}
 
