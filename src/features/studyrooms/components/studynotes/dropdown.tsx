@@ -86,7 +86,7 @@ export const StudyNotesDropdown = ({
           <DropdownMenu.Item asChild>
             <Link
               href={`/dashboard/studynote/${item.id}/write`}
-              className="justify-center border-none"
+              className="justify-center border-none focus:ring-0 focus:outline-none"
             >
               편집하기
             </Link>
