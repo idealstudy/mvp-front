@@ -63,6 +63,7 @@ export const StudyNotesList = ({ data }: { data: StudyNote[] }) => {
               </p>
             )}
           </div>
+          {/* 수정이 되지 않았을 시 문구가 작성으로 바뀌는데, 후에 추가 예정 */}
           <p className="font-caption-normal text-gray-scale-gray-60">
             {getRelativeTimeString(item.updatedAt)} 수정
           </p>
