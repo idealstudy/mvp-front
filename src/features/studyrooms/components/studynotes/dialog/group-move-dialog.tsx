@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import {
   useDeleteStudyNoteGroup,
   useUpdateStudyNoteGroup,
 } from '../services/query';
-import { getStudyNoteGroupOption } from '../services/query-options';
+import { getStudyNoteGroupInfiniteOption } from '../services/query-options';
+
+const PAGE_SIZE = 10;
 
 export const GroupMoveDialog = ({
   open,
@@ -28,11 +30,17 @@ export const GroupMoveDialog = ({
   keyword: string;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: studyNoteGroups } = useQuery({
-    ...getStudyNoteGroupOption({
+  const {
+    data: studyNoteGroups,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { page: 0, size: 10, sort: ['desc'] },
+      pageable: { page: 0, size: PAGE_SIZE, sort: ['desc'] },
     }),
   });
 
@@ -51,13 +59,34 @@ export const GroupMoveDialog = ({
     keyword,
   });
 
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || !hasNextPage || isFetchingNextPage)
+      return;
+
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
+    const scrollThreshold = 50;
+
+    if (scrollTop + clientHeight >= scrollHeight - scrollThreshold) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, [handleScroll]);
+
   const handleSave = () => {
     if (selectedGroup === null || selectedGroup === 'none') {
       removeStudyNoteGroup();
     } else {
       updateStudyNoteGroup();
-      dispatch({ type: 'CLOSE' });
     }
+    dispatch({ type: 'CLOSE' });
   };
 
   return (
@@ -73,29 +102,63 @@ export const GroupMoveDialog = ({
           <Dialog.Description className="font-headline2-heading mb-1">
             이동할 그룹
           </Dialog.Description>
-          <Select
-            value={selectedGroup ?? ''}
-            onValueChange={(value) =>
-              setSelectedGroup(value === 'none' ? null : value)
-            }
+          <div
+            ref={scrollContainerRef}
+            className="max-h-60 overflow-y-auto"
           >
-            <Select.Trigger
-              className="w-full px-6"
-              data-position="right-6 text-black"
-              placeholder="그룹을 선택하세요"
-            />
-            <Select.Content>
-              <Select.Option value="none">없음</Select.Option>
-              {studyNoteGroups?.content?.map((item) => (
-                <Select.Option
-                  key={item.id}
-                  value={item.id.toString()}
+            <Select
+              value={selectedGroup ?? ''}
+              onValueChange={(value) =>
+                setSelectedGroup(value === 'none' ? null : value)
+              }
+            >
+              <Select.Trigger
+                className="w-full px-6"
+                data-position="right-6 text-black"
+                placeholder="그룹을 선택하세요"
+              />
+              <Select.Content
+                className="max-h-60"
+                position="popper"
+              >
+                <div
+                  className="max-h-40 overflow-y-auto"
+                  onScroll={(e) => {
+                    const target = e.target as HTMLDivElement;
+                    const { scrollTop, scrollHeight, clientHeight } = target;
+                    const scrollThreshold = 50;
+
+                    if (
+                      scrollTop + clientHeight >=
+                      scrollHeight - scrollThreshold
+                    ) {
+                      if (hasNextPage && !isFetchingNextPage) {
+                        fetchNextPage();
+                      }
+                    }
+                  }}
                 >
-                  {item.title}
-                </Select.Option>
-              ))}
-            </Select.Content>
-          </Select>
+                  <Select.Option value="none">없음</Select.Option>
+                  {studyNoteGroups?.pages.map((page) =>
+                    page.content.map((item) => (
+                      <Select.Option
+                        key={item.id}
+                        value={item.id.toString()}
+                      >
+                        {item.title}
+                      </Select.Option>
+                    ))
+                  )}
+                </div>
+              </Select.Content>
+            </Select>
+
+            {isFetchingNextPage && (
+              <div className="mt-4 text-center text-sm text-gray-500">
+                로딩 중...
+              </div>
+            )}
+          </div>
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
           <Dialog.Close asChild>
