@@ -91,9 +91,9 @@ export const SearchFilterBar = ({
           </Select.Content>
         </Select>
       </div>
-      <div className="relative">
+      <div className="relative w-[234px]">
         <Input
-          className="desktop:max-w-[234px] border-line-line1 h-12 w-full pr-12"
+          className="border-line-line1 font-body2-normal h-12 w-full rounded-[8px] pr-[42px] pl-4"
           placeholder="검색어를 입력하세요"
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
