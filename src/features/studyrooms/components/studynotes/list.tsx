@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
 
 import { StudyNotesDropdown } from './dropdown';
-import { StudyNote } from './type';
+import type { StudyNote, StudyNoteGroupPageable } from './type';
 
 export const StudyNotesList = ({
   data,
@@ -18,7 +18,7 @@ export const StudyNotesList = ({
 }: {
   data: StudyNote[];
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const [open, setOpen] = useState(0);

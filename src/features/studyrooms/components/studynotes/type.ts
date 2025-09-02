@@ -28,3 +28,9 @@ export interface StudyNoteDetails {
     }[],
   ];
 }
+
+export interface StudyNoteGroupPageable {
+  page: number;
+  size: number;
+  sortKey: string;
+}

@@ -3,6 +3,7 @@ import type {
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
+import type { StudyNoteGroupPageable } from '../type';
 import { DeleteDialog } from './delete-dialog';
 import { GroupMoveDialog } from './group-move-dialog';
 import { OnConfirmDialog } from './on-confirm-dialog';
@@ -20,7 +21,7 @@ export const StudyNotesDialog = ({
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   studyNoteId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   if (state.status !== 'open') return null;

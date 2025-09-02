@@ -10,6 +10,7 @@ import {
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
 import { StudyNotesDialog } from './dialog';
+import type { StudyNoteGroupPageable } from './type';
 
 export const StudyNotesDropdown = ({
   studyRoomId,
@@ -29,7 +30,7 @@ export const StudyNotesDropdown = ({
     groupId?: number;
     visibility: string;
   };
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);

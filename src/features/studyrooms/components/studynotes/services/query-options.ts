@@ -1,7 +1,7 @@
 import { Pageable, PaginationMeta } from '@/lib/api';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
-import { StudyNoteGroup } from '../type';
+import type { StudyNoteGroup, StudyNoteGroupPageable } from '../type';
 import {
   getStudyNoteDetail,
   getStudyNoteGroup,
@@ -13,7 +13,7 @@ export const StudyNotesQueryKey = {
   all: ['studyNotes'],
   studyNotes: (args: {
     studyRoomId: number;
-    pageable: { page: number; size: number; sortKey: string };
+    pageable: StudyNoteGroupPageable;
     keyword: string;
   }) => [
     ...StudyNotesQueryKey.all,
@@ -83,7 +83,7 @@ export const UpdateStudyNoteQueryKey = {
 
 export const getStudyNotesOption = (args: {
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   return queryOptions({

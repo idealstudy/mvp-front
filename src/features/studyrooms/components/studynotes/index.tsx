@@ -9,6 +9,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { StudyNotesList } from './list';
 import { SearchFilterBar } from './search-filter-bar';
 import { useStudyNotesQuery } from './services/query';
+import type { StudyNoteGroupPageable } from './type';
 
 export const StudyNotes = () => {
   const [search, setSearch] = useState('');
@@ -20,7 +21,7 @@ export const StudyNotes = () => {
   const { id } = useParams();
   const studyRoomId = Number(id);
 
-  const pageable: { page: number; size: number; sortKey: string } = {
+  const pageable: StudyNoteGroupPageable = {
     page: currentPage,
     size: limit,
     sortKey: sort,

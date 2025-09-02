@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import type { StudyNoteGroupPageable } from '../type';
 import { deleteStudyNoteGroup, updateStudyNoteGroup } from './api';
 import {
   StudyNoteGroupQueryKey,
@@ -10,7 +11,7 @@ import {
 
 export const useStudyNotesQuery = (args: {
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   return useQuery(getStudyNotesOption(args));
@@ -19,7 +20,7 @@ export const useStudyNotesQuery = (args: {
 export const useDeleteStudyNoteGroup = (args: {
   studyNoteId: number;
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const queryClient = useQueryClient();
@@ -48,7 +49,7 @@ export const useUpdateStudyNoteGroup = (args: {
   teachingNoteId: number;
   teachingNoteGroupId: number;
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const queryClient = useQueryClient();
