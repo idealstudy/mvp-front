@@ -9,14 +9,16 @@ import { Pagination } from '@/components/ui/pagination';
 import { StudyNotesList } from './list';
 import { SearchFilterBar } from './search-filter-bar';
 import { useStudyNotesQuery } from './services/query';
-import type { StudyNoteGroupPageable } from './type';
+import type {
+  StudyNoteGroupPageable,
+  StudyNoteLimit,
+  StudyNoteSortKey,
+} from './type';
 
 export const StudyNotes = () => {
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<
-    'LATEST_EDITED' | 'OLDEST_EDITED' | 'TITLE_ASC' | 'TAUGHT_AT_ASC'
-  >('LATEST_EDITED');
-  const [limit, setLimit] = useState<20 | 30>(20);
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
+  const [limit, setLimit] = useState<StudyNoteLimit>(20);
   const [currentPage, setCurrentPage] = useState(0);
   const { id } = useParams();
   const studyRoomId = Number(id);
@@ -42,13 +44,11 @@ export const StudyNotes = () => {
   };
 
   const handleSortChange = (e: string) => {
-    setSort(
-      e as 'LATEST_EDITED' | 'OLDEST_EDITED' | 'TITLE_ASC' | 'TAUGHT_AT_ASC'
-    );
+    setSort(e as StudyNoteSortKey);
   };
 
   const handleLimitChange = (e: number) => {
-    setLimit(Number(e) as 20 | 30);
+    setLimit(Number(e) as StudyNoteLimit);
   };
 
   useEffect(() => {

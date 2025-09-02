@@ -34,3 +34,16 @@ export interface StudyNoteGroupPageable {
   size: number;
   sortKey: string;
 }
+
+export type StudyNoteSortKey =
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'TITLE_ASC'
+  | 'TAUGHT_AT_ASC';
+
+export type StudyNoteLimit = 20 | 30;
+export interface StudyNotesPageable {
+  sortKey: StudyNoteSortKey;
+  limit: StudyNoteLimit;
+  page: number;
+}
