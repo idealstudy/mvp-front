@@ -38,7 +38,11 @@ export const useDeleteStudyNoteGroup = (args: {
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
           studyRoomId: args.studyRoomId,
-          pageable: { page: 0, size: 10, sort: ['desc'] },
+          pageable: {
+            page: args.pageable.page,
+            size: args.pageable.size,
+            sort: [args.pageable.sortKey],
+          },
         }),
       });
     },
@@ -67,7 +71,11 @@ export const useUpdateStudyNoteGroup = (args: {
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
           studyRoomId: args.studyRoomId,
-          pageable: { page: 0, size: 10, sort: ['desc'] },
+          pageable: {
+            page: args.pageable.page,
+            size: args.pageable.size,
+            sort: [args.pageable.sortKey],
+          },
         }),
       });
     },
