@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../type';
-import { deleteStudyNoteGroup, updateStudyNoteGroup } from './api';
+import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
 import {
   StudyNoteGroupQueryKey,
   StudyNotesQueryKey,
@@ -31,7 +31,7 @@ export const useStudyNotesByGroupIdQuery = (args: {
   });
 };
 
-export const useDeleteStudyNoteGroup = (args: {
+export const useDeleteStudyNoteToGroup = (args: {
   studyNoteId: number;
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
@@ -40,7 +40,7 @@ export const useDeleteStudyNoteGroup = (args: {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => deleteStudyNoteGroup(args),
+    mutationFn: () => deleteStudyNoteToGroup(args),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: StudyNotesQueryKey.studyNotes({
@@ -63,7 +63,7 @@ export const useDeleteStudyNoteGroup = (args: {
   });
 };
 
-export const useUpdateStudyNoteGroup = (args: {
+export const useUpdateStudyNoteToGroup = (args: {
   teachingNoteId: number;
   teachingNoteGroupId: number;
   studyRoomId: number;

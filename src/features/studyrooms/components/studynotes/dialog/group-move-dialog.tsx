@@ -11,8 +11,8 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import {
-  useDeleteStudyNoteGroup,
-  useUpdateStudyNoteGroup,
+  useDeleteStudyNoteToGroup,
+  useUpdateStudyNoteToGroup,
 } from '../services/query';
 import type { StudyNoteGroupPageable } from '../type';
 
@@ -53,14 +53,14 @@ export const GroupMoveDialog = ({
     fetchNextPage,
   });
 
-  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteGroup({
+  const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteToGroup({
     studyNoteId: studyNoteId,
     studyRoomId,
     pageable,
     keyword,
   });
 
-  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup({
+  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteToGroup({
     teachingNoteId: studyNoteId,
     teachingNoteGroupId: Number(selectedGroup),
     studyRoomId,

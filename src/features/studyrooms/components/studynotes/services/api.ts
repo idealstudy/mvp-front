@@ -43,7 +43,7 @@ export const getStudyNotesByGroupId = async (args: {
   return response.data;
 };
 
-export const deleteStudyNoteGroup = async (args: { studyNoteId: number }) => {
+export const deleteStudyNoteToGroup = async (args: { studyNoteId: number }) => {
   const response = await apiClient.delete(
     `/teacher/teaching-notes/${args.studyNoteId}/teaching-note-groups`
   );
