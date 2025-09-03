@@ -18,11 +18,13 @@ export const StudyroomGroupDialogs = ({
   dispatch,
   studyRoomId,
   selectedGroupId,
+  handleSelectGroupId,
 }: {
   dialog: DialogState;
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   selectedGroupId: number;
+  handleSelectGroupId: (id: number | string) => void;
 }) => {
   const { mutate: createStudyNoteGroup } = useCreateStudyNoteGroup();
   const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup();
@@ -41,6 +43,7 @@ export const StudyroomGroupDialogs = ({
   };
 
   const handleDeleteGroup = () => {
+    handleSelectGroupId('all');
     deleteStudyNoteGroup({
       teachingNoteGroupId: selectedGroupId,
       studyRoomId,

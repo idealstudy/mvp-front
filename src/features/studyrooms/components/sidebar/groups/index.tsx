@@ -69,6 +69,7 @@ export const StudyroomGroups = ({
         dispatch={dispatch}
         studyRoomId={studyRoomId}
         selectedGroupId={Number(selectedGroupId)}
+        handleSelectGroupId={handleSelectGroupId}
       />
 
       <div className="flex flex-col gap-3">
