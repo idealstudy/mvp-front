@@ -13,7 +13,7 @@ import {
 import { StudyroomGroups } from './groups/index';
 import { StudyroomSidebarHeader } from './header';
 import { useDeleteStudyRoom } from './services/query';
-import { StudyStats } from './studyStats';
+import { StudyStats } from './status';
 
 export const StudyroomSidebar = ({
   studyRoomId,

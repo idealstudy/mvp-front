@@ -75,14 +75,17 @@ export const StudyroomGroups = ({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <p className="font-body1-heading">수업노트 그룹</p>
-          <Image
-            src="/studyroom/ic-plus.png"
-            alt="plus"
-            width={24}
-            height={24}
-            className="hover:bg-gray-scale-gray-5 cursor-pointer rounded-[8px] p-1"
+          <div
+            className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
             onClick={handleCreateGroupClick}
-          />
+          >
+            <Image
+              src="/studyroom/ic-plus.svg"
+              alt="plus"
+              width={16}
+              height={16}
+            />
+          </div>
         </div>
 
         <div

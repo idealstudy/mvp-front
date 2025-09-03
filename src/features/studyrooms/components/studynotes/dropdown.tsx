@@ -55,7 +55,7 @@ export const StudyNotesDropdown = ({
       >
         <DropdownMenu.Trigger asChild>
           <Image
-            src="/studynotes/more-gray.png"
+            src="/studynotes/gray-kebab.svg"
             width={24}
             height={24}
             alt="study-notes"

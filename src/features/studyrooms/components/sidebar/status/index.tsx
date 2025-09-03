@@ -4,18 +4,18 @@ export const StudyStats = () => {
   const studyIcons = [
     {
       name: '수업노트',
-      icon: '/studyroom/notebook.png',
+      icon: '/studyroom/notebook.svg',
       count: '999장',
     },
     {
       name: '학생',
-      icon: '/studyroom/person.png',
+      icon: '/studyroom/person.svg',
       count: '999명',
     },
 
     {
       name: '질문',
-      icon: '/studyroom/question.png',
+      icon: '/studyroom/question.svg',
       count: '999개',
     },
   ];

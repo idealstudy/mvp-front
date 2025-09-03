@@ -26,17 +26,16 @@ export const InviteButton = () => {
         />
       )}
       <Button
-        className="border-key-color-primary hover:bg-orange-scale-orange-10 flex w-full items-center justify-center gap-1 rounded-[8px] bg-white"
+        className="border-key-color-primary hover:bg-orange-scale-orange-10 flex w-full items-center justify-center gap-2 rounded-[8px] bg-white"
         onClick={() =>
           dispatch({ type: 'OPEN', scope: 'invite', kind: 'invite' })
         }
       >
         <Image
-          src="/studyroom/ic-invite.png"
+          src="/studyroom/ic-invite.svg"
           alt="invite-student"
           width={24}
           height={24}
-          className="mb-1"
         />
         <span className="font-body2-normal text-key-color-primary">
           학생 초대

@@ -48,7 +48,7 @@ export const StudyroomSidebarHeader = ({
         </DropdownMenu>
       </div>
       <Image
-        src="/studyroom/study-room-profile.png"
+        src="/studyroom/study-room-profile.svg"
         alt="select-area"
         className="bg-orange-scale-orange-1 rounded-[12px] p-[14px]"
         width={300}

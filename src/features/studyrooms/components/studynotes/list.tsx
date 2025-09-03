@@ -36,7 +36,7 @@ export const StudyNotesList = ({
       <div className="flex flex-row items-center gap-3">
         {item.visibility === 'PUBLIC' && (
           <Image
-            src="/studynotes/read-global.png"
+            src="/studynotes/read-global.svg"
             width={28}
             height={28}
             alt="study-notes"
@@ -47,7 +47,7 @@ export const StudyNotesList = ({
           item.visibility === 'SPECIFIC_STUDENTS_AND_PARENTS' ||
           item.visibility === 'STUDY_ROOM_STUDENTS_AND_PARENTS') && (
           <Image
-            src="/studynotes/read-students.png"
+            src="/studynotes/read-students.svg"
             width={28}
             height={28}
             alt="study-notes"
@@ -56,7 +56,7 @@ export const StudyNotesList = ({
         )}
         {item.visibility === 'TEACHER_ONLY' && (
           <Image
-            src="/studynotes/read-secret.png"
+            src="/studynotes/read-secret.svg"
             width={28}
             height={28}
             alt="study-notes"

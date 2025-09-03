@@ -46,7 +46,7 @@ export const StudyroomList = ({
             <div
               className={cn(
                 'bg-gray-scale-gray-60 h-6 w-6 shrink-0 transition-colors duration-200',
-                '[mask-image:url("/studyroom/ic-folder.png")]',
+                '[mask-image:url("/studyroom/ic-folder.svg")]',
                 '[mask-size:contain]',
                 '[mask-repeat:no-repeat]',
                 '[mask-position:center]',
