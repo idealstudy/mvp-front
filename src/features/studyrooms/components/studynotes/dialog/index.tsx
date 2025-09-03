@@ -1,8 +1,7 @@
 import { useState } from 'react';
 
-import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
 import type {
   DialogAction,
   DialogState,
@@ -59,18 +58,19 @@ export const StudyNotesDialog = ({
       )}
 
       {state.scope === 'note' && state.kind === 'delete' && (
-        <DeleteDialog
+        <ConfirmDialog
+          type="delete"
           open
-          onCancel={() => dispatch({ type: 'CLOSE' })}
+          dispatch={dispatch}
           onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
-          onOpenChange={(open) => !open && dispatch({ type: 'CLOSE' })}
           title="수업 노트를 삭제하시겠습니까?"
           description="삭제된 수업노트는 복구할 수 없습니다."
         />
       )}
 
       {state.scope === 'note' && state.kind === 'onConfirm' && (
-        <OnConfirmDialog
+        <ConfirmDialog
+          type="confirm"
           open
           dispatch={dispatch}
           description="수업노트가 삭제되었습니다."

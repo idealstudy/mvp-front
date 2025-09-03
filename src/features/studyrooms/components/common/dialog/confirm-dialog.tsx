@@ -1,19 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
+import { cn } from '@/lib/utils';
 
-export const DeleteDialog = ({
+export const ConfirmDialog = ({
+  type,
   open,
-  onCancel,
   onConfirm,
-  onOpenChange,
+  dispatch,
   title,
   description,
   handleDeleteMsg,
 }: {
+  type: 'delete' | 'confirm';
   open: boolean;
-  onCancel: () => void;
   onConfirm?: () => void;
-  onOpenChange: (open: boolean) => void;
+  dispatch: (action: DialogAction) => void;
   title?: string;
   description: string;
   handleDeleteMsg?: () => void;
@@ -27,7 +29,7 @@ export const DeleteDialog = ({
   return (
     <Dialog
       isOpen={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={() => dispatch({ type: 'CLOSE' })}
     >
       <Dialog.Content className="w-[598px]">
         <Dialog.Header>
@@ -37,27 +39,38 @@ export const DeleteDialog = ({
           <Dialog.Description className="font-headline1-heading text-center">
             {title}
           </Dialog.Description>
-          <Dialog.Description className="font-headline2-normal mt-4 text-center">
+          <Dialog.Description
+            className={cn(
+              'font-headline2-normal mt-4 text-center',
+              type === 'confirm' && 'font-headline1-heading font-bold'
+            )}
+          >
             {description}
           </Dialog.Description>
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-center">
-          <Button
-            className="w-[120px]"
-            size="small"
-            variant="outlined"
-            onClick={onCancel}
-          >
-            취소
-          </Button>
+          {type === 'delete' && (
+            <Button
+              className="w-[120px]"
+              size="small"
+              variant="outlined"
+              onClick={() => dispatch({ type: 'CLOSE' })}
+            >
+              취소
+            </Button>
+          )}
 
           <Button
             className="w-[120px]"
             size="small"
             variant="secondary"
-            onClick={handleDelete}
+            onClick={
+              type === 'delete'
+                ? handleDelete
+                : () => dispatch({ type: 'CLOSE' })
+            }
           >
-            삭제
+            {type === 'delete' ? '확인' : '삭제'}
           </Button>
         </Dialog.Footer>
       </Dialog.Content>

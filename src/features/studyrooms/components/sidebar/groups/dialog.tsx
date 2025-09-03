@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 
-import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
 import {
   DialogAction,
   DialogState,
@@ -58,10 +57,10 @@ export const StudyroomGroupsDialog = ({
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
         dialog.kind === 'delete' && (
-          <DeleteDialog
+          <ConfirmDialog
+            type="delete"
             open={true}
-            onCancel={() => dispatch({ type: 'CLOSE' })}
-            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            dispatch={dispatch}
             onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
             title="수업 노트 그룹을 삭제하시겠습니까?"
             description="삭제된 수업노트 그룹은 복구할 수 없습니다."
@@ -71,7 +70,8 @@ export const StudyroomGroupsDialog = ({
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
         dialog.kind === 'onConfirm' && (
-          <OnConfirmDialog
+          <ConfirmDialog
+            type="confirm"
             open={true}
             dispatch={dispatch}
             description="수업노트 그룹이 삭제되었습니다."

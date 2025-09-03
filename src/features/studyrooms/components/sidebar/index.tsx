@@ -3,9 +3,8 @@
 import { useReducer, useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
-import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
 import {
   dialogReducer,
   initialDialogState,
@@ -44,7 +43,8 @@ export const StudyroomSidebar = () => {
   return (
     <>
       {dialog.status === 'open' && dialog.kind === 'onConfirm' && (
-        <OnConfirmDialog
+        <ConfirmDialog
+          type="confirm"
           open={true}
           dispatch={dispatch}
           description={deleteNoticeMsg}
@@ -54,10 +54,10 @@ export const StudyroomSidebar = () => {
       {dialog.status === 'open' &&
         dialog.kind === 'delete' &&
         dialog.scope === 'studyroom' && (
-          <DeleteDialog
+          <ConfirmDialog
+            type="delete"
             open={true}
-            onCancel={() => dispatch({ type: 'CLOSE' })}
-            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            dispatch={dispatch}
             onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
             title="스터디룸을 삭제하시겠습니까?"
             description="삭제된 스터디룸은 복구할 수 없습니다."
