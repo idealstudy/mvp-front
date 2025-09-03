@@ -1,7 +1,7 @@
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 import { Pageable } from '@/lib/api';
 
-import type { StudyNoteGroup } from '../components/studynotes/type';
+import type { StudyNoteGroup } from '../components/types';
 
 // 수업노트 그룹 조회
 export const getStudyNoteGroup = async (args: {

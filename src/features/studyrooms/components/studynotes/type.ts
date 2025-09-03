@@ -9,11 +9,6 @@ export interface StudyNote {
   updatedAt: string;
 }
 
-export interface StudyNoteGroup {
-  id: number;
-  title: string;
-}
-
 export interface StudyNoteDetails {
   id: number;
   studyRoomId: number;
