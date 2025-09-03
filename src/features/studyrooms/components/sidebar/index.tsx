@@ -11,7 +11,7 @@ import {
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { StudyroomGroups } from './groups';
+import { StudyroomGroups } from './groups/index';
 import { StudyroomSidebarHeader } from './header';
 import { StudyStats } from './studyStats';
 

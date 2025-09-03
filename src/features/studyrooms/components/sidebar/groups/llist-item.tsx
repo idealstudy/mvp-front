@@ -5,22 +5,39 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { cn } from '@/lib/utils';
 
 export const GroupListItem = ({
   group,
   selectedGroupId,
   handleSelectGroup,
-  handleRenameGroup,
-  handleDeleteGroup,
+  dispatch,
 }: {
   group: { id: number; name: string };
   selectedGroupId: number;
   handleSelectGroup: (id: number) => void;
-  handleRenameGroup: () => void;
-  handleDeleteGroup: () => void;
+  dispatch: (action: DialogAction) => void;
 }) => {
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+
+  const handleRenameGroup = () => {
+    dispatch({
+      type: 'OPEN',
+      scope: 'group',
+      kind: 'rename',
+      payload: { groupId: group.id, initialTitle: group.name },
+    });
+  };
+
+  const handleDeleteGroup = () => {
+    dispatch({
+      type: 'OPEN',
+      scope: 'group',
+      kind: 'delete',
+      payload: { groupId: group.id, title: group.name },
+    });
+  };
 
   return (
     <div
