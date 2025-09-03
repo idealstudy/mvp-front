@@ -14,13 +14,13 @@ export const StudyNotesQueryKey = {
   studyNotes: (args: {
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
-    keyword: string;
+    // keyword: string;
   }) => [
     ...StudyNotesQueryKey.all,
     'studyNotes',
     args.studyRoomId,
     args.pageable,
-    args.keyword,
+    // args.keyword,
   ],
 };
 
@@ -40,14 +40,14 @@ export const StudyNotesByGroupIdQueryKey = {
     studyRoomId: number;
     teachingNoteGroupId: number | string;
     pageable: StudyNoteGroupPageable;
-    keyword: string;
+    // keyword: string;
   }) => [
     ...StudyNotesByGroupIdQueryKey.all,
     'studyNotesByGroupId',
     args.studyRoomId,
     args.teachingNoteGroupId,
     args.pageable,
-    args.keyword,
+    // args.keyword,
   ],
 };
 
@@ -101,7 +101,7 @@ export const UpdateStudyNoteQueryKey = {
 export const getStudyNotesOption = (args: {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   return queryOptions({
     queryKey: StudyNotesQueryKey.studyNotes(args),
@@ -113,7 +113,7 @@ export const getStudyNotesByGroupIdOption = (args: {
   studyRoomId: number;
   teachingNoteGroupId: number | string;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   return queryOptions({
     queryKey: StudyNotesByGroupIdQueryKey.studyNotesByGroupId(args),

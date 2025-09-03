@@ -24,13 +24,13 @@ export const StudyNotes = ({
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const { id } = useParams();
   const studyRoomId = Number(id);
 
   const pageable: StudyNoteGroupPageable = {
-    page: currentPage - 1,
+    page: currentPage,
     size: limit,
     sortKey: sort,
   };
@@ -38,14 +38,14 @@ export const StudyNotes = ({
   const { data } = useStudyNotesQuery({
     studyRoomId: studyRoomId,
     pageable: pageable,
-    keyword: search,
+    // keyword: search,
   });
 
   const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery({
     studyRoomId: studyRoomId,
     teachingNoteGroupId: selectedGroupId,
     pageable: pageable,
-    keyword: search,
+    // keyword: search,
     enabled: selectedGroupId !== 'all',
   });
 

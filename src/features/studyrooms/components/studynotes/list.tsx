@@ -3,10 +3,10 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { formatMMDDWeekday, getRelativeTimeString } from '@/lib/utils';
 
+import { ListItem } from '../common/list-item';
 import { StudyNotesDropdown } from './dropdown';
 import type { StudyNote, StudyNoteGroupPageable } from './type';
 
@@ -27,14 +27,10 @@ export const StudyNotesList = ({
     setOpen(open === id ? 0 : id);
   };
 
-  return data.map((item) => (
-    <Link
-      key={item.id}
-      className="font-body2-normal hover:bg-gray-scale-gray-1 flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
-      href="#"
-    >
-      <div className="flex flex-row items-center gap-3">
-        {item.visibility === 'PUBLIC' && (
+  const image = (item: StudyNote) => {
+    switch (item.visibility) {
+      case 'PUBLIC':
+        return (
           <Image
             src="/studynotes/read-global.svg"
             width={28}
@@ -42,10 +38,9 @@ export const StudyNotesList = ({
             alt="study-notes"
             className="h-[28px] w-[28px] cursor-pointer"
           />
-        )}
-        {(item.visibility === 'SPECIFIC_STUDENTS_ONLY' ||
-          item.visibility === 'SPECIFIC_STUDENTS_AND_PARENTS' ||
-          item.visibility === 'STUDY_ROOM_STUDENTS_AND_PARENTS') && (
+        );
+      case 'SPECIFIC_STUDENTS_ONLY':
+        return (
           <Image
             src="/studynotes/read-students.svg"
             width={28}
@@ -53,8 +48,29 @@ export const StudyNotesList = ({
             alt="study-notes"
             className="h-[28px] w-[28px] cursor-pointer"
           />
-        )}
-        {item.visibility === 'TEACHER_ONLY' && (
+        );
+      case 'SPECIFIC_STUDENTS_AND_PARENTS':
+        return (
+          <Image
+            src="/studynotes/read-students.svg"
+            width={28}
+            height={28}
+            alt="study-notes"
+            className="h-[28px] w-[28px] cursor-pointer"
+          />
+        );
+      case 'STUDY_ROOM_STUDENTS_AND_PARENTS':
+        return (
+          <Image
+            src="/studynotes/read-students.svg"
+            width={28}
+            height={28}
+            alt="study-notes"
+            className="h-[28px] w-[28px] cursor-pointer"
+          />
+        );
+      case 'TEACHER_ONLY':
+        return (
           <Image
             src="/studynotes/read-secret.svg"
             width={28}
@@ -62,28 +78,31 @@ export const StudyNotesList = ({
             alt="study-notes"
             className="h-[28px] w-[28px] cursor-pointer"
           />
-        )}
+        );
+      default:
+        return null;
+    }
+  };
 
-        <div className="flex flex-col items-start justify-between">
-          <div className="flex flex-row items-center gap-2">
-            <p>{item.title}</p>
-            {item.groupId && (
-              <p className="text-gray-scale-gray-60 bg-gray-scale-gray-5 flex h-5 items-center justify-center rounded-[4px] p-1 text-[10px]">
-                {item.groupName}
-              </p>
-            )}
-          </div>
-          <p className="font-caption-normal text-gray-scale-gray-60">
-            {item.updatedAt === item.taughtAt
-              ? `${getRelativeTimeString(item.taughtAt)} 작성`
-              : `${getRelativeTimeString(item.updatedAt)} 수정`}
+  return data.map((item) => (
+    <ListItem
+      key={item.id}
+      title={item.title}
+      tag={
+        item.groupId && (
+          <p className="text-gray-scale-gray-60 bg-gray-scale-gray-5 flex h-5 items-center justify-center rounded-[4px] p-1 text-[10px]">
+            {item.groupName}
           </p>
-        </div>
-      </div>
-      <div className="flex flex-row items-center gap-1">
-        <p className="text-gray-scale-gray-70">
-          {formatMMDDWeekday(item.taughtAt)}
-        </p>
+        )
+      }
+      icon={image(item)}
+      subtitle={
+        item.updatedAt === item.taughtAt
+          ? `${getRelativeTimeString(item.taughtAt)} 작성`
+          : `${getRelativeTimeString(item.updatedAt)} 수정`
+      }
+      date={formatMMDDWeekday(item.taughtAt)}
+      dropdown={
         <StudyNotesDropdown
           open={open}
           handleOpen={handleOpen}
@@ -92,7 +111,9 @@ export const StudyNotesList = ({
           pageable={pageable}
           keyword={keyword}
         />
-      </div>
-    </Link>
+      }
+      href={`/dashboard/studynote/${item.id}/write`}
+      id={item.id}
+    />
   ));
 };

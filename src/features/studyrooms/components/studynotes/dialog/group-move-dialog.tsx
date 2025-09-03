@@ -61,7 +61,7 @@ export const GroupMoveDialog = ({
     studyNoteId: studyNoteId,
     studyRoomId,
     pageable,
-    keyword,
+    // keyword,
   });
 
   const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteToGroup({

@@ -5,7 +5,7 @@ import type { StudyNote, StudyNoteGroupPageable } from '../type';
 export const getStudyNotes = async (args: {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   const response = (
     await apiClient.get<
@@ -15,7 +15,7 @@ export const getStudyNotes = async (args: {
         page: args.pageable.page,
         size: args.pageable.size,
         sortKey: args.pageable.sortKey,
-        keyword: args.keyword,
+        // keyword: args.keyword,
       },
     })
   ).data;
@@ -26,7 +26,7 @@ export const getStudyNotesByGroupId = async (args: {
   studyRoomId: number;
   teachingNoteGroupId: number | string;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   const response = await apiClient.get(
     `/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups/${args.teachingNoteGroupId}/teaching-notes`,
@@ -35,7 +35,7 @@ export const getStudyNotesByGroupId = async (args: {
         page: args.pageable.page,
         size: args.pageable.size,
         sortKey: args.pageable.sortKey,
-        keyword: args.keyword,
+        // keyword: args.keyword,
       },
     }
   );

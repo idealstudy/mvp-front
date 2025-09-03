@@ -13,7 +13,7 @@ import {
 export const useStudyNotesQuery = (args: {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   return useQuery(getStudyNotesOption(args));
 };
@@ -22,7 +22,7 @@ export const useStudyNotesByGroupIdQuery = (args: {
   studyRoomId: number;
   teachingNoteGroupId: number | string;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
   enabled?: boolean;
 }) => {
   return useQuery({
@@ -35,7 +35,7 @@ export const useDeleteStudyNoteToGroup = (args: {
   studyNoteId: number;
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
-  keyword: string;
+  // keyword: string;
 }) => {
   const queryClient = useQueryClient();
 
@@ -46,7 +46,7 @@ export const useDeleteStudyNoteToGroup = (args: {
         queryKey: StudyNotesQueryKey.studyNotes({
           studyRoomId: args.studyRoomId,
           pageable: args.pageable,
-          keyword: args.keyword,
+          // keyword: args.keyword,
         }),
       });
       queryClient.invalidateQueries({
@@ -79,7 +79,7 @@ export const useUpdateStudyNoteToGroup = (args: {
         queryKey: StudyNotesQueryKey.studyNotes({
           studyRoomId: args.studyRoomId,
           pageable: args.pageable,
-          keyword: args.keyword,
+          // keyword: args.keyword,
         }),
       });
       queryClient.invalidateQueries({
