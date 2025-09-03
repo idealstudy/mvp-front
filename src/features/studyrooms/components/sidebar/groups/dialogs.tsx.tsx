@@ -9,7 +9,7 @@ import {
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-export const StudyroomGroupsDialog = ({
+export const StudyroomGroupDialogs = ({
   dialog,
   dispatch,
   handleCreateGroup,

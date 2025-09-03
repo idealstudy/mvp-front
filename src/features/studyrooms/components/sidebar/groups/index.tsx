@@ -7,7 +7,7 @@ import {
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { StudyroomGroupsDialog } from './dialog';
+import { StudyroomGroupDialogs } from './dialogs.tsx';
 import { GroupListItem } from './llist-item';
 
 export const StudyroomGroups = ({
@@ -33,7 +33,7 @@ export const StudyroomGroups = ({
 
   return (
     <>
-      <StudyroomGroupsDialog
+      <StudyroomGroupDialogs
         dialog={dialog}
         dispatch={dispatch}
         handleCreateGroup={handleCreateGroup}
