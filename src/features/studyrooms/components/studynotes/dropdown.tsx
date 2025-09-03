@@ -10,6 +10,7 @@ import {
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
 import { StudyNotesDialog } from './dialog';
+import type { StudyNote } from './type';
 import type { StudyNoteGroupPageable } from './type';
 
 export const StudyNotesDropdown = ({
@@ -23,13 +24,7 @@ export const StudyNotesDropdown = ({
   studyRoomId: number;
   open: number;
   handleOpen: (id: number) => void;
-  item: {
-    id: number;
-    title: string;
-    groupName?: string;
-    groupId?: number | null;
-    visibility: string;
-  };
+  item: StudyNote;
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
@@ -47,7 +42,7 @@ export const StudyNotesDropdown = ({
         studyRoomId={studyRoomId}
         pageable={pageable}
         keyword={keyword}
-        studyNoteId={item.id}
+        item={item}
       />
       <DropdownMenu
         open={open === item.id}
@@ -65,7 +60,8 @@ export const StudyNotesDropdown = ({
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className="w-[110px] justify-center">
           <DropdownMenu.Item
-            onClick={() =>
+            onClick={(e) => {
+              e.preventDefault();
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
@@ -73,14 +69,15 @@ export const StudyNotesDropdown = ({
                 payload: {
                   initialTitle: item.title,
                 },
-              })
-            }
+              });
+            }}
             className="justify-center"
           >
             <p>제목수정</p>
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onClick={() =>
+            onClick={(e) => {
+              e.preventDefault();
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
@@ -88,8 +85,8 @@ export const StudyNotesDropdown = ({
                 payload: {
                   noteId: item.id,
                 },
-              })
-            }
+              });
+            }}
             className="justify-center px-[12px]"
           >
             그룹이동하기
@@ -104,14 +101,18 @@ export const StudyNotesDropdown = ({
           </DropdownMenu.Item>
           <DropdownMenu.Item
             className="justify-center"
-            onClick={handleCopy}
+            onClick={(e) => {
+              e.preventDefault();
+              handleCopy();
+            }}
           >
             복제하기
           </DropdownMenu.Item>
           <DropdownMenu.Item
             variant="danger"
             className="justify-center"
-            onClick={() =>
+            onClick={(e) => {
+              e.preventDefault();
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
@@ -119,8 +120,8 @@ export const StudyNotesDropdown = ({
                 payload: {
                   noteId: item.id,
                 },
-              })
-            }
+              });
+            }}
           >
             삭제하기
           </DropdownMenu.Item>

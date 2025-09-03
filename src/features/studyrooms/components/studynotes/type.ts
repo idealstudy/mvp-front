@@ -1,3 +1,8 @@
+export interface StudentInfo {
+  studentId: number;
+  studentName: string;
+}
+
 export interface StudyNote {
   id: number;
   groupId: number | null;
@@ -9,19 +14,9 @@ export interface StudyNote {
   updatedAt: string;
 }
 
-export interface StudyNoteDetails {
-  id: number;
-  studyRoomId: number;
-  studyRoomName: string;
-  title: string;
+export interface StudyNoteDetails extends StudyNote {
   content: string;
-  taughtAt: string;
-  studentInfos: [
-    {
-      studentId: number;
-      studentName: string;
-    }[],
-  ];
+  studentInfos: StudentInfo[];
 }
 
 export interface StudyNoteGroupPageable {

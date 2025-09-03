@@ -1,10 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { StudyNoteDetail } from '@/features/dashboard/studynote/detail/tyoe';
+import {
+  type UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../type';
 import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
+import { updateStudyNote } from './api';
 import {
   StudyNoteGroupQueryKey,
   StudyNotesQueryKey,
+  UpdateStudyNoteQueryKey,
   getStudyNoteDetailsOption,
   getStudyNotesByGroupIdOption,
   getStudyNotesOption,
@@ -96,21 +104,61 @@ export const useUpdateStudyNoteToGroup = (args: {
   });
 };
 
-export const useStudyNoteDetailsQuery = (args: { teachingNoteId: number }) => {
-  return useQuery(getStudyNoteDetailsOption(args));
+export const useStudyNoteDetailsQuery = (
+  args: { teachingNoteId: number },
+  options?: Partial<
+    UseQueryOptions<
+      StudyNoteDetail,
+      Error,
+      StudyNoteDetail,
+      (string | number)[]
+    >
+  >
+) => {
+  return useQuery({
+    ...getStudyNoteDetailsOption(args),
+    ...options,
+  });
 };
 
-export const useUpdateStudyNote = (args: {
-  teachingNoteId: number;
-  studyRoomId: number;
-  teachingNoteGroupId: number;
-  title: string;
-  content: string;
-  visibility: string;
-  taughtAt: string;
-  studentIds: number[];
-}) => {
+export const useUpdateStudyNote = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => updateStudyNoteGroup(args),
+    mutationFn: (args: {
+      teachingNoteId: number;
+      studyRoomId: number;
+      teachingNoteGroupId: number | null;
+      title: string;
+      content: string;
+      visibility: string;
+      taughtAt: string;
+      studentIds: number[];
+    }) => updateStudyNote(args),
+    onSuccess: (_, args) => {
+      // 스터디 노트 리스트 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: StudyNotesQueryKey.all,
+      });
+
+      // 스터디 노트 그룹 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: StudyNoteGroupQueryKey.all,
+      });
+
+      // 스터디 노트 상세 정보 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: UpdateStudyNoteQueryKey.updateStudyNote({
+          teachingNoteId: args.teachingNoteId,
+          studyRoomId: args.studyRoomId,
+          teachingNoteGroupId: args.teachingNoteGroupId,
+          title: args.title,
+          content: args.content,
+          visibility: args.visibility,
+          taughtAt: args.taughtAt,
+          studentIds: args.studentIds,
+        }),
+      });
+    },
   });
 };

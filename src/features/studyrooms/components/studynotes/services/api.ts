@@ -77,17 +77,10 @@ export const updateStudyNoteGroup = async (args: {
   return response.data;
 };
 
-export const getStudyNoteDetail = async (args: { teachingNoteId: number }) => {
-  const response = await apiClient.get(
-    `/public/teaching-notes/${args.teachingNoteId}`
-  );
-  return response.data;
-};
-
 export const updateStudyNote = async (args: {
   teachingNoteId: number;
   studyRoomId: number;
-  teachingNoteGroupId: number;
+  teachingNoteGroupId: number | null;
   title: string;
   content: string;
   visibility: string;

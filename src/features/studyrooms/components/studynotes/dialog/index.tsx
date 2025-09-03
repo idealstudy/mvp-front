@@ -1,40 +1,58 @@
-import { useState } from 'react';
-
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
+import { useUpdateStudyNote } from '@/features/studyrooms/components/studynotes/services/query';
 import type {
   DialogAction,
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import type { StudyNoteGroupPageable } from '../type';
+import { useStudyNoteDetailsQuery } from '../services/query';
+import type { StudyNote, StudyNoteGroupPageable } from '../type';
 import { GroupMoveDialog } from './group-move-dialog';
 
 export const StudyNotesDialog = ({
   state,
   dispatch,
   studyRoomId,
-  studyNoteId,
+  item,
   pageable,
   keyword,
 }: {
   state: DialogState;
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
-  studyNoteId: number;
+  item: StudyNote;
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
-  const [renameName, setRenameName] = useState<string>('');
+  const { data } = useStudyNoteDetailsQuery(
+    {
+      teachingNoteId: item.id,
+    },
+    {
+      enabled: state.status === 'open' && !!item.id,
+    }
+  );
+
+  const { mutate: updateStudyNote } = useUpdateStudyNote();
 
   const handleRename = (name: string) => {
-    setRenameName(name);
+    updateStudyNote({
+      teachingNoteId: item.id,
+      studyRoomId,
+      title: name,
+      teachingNoteGroupId: item.groupId ?? null,
+      content: data?.content || '',
+      visibility: item.visibility,
+      taughtAt: item.taughtAt,
+      studentIds: data?.studentInfos?.map((student) => student.studentId) ?? [],
+    });
   };
 
   if (state.status !== 'open') return null;
 
   return (
-    <>
+    <div onSelect={(e) => e.preventDefault()}>
       {state.scope === 'note' && state.kind === 'rename' && (
         <InputDialog
           isOpen={true}
@@ -42,7 +60,7 @@ export const StudyNotesDialog = ({
           onOpenChange={() => dispatch({ type: 'CLOSE' })}
           title="제목 수정하기"
           description="수업노트 제목"
-          onSubmit={() => handleRename(renameName)}
+          onSubmit={(name) => handleRename(name)}
         />
       )}
 
@@ -51,7 +69,7 @@ export const StudyNotesDialog = ({
           open
           dispatch={dispatch}
           studyRoomId={studyRoomId}
-          studyNoteId={studyNoteId}
+          studyNoteId={item.id}
           pageable={pageable}
           keyword={keyword}
         />
@@ -76,6 +94,6 @@ export const StudyNotesDialog = ({
           description="수업노트가 삭제되었습니다."
         />
       )}
-    </>
+    </div>
   );
 };
