@@ -1,11 +1,6 @@
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
-import { Pageable } from '@/lib/api';
 
-import type {
-  StudyNote,
-  StudyNoteGroup,
-  StudyNoteGroupPageable,
-} from '../type';
+import type { StudyNote, StudyNoteGroupPageable } from '../type';
 
 export const getStudyNotes = async (args: {
   studyRoomId: number;
@@ -21,27 +16,6 @@ export const getStudyNotes = async (args: {
         size: args.pageable.size,
         sortKey: args.pageable.sortKey,
         // keyword: args.keyword,
-      },
-    })
-  ).data;
-  return response.data;
-};
-
-export const getStudyNoteGroup = async (args: {
-  studyRoomId: number;
-  pageable: Pageable;
-}) => {
-  const response = (
-    await apiClient.get<
-      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
-    >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
-      params: {
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sort: args.pageable.sort,
-      },
-      paramsSerializer: {
-        indexes: null,
       },
     })
   ).data;

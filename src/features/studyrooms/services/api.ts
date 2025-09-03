@@ -1,0 +1,26 @@
+import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
+import { Pageable } from '@/lib/api';
+
+import type { StudyNoteGroup } from '../components/studynotes/type';
+
+// 수업노트 그룹 조회
+export const getStudyNoteGroup = async (args: {
+  studyRoomId: number;
+  pageable: Pageable;
+}) => {
+  const response = (
+    await apiClient.get<
+      CommonResponse<PaginationMeta & { content: StudyNoteGroup[] }>
+    >(`/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups`, {
+      params: {
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sort: args.pageable.sort,
+      },
+      paramsSerializer: {
+        indexes: null,
+      },
+    })
+  ).data;
+  return response.data;
+};

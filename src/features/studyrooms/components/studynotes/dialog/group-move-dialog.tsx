@@ -1,16 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
+import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import {
   useDeleteStudyNoteGroup,
   useUpdateStudyNoteGroup,
 } from '../services/query';
-import { getStudyNoteGroupInfiniteOption } from '../services/query-options';
 import type { StudyNoteGroupPageable } from '../type';
 
 const PAGE_SIZE = 10;
@@ -31,7 +34,6 @@ export const GroupMoveDialog = ({
   keyword: string;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     data: studyNoteGroups,
@@ -43,6 +45,12 @@ export const GroupMoveDialog = ({
       studyRoomId: studyRoomId,
       pageable: { ...pageable, size: PAGE_SIZE, sort: [pageable.sortKey] },
     }),
+  });
+
+  const { scrollContainerRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
   });
 
   const { mutate: removeStudyNoteGroup } = useDeleteStudyNoteGroup({
@@ -59,27 +67,6 @@ export const GroupMoveDialog = ({
     pageable,
     keyword,
   });
-
-  const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current || !hasNextPage || isFetchingNextPage)
-      return;
-
-    const { scrollTop, scrollHeight, clientHeight } =
-      scrollContainerRef.current;
-    const scrollThreshold = 50;
-
-    if (scrollTop + clientHeight >= scrollHeight - scrollThreshold) {
-      fetchNextPage();
-    }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }
-  }, [handleScroll]);
 
   const handleSave = () => {
     if (selectedGroup === null || selectedGroup === 'none') {
@@ -122,23 +109,7 @@ export const GroupMoveDialog = ({
                 className="max-h-60"
                 position="popper"
               >
-                <div
-                  className="max-h-40 overflow-y-auto"
-                  onScroll={(e) => {
-                    const target = e.target as HTMLDivElement;
-                    const { scrollTop, scrollHeight, clientHeight } = target;
-                    const scrollThreshold = 50;
-
-                    if (
-                      scrollTop + clientHeight >=
-                      scrollHeight - scrollThreshold
-                    ) {
-                      if (hasNextPage && !isFetchingNextPage) {
-                        fetchNextPage();
-                      }
-                    }
-                  }}
-                >
+                <div className="max-h-40 overflow-y-auto">
                   <Select.Option value="none">없음</Select.Option>
                   {studyNoteGroups?.pages.map((page) =>
                     page.content.map((item) => (

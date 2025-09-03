@@ -1,13 +1,8 @@
-import { Pageable, PaginationMeta } from '@/lib/api';
-import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
+import { Pageable } from '@/lib/api';
+import { queryOptions } from '@tanstack/react-query';
 
-import type { StudyNoteGroup, StudyNoteGroupPageable } from '../type';
-import {
-  getStudyNoteDetail,
-  getStudyNoteGroup,
-  getStudyNotes,
-  updateStudyNote,
-} from './api';
+import type { StudyNoteGroupPageable } from '../type';
+import { getStudyNoteDetail, getStudyNotes, updateStudyNote } from './api';
 
 export const StudyNotesQueryKey = {
   all: ['studyNotes'],
@@ -89,37 +84,6 @@ export const getStudyNotesOption = (args: {
   return queryOptions({
     queryKey: StudyNotesQueryKey.studyNotes(args),
     queryFn: () => getStudyNotes(args),
-  });
-};
-
-export const getStudyNoteGroupOption = (args: {
-  studyRoomId: number;
-  pageable: Pageable;
-}) => {
-  return queryOptions({
-    queryKey: StudyNoteGroupQueryKey.studyNoteGroups(args),
-    queryFn: () => getStudyNoteGroup(args),
-  });
-};
-
-export const getStudyNoteGroupInfiniteOption = (args: {
-  studyRoomId: number;
-  pageable: Pageable;
-}) => {
-  return infiniteQueryOptions({
-    queryKey: [...StudyNoteGroupQueryKey.studyNoteGroups(args), 'infinite'],
-    queryFn: ({ pageParam = 0 }) =>
-      getStudyNoteGroup({
-        ...args,
-        pageable: { ...args.pageable, page: pageParam },
-      }),
-    initialPageParam: 0,
-    getNextPageParam: (
-      lastPage: PaginationMeta & { content: StudyNoteGroup[] }
-    ) => {
-      if (lastPage.pageNumber >= lastPage.totalPages - 1) return undefined;
-      return lastPage.pageNumber + 1;
-    },
   });
 };
 
