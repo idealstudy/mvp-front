@@ -24,7 +24,7 @@ export const ListItem = ({
   return (
     <Link
       key={id}
-      className="font-body2-normal hover:bg-gray-scale-gray-1 flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
+      className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
       href={href}
     >
       <div className="flex flex-row items-center gap-3">
