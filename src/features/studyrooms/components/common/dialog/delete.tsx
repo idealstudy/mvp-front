@@ -6,15 +6,22 @@ export const DeleteDialog = ({
   onCancel,
   onConfirm,
   onOpenChange,
+  title,
+  description,
+  handleDeleteMsg,
 }: {
   open: boolean;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   onOpenChange: (open: boolean) => void;
+  title?: string;
+  description: string;
+  handleDeleteMsg?: () => void;
 }) => {
   const handleDelete = () => {
     // TODO: API 호출이나 상태 업데이트 로직 넣기
-    onConfirm();
+    onConfirm?.();
+    handleDeleteMsg?.();
   };
 
   return (
@@ -28,10 +35,10 @@ export const DeleteDialog = ({
         </Dialog.Header>
         <Dialog.Body className="mt-6">
           <Dialog.Description className="font-headline1-heading text-center">
-            수업 노트를 삭제하시겠습니까?
+            {title}
           </Dialog.Description>
           <Dialog.Description className="font-headline2-normal mt-4 text-center">
-            삭제된 수업노트는 복구할 수 없습니다.
+            {description}
           </Dialog.Description>
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-center">

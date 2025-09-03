@@ -1,15 +1,26 @@
+'use client';
+
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { TextField } from '@/components/ui/text-field';
 
-export const DeleteGroupDialog = ({
+export const RenameDialog = ({
   isOpen,
+  initialName,
   onOpenChange,
-  onConfirm,
+  title,
+  handleRename,
 }: {
   isOpen: boolean;
+  initialName: string;
   onOpenChange: () => void;
-  onConfirm: () => void;
+  title: string;
+  handleRename: () => void;
 }) => {
+  const [name, setName] = useState('');
+
   return (
     <Dialog
       isOpen={isOpen}
@@ -17,22 +28,27 @@ export const DeleteGroupDialog = ({
     >
       <Dialog.Content className="w-[598px]">
         <Dialog.Header>
-          <Dialog.Title className="text-center"></Dialog.Title>
+          <Dialog.Title>{title}</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body className="mt-6">
-          <Dialog.Description className="font-headline1-heading text-center">
-            수업 노트 그룹을 삭제하시겠습니까?
+          <Dialog.Description className="font-headline2-heading mb-1">
+            {title}
           </Dialog.Description>
-          <Dialog.Description className="font-headline2-normal mt-4 text-center">
-            삭제된 수업노트 그룹은 복구할 수 없습니다.
-          </Dialog.Description>
+          <TextField>
+            <TextField.Input
+              placeholder={`${initialName}`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={15}
+            />
+          </TextField>
         </Dialog.Body>
-        <Dialog.Footer className="mt-6 justify-center">
+        <Dialog.Footer className="mt-6 justify-end">
           <Dialog.Close asChild>
             <Button
+              variant="outlined"
               className="w-[120px]"
               size="small"
-              variant="outlined"
               onClick={onOpenChange}
             >
               취소
@@ -42,10 +58,10 @@ export const DeleteGroupDialog = ({
             <Button
               className="w-[120px]"
               size="small"
-              variant="secondary"
-              onClick={onConfirm}
+              disabled={!name.trim()}
+              onClick={handleRename}
             >
-              삭제
+              저장
             </Button>
           </Dialog.Close>
         </Dialog.Footer>

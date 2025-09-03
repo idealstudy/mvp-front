@@ -4,28 +4,32 @@ import { useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
+import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
+import { RenameDialog } from '@/features/studyrooms/components/common/dialog/rename';
 import {
   dialogReducer,
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
 import { CreateGroupDialog } from './create-dialog';
-import { DeleteGroupDialog } from './delete-dialog';
 import { GroupListItem } from './llist-item';
-import { RenameGroupDialog } from './rename-dialog';
 
 export const StudyroomGroups = ({
   groups,
-  handleGroupDeleteConfirmAction,
 }: {
   groups: { id: number; name: string }[];
-  handleGroupDeleteConfirmAction: () => void;
 }) => {
   const [selectedGroupId, setSelectedGroupId] = useState<number>(12);
+  const [renameName, setRenameName] = useState<string>('');
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   const handleSelectGroup = (id: number) => {
     setSelectedGroupId(id);
+  };
+
+  const handleRename = (name: string) => {
+    setRenameName(name);
   };
 
   const handleGroupAction = (action: 'create' | 'rename' | 'delete') => {
@@ -34,7 +38,7 @@ export const StudyroomGroups = ({
         dispatch({
           type: 'OPEN',
           scope: 'group',
-          kind: 'rename', // create는 rename kind로 처리
+          kind: 'create',
           payload: { groupId: undefined },
         });
         break;
@@ -67,7 +71,7 @@ export const StudyroomGroups = ({
     <>
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
-        dialog.kind === 'rename' &&
+        dialog.kind === 'create' &&
         !dialog.payload?.groupId && (
           <CreateGroupDialog
             isOpen={true}
@@ -79,20 +83,35 @@ export const StudyroomGroups = ({
         dialog.scope === 'group' &&
         dialog.kind === 'rename' &&
         dialog.payload?.groupId && (
-          <RenameGroupDialog
+          <RenameDialog
             isOpen={true}
-            initialGroupName={dialog.payload?.initialTitle || ''}
+            initialName={dialog.payload?.initialTitle || ''}
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            title="수업노트 그룹 수정"
+            handleRename={() => handleRename(renameName)}
           />
         )}
 
       {dialog.status === 'open' &&
         dialog.scope === 'group' &&
         dialog.kind === 'delete' && (
-          <DeleteGroupDialog
-            isOpen={true}
+          <DeleteDialog
+            open={true}
+            onCancel={() => dispatch({ type: 'CLOSE' })}
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
-            onConfirm={handleGroupDeleteConfirmAction}
+            onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
+            title="수업 노트 그룹을 삭제하시겠습니까?"
+            description="삭제된 수업노트 그룹은 복구할 수 없습니다."
+          />
+        )}
+
+      {dialog.status === 'open' &&
+        dialog.scope === 'group' &&
+        dialog.kind === 'onConfirm' && (
+          <OnConfirmDialog
+            open={true}
+            dispatch={dispatch}
+            description="삭제된 수업노트 그룹은 복구할 수 없습니다."
           />
         )}
 

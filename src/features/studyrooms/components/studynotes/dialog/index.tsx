@@ -1,13 +1,15 @@
+import { useState } from 'react';
+
+import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
+import { RenameDialog } from '@/features/studyrooms/components/common/dialog/rename';
 import type {
   DialogAction,
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
 import type { StudyNoteGroupPageable } from '../type';
-import { DeleteDialog } from './delete-dialog';
 import { GroupMoveDialog } from './group-move-dialog';
-import { OnConfirmDialog } from './on-confirm-dialog';
-import { RenameDialog } from './rename-dialog';
 
 export const StudyNotesDialog = ({
   state,
@@ -24,16 +26,23 @@ export const StudyNotesDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
+  const [renameName, setRenameName] = useState<string>('');
+
+  const handleRename = (name: string) => {
+    setRenameName(name);
+  };
+
   if (state.status !== 'open') return null;
 
   return (
     <>
       {state.scope === 'note' && state.kind === 'rename' && (
         <RenameDialog
-          open
-          state={state}
-          dispatch={dispatch}
-          studyNoteId={studyNoteId}
+          isOpen={true}
+          initialName={state.payload?.initialTitle || ''}
+          onOpenChange={() => dispatch({ type: 'CLOSE' })}
+          title="수업노트 이름 변경"
+          handleRename={() => handleRename(renameName)}
         />
       )}
 
@@ -54,6 +63,8 @@ export const StudyNotesDialog = ({
           onCancel={() => dispatch({ type: 'CLOSE' })}
           onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
           onOpenChange={(open) => !open && dispatch({ type: 'CLOSE' })}
+          title="수업 노트를 삭제하시겠습니까?"
+          description="삭제된 수업노트는 복구할 수 없습니다."
         />
       )}
 
@@ -61,6 +72,7 @@ export const StudyNotesDialog = ({
         <OnConfirmDialog
           open
           dispatch={dispatch}
+          description="수업노트가 삭제되었습니다."
         />
       )}
     </>

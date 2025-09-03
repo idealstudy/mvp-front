@@ -7,8 +7,9 @@ export default function StudyRoomDetailPage() {
   return (
     <main>
       <ColumnLayout>
-        <ColumnLayout.Left className="h-[400px] rounded-[12px] bg-gray-200" />
-        <StudyroomSidebar />
+        <ColumnLayout.Left className="h-[400px] rounded-[12px] bg-gray-200">
+          <StudyroomSidebar />
+        </ColumnLayout.Left>
         <ColumnLayout.Right className="desktop:max-w-[740px] flex h-[400px] flex-col gap-3 rounded-[12px] px-8 py-6">
           <StudyRoomTabs />
           <StudyNotes />
