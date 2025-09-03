@@ -51,6 +51,12 @@ export const StudyNotes = () => {
     setLimit(Number(e) as StudyNoteLimit);
   };
 
+  const page = {
+    page: currentPage,
+    totalPages: data?.totalPages || 0,
+    onPageChange: handlePageChange,
+  };
+
   useEffect(() => {
     setCurrentPage(0);
   }, [search, sort, limit]);
@@ -73,11 +79,7 @@ export const StudyNotes = () => {
           keyword={search}
         />
       </div>
-      <Pagination
-        page={currentPage}
-        totalPages={data?.totalPages || 0}
-        onPageChange={handlePageChange}
-      />
+      <Pagination {...page} />
     </div>
   );
 };

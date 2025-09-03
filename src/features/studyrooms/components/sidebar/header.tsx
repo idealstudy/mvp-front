@@ -1,19 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import Image from 'next/image';
 
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
 
 export const StudyroomSidebarHeader = ({
-  handleRoomRename,
-  handleDeleteRoom,
+  studyRoomId,
 }: {
-  handleRoomRename: () => void;
-  handleDeleteRoom: () => void;
+  studyRoomId: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   return (
     <>
@@ -36,14 +40,41 @@ export const StudyroomSidebarHeader = ({
             />
           </DropdownMenu.Trigger>
           <DropdownMenu.Content>
-            <DropdownMenu.Item onClick={handleRoomRename}>
+            {/* <DropdownMenu.Item onClick={handleRoomRename}>
               편집하기
+            </DropdownMenu.Item> */}
+            <DropdownMenu.Item
+              onClick={() =>
+                dispatch({
+                  type: 'OPEN',
+                  scope: 'studyroom',
+                  kind: 'rename',
+                  payload: {
+                    initialTitle: '에듀중학교 복습반',
+                    studyRoomId: studyRoomId,
+                  },
+                })
+              }
+              className="justify-center"
+            >
+              <p>편집하기</p>
             </DropdownMenu.Item>
+
             <DropdownMenu.Item
               variant="danger"
-              onClick={handleDeleteRoom}
+              className="justify-center"
+              onClick={() =>
+                dispatch({
+                  type: 'OPEN',
+                  scope: 'studyroom',
+                  kind: 'delete',
+                  payload: {
+                    studyRoomId: studyRoomId,
+                  },
+                })
+              }
             >
-              삭제하기
+              <p>삭제하기</p>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu>

@@ -12,6 +12,7 @@ export type DialogState =
         title?: string;
         initialTitle?: string;
         groupId?: string;
+        studyRoomId?: string;
       };
     };
 
@@ -25,6 +26,7 @@ export type DialogAction =
         title?: string;
         initialTitle?: string;
         groupId?: string;
+        studyRoomId?: string;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

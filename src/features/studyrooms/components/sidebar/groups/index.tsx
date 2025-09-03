@@ -1,27 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import Image from 'next/image';
+
+import {
+  dialogReducer,
+  initialDialogState,
+} from '@/features/studyrooms/hooks/useDialogReducer';
 
 import { CreateGroupDialog } from './create-dialog';
 import { DeleteGroupDialog } from './delete-dialog';
 import { GroupListItem } from './llist-item';
 import { RenameGroupDialog } from './rename-dialog';
-
-type GroupDialogType = 'create' | 'rename' | 'delete' | null;
-
-interface GroupDialogData {
-  groupId?: number;
-  currentName?: string;
-  groupName?: string;
-}
-
-interface GroupDialogState {
-  isOpen: boolean;
-  type: GroupDialogType;
-  data?: GroupDialogData;
-}
 
 export const StudyroomGroups = ({
   groups,
@@ -31,38 +22,42 @@ export const StudyroomGroups = ({
   handleGroupDeleteConfirmAction: () => void;
 }) => {
   const [selectedGroupId, setSelectedGroupId] = useState<number>(12);
-  const [groupDialog, setGroupDialog] = useState<GroupDialogState>({
-    isOpen: false,
-    type: null,
-  });
+  const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   const handleSelectGroup = (id: number) => {
     setSelectedGroupId(id);
   };
 
-  const openGroupDialog = (type: GroupDialogType, data?: GroupDialogData) => {
-    setGroupDialog({ isOpen: true, type, data });
-  };
-
-  const closeGroupDialog = () => {
-    setGroupDialog({ isOpen: false, type: null, data: undefined });
-  };
-
-  const handleGroupAction = (action: GroupDialogType) => {
+  const handleGroupAction = (action: 'create' | 'rename' | 'delete') => {
     switch (action) {
       case 'create':
-        openGroupDialog('create');
+        dispatch({
+          type: 'OPEN',
+          scope: 'group',
+          kind: 'rename', // create는 rename kind로 처리
+          payload: { groupId: undefined },
+        });
         break;
       case 'rename':
-        openGroupDialog('rename', {
-          groupId: selectedGroupId,
-          currentName: groups.find((g) => g.id === selectedGroupId)?.name,
+        dispatch({
+          type: 'OPEN',
+          scope: 'group',
+          kind: 'rename',
+          payload: {
+            groupId: selectedGroupId.toString(),
+            initialTitle: groups.find((g) => g.id === selectedGroupId)?.name,
+          },
         });
         break;
       case 'delete':
-        openGroupDialog('delete', {
-          groupId: selectedGroupId,
-          groupName: groups.find((g) => g.id === selectedGroupId)?.name,
+        dispatch({
+          type: 'OPEN',
+          scope: 'group',
+          kind: 'delete',
+          payload: {
+            groupId: selectedGroupId.toString(),
+            title: groups.find((g) => g.id === selectedGroupId)?.name,
+          },
         });
         break;
     }
@@ -70,32 +65,36 @@ export const StudyroomGroups = ({
 
   return (
     <>
-      {groupDialog.isOpen && (
-        <>
-          {groupDialog.type === 'create' && (
-            <CreateGroupDialog
-              isOpen={true}
-              onOpenChange={closeGroupDialog}
-            />
-          )}
+      {dialog.status === 'open' &&
+        dialog.scope === 'group' &&
+        dialog.kind === 'rename' &&
+        !dialog.payload?.groupId && (
+          <CreateGroupDialog
+            isOpen={true}
+            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+          />
+        )}
 
-          {groupDialog.type === 'rename' && (
-            <RenameGroupDialog
-              isOpen={true}
-              initialGroupName={groupDialog.data?.currentName || ''}
-              onOpenChange={closeGroupDialog}
-            />
-          )}
+      {dialog.status === 'open' &&
+        dialog.scope === 'group' &&
+        dialog.kind === 'rename' &&
+        dialog.payload?.groupId && (
+          <RenameGroupDialog
+            isOpen={true}
+            initialGroupName={dialog.payload?.initialTitle || ''}
+            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+          />
+        )}
 
-          {groupDialog.type === 'delete' && (
-            <DeleteGroupDialog
-              isOpen={true}
-              onOpenChange={closeGroupDialog}
-              onConfirm={handleGroupDeleteConfirmAction}
-            />
-          )}
-        </>
-      )}
+      {dialog.status === 'open' &&
+        dialog.scope === 'group' &&
+        dialog.kind === 'delete' && (
+          <DeleteGroupDialog
+            isOpen={true}
+            onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            onConfirm={handleGroupDeleteConfirmAction}
+          />
+        )}
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
