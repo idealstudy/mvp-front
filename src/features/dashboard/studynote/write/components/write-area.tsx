@@ -21,7 +21,7 @@ const WriteArea = () => {
           </h1>
         </span>
         <Image
-          src="/dashboard/study-room-write-header.png"
+          src="/studyroom/study-room-write-header.png"
           alt="header-image"
           width={71}
           height={151}
