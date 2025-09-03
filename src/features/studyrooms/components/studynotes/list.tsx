@@ -30,7 +30,7 @@ export const StudyNotesList = ({
   return data.map((item) => (
     <Link
       key={item.id}
-      className="font-body2-normal hover:bg-gray-scale-gray-5 flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3"
+      className="font-body2-normal hover:bg-gray-scale-gray-1 flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
       href="#"
     >
       <div className="flex flex-row items-center gap-3">
@@ -68,7 +68,7 @@ export const StudyNotesList = ({
           <div className="flex flex-row items-center gap-2">
             <p>{item.title}</p>
             {item.groupId && (
-              <p className="text-gray-scale-gray-60 flex h-5 items-center justify-center rounded-[4px] bg-[#f3f3f3] p-1 text-[10px]">
+              <p className="text-gray-scale-gray-60 bg-gray-scale-gray-5 flex h-5 items-center justify-center rounded-[4px] p-1 text-[10px]">
                 {item.groupName}
               </p>
             )}

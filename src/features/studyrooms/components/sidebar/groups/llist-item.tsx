@@ -42,9 +42,8 @@ export const GroupListItem = ({
   return (
     <div
       className={cn(
-        'group desktop:max-w-[296px] flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-md px-2 py-3 hover:bg-gray-50',
-        selectedGroupId === group.id && 'text-key-color-primary',
-        menuOpenId === group.id && 'bg-gray-50'
+        'group desktop:max-w-[296px] hover:bg-gray-scale-gray-1 flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-[8px] px-2 py-3',
+        selectedGroupId === group.id && 'text-key-color-primary'
       )}
       onClick={() => handleSelectGroup(group.id)}
     >
@@ -82,7 +81,7 @@ export const GroupListItem = ({
           }}
         >
           <DropdownMenu.Trigger
-            className="flex cursor-pointer items-center justify-center"
+            className="flex cursor-pointer justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -91,7 +90,7 @@ export const GroupListItem = ({
               width={24}
               height={24}
               className={cn(
-                'hidden shrink-0 cursor-pointer rounded-[8px] p-1 group-hover:block',
+                'hidden shrink-0 cursor-pointer group-hover:block',
                 menuOpenId === group.id && 'block'
               )}
             />
