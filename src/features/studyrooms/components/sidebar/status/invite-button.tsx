@@ -26,7 +26,7 @@ export const InviteButton = () => {
         />
       )}
       <Button
-        className="bg-orange-scale-orange-1 border-key-color-primary hover:bg-orange-scale-orange-10 flex w-full items-center justify-center gap-1 rounded-[8px]"
+        className="border-key-color-primary hover:bg-orange-scale-orange-10 flex w-full items-center justify-center gap-1 rounded-[8px] bg-white"
         onClick={() =>
           dispatch({ type: 'OPEN', scope: 'invite', kind: 'invite' })
         }
