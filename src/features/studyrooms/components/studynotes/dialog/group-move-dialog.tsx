@@ -11,6 +11,7 @@ import {
   useUpdateStudyNoteGroup,
 } from '../services/query';
 import { getStudyNoteGroupInfiniteOption } from '../services/query-options';
+import type { StudyNoteGroupPageable } from '../type';
 
 const PAGE_SIZE = 10;
 
@@ -26,7 +27,7 @@ export const GroupMoveDialog = ({
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   studyNoteId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
@@ -40,7 +41,7 @@ export const GroupMoveDialog = ({
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { page: 0, size: PAGE_SIZE, sort: ['desc'] },
+      pageable: { ...pageable, size: PAGE_SIZE, sort: [pageable.sortKey] },
     }),
   });
 

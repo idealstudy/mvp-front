@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 
+import type { StudyNoteLimit, StudyNoteSortKey } from './type';
+
 type Props = {
   search: string;
   sort: string;
@@ -16,16 +18,16 @@ type Props = {
   onLimitChange: (value: number) => void;
 };
 
-const SORT_OPTIONS = [
+const SORT_OPTIONS: Array<{ value: StudyNoteSortKey; label: string }> = [
   { value: 'LATEST_EDITED', label: '최근 편집순' },
   { value: 'OLDEST_EDITED', label: '오래된순' },
   { value: 'TITLE_ASC', label: '가나다순' },
   { value: 'TAUGHT_AT_ASC', label: '수업일자순' },
 ];
 
-const LIMIT_OPTIONS = [
-  { value: '20', label: '20개씩' },
-  { value: '30', label: '30개씩' },
+const LIMIT_OPTIONS: Array<{ value: StudyNoteLimit; label: string }> = [
+  { value: 20, label: '20개씩' },
+  { value: 30, label: '30개씩' },
 ];
 
 const SELECT_STYLES = {
@@ -82,7 +84,7 @@ export const SearchFilterBar = ({
             {LIMIT_OPTIONS.map((option) => (
               <Select.Option
                 key={option.value}
-                value={option.value}
+                value={option.value.toString()}
                 className={SELECT_STYLES.option}
               >
                 {option.label}

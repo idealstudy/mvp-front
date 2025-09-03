@@ -1,11 +1,15 @@
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
 import { Pageable } from '@/lib/api';
 
-import { StudyNote, StudyNoteGroup } from '../type';
+import type {
+  StudyNote,
+  StudyNoteGroup,
+  StudyNoteGroupPageable,
+} from '../type';
 
 export const getStudyNotes = async (args: {
   studyRoomId: number;
-  pageable: { page: number; size: number; sortKey: string };
+  pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
   const response = (

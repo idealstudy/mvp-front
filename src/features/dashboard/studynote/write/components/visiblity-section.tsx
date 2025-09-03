@@ -7,8 +7,8 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Select } from '@/components/ui/select';
+import { STUDY_NOTE_VISIBILITY } from '@/features/dashboard/studynote/constant';
 
-import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteForm } from '../schemas/note';
 import { useWriteStudyNoteMutation } from '../services/query';
 import { RequiredMark } from './form-provider';

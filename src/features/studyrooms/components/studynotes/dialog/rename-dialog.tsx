@@ -35,10 +35,10 @@ export const RenameDialog = ({
   const { mutate: updateStudyNote } = useUpdateStudyNote({
     teachingNoteId: studyNoteId,
     studyRoomId: studyNoteDetails?.data?.studyRoomId || 0,
-    teachingNoteGroupId: 1, // 기본값으로 수정
+    teachingNoteGroupId: studyNoteDetails?.data?.teachingNoteGroupId || 0,
     title: title,
     content: studyNoteDetails?.data?.content || '',
-    visibility: 'PUBLIC', // 기본값으로 PUBLIC 설정
+    visibility: studyNoteDetails?.data?.visibility || '',
     taughtAt: studyNoteDetails?.data?.taughtAt || '',
     studentIds:
       studyNoteDetails?.data?.studentInfos?.map(
