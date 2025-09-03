@@ -12,6 +12,7 @@ import {
 
 import { StudyroomGroups } from './groups/index';
 import { StudyroomSidebarHeader } from './header';
+import { useDeleteStudyRoom } from './services/query';
 import { StudyStats } from './studyStats';
 
 export const StudyroomSidebar = ({
@@ -28,12 +29,15 @@ export const StudyroomSidebar = ({
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
 
+  const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
+
   const handleSubmitRoomRename = (name: string) => {
     setRoomName(name);
     dispatch({ type: 'CLOSE' });
   };
 
   const handleDeleteGroup = () => {
+    deleteStudyRoom({ studyRoomId });
     setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
     dispatch({ type: 'GO_TO_CONFIRM' });
   };

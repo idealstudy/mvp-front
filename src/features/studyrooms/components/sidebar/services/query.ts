@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { STUDYROOM_SIDEBAR_GROUPS_PAGEABLE } from '../groups';
 import {
   deleteStudyNoteGroup,
+  deleteStudyRoom,
   postStudyNoteGroup,
   updateStudyNoteGroup,
 } from './api';
@@ -101,5 +102,11 @@ export const useDeleteStudyNoteGroup = () => {
         },
       });
     },
+  });
+};
+
+export const useDeleteStudyRoom = () => {
+  return useMutation({
+    mutationFn: (args: { studyRoomId: number }) => deleteStudyRoom(args),
   });
 };

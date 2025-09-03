@@ -41,3 +41,14 @@ export const deleteStudyNoteGroup = async ({
   );
   return response.data;
 };
+
+export const deleteStudyRoom = async ({
+  studyRoomId,
+}: {
+  studyRoomId: number;
+}) => {
+  const response = await apiClient.delete(
+    `/teacher/study-rooms/${studyRoomId}`
+  );
+  return response.data;
+};

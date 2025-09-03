@@ -29,3 +29,12 @@ export const DeleteStudyNoteGroupQueryKey = {
     args.teachingNoteGroupId,
   ],
 };
+
+export const DeleteStudyRoomQueryKey = {
+  all: ['deleteStudyRoom'],
+  deleteStudyRoom: (args: { studyRoomId: number }) => [
+    ...DeleteStudyRoomQueryKey.all,
+    'deleteStudyRoom',
+    args.studyRoomId,
+  ],
+};
