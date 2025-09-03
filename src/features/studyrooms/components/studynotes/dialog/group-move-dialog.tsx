@@ -16,7 +16,11 @@ import {
 } from '../services/query';
 import type { StudyNoteGroupPageable } from '../type';
 
-const PAGE_SIZE = 10;
+export const GROUP_MOVE_DIALOG_PAGEABLE = {
+  page: 0,
+  size: 10,
+  sort: ['desc'],
+};
 
 export const GroupMoveDialog = ({
   open,
@@ -43,7 +47,7 @@ export const GroupMoveDialog = ({
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { ...pageable, size: PAGE_SIZE, sort: ['id'] },
+      pageable: GROUP_MOVE_DIALOG_PAGEABLE,
     }),
   });
 
@@ -95,10 +99,7 @@ export const GroupMoveDialog = ({
           <Dialog.Description className="font-headline2-heading mb-1">
             이동할 그룹
           </Dialog.Description>
-          <div
-            ref={scrollContainerRef}
-            className="max-h-60 overflow-y-auto"
-          >
+          <div className="max-h-60 overflow-y-auto">
             <Select
               value={selectedGroup ?? ''}
               onValueChange={(value) => setSelectedGroup(value)}
@@ -112,7 +113,10 @@ export const GroupMoveDialog = ({
                 className="max-h-60"
                 position="popper"
               >
-                <div className="max-h-40 overflow-y-auto">
+                <div
+                  className="flex max-h-40 flex-col gap-2 overflow-y-auto"
+                  ref={scrollContainerRef}
+                >
                   {allGroups.map((item) => (
                     <Select.Option
                       key={item.id}

@@ -16,7 +16,7 @@ import { GroupListItem } from './llist-item';
 export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
   page: 0,
   size: 20,
-  sort: ['id'],
+  sort: ['desc'],
 };
 
 export const StudyroomGroups = ({
