@@ -43,7 +43,7 @@ export const GroupMoveDialog = ({
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { ...pageable, size: PAGE_SIZE, sort: [pageable.sortKey] },
+      pageable: { ...pageable, size: PAGE_SIZE, sort: ['id'] },
     }),
   });
 
@@ -77,6 +77,11 @@ export const GroupMoveDialog = ({
     dispatch({ type: 'CLOSE' });
   };
 
+  const allGroups = [
+    { id: 'none', title: '없음' },
+    ...(studyNoteGroups?.pages.flatMap((page) => page.content) || []),
+  ];
+
   return (
     <Dialog
       isOpen={open}
@@ -96,9 +101,7 @@ export const GroupMoveDialog = ({
           >
             <Select
               value={selectedGroup ?? ''}
-              onValueChange={(value) =>
-                setSelectedGroup(value === 'none' ? null : value)
-              }
+              onValueChange={(value) => setSelectedGroup(value)}
             >
               <Select.Trigger
                 className="w-full px-6"
@@ -110,17 +113,14 @@ export const GroupMoveDialog = ({
                 position="popper"
               >
                 <div className="max-h-40 overflow-y-auto">
-                  <Select.Option value="none">없음</Select.Option>
-                  {studyNoteGroups?.pages.map((page) =>
-                    page.content.map((item) => (
-                      <Select.Option
-                        key={item.id}
-                        value={item.id.toString()}
-                      >
-                        {item.title}
-                      </Select.Option>
-                    ))
-                  )}
+                  {allGroups.map((item) => (
+                    <Select.Option
+                      key={item.id}
+                      value={item.id.toString()}
+                    >
+                      {item.title}
+                    </Select.Option>
+                  ))}
                 </div>
               </Select.Content>
             </Select>

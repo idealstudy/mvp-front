@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 
 import Image from 'next/image';
 
@@ -6,21 +6,43 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
+import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { StudyroomGroupDialogs } from './dialogs.tsx';
 import { GroupListItem } from './llist-item';
 
+const PAGE_SIZE = 20;
+
 export const StudyroomGroups = ({
-  groups,
+  studyRoomId,
+  selectedGroupId,
+  handleSelectGroupId,
 }: {
-  groups: { id: number; name: string }[];
+  studyRoomId: number;
+  selectedGroupId: number | string;
+  handleSelectGroupId: (id: number | string) => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
-  const [selectedGroupId, setSelectedGroupId] = useState<number>(12);
 
-  const handleSelectGroup = (id: number) => {
-    setSelectedGroupId(id);
-  };
+  const {
+    data: studyNoteGroups,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    ...getStudyNoteGroupInfiniteOption({
+      studyRoomId: studyRoomId,
+      pageable: { page: 0, size: PAGE_SIZE, sort: ['id'] },
+    }),
+  });
+
+  const { scrollContainerRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   const handleCreateGroup = () => {
     dispatch({
@@ -30,6 +52,11 @@ export const StudyroomGroups = ({
       payload: { groupId: undefined, initialTitle: '' },
     });
   };
+
+  const allGroups = [
+    { id: 'all', title: '전체 보기' },
+    ...(studyNoteGroups?.pages.flatMap((page) => page.content) || []),
+  ];
 
   return (
     <>
@@ -52,13 +79,16 @@ export const StudyroomGroups = ({
           />
         </div>
 
-        <div className="desktop:max-h-[880px] flex flex-col overflow-y-auto">
-          {groups.map((group) => (
+        <div
+          ref={scrollContainerRef}
+          className="desktop:max-h-[1000px] flex flex-col overflow-y-auto"
+        >
+          {allGroups.map((group) => (
             <GroupListItem
               key={group.id}
               group={group}
               selectedGroupId={selectedGroupId}
-              handleSelectGroup={handleSelectGroup}
+              handleSelectGroup={handleSelectGroupId}
               dispatch={dispatch}
             />
           ))}

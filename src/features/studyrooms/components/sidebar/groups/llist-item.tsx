@@ -14,9 +14,9 @@ export const GroupListItem = ({
   handleSelectGroup,
   dispatch,
 }: {
-  group: { id: number; name: string };
-  selectedGroupId: number;
-  handleSelectGroup: (id: number) => void;
+  group: { id: number | string; title: string };
+  selectedGroupId: number | string;
+  handleSelectGroup: (id: number | string) => void;
   dispatch: (action: DialogAction) => void;
 }) => {
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
@@ -26,7 +26,7 @@ export const GroupListItem = ({
       type: 'OPEN',
       scope: 'group',
       kind: 'rename',
-      payload: { groupId: group.id, initialTitle: group.name },
+      payload: { groupId: group.id as number, initialTitle: group.title },
     });
   };
 
@@ -35,7 +35,7 @@ export const GroupListItem = ({
       type: 'OPEN',
       scope: 'group',
       kind: 'delete',
-      payload: { groupId: group.id, title: group.name },
+      payload: { groupId: group.id as number, title: group.title },
     });
   };
 
@@ -65,17 +65,17 @@ export const GroupListItem = ({
             selectedGroupId === group.id && 'text-key-color-primary'
           )}
         >
-          {group.name}
+          {group.title}
         </p>
       </div>
 
-      {group.id !== 12 && (
+      {group.id !== 'all' && (
         <DropdownMenu
           open={menuOpenId === group.id}
           onOpenChange={(open) => {
             if (open) {
               handleSelectGroup(group.id);
-              setMenuOpenId(group.id);
+              setMenuOpenId(group.id as number);
             } else {
               setMenuOpenId(null);
             }

@@ -14,22 +14,15 @@ import { StudyroomGroups } from './groups/index';
 import { StudyroomSidebarHeader } from './header';
 import { StudyStats } from './studyStats';
 
-const studyroomGroups = [
-  {
-    id: 12,
-    name: '전체보기',
-  },
-  {
-    id: 2,
-    name: '가가중가가중가가중가가중가가중중중',
-  },
-  {
-    id: 3,
-    name: '가가중가가중가가중가가중가',
-  },
-];
-
-export const StudyroomSidebar = () => {
+export const StudyroomSidebar = ({
+  studyRoomId,
+  selectedGroupId,
+  handleSelectGroupId,
+}: {
+  studyRoomId: number;
+  selectedGroupId: number | string;
+  handleSelectGroupId: (id: number | string) => void;
+}) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [roomName, setRoomName] = useState('');
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
@@ -82,7 +75,11 @@ export const StudyroomSidebar = () => {
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader dispatch={dispatch} />
         <StudyStats />
-        <StudyroomGroups groups={studyroomGroups} />
+        <StudyroomGroups
+          studyRoomId={studyRoomId}
+          selectedGroupId={selectedGroupId}
+          handleSelectGroupId={handleSelectGroupId}
+        />
         <div className="font-body2-normal text-gray-scale-gray-60 flex items-end justify-end">
           <p className="text-right">마지막 활동 3일전</p>
         </div>

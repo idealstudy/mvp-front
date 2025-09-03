@@ -6,6 +6,7 @@ import {
   StudyNoteGroupQueryKey,
   StudyNotesQueryKey,
   getStudyNoteDetailsOption,
+  getStudyNotesByGroupIdOption,
   getStudyNotesOption,
 } from './query-options';
 
@@ -15,6 +16,19 @@ export const useStudyNotesQuery = (args: {
   keyword: string;
 }) => {
   return useQuery(getStudyNotesOption(args));
+};
+
+export const useStudyNotesByGroupIdQuery = (args: {
+  studyRoomId: number;
+  teachingNoteGroupId: number | string;
+  pageable: StudyNoteGroupPageable;
+  keyword: string;
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    ...getStudyNotesByGroupIdOption(args),
+    enabled: args.enabled !== false,
+  });
 };
 
 export const useDeleteStudyNoteGroup = (args: {

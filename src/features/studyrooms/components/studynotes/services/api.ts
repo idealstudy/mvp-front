@@ -22,6 +22,27 @@ export const getStudyNotes = async (args: {
   return response.data;
 };
 
+export const getStudyNotesByGroupId = async (args: {
+  studyRoomId: number;
+  teachingNoteGroupId: number | string;
+  pageable: StudyNoteGroupPageable;
+  keyword: string;
+}) => {
+  const response = await apiClient.get(
+    `/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups/${args.teachingNoteGroupId}/teaching-notes`,
+    {
+      params: {
+        page: args.pageable.page,
+        size: args.pageable.size,
+        sortKey: args.pageable.sortKey,
+        // keyword: args.keyword,
+      },
+    }
+  );
+
+  return response.data;
+};
+
 export const deleteStudyNoteGroup = async (args: { studyNoteId: number }) => {
   const response = await apiClient.delete(
     `/teacher/teaching-notes/${args.studyNoteId}/teaching-note-groups`

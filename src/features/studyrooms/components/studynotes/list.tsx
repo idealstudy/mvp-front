@@ -73,7 +73,6 @@ export const StudyNotesList = ({
               </p>
             )}
           </div>
-          {/* 수정이 되지 않았을 시 문구가 작성으로 바뀌는데, 후에 추가 예정 */}
           <p className="font-caption-normal text-gray-scale-gray-60">
             {item.updatedAt === item.taughtAt
               ? `${getRelativeTimeString(item.taughtAt)} 작성`
