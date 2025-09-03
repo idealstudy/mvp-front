@@ -4,8 +4,8 @@ import { useReducer, useState } from 'react';
 
 import { ColumnLayout } from '@/components/layout/column-layout';
 import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
-import { RenameDialog } from '@/features/studyrooms/components/common/dialog/rename';
 import {
   dialogReducer,
   initialDialogState,
@@ -70,12 +70,12 @@ export const StudyroomSidebar = () => {
       {dialog.status === 'open' &&
         dialog.kind === 'rename' &&
         dialog.scope === 'studyroom' && (
-          <RenameDialog
+          <InputDialog
             isOpen={true}
-            initialName="에듀중학교 복습반ㅇㄷㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇ"
+            placeholder="에듀중학교 복습반ㅇㄷㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇㄹㅇ"
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
             title="스터디룸 이름 변경"
-            handleRename={() => handleSubmitRoomRename(roomName)}
+            onSubmit={() => handleSubmitRoomRename(roomName)}
           />
         )}
 

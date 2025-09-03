@@ -1,10 +1,11 @@
-export type DialogScope = 'group' | 'studyroom' | 'note';
+export type DialogScope = 'group' | 'studyroom' | 'note' | 'invite';
 export type DialogKind =
   | 'rename'
   | 'group-move'
   | 'delete'
   | 'onConfirm'
-  | 'create';
+  | 'create'
+  | 'invite';
 
 export type DialogState =
   | { status: 'idle' }

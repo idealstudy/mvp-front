@@ -5,14 +5,13 @@ import { useReducer, useState } from 'react';
 import Image from 'next/image';
 
 import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
-import { RenameDialog } from '@/features/studyrooms/components/common/dialog/rename';
 import {
   dialogReducer,
   initialDialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { CreateGroupDialog } from './create-dialog';
 import { GroupListItem } from './llist-item';
 
 export const StudyroomGroups = ({
@@ -22,6 +21,7 @@ export const StudyroomGroups = ({
 }) => {
   const [selectedGroupId, setSelectedGroupId] = useState<number>(12);
   const [renameName, setRenameName] = useState<string>('');
+  const [createGroupName, setCreateGroupName] = useState<string>('');
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   const handleSelectGroup = (id: number) => {
@@ -32,6 +32,10 @@ export const StudyroomGroups = ({
     setRenameName(name);
   };
 
+  const handleCreateGroup = (name: string) => {
+    setCreateGroupName(name);
+  };
+
   const handleGroupAction = (action: 'create' | 'rename' | 'delete') => {
     switch (action) {
       case 'create':
@@ -39,7 +43,7 @@ export const StudyroomGroups = ({
           type: 'OPEN',
           scope: 'group',
           kind: 'create',
-          payload: { groupId: undefined },
+          payload: { groupId: undefined, initialTitle: createGroupName },
         });
         break;
       case 'rename':
@@ -73,9 +77,13 @@ export const StudyroomGroups = ({
         dialog.scope === 'group' &&
         dialog.kind === 'create' &&
         !dialog.payload?.groupId && (
-          <CreateGroupDialog
+          <InputDialog
             isOpen={true}
+            placeholder="수업노트 그룹명을 입력해주세요"
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
+            title="수업노트 그룹 생성"
+            description="수업노트 그룹명을 입력해 주세요"
+            onSubmit={() => handleCreateGroup(renameName)}
           />
         )}
 
@@ -83,12 +91,13 @@ export const StudyroomGroups = ({
         dialog.scope === 'group' &&
         dialog.kind === 'rename' &&
         dialog.payload?.groupId && (
-          <RenameDialog
+          <InputDialog
             isOpen={true}
-            initialName={dialog.payload?.initialTitle || ''}
+            placeholder={dialog.payload?.initialTitle || ''}
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
             title="수업노트 그룹 수정"
-            handleRename={() => handleRename(renameName)}
+            description="수업노트 그룹명"
+            onSubmit={() => handleRename(renameName)}
           />
         )}
 

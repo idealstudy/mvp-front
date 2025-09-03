@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { DeleteDialog } from '@/features/studyrooms/components/common/dialog/delete';
+import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import { OnConfirmDialog } from '@/features/studyrooms/components/common/dialog/on-confirm';
-import { RenameDialog } from '@/features/studyrooms/components/common/dialog/rename';
 import type {
   DialogAction,
   DialogState,
@@ -37,12 +37,13 @@ export const StudyNotesDialog = ({
   return (
     <>
       {state.scope === 'note' && state.kind === 'rename' && (
-        <RenameDialog
+        <InputDialog
           isOpen={true}
-          initialName={state.payload?.initialTitle || ''}
+          placeholder={state.payload?.initialTitle || ''}
           onOpenChange={() => dispatch({ type: 'CLOSE' })}
-          title="수업노트 이름 변경"
-          handleRename={() => handleRename(renameName)}
+          title="제목 수정하기"
+          description="수업노트 제목"
+          onSubmit={() => handleRename(renameName)}
         />
       )}
 
