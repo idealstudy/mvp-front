@@ -27,7 +27,7 @@ export const StudyNotesDropdown = ({
     id: number;
     title: string;
     groupName?: string;
-    groupId?: number;
+    groupId?: number | null;
     visibility: string;
   };
   pageable: StudyNoteGroupPageable;

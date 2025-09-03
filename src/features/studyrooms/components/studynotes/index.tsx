@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import { Pagination } from '@/components/ui/pagination';
-
+import { StudyRoomDetailLayout } from '../common/layout';
 import { StudyNotesList } from './list';
-import { SearchFilterBar } from './search-filter-bar';
 import {
   useStudyNotesByGroupIdQuery,
   useStudyNotesQuery,
@@ -26,12 +24,13 @@ export const StudyNotes = ({
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const { id } = useParams();
   const studyRoomId = Number(id);
 
   const pageable: StudyNoteGroupPageable = {
-    page: currentPage,
+    page: currentPage - 1,
     size: limit,
     sortKey: sort,
   };
@@ -70,8 +69,8 @@ export const StudyNotes = ({
     page: currentPage,
     totalPages:
       selectedGroupId === 'all'
-        ? data?.totalPages || 0
-        : studyNotesByGroupId?.data?.totalPages || 0,
+        ? data?.totalPages || 1
+        : studyNotesByGroupId?.data?.totalPages || 1,
     onPageChange: handlePageChange,
   };
 
@@ -80,28 +79,25 @@ export const StudyNotes = ({
   }, [search, sort, limit, selectedGroupId]);
 
   return (
-    <div className="border-line-line1 flex flex-col gap-6 rounded-[12px] border bg-white px-8 py-6">
-      <div className="flex flex-col gap-3">
-        <SearchFilterBar
-          search={search}
-          sort={sort}
-          limit={limit}
-          onSearch={handleSearch}
-          onSortChange={handleSortChange}
-          onLimitChange={handleLimitChange}
-        />
-        <StudyNotesList
-          data={
-            selectedGroupId === 'all'
-              ? data?.content || []
-              : studyNotesByGroupId?.data?.content || []
-          }
-          studyRoomId={Number(studyRoomId)}
-          pageable={pageable}
-          keyword={search}
-        />
-      </div>
-      <Pagination {...page} />
-    </div>
+    <StudyRoomDetailLayout
+      search={search}
+      sort={sort}
+      limit={limit}
+      onSearch={handleSearch}
+      onSortChange={handleSortChange}
+      onLimitChange={handleLimitChange}
+      page={page}
+    >
+      <StudyNotesList
+        data={
+          selectedGroupId === 'all'
+            ? data?.content || []
+            : studyNotesByGroupId?.data?.content || []
+        }
+        studyRoomId={Number(studyRoomId)}
+        pageable={pageable}
+        keyword={search}
+      />
+    </StudyRoomDetailLayout>
   );
 };

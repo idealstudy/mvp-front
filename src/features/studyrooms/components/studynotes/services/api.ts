@@ -15,7 +15,7 @@ export const getStudyNotes = async (args: {
         page: args.pageable.page,
         size: args.pageable.size,
         sortKey: args.pageable.sortKey,
-        // keyword: args.keyword,
+        keyword: args.keyword,
       },
     })
   ).data;
@@ -35,7 +35,7 @@ export const getStudyNotesByGroupId = async (args: {
         page: args.pageable.page,
         size: args.pageable.size,
         sortKey: args.pageable.sortKey,
-        // keyword: args.keyword,
+        keyword: args.keyword,
       },
     }
   );

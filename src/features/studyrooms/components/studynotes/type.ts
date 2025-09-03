@@ -1,6 +1,6 @@
 export interface StudyNote {
   id: number;
-  groupId: number;
+  groupId: number | null;
   groupName: string;
   teacherName: string;
   title: string;

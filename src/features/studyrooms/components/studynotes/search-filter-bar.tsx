@@ -11,11 +11,11 @@ import type { StudyNoteLimit, StudyNoteSortKey } from './type';
 
 type Props = {
   search: string;
-  sort: string;
-  limit: number;
+  sort: StudyNoteSortKey;
+  limit: StudyNoteLimit;
   onSearch: (value: string) => void;
-  onSortChange: (value: string) => void;
-  onLimitChange: (value: number) => void;
+  onSortChange: (value: StudyNoteSortKey) => void;
+  onLimitChange: (value: StudyNoteLimit) => void;
 };
 
 const SORT_OPTIONS: Array<{ value: StudyNoteSortKey; label: string }> = [
@@ -73,7 +73,9 @@ export const SearchFilterBar = ({
         </Select>
         <Select
           defaultValue={limit.toString()}
-          onValueChange={(value) => onLimitChange(Number(value))}
+          onValueChange={(value) =>
+            onLimitChange(Number(value) as StudyNoteLimit)
+          }
         >
           <Select.Trigger
             className={SELECT_STYLES.trigger}
