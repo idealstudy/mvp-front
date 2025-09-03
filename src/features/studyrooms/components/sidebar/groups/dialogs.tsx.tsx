@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import {
@@ -9,19 +7,45 @@ import {
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
+import { useDeleteStudyNoteGroup } from '../services/query';
+import {
+  useCreateStudyNoteGroup,
+  useUpdateStudyNoteGroup,
+} from '../services/query';
+
 export const StudyroomGroupDialogs = ({
   dialog,
   dispatch,
-  handleCreateGroup,
+  studyRoomId,
+  selectedGroupId,
 }: {
   dialog: DialogState;
   dispatch: (action: DialogAction) => void;
-  handleCreateGroup: (name: string) => void;
+  studyRoomId: number;
+  selectedGroupId: number;
 }) => {
-  const [renameName, setRenameName] = useState<string>('');
+  const { mutate: createStudyNoteGroup } = useCreateStudyNoteGroup();
+  const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup();
+  const { mutate: deleteStudyNoteGroup } = useDeleteStudyNoteGroup();
 
+  const handleCreateGroup = (title: string) => {
+    createStudyNoteGroup({ studyRoomId, title });
+  };
   const handleRename = (name: string) => {
-    setRenameName(name);
+    updateStudyNoteGroup({
+      teachingNoteGroupId: selectedGroupId,
+      title: name,
+      studyRoomId,
+    });
+    dispatch({ type: 'CLOSE' });
+  };
+
+  const handleDeleteGroup = () => {
+    deleteStudyNoteGroup({
+      teachingNoteGroupId: selectedGroupId,
+      studyRoomId,
+    });
+    dispatch({ type: 'GO_TO_CONFIRM' });
   };
 
   return (
@@ -36,7 +60,7 @@ export const StudyroomGroupDialogs = ({
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
             title="수업노트 그룹 생성"
             description="수업노트 그룹명을 입력해 주세요"
-            onSubmit={() => handleCreateGroup(renameName)}
+            onSubmit={(name) => handleCreateGroup(name)}
           />
         )}
 
@@ -50,7 +74,7 @@ export const StudyroomGroupDialogs = ({
             onOpenChange={() => dispatch({ type: 'CLOSE' })}
             title="수업노트 그룹 수정"
             description="수업노트 그룹명"
-            onSubmit={() => handleRename(renameName)}
+            onSubmit={(name) => handleRename(name)}
           />
         )}
 
@@ -61,7 +85,7 @@ export const StudyroomGroupDialogs = ({
             type="delete"
             open={true}
             dispatch={dispatch}
-            onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
+            onDelete={() => handleDeleteGroup()}
             title="수업 노트 그룹을 삭제하시겠습니까?"
             description="삭제된 수업노트 그룹은 복구할 수 없습니다."
           />

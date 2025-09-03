@@ -6,26 +6,18 @@ import { cn } from '@/lib/utils';
 export const ConfirmDialog = ({
   type,
   open,
-  onConfirm,
   dispatch,
   title,
   description,
-  handleDeleteMsg,
+  onDelete,
 }: {
   type: 'delete' | 'confirm';
   open: boolean;
-  onConfirm?: () => void;
   dispatch: (action: DialogAction) => void;
   title?: string;
   description: string;
-  handleDeleteMsg?: () => void;
+  onDelete?: () => void;
 }) => {
-  const handleDelete = () => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
-    onConfirm?.();
-    handleDeleteMsg?.();
-  };
-
   return (
     <Dialog
       isOpen={open}
@@ -65,12 +57,10 @@ export const ConfirmDialog = ({
             size="small"
             variant="secondary"
             onClick={
-              type === 'delete'
-                ? handleDelete
-                : () => dispatch({ type: 'CLOSE' })
+              type === 'delete' ? onDelete : () => dispatch({ type: 'CLOSE' })
             }
           >
-            {type === 'delete' ? '확인' : '삭제'}
+            {type === 'delete' ? '삭제' : '확인'}
           </Button>
         </Dialog.Footer>
       </Dialog.Content>

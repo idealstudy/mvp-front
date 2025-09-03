@@ -62,7 +62,7 @@ export const StudyNotesDialog = ({
           type="delete"
           open
           dispatch={dispatch}
-          onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
+          onDelete={() => dispatch({ type: 'GO_TO_CONFIRM' })}
           title="수업 노트를 삭제하시겠습니까?"
           description="삭제된 수업노트는 복구할 수 없습니다."
         />

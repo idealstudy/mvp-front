@@ -13,7 +13,11 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { StudyroomGroupDialogs } from './dialogs.tsx';
 import { GroupListItem } from './llist-item';
 
-const PAGE_SIZE = 20;
+export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
+  page: 0,
+  size: 20,
+  sort: ['id'],
+};
 
 export const StudyroomGroups = ({
   studyRoomId,
@@ -34,7 +38,7 @@ export const StudyroomGroups = ({
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
-      pageable: { page: 0, size: PAGE_SIZE, sort: ['id'] },
+      pageable: STUDYROOM_SIDEBAR_GROUPS_PAGEABLE,
     }),
   });
 
@@ -44,12 +48,12 @@ export const StudyroomGroups = ({
     fetchNextPage,
   });
 
-  const handleCreateGroup = () => {
+  const handleCreateGroupClick = () => {
     dispatch({
       type: 'OPEN',
       scope: 'group',
       kind: 'create',
-      payload: { groupId: undefined, initialTitle: '' },
+      payload: { groupId: undefined, title: '' },
     });
   };
 
@@ -63,7 +67,8 @@ export const StudyroomGroups = ({
       <StudyroomGroupDialogs
         dialog={dialog}
         dispatch={dispatch}
-        handleCreateGroup={handleCreateGroup}
+        studyRoomId={studyRoomId}
+        selectedGroupId={Number(selectedGroupId)}
       />
 
       <div className="flex flex-col gap-3">
@@ -75,7 +80,7 @@ export const StudyroomGroups = ({
             width={24}
             height={24}
             className="hover:bg-gray-scale-gray-5 cursor-pointer rounded-[8px] p-1"
-            onClick={handleCreateGroup}
+            onClick={handleCreateGroupClick}
           />
         </div>
 

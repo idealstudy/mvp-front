@@ -33,6 +33,11 @@ export const StudyroomSidebar = ({
     dispatch({ type: 'CLOSE' });
   };
 
+  const handleDeleteGroup = () => {
+    setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
+    dispatch({ type: 'GO_TO_CONFIRM' });
+  };
+
   return (
     <>
       {dialog.status === 'open' && dialog.kind === 'onConfirm' && (
@@ -51,12 +56,9 @@ export const StudyroomSidebar = ({
             type="delete"
             open={true}
             dispatch={dispatch}
-            onConfirm={() => dispatch({ type: 'GO_TO_CONFIRM' })}
+            onDelete={() => handleDeleteGroup()}
             title="스터디룸을 삭제하시겠습니까?"
             description="삭제된 스터디룸은 복구할 수 없습니다."
-            handleDeleteMsg={() =>
-              setDeleteNoticeMsg('스터디룸이 삭제되었습니다.')
-            }
           />
         )}
 
