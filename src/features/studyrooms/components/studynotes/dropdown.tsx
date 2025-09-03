@@ -86,7 +86,7 @@ export const StudyNotesDropdown = ({
                 scope: 'note',
                 kind: 'group-move',
                 payload: {
-                  noteId: item.id.toString(),
+                  noteId: item.id,
                 },
               })
             }
@@ -117,7 +117,7 @@ export const StudyNotesDropdown = ({
                 scope: 'note',
                 kind: 'delete',
                 payload: {
-                  noteId: item.id.toString(),
+                  noteId: item.id,
                 },
               })
             }

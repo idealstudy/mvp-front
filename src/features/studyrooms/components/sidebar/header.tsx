@@ -13,7 +13,7 @@ import {
 export const StudyroomSidebarHeader = ({
   studyRoomId,
 }: {
-  studyRoomId: string;
+  studyRoomId: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 

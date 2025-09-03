@@ -162,7 +162,7 @@ export const StudyroomSidebar = () => {
         )}
 
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
-        <StudyroomSidebarHeader studyRoomId="1" />
+        <StudyroomSidebarHeader studyRoomId={1} />
         <StudyStats />
         <StudyroomGroups
           groups={studyroomGroups}

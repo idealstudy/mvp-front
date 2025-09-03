@@ -8,11 +8,11 @@ export type DialogState =
       scope: DialogScope;
       kind: DialogKind;
       payload?: {
-        noteId?: string;
+        noteId?: number;
         title?: string;
         initialTitle?: string;
-        groupId?: string;
-        studyRoomId?: string;
+        groupId?: number;
+        studyRoomId?: number;
       };
     };
 
@@ -22,11 +22,11 @@ export type DialogAction =
       scope: DialogScope;
       kind: DialogKind;
       payload?: {
-        noteId?: string;
+        noteId?: number;
         title?: string;
         initialTitle?: string;
-        groupId?: string;
-        studyRoomId?: string;
+        groupId?: number;
+        studyRoomId?: number;
       };
     }
   | { type: 'GO_TO_CONFIRM' }

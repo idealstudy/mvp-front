@@ -44,7 +44,7 @@ export const StudyroomGroups = ({
           scope: 'group',
           kind: 'rename',
           payload: {
-            groupId: selectedGroupId.toString(),
+            groupId: selectedGroupId,
             initialTitle: groups.find((g) => g.id === selectedGroupId)?.name,
           },
         });
@@ -55,7 +55,7 @@ export const StudyroomGroups = ({
           scope: 'group',
           kind: 'delete',
           payload: {
-            groupId: selectedGroupId.toString(),
+            groupId: selectedGroupId,
             title: groups.find((g) => g.id === selectedGroupId)?.name,
           },
         });
