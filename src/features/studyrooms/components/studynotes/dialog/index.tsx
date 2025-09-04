@@ -52,7 +52,7 @@ export const StudyNotesDialog = ({
   if (state.status !== 'open') return null;
 
   return (
-    <div onSelect={(e) => e.preventDefault()}>
+    <>
       {state.scope === 'note' && state.kind === 'rename' && (
         <InputDialog
           isOpen={true}
@@ -94,6 +94,6 @@ export const StudyNotesDialog = ({
           description="수업노트가 삭제되었습니다."
         />
       )}
-    </div>
+    </>
   );
 };

@@ -60,8 +60,7 @@ export const StudyNotesDropdown = ({
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className="w-[110px] justify-center">
           <DropdownMenu.Item
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
@@ -76,8 +75,7 @@ export const StudyNotesDropdown = ({
             <p>제목수정</p>
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
@@ -101,8 +99,7 @@ export const StudyNotesDropdown = ({
           </DropdownMenu.Item>
           <DropdownMenu.Item
             className="justify-center"
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               handleCopy();
             }}
           >
@@ -111,8 +108,7 @@ export const StudyNotesDropdown = ({
           <DropdownMenu.Item
             variant="danger"
             className="justify-center"
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               dispatch({
                 type: 'OPEN',
                 scope: 'note',
