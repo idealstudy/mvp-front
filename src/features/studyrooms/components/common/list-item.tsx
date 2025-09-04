@@ -41,7 +41,15 @@ export const ListItem = ({
       </div>
       <div className="flex flex-row items-center gap-1">
         <p className="text-gray-scale-gray-70">{date}</p>
-        {dropdown}
+        <button
+          type="button"
+          className="flex shrink-0 flex-row items-center"
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
+          {dropdown}
+        </button>
       </div>
     </Link>
   );
