@@ -40,8 +40,7 @@ export const GroupListItem = ({
   };
 
   return (
-    <button
-      type="button"
+    <div
       className={cn(
         'group desktop:max-w-[296px] hover:bg-gray-scale-gray-1 flex w-full cursor-pointer items-center justify-between gap-[10px] rounded-[8px] px-2 py-3',
         selectedGroupId === group.id && 'text-key-color-primary'
@@ -106,6 +105,6 @@ export const GroupListItem = ({
           </DropdownMenu.Content>
         </DropdownMenu>
       )}
-    </button>
+    </div>
   );
 };
