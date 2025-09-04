@@ -26,6 +26,13 @@ export const ListItem = ({
       key={id}
       className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
       href={href}
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-action-area]')) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
     >
       <div className="flex flex-row items-center gap-3">
         {icon}
@@ -41,15 +48,12 @@ export const ListItem = ({
       </div>
       <div className="flex flex-row items-center gap-1">
         <p className="text-gray-scale-gray-70">{date}</p>
-        <button
-          type="button"
+        <div
           className="flex shrink-0 flex-row items-center"
-          onClick={(e) => {
-            e.preventDefault();
-          }}
+          data-action-area
         >
           {dropdown}
-        </button>
+        </div>
       </div>
     </Link>
   );
