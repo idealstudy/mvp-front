@@ -43,9 +43,7 @@ export const ListItem = ({
         <p className="text-gray-scale-gray-70">{date}</p>
         <div
           className="flex shrink-0 flex-row items-center"
-          onClick={(e) => {
-            e.preventDefault();
-          }}
+          onClick={(e) => e.preventDefault()}
         >
           {dropdown}
         </div>
