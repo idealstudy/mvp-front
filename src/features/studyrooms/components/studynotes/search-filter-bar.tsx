@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { Select } from '@/features/studyrooms/components/common/select';
 
 import type { StudyNoteLimit, StudyNoteSortKey } from './type';
 
