@@ -1,11 +1,21 @@
 import Image from 'next/image';
 
 import type { Meta, StoryObj } from '@storybook/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { DropdownMenu } from '../components/ui/dropdown-menu';
 import { StudyRoomDetailLayout } from '../features/studyrooms/components/common/layout';
 import { ListItem } from '../features/studyrooms/components/common/list-item';
 import { StudyNotesList } from '../features/studyrooms/components/studynotes/list';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 const meta: Meta<typeof StudyRoomDetailLayout> = {
   title: 'studyroom/Layout',
@@ -14,6 +24,13 @@ const meta: Meta<typeof StudyRoomDetailLayout> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
 };
 export default meta;
 
