@@ -21,8 +21,8 @@ export const StudyroomSidebar = ({
   handleSelectGroupId,
 }: {
   studyRoomId: number;
-  selectedGroupId: number | string;
-  handleSelectGroupId: (id: number | string) => void;
+  selectedGroupId: number | 'all';
+  handleSelectGroupId: (id: number | 'all') => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [roomName, setRoomName] = useState('');

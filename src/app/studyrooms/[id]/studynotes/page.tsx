@@ -10,12 +10,10 @@ import { StudyNotes } from '@/features/studyrooms/components/studynotes';
 import { StudyRoomTabs } from '@/features/studyrooms/components/taps';
 
 export default function StudyRoomDetailPage() {
-  const [selectedGroupId, setSelectedGroupId] = useState<number | string>(
-    'all'
-  );
+  const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
   const { id } = useParams();
 
-  const handleSelectGroupId = (id: number | string) => {
+  const handleSelectGroupId = (id: number | 'all') => {
     setSelectedGroupId(id);
   };
 

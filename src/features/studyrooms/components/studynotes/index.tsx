@@ -20,7 +20,7 @@ import type {
 export const StudyNotes = ({
   selectedGroupId,
 }: {
-  selectedGroupId: number | string;
+  selectedGroupId: number | 'all';
 }) => {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
