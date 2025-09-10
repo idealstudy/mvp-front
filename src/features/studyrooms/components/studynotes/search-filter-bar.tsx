@@ -51,7 +51,7 @@ export const SearchFilterBar = ({
     <div className="items-cente flex justify-between gap-4">
       <div className="flex gap-[10px]">
         <Select
-          defaultValue={sort}
+          value={sort}
           onValueChange={onSortChange}
         >
           <Select.Trigger
@@ -72,7 +72,7 @@ export const SearchFilterBar = ({
           </Select.Content>
         </Select>
         <Select
-          defaultValue={limit.toString()}
+          value={limit.toString()}
           onValueChange={(value) =>
             onLimitChange(Number(value) as StudyNoteLimit)
           }
