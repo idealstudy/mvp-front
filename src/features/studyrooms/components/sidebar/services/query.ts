@@ -10,11 +10,6 @@ import {
   deleteStudyRoom,
   updateStudyNoteGroup,
 } from './api';
-import {
-  CreateStudyNoteGroupQueryKey,
-  DeleteStudyNoteGroupQueryKey,
-  UpdateStudyNoteGroupQueryKey,
-} from './query-options';
 
 export const useCreateStudyNoteGroup = () => {
   const queryClient = useQueryClient();
@@ -22,10 +17,6 @@ export const useCreateStudyNoteGroup = () => {
     mutationFn: (args: { studyRoomId: number; title: string }) =>
       createStudyNoteGroup(args),
     onSuccess: (_, args) => {
-      queryClient.invalidateQueries({
-        queryKey: CreateStudyNoteGroupQueryKey.createStudyNoteGroup(args),
-      });
-
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
           studyRoomId: args.studyRoomId,
@@ -45,10 +36,6 @@ export const useUpdateStudyNoteGroup = () => {
       studyRoomId: number;
     }) => updateStudyNoteGroup(args),
     onSuccess: (_, args) => {
-      queryClient.invalidateQueries({
-        queryKey: UpdateStudyNoteGroupQueryKey.updateStudyNoteGroup(args),
-      });
-
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
           studyRoomId: args.studyRoomId,
@@ -78,10 +65,6 @@ export const useDeleteStudyNoteGroup = () => {
     mutationFn: (args: { teachingNoteGroupId: number; studyRoomId: number }) =>
       deleteStudyNoteGroup(args),
     onSuccess: (_, args) => {
-      queryClient.invalidateQueries({
-        queryKey: DeleteStudyNoteGroupQueryKey.deleteStudyNoteGroup(args),
-      });
-
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
           studyRoomId: args.studyRoomId,
