@@ -44,6 +44,8 @@ export const GroupMoveDialog = ({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isPending,
+    isError,
   } = useInfiniteQuery({
     ...getStudyNoteGroupInfiniteOption({
       studyRoomId: studyRoomId,
@@ -81,9 +83,29 @@ export const GroupMoveDialog = ({
     dispatch({ type: 'CLOSE' });
   };
 
+  // 1) 로딩 화면: 반드시 return 해서 아래 로직이 실행되지 않게
+  if (isPending) {
+    return (
+      <div className="p-4">
+        <p>그룹 불러오는 중…</p>
+      </div>
+    );
+  }
+
+  // 2) 에러 화면: 마찬가지로 return
+  if (isError) {
+    return (
+      <div className="p-4">
+        <p>그룹을 불러오지 못했어요.</p>
+      </div>
+    );
+  }
+
+  // 3)
+
   const allGroups = [
-    { id: 'none', title: '없음' },
-    ...(studyNoteGroups?.pages.flatMap((page) => page.content) || []),
+    { id: 'all', title: '전체 보기' },
+    ...studyNoteGroups.pages.flatMap((page) => page.content),
   ];
 
   return (
