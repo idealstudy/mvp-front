@@ -28,7 +28,7 @@ export const useStudyNotesQuery = (args: {
 
 export const useStudyNotesByGroupIdQuery = (args: {
   studyRoomId: number;
-  teachingNoteGroupId: number | string;
+  teachingNoteGroupId: number;
   pageable: StudyNoteGroupPageable;
   // keyword: string;
   enabled?: boolean;

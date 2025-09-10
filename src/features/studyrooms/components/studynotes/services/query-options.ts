@@ -34,7 +34,7 @@ export const StudyNotesByGroupIdQueryKey = {
   all: ['studyNotesByGroupId'],
   studyNotesByGroupId: (args: {
     studyRoomId: number;
-    teachingNoteGroupId: number | string;
+    teachingNoteGroupId: number;
     pageable: StudyNoteGroupPageable;
     // keyword: string;
   }) => [
@@ -107,7 +107,7 @@ export const getStudyNotesOption = (args: {
 
 export const getStudyNotesByGroupIdOption = (args: {
   studyRoomId: number;
-  teachingNoteGroupId: number | string;
+  teachingNoteGroupId: number;
   pageable: StudyNoteGroupPageable;
   // keyword: string;
 }) => {

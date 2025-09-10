@@ -43,7 +43,7 @@ export const StudyNotes = ({
 
   const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery({
     studyRoomId: studyRoomId,
-    teachingNoteGroupId: selectedGroupId,
+    teachingNoteGroupId: Number(selectedGroupId),
     pageable: pageable,
     // keyword: search,
     enabled: selectedGroupId !== 'all',

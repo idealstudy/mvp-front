@@ -24,7 +24,7 @@ export const getStudyNotes = async (args: {
 
 export const getStudyNotesByGroupId = async (args: {
   studyRoomId: number;
-  teachingNoteGroupId: number | string;
+  teachingNoteGroupId: number;
   pageable: StudyNoteGroupPageable;
   // keyword: string;
 }) => {
