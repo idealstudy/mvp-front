@@ -5,9 +5,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { STUDYROOM_SIDEBAR_GROUPS_PAGEABLE } from '../groups';
 import {
+  createStudyNoteGroup,
   deleteStudyNoteGroup,
   deleteStudyRoom,
-  postStudyNoteGroup,
   updateStudyNoteGroup,
 } from './api';
 import {
@@ -20,7 +20,7 @@ export const useCreateStudyNoteGroup = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (args: { studyRoomId: number; title: string }) =>
-      postStudyNoteGroup(args),
+      createStudyNoteGroup(args),
     onSuccess: (_, args) => {
       queryClient.invalidateQueries({
         queryKey: CreateStudyNoteGroupQueryKey.createStudyNoteGroup(args),

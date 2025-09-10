@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api';
 
 // 수업노트 그룹 생성
-export const postStudyNoteGroup = async ({
+export const createStudyNoteGroup = async ({
   studyRoomId,
   title,
 }: {
