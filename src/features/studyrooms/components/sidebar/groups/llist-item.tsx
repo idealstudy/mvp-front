@@ -14,28 +14,30 @@ export const GroupListItem = ({
   handleSelectGroup,
   dispatch,
 }: {
-  group: { id: number | string; title: string };
-  selectedGroupId: number | string;
-  handleSelectGroup: (id: number | string) => void;
+  group: { id: number | 'all'; title: string };
+  selectedGroupId: number | 'all';
+  handleSelectGroup: (id: number | 'all') => void;
   dispatch: (action: DialogAction) => void;
 }) => {
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
 
   const handleRenameGroup = () => {
+    if (group.id === 'all') return;
     dispatch({
       type: 'OPEN',
       scope: 'group',
       kind: 'rename',
-      payload: { groupId: group.id as number, initialTitle: group.title },
+      payload: { groupId: group.id, initialTitle: group.title },
     });
   };
 
   const handleDeleteGroup = () => {
+    if (group.id === 'all') return;
     dispatch({
       type: 'OPEN',
       scope: 'group',
       kind: 'delete',
-      payload: { groupId: group.id as number, title: group.title },
+      payload: { groupId: group.id, title: group.title },
     });
   };
 

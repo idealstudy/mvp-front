@@ -25,8 +25,8 @@ export const StudyroomGroups = ({
   handleSelectGroupId,
 }: {
   studyRoomId: number;
-  selectedGroupId: number | string;
-  handleSelectGroupId: (id: number | string) => void;
+  selectedGroupId: number | 'all';
+  handleSelectGroupId: (id: number | 'all') => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
@@ -79,7 +79,7 @@ export const StudyroomGroups = ({
 
   // 3)
 
-  const allGroups = [
+  const allGroups: Array<{ id: number | 'all'; title: string }> = [
     { id: 'all', title: '전체 보기' },
     ...studyNoteGroups.pages.flatMap((page) => page.content),
   ];

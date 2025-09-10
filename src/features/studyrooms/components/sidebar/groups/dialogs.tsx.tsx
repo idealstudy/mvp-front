@@ -24,7 +24,7 @@ export const StudyroomGroupDialogs = ({
   dispatch: (action: DialogAction) => void;
   studyRoomId: number;
   selectedGroupId: number;
-  handleSelectGroupId: (id: number | string) => void;
+  handleSelectGroupId: (id: number | 'all') => void;
 }) => {
   const { mutate: createStudyNoteGroup } = useCreateStudyNoteGroup();
   const { mutate: updateStudyNoteGroup } = useUpdateStudyNoteGroup();
