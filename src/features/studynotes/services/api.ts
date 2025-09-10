@@ -24,19 +24,19 @@ export const getStudyNotes = async (args: {
   return response.data;
 };
 
-export const getStudyNotesByGroupId = async (args: {
+export const getStudyNotesByGroupId = async (params: {
   studyRoomId: number;
   teachingNoteGroupId: number;
   pageable: StudyNoteGroupPageable;
   // keyword: string;
 }) => {
   const response = await apiClient.get(
-    `/teacher/study-rooms/${args.studyRoomId}/teaching-note-groups/${args.teachingNoteGroupId}/teaching-notes`,
+    `/teacher/study-rooms/${params.studyRoomId}/teaching-note-groups/${params.teachingNoteGroupId}/teaching-notes`,
     {
       params: {
-        page: args.pageable.page,
-        size: args.pageable.size,
-        sortKey: args.pageable.sortKey,
+        page: params.pageable.page,
+        size: params.pageable.size,
+        sortKey: params.pageable.sortKey,
         // keyword: args.keyword,
       },
     }
