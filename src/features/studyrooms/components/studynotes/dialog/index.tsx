@@ -25,11 +25,19 @@ export const StudyNotesDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
-  const { data } = useStudyNoteDetailQuery(item.id, {
+  const { data, isPending, isError } = useStudyNoteDetailQuery(item.id, {
     enabled: state.status === 'open' && !!item.id,
   });
 
   const { mutate: updateStudyNote } = useUpdateStudyNote();
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
+  }
 
   const handleRename = (name: string) => {
     updateStudyNote({
@@ -40,7 +48,7 @@ export const StudyNotesDialog = ({
       content: data?.content || '',
       visibility: item.visibility,
       taughtAt: item.taughtAt,
-      studentIds: data?.studentInfos?.map((student) => student.studentId) ?? [],
+      studentIds: data?.studentInfos?.map((student) => student.studentId),
     });
   };
 

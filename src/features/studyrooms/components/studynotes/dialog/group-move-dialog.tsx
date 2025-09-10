@@ -87,7 +87,7 @@ export const GroupMoveDialog = ({
   if (isPending) {
     return (
       <div className="p-4">
-        <p>그룹 불러오는 중…</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export const GroupMoveDialog = ({
   if (isError) {
     return (
       <div className="p-4">
-        <p>그룹을 불러오지 못했어요.</p>
+        <p>Error</p>
       </div>
     );
   }
