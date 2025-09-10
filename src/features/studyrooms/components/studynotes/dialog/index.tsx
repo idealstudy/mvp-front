@@ -1,7 +1,7 @@
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import { useUpdateStudyNote } from '@/features/studynotes/services/query';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
-import { useUpdateStudyNote } from '@/features/studyrooms/components/studynotes/services/query';
 import type {
   DialogAction,
   DialogState,

@@ -1,4 +1,4 @@
-import { StudyNotesByGroupIdQueryKey } from '@/features/studyrooms/components/studynotes/services/query-options';
+import { StudyNotesByGroupIdQueryKey } from '@/features/studynotes/services/query-options';
 import { StudyNoteGroupQueryKey } from '@/features/studyrooms/services/query-options';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';

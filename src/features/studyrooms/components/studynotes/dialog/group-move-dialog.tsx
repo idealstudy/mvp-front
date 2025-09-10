@@ -4,16 +4,16 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import {
+  useDeleteStudyNoteToGroup,
+  useUpdateStudyNoteToGroup,
+} from '@/features/studynotes/services/query';
 import { Select } from '@/features/studyrooms/components/common/select';
 import { DialogAction } from '@/features/studyrooms/hooks/useDialogReducer';
 import { getStudyNoteGroupInfiniteOption } from '@/features/studyrooms/services/query-options';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import {
-  useDeleteStudyNoteToGroup,
-  useUpdateStudyNoteToGroup,
-} from '../services/query';
 import type { StudyNoteGroupPageable } from '../type';
 
 export const GROUP_MOVE_DIALOG_PAGEABLE = {

@@ -1,6 +1,8 @@
+import type {
+  StudyNote,
+  StudyNoteGroupPageable,
+} from '@/features/studyrooms/components/studynotes/type';
 import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
-
-import type { StudyNote, StudyNoteGroupPageable } from '../type';
 
 export const getStudyNotes = async (args: {
   studyRoomId: number;

@@ -2,7 +2,7 @@ import { getStudyNoteDetail } from '@/features/dashboard/studynote/detail/servic
 import { Pageable } from '@/lib/api';
 import { queryOptions } from '@tanstack/react-query';
 
-import type { StudyNoteGroupPageable } from '../type';
+import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
 import { getStudyNotes, getStudyNotesByGroupId, updateStudyNote } from './api';
 
 export const StudyNotesQueryKey = {

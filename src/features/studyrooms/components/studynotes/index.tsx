@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import { StudyRoomDetailLayout } from '../common/layout';
-import { StudyNotesList } from './list';
 import {
   useStudyNotesByGroupIdQuery,
   useStudyNotesQuery,
-} from './services/query';
+} from '@/features/studynotes/services/query';
+
+import { StudyRoomDetailLayout } from '../common/layout';
+import { StudyNotesList } from './list';
 import type {
   StudyNoteGroupPageable,
   StudyNoteLimit,

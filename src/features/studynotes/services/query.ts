@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { StudyNoteGroupPageable } from '../type';
+import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
 import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
 import { updateStudyNote } from './api';
 import {
