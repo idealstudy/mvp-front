@@ -1,3 +1,4 @@
+import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
 import { ConfirmDialog } from '@/features/studyrooms/components/common/dialog/confirm-dialog';
 import { InputDialog } from '@/features/studyrooms/components/common/dialog/input-dialog';
 import { useUpdateStudyNote } from '@/features/studyrooms/components/studynotes/services/query';
@@ -6,7 +7,6 @@ import type {
   DialogState,
 } from '@/features/studyrooms/hooks/useDialogReducer';
 
-import { useStudyNoteDetailsQuery } from '../services/query';
 import type { StudyNote, StudyNoteGroupPageable } from '../type';
 import { GroupMoveDialog } from './group-move-dialog';
 
@@ -25,14 +25,9 @@ export const StudyNotesDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
-  const { data } = useStudyNoteDetailsQuery(
-    {
-      teachingNoteId: item.id,
-    },
-    {
-      enabled: state.status === 'open' && !!item.id,
-    }
-  );
+  const { data } = useStudyNoteDetailQuery(item.id, {
+    enabled: state.status === 'open' && !!item.id,
+  });
 
   const { mutate: updateStudyNote } = useUpdateStudyNote();
 

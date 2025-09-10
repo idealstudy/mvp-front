@@ -1,10 +1,4 @@
-import type { StudyNoteDetail } from '@/features/dashboard/studynote/detail/tyoe';
-import {
-  type UseQueryOptions,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { StudyNoteGroupPageable } from '../type';
 import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
@@ -13,7 +7,6 @@ import {
   StudyNoteGroupQueryKey,
   StudyNotesQueryKey,
   UpdateStudyNoteQueryKey,
-  getStudyNoteDetailsOption,
   getStudyNotesByGroupIdOption,
   getStudyNotesOption,
 } from './query-options';
@@ -101,23 +94,6 @@ export const useUpdateStudyNoteToGroup = (args: {
         }),
       });
     },
-  });
-};
-
-export const useStudyNoteDetailsQuery = (
-  args: { teachingNoteId: number },
-  options?: Partial<
-    UseQueryOptions<
-      StudyNoteDetail,
-      Error,
-      StudyNoteDetail,
-      (string | number)[]
-    >
-  >
-) => {
-  return useQuery({
-    ...getStudyNoteDetailsOption(args),
-    ...options,
   });
 };
 
