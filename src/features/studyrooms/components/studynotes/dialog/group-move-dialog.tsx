@@ -37,7 +37,7 @@ export const GroupMoveDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
-  const [selectedGroup, setSelectedGroup] = useState<string | null>('none');
+  const [selectedGroup, setSelectedGroup] = useState<string | null>('all');
 
   const {
     data: studyNoteGroups,
