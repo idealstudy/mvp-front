@@ -5,13 +5,13 @@ import { queryOptions } from '@tanstack/react-query';
 import type { StudyNoteGroupPageable } from '../../studyrooms/components/studynotes/type';
 import { getStudyNotes, getStudyNotesByGroupId, updateStudyNote } from './api';
 
-const queryKey = {
+export const queryKey = {
   all: ['studynote'],
   byGroupId: ['studynote', 'byGroupId'],
 };
 
 export const StudyNotesQueryKey = {
-  all: ['studyNotes'],
+  all: queryKey.all,
   studyNotes: (args: {
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
@@ -105,7 +105,7 @@ export const getStudyNotesOption = (args: {
   // keyword: string;
 }) => {
   return queryOptions({
-    queryKey: [queryKey.byGroupId, args],
+    queryKey: StudyNotesQueryKey.studyNotes(args),
     queryFn: () => getStudyNotes(args),
   });
 };
@@ -116,14 +116,14 @@ export const getStudyNotesByGroupIdOption = (args: {
   pageable: StudyNoteGroupPageable;
 }) => {
   return queryOptions({
-    queryKey: [queryKey.byGroupId, args],
+    queryKey: StudyNotesByGroupIdQueryKey.studyNotesByGroupId(args),
     queryFn: () => getStudyNotesByGroupId(args),
   });
 };
 
 export const getStudyNoteDetailsOption = (args: { teachingNoteId: number }) => {
   return queryOptions({
-    queryKey: [queryKey.byGroupId, args],
+    queryKey: StudyNoteDetailsQueryKey.studyNoteDetails(args),
     queryFn: () => getStudyNoteDetail(args.teachingNoteId),
   });
 };

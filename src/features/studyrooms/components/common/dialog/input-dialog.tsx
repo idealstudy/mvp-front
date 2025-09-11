@@ -13,6 +13,7 @@ export const InputDialog = ({
   title,
   description,
   onSubmit,
+  error,
 }: {
   isOpen: boolean;
   placeholder: string;
@@ -20,6 +21,7 @@ export const InputDialog = ({
   title: string;
   description?: string;
   onSubmit: (name: string) => void;
+  error?: string;
 }) => {
   const [name, setName] = useState('');
 
@@ -36,7 +38,7 @@ export const InputDialog = ({
           <Dialog.Description className="font-headline2-heading mb-1">
             {description}
           </Dialog.Description>
-          <TextField>
+          <TextField error={!!error}>
             <TextField.Input
               placeholder={`${placeholder}`}
               value={name}
@@ -44,6 +46,7 @@ export const InputDialog = ({
               maxLength={15}
             />
           </TextField>
+          {error && <p className="text-system-warning">{error}</p>}
         </Dialog.Body>
         <Dialog.Footer className="mt-6 justify-end">
           <Dialog.Close asChild>
@@ -60,7 +63,7 @@ export const InputDialog = ({
             <Button
               className="w-[120px]"
               size="small"
-              disabled={!name.trim()}
+              disabled={!name.trim() || !!error}
               onClick={() => onSubmit(name)}
             >
               저장

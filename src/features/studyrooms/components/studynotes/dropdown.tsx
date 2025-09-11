@@ -31,19 +31,33 @@ export const StudyNotesDropdown = ({
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   const handleCopy = () => {
-    // TODO: API 호출이나 상태 업데이트 로직 넣기
+    // TODO: 수업노트 복제 API 호출 후 상태 업데이트 로직 넣기
+  };
+
+  const handleDelete = () => {
+    // TODO: 수업노트 삭제 API 호출 후 상태 업데이트 로직 넣기
+    dispatch({
+      type: 'OPEN',
+      scope: 'note',
+      kind: 'delete',
+      payload: {
+        noteId: item.id,
+      },
+    });
   };
 
   return (
     <>
-      <StudyNotesDialog
-        state={dialog}
-        dispatch={dispatch}
-        studyRoomId={studyRoomId}
-        pageable={pageable}
-        keyword={keyword}
-        item={item}
-      />
+      {dialog.status === 'open' && (
+        <StudyNotesDialog
+          state={dialog}
+          dispatch={dispatch}
+          studyRoomId={studyRoomId}
+          pageable={pageable}
+          keyword={keyword}
+          item={item}
+        />
+      )}
       <DropdownMenu
         open={open === item.id}
         onOpenChange={() => handleOpen(item.id)}
@@ -108,16 +122,7 @@ export const StudyNotesDropdown = ({
           <DropdownMenu.Item
             variant="danger"
             className="justify-center"
-            onClick={() => {
-              dispatch({
-                type: 'OPEN',
-                scope: 'note',
-                kind: 'delete',
-                payload: {
-                  noteId: item.id,
-                },
-              });
-            }}
+            onClick={() => handleDelete()}
           >
             삭제하기
           </DropdownMenu.Item>

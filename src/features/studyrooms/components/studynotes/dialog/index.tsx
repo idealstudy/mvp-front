@@ -25,6 +25,7 @@ export const StudyNotesDialog = ({
   pageable: StudyNoteGroupPageable;
   keyword: string;
 }) => {
+  // const [error, setError] = useState<string | null>(null);
   const { data, isPending, isError } = useStudyNoteDetailQuery(item.id, {
     enabled: state.status === 'open' && !!item.id,
   });
@@ -40,16 +41,23 @@ export const StudyNotesDialog = ({
   }
 
   const handleRename = (name: string) => {
-    updateStudyNote({
-      teachingNoteId: item.id,
-      studyRoomId,
-      title: name,
-      teachingNoteGroupId: item.groupId ?? null,
-      content: data?.content || '',
-      visibility: item.visibility,
-      taughtAt: item.taughtAt,
-      studentIds: data?.studentInfos?.map((student) => student.studentId),
-    });
+    updateStudyNote(
+      {
+        teachingNoteId: item.id,
+        studyRoomId,
+        title: name,
+        teachingNoteGroupId: item.groupId ?? null,
+        content: data?.content || '',
+        visibility: item.visibility,
+        taughtAt: item.taughtAt,
+        studentIds: data?.studentInfos?.map((student) => student.studentId),
+      }
+      // {
+      //   onError: (error) => {
+      //     setError(error.message || '이름 중복');
+      //   },
+      // }
+    );
   };
 
   if (state.status !== 'open') return null;

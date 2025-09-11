@@ -31,11 +31,13 @@ export const StudyroomSidebar = ({
 
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
 
+  // TODO: 스터디룸 이름 변경 API 연결
   const handleSubmitRoomRename = (name: string) => {
     setRoomName(name);
     dispatch({ type: 'CLOSE' });
   };
 
+  // TODO: 스터디룸 삭제 API 연결
   const handleDeleteGroup = () => {
     deleteStudyRoom({ studyRoomId });
     setDeleteNoticeMsg('스터디룸이 삭제되었습니다.');
@@ -80,12 +82,14 @@ export const StudyroomSidebar = ({
 
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader dispatch={dispatch} />
+        {/* TODO: 스터디룸 수업노트, 학생, 질문 카운트 추가 */}
         <StudyStats />
         <StudyroomGroups
           studyRoomId={studyRoomId}
           selectedGroupId={selectedGroupId}
           handleSelectGroupId={handleSelectGroupId}
         />
+        {/* TODO: 마지막 활동 시간 추가 */}
         <div className="font-body2-normal text-gray-scale-gray-60 flex items-end justify-end">
           <p className="text-right">마지막 활동 3일전</p>
         </div>

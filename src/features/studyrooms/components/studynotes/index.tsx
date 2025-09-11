@@ -36,12 +36,14 @@ export const StudyNotes = ({
     sortKey: sort,
   };
 
+  // TODO: 수업노트 조회 API keyword search 연결
   const { data } = useStudyNotesQuery({
     studyRoomId: studyRoomId,
     pageable: pageable,
     // keyword: search,
   });
 
+  // TODO: 수업노트 그룹으로 수업노트 조회 API keyword search 연결
   const { data: studyNotesByGroupId } = useStudyNotesByGroupIdQuery({
     studyRoomId: studyRoomId,
     teachingNoteGroupId: Number(selectedGroupId),
