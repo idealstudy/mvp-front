@@ -14,8 +14,7 @@ import {
 export const useCreateStudyNoteGroup = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (args: { studyRoomId: number; title: string }) =>
-      createStudyNoteGroup(args),
+    mutationFn: createStudyNoteGroup,
     onSuccess: (_, args) => {
       queryClient.invalidateQueries({
         queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
