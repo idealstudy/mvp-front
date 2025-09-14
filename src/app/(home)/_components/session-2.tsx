@@ -1,22 +1,18 @@
 import Image from 'next/image';
 
-import landing01 from '@/../public/home/landing-01.svg';
-import landing02 from '@/../public/home/landing-02.svg';
-import landing03 from '@/../public/home/landing-03.svg';
-
 const problemCards = [
   {
-    src: landing01,
+    src: '/home/landing-01.svg',
     alt: '캐릭터1',
     texts: ['대화와 자료가 뒤죽박죽...', '그래서 이번 숙제는 어딨더라?'],
   },
   {
-    src: landing02,
+    src: '/home/landing-02.svg',
     alt: '캐릭터2',
     texts: ['스터디 플래너, 쓰긴 해야 되는데', '매번 실패해요'],
   },
   {
-    src: landing03,
+    src: '/home/landing-03.svg',
     alt: '캐릭터3',
     texts: ['대화와 자료가 뒤죽박죽...', '그 피드백은 어딨더라?'],
   },

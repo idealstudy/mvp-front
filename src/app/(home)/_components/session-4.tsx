@@ -4,8 +4,6 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import subTitle03 from '@/../public/home/landing-subtitle-03.svg';
-import arrow from '@/../public/ic-arrow-right.svg';
 import { cn } from '@/lib/utils';
 
 export function Session4() {
@@ -14,7 +12,7 @@ export function Session4() {
       <div className="mx-auto flex-col-reverse items-center justify-between">
         <div className="flex">
           <Image
-            src={subTitle03}
+            src="/home/landing-subtitle-03.svg"
             alt="sub title 그림"
             width={48}
             height={56}
@@ -69,7 +67,7 @@ const FAQAccordion = () => {
                 {item.question}
               </p>
               <Image
-                src={arrow}
+                src="/ic-arrow-right.svg"
                 alt="화살표"
                 width={24}
                 height={24}
