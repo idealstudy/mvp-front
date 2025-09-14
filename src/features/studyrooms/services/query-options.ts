@@ -4,14 +4,8 @@ import { infiniteQueryOptions } from '@tanstack/react-query';
 import type { StudyNoteGroup } from '../components/types';
 import { getStudyNoteGroup } from './api';
 
-export const StudyNoteGroupQueryKey = {
+export const StudyRoomsGroupQueryKey = {
   all: ['studyNoteGroups'],
-  studyNoteGroups: (args: { studyRoomId: number; pageable: Pageable }) => [
-    ...StudyNoteGroupQueryKey.all,
-    'studyNoteGroups',
-    args.studyRoomId,
-    args.pageable,
-  ],
 };
 
 export const getStudyNoteGroupInfiniteOption = (args: {
@@ -19,7 +13,7 @@ export const getStudyNoteGroupInfiniteOption = (args: {
   pageable: Pageable;
 }) => {
   return infiniteQueryOptions({
-    queryKey: StudyNoteGroupQueryKey.studyNoteGroups(args),
+    queryKey: [StudyRoomsGroupQueryKey.all, args],
     queryFn: ({ pageParam = 0 }) =>
       getStudyNoteGroup({
         ...args,

@@ -4,9 +4,7 @@ import type { StudyNoteGroupPageable } from '../../studyrooms/components/studyno
 import { deleteStudyNoteToGroup, updateStudyNoteGroup } from './api';
 import { updateStudyNote } from './api';
 import {
-  StudyNoteGroupQueryKey,
-  StudyNotesQueryKey,
-  UpdateStudyNoteQueryKey,
+  StudyNoteQueryKey,
   getStudyNotesByGroupIdOption,
   getStudyNotesOption,
 } from './query-options';
@@ -44,21 +42,10 @@ export const useDeleteStudyNoteToGroup = (args: {
     mutationFn: () => deleteStudyNoteToGroup(args),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: StudyNotesQueryKey.studyNotes({
-          studyRoomId: args.studyRoomId,
-          pageable: args.pageable,
-          // keyword: args.keyword,
-        }),
+        queryKey: [StudyNoteQueryKey.all],
       });
       queryClient.invalidateQueries({
-        queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
-          studyRoomId: args.studyRoomId,
-          pageable: {
-            page: args.pageable.page,
-            size: args.pageable.size,
-            sort: [args.pageable.sortKey],
-          },
-        }),
+        queryKey: [StudyNoteQueryKey.byGroupId],
       });
     },
   });
@@ -77,21 +64,10 @@ export const useUpdateStudyNoteToGroup = (args: {
     mutationFn: () => updateStudyNoteGroup(args),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: StudyNotesQueryKey.studyNotes({
-          studyRoomId: args.studyRoomId,
-          pageable: args.pageable,
-          // keyword: args.keyword,
-        }),
+        queryKey: [StudyNoteQueryKey.all],
       });
       queryClient.invalidateQueries({
-        queryKey: StudyNoteGroupQueryKey.studyNoteGroups({
-          studyRoomId: args.studyRoomId,
-          pageable: {
-            page: args.pageable.page,
-            size: args.pageable.size,
-            sort: [args.pageable.sortKey],
-          },
-        }),
+        queryKey: [StudyNoteQueryKey.byGroupId],
       });
     },
   });
@@ -111,29 +87,20 @@ export const useUpdateStudyNote = () => {
       taughtAt: string;
       studentIds: number[];
     }) => updateStudyNote(args),
-    onSuccess: (_, args) => {
+    onSuccess: () => {
       // 스터디 노트 리스트 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: StudyNotesQueryKey.all,
+        queryKey: [StudyNoteQueryKey.all],
       });
 
       // 스터디 노트 그룹 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: StudyNoteGroupQueryKey.all,
+        queryKey: [StudyNoteQueryKey.byGroupId],
       });
 
       // 스터디 노트 상세 정보 쿼리 무효화
       queryClient.invalidateQueries({
-        queryKey: UpdateStudyNoteQueryKey.updateStudyNote({
-          teachingNoteId: args.teachingNoteId,
-          studyRoomId: args.studyRoomId,
-          teachingNoteGroupId: args.teachingNoteGroupId,
-          title: args.title,
-          content: args.content,
-          visibility: args.visibility,
-          taughtAt: args.taughtAt,
-          studentIds: args.studentIds,
-        }),
+        queryKey: [StudyNoteQueryKey.update],
       });
     },
   });
