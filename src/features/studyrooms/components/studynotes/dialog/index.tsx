@@ -27,7 +27,7 @@ export const StudyNotesDialog = ({
 }) => {
   // const [error, setError] = useState<string | null>(null);
   const { data, isPending, isError } = useStudyNoteDetailQuery(item.id, {
-    enabled: state.status === 'open' && !!item.id,
+    enabled: state.status === 'open',
   });
 
   const { mutate: updateStudyNote } = useUpdateStudyNote();
