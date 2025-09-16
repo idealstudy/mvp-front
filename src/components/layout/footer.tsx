@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import logo from '@/../public/logo.svg';
 import { ROUTE } from '@/constants/route';
 
 export const Footer = () => {
@@ -10,7 +9,7 @@ export const Footer = () => {
       <div className="mx-auto max-w-7xl space-y-4">
         <Link href={ROUTE.HOME}>
           <Image
-            src={logo}
+            src="/logo.svg"
             alt="THE EDU 로고"
             width={79}
             height={22}

@@ -4,14 +4,12 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import subTitle02 from '@/../public/home/landing-subtitle-02.svg';
-
 export function Session3() {
   return (
     <section className="mt-[179px] mr-[36px] w-full max-w-[1344px]">
       <div className="mx-auto flex items-center">
         <Image
-          src={subTitle02}
+          src="/home/landing-subtitle-02.svg"
           alt="서브 타이틀 그림"
           width={48}
           height={56}

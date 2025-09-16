@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import landing from '@/../public/home/landing-main.svg';
 import { ROUTE } from '@/constants/route';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
@@ -66,7 +65,7 @@ export function Session1() {
 
         <div>
           <Image
-            src={landing}
+            src="/home/landing-main.svg"
             alt="Session 1 이미지"
             width={785}
             height={608}
