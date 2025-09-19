@@ -1,11 +1,7 @@
+import { Icon } from '@/components/ui/icon';
 import { Meta, StoryObj } from '@storybook/react';
 
-import {
-  NotebookIcon,
-  PersonIcon,
-  QuestionIcon,
-  Tabs,
-} from '../features/studyrooms/components/common/tabs';
+import { Tabs } from '../features/studyrooms/components/common/tabs';
 
 const meta = {
   title: 'studyroom/Tabs',
@@ -25,15 +21,15 @@ export const Default: Story = {
         <Tabs defaultValue="1">
           <Tabs.List>
             <Tabs.Trigger value="1">
-              <NotebookIcon />
+              <Icon.Notebook />
               수업노트
             </Tabs.Trigger>
             <Tabs.Trigger value="2">
-              <PersonIcon />
+              <Icon.Person />
               학생
             </Tabs.Trigger>
             <Tabs.Trigger value="3">
-              <QuestionIcon />
+              <Icon.Question />
               질문
             </Tabs.Trigger>
           </Tabs.List>

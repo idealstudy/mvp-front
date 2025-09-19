@@ -10,8 +10,11 @@ import Home from '@/assets/icons/home.svg';
 import Link from '@/assets/icons/link.svg';
 import Mail from '@/assets/icons/mail.svg';
 import Menu from '@/assets/icons/menu.svg';
+import Notebook from '@/assets/icons/notebook.svg';
+import Person from '@/assets/icons/person.svg';
 import Plus from '@/assets/icons/plus.svg';
 import QuestionMark from '@/assets/icons/question-mark.svg';
+import Question from '@/assets/icons/question.svg';
 import Settings from '@/assets/icons/settings.svg';
 import X from '@/assets/icons/x.svg';
 
@@ -28,7 +31,10 @@ export const Icon = {
   Link,
   Mail,
   Menu,
+  Notebook,
+  Person,
   Plus,
+  Question,
   QuestionMark,
   Settings,
   X,

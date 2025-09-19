@@ -1,11 +1,7 @@
 'use client';
 
-import {
-  NotebookIcon,
-  PersonIcon,
-  QuestionIcon,
-  Tabs,
-} from '@/features/studyrooms/components/common/tabs';
+import { Icon } from '@/components/ui/icon';
+import { Tabs } from '@/features/studyrooms/components/common/tabs';
 
 import { StudyNote } from './study-note';
 
@@ -15,15 +11,15 @@ export const StudyRoomTabs = () => {
       <Tabs defaultValue="1">
         <Tabs.List>
           <Tabs.Trigger value="1">
-            <NotebookIcon />
+            <Icon.Notebook />
             수업노트
           </Tabs.Trigger>
           <Tabs.Trigger value="2">
-            <PersonIcon />
+            <Icon.Person />
             학생
           </Tabs.Trigger>
           <Tabs.Trigger value="3">
-            <QuestionIcon />
+            <Icon.Question />
             질문
           </Tabs.Trigger>
         </Tabs.List>
