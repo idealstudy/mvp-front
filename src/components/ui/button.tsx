@@ -44,7 +44,7 @@ const buttonVariants = cva(
     },
     defaultVariants: {
       variant: 'primary',
-      size: 'large',
+      size: 'medium',
     },
   }
 );

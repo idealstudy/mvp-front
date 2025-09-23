@@ -62,7 +62,12 @@ export const EmptyConnectionDialog = () => {
             className={DialogTwStyles.closeButton}
             asChild
           >
-            <Button className={DialogTwStyles.cancelButton}>나중에</Button>
+            <Button
+              size="large"
+              className={DialogTwStyles.cancelButton}
+            >
+              나중에
+            </Button>
           </Dialog.Close>
           <Dialog.Close
             className={DialogTwStyles.closeButton}

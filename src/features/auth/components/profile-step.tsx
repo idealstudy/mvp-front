@@ -36,7 +36,12 @@ export const ProfileStep = () => {
           {form.formState.errors.name?.message}
         </Form.ErrorMessage>
       </Form.Item>
-      <Button type="submit">가입 완료</Button>
+      <Button
+        size="large"
+        type="submit"
+      >
+        가입 완료
+      </Button>
     </div>
   );
 };

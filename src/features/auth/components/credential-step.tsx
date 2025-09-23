@@ -214,6 +214,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         </div>
       </Checkbox.Group>
       <Button
+        size="large"
         onClick={onNextButtonClick}
         disabled={!canMoveToNext}
       >

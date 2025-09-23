@@ -56,7 +56,12 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
           {form.formState.errors.email?.message}
         </Form.ErrorMessage>
       </Form.Item>
-      <Button onClick={onNextButtonClick}>계속</Button>
+      <Button
+        size="large"
+        onClick={onNextButtonClick}
+      >
+        계속
+      </Button>
       <Link
         className="flex w-fit gap-2 self-center"
         href={ROUTE.LOGIN}
