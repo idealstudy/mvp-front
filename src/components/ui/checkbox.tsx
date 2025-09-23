@@ -58,7 +58,10 @@ const CheckboxLabel = ({
 }: CheckboxLabelProps) => {
   return (
     <Label.Root
-      className={cn('flex items-center gap-2', className)}
+      className={cn(
+        'has-disabled:text-text-inactive flex items-center gap-2',
+        className
+      )}
       {...props}
     >
       {children}

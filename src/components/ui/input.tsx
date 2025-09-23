@@ -12,9 +12,9 @@ export const Input = ({
   return (
     <input
       className={cn(
-        'border-gray-scale-gray-50 placeholder:text-gray-scale-gray-50 h-[56px] w-full rounded-[4px] border px-[24px] outline-none',
+        'border-line-line2 placeholder:text-gray-scale-gray-50 h-[56px] w-full rounded-[4px] border px-[24px] outline-none',
         'focus-visible:border-line-line3',
-        'disabled:border-light-gray-30 disabled:bg-gray-scale-gray-5 disabled:text-gray-scale-gray-50',
+        'disabled:border-text-inactive disabled:bg-gray-scale-gray-1 disabled:text-text-inactive',
         'read-only:border-light-gray-30 read-only:gray-scale-gray-5 read-only:text-gray-scale-gray-50',
         ariaInvalid &&
           'border-system-warning focus-visible:border-system-warning',

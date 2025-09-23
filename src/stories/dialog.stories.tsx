@@ -20,7 +20,7 @@ export const WithInput: Story = {
     return (
       <Dialog>
         <Dialog.Trigger asChild>
-          <Button size="small">열기</Button>
+          <Button size="xsmall">열기</Button>
         </Dialog.Trigger>
         <Dialog.Content className="w-[598px]">
           <Dialog.Header>
@@ -43,7 +43,7 @@ export const WithInput: Story = {
               <Button
                 className="w-[120px]"
                 variant="outlined"
-                size="small"
+                size="xsmall"
               >
                 취소
               </Button>
@@ -51,7 +51,7 @@ export const WithInput: Story = {
             <Dialog.Close asChild>
               <Button
                 className="w-[120px]"
-                size="small"
+                size="xsmall"
               >
                 저장
               </Button>

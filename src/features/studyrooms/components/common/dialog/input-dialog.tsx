@@ -53,7 +53,7 @@ export const InputDialog = ({
             <Button
               variant="outlined"
               className="w-[120px]"
-              size="small"
+              size="xsmall"
               onClick={onOpenChange}
             >
               취소
@@ -62,7 +62,7 @@ export const InputDialog = ({
           <Dialog.Close asChild>
             <Button
               className="w-[120px]"
-              size="small"
+              size="xsmall"
               disabled={!name.trim() || !!error}
               onClick={() => onSubmit(name)}
             >

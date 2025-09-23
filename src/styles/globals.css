@@ -86,7 +86,7 @@
   --color-system-background-alt: var(--gray-scale-white);
   --color-system-background-inactive: var(--gray-scale-gray-5);
 
-  --color-background-gray: var(--gray-scale-gray-5);
+  --color-background-gray: var(--gray-scale-gray-1);
   --color-background-inactive: var(--gray-scale-gray-10);
   --color-background-orange: var(--orange-scale-orange-1);
 

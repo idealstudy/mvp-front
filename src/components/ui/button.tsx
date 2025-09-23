@@ -11,7 +11,7 @@ export type ButtonProps = React.ComponentPropsWithRef<'button'> &
 
 const buttonVariants = cva(
   cn(
-    'inline-flex justify-center items-center cursor-pointer whitespace-nowrap rounded-[4px] font-normal',
+    'inline-flex justify-center items-center cursor-pointer whitespace-nowrap rounded-[8px]',
     'disabled:bg-background-inactive disabled:text-text-inactive disabled:border-line-line2 disabled:pointer-events-none'
   ),
   {
@@ -27,13 +27,19 @@ const buttonVariants = cva(
         ),
         outlined: cn(
           'bg-gray-scale-white text-text-main border border-line-line2',
-          'hover:bg-gray-scale-gray-5',
+          'hover:bg-gray-scale-gray-1',
           'active:bg-gray-scale-gray-10'
         ),
       },
       size: {
-        large: 'h-[64px] px-[26px] text-[20px]',
-        small: 'h-[40px] px-[16px] text-[16px]',
+        large:
+          'h-[64px] px-[26px] font-headline2-heading disabled:font-headline2-normal',
+        medium:
+          'h-[56px] px-[20px] font-body2-heading disabled:font-body2-normal',
+        small:
+          'h-[48px] px-[20px] font-body2-heading disabled:font-body2-normal',
+        xsmall:
+          'h-[40px] px-[16px] font-body2-heading disabled:font-body2-normal',
       },
     },
     defaultVariants: {

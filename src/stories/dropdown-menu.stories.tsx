@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
 

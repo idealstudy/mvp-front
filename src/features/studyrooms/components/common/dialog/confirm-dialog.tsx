@@ -44,7 +44,7 @@ export const ConfirmDialog = ({
           {type === 'delete' && (
             <Button
               className="w-[120px]"
-              size="small"
+              size="xsmall"
               variant="outlined"
               onClick={() => dispatch({ type: 'CLOSE' })}
             >
@@ -54,7 +54,7 @@ export const ConfirmDialog = ({
 
           <Button
             className="w-[120px]"
-            size="small"
+            size="xsmall"
             variant="secondary"
             onClick={
               type === 'delete' ? onDelete : () => dispatch({ type: 'CLOSE' })

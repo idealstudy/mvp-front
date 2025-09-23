@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { createContextFactory } from '@/lib/context';
 import { cn } from '@/lib/utils';
 import { Select as SelectPrimitives } from 'radix-ui';
 
@@ -22,10 +23,20 @@ export const SelectChevronDownIcon = ({
   );
 };
 
-type SelectProps = React.ComponentPropsWithRef<typeof SelectPrimitives.Root>;
+type SelectProps = React.ComponentPropsWithRef<typeof SelectPrimitives.Root> & {
+  'aria-invalid'?: boolean;
+};
 
-const Select = ({ children, ...props }: SelectProps) => {
-  return <SelectPrimitives.Root {...props}>{children}</SelectPrimitives.Root>;
+const Select = ({
+  children,
+  'aria-invalid': ariaInvalid = false,
+  ...props
+}: SelectProps) => {
+  return (
+    <SelectContext value={{ invalid: !!ariaInvalid }}>
+      <SelectPrimitives.Root {...props}>{children}</SelectPrimitives.Root>
+    </SelectContext>
+  );
 };
 
 type SelectTriggerProps = React.ComponentPropsWithRef<
@@ -36,10 +47,12 @@ type SelectTriggerProps = React.ComponentPropsWithRef<
 
 const SelectTrigger = ({
   className,
-  'aria-invalid': ariaInvalid,
+
   placeholder,
   ...props
 }: SelectTriggerProps) => {
+  const { invalid } = useSelectContext();
+
   return (
     <SelectPrimitives.Trigger
       className={cn(
@@ -49,11 +62,11 @@ const SelectTrigger = ({
         'placeholder-text-gray-scale-gray-50',
         'cursor-pointer',
         'data-[state=open]:[&>svg]:rotate-180',
-        //   'disabled:bg-background-100 disabled:pointer-events-none disabled:opacity-50',
-        ariaInvalid && '',
+        'disabled:border-text-inactive disabled:bg-gray-scale-gray-1 disabled:text-text-inactive disabled:pointer-events-none',
+        invalid && 'border-system-warning',
         className
       )}
-      aria-invalid={ariaInvalid}
+      aria-invalid={invalid}
       {...props}
     >
       <span className="truncate">
@@ -116,7 +129,7 @@ const SelectOption = ({ className, children, ...props }: SelectOptionProps) => {
     <SelectPrimitives.Item
       className={cn(
         'relative flex h-[56px] w-full cursor-pointer items-center px-6 outline-hidden select-none',
-        'focus:bg-gray-scale-gray-5',
+        'focus:bg-gray-scale-gray-1',
         'data-[state=checked]:text-key-color-primary',
         'data-disabled:pointer-events-none',
         className
@@ -161,5 +174,12 @@ export const ChevronDownIcon = ({ className }: { className: string }) => {
     </svg>
   );
 };
+
+type SelectContextValue = {
+  invalid: boolean;
+};
+
+const [SelectContext, useSelectContext] =
+  createContextFactory<SelectContextValue>('Select');
 
 export { Select };

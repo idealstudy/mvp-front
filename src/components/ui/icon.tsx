@@ -15,6 +15,7 @@ import Person from '@/assets/icons/person.svg';
 import Plus from '@/assets/icons/plus.svg';
 import QuestionMark from '@/assets/icons/question-mark.svg';
 import Question from '@/assets/icons/question.svg';
+import Search from '@/assets/icons/search.svg';
 import Settings from '@/assets/icons/settings.svg';
 import X from '@/assets/icons/x.svg';
 
@@ -36,6 +37,7 @@ export const Icon = {
   Plus,
   Question,
   QuestionMark,
+  Search,
   Settings,
   X,
 };

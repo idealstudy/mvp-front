@@ -45,13 +45,14 @@ const DropdownMenuContent = ({
 const dropdownMenuItemVariants = cva(
   cn(
     'outline-hidden relative flex cursor-pointer select-none items-center px-4 h-[32px]',
+    'focus:bg-background-gray',
     '[&_svg]:shrink-0'
   ),
   {
     variants: {
       variant: {
-        default: cn('text-text-main', 'focus:bg-background-gray'),
-        danger: cn('text-system-warning', 'focus:bg-background-orange'),
+        default: 'text-text-main',
+        danger: 'text-system-warning',
       },
     },
     defaultVariants: {

@@ -58,6 +58,21 @@ export const ItemDisabled: Story = {
   },
 };
 
+export const Invalid: Story = {
+  render: () => {
+    return (
+      <RadioGroup
+        defaultValue="1"
+        aria-invalid
+      >
+        <RadioGroup.Option value="1">미구현</RadioGroup.Option>
+        <RadioGroup.Option value="2">미구현</RadioGroup.Option>
+        <RadioGroup.Option value="3">미구현</RadioGroup.Option>
+      </RadioGroup>
+    );
+  },
+};
+
 export const Controlled: Story = {
   render: () => {
     const [value, setValue] = useState('1');

@@ -37,30 +37,20 @@ export const Disabled: Story = {
   },
 };
 
+export const Large: Story = {
+  render: () => {
+    return <Button size="large">버튼</Button>;
+  },
+};
+
 export const Small: Story = {
   render: () => {
-    return (
-      <div className="flex gap-2">
-        <Button size="small">버튼</Button>
-        <Button
-          size="small"
-          variant="secondary"
-        >
-          버튼
-        </Button>
-        <Button
-          size="small"
-          variant="outlined"
-        >
-          버튼
-        </Button>
-        <Button
-          size="small"
-          disabled
-        >
-          버튼
-        </Button>
-      </div>
-    );
+    return <Button size="small">버튼</Button>;
+  },
+};
+
+export const XSmall: Story = {
+  render: () => {
+    return <Button size="xsmall">버튼</Button>;
   },
 };

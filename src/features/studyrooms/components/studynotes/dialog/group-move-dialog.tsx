@@ -163,7 +163,7 @@ export const GroupMoveDialog = ({
             <Button
               variant="outlined"
               className="w-[120px]"
-              size="small"
+              size="xsmall"
               onClick={() => dispatch({ type: 'CLOSE' })}
             >
               취소
@@ -172,7 +172,7 @@ export const GroupMoveDialog = ({
           <Dialog.Close asChild>
             <Button
               className="w-[120px]"
-              size="small"
+              size="xsmall"
               onClick={handleSave}
             >
               저장

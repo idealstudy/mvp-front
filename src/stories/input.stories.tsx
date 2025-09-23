@@ -32,6 +32,17 @@ export const WithPlaceholder: Story = {
   },
 };
 
+export const Disabled: Story = {
+  render: () => {
+    return (
+      <Input
+        disabled
+        placeholder="텍스트를 입력해주세요"
+      />
+    );
+  },
+};
+
 export const Invalid: Story = {
   render: () => {
     return <Input aria-invalid />;

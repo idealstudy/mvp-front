@@ -12,9 +12,16 @@ export const Form = ({ children, ...props }: FormProps) => {
   return <form {...props}>{children}</form>;
 };
 
-type FormLabelProps = React.ComponentProps<typeof Label.Root>;
+type FormLabelProps = React.ComponentProps<typeof Label.Root> & {
+  required?: boolean;
+};
 
-const FormLabel = ({ className, children, ...props }: FormLabelProps) => {
+const FormLabel = ({
+  className,
+  children,
+  required,
+  ...props
+}: FormLabelProps) => {
   const { id } = useFormItemContext();
 
   return (
@@ -24,6 +31,7 @@ const FormLabel = ({ className, children, ...props }: FormLabelProps) => {
       {...props}
     >
       {children}
+      {required && <span className="text-key-color-primary ml-1">*</span>}
     </Label.Root>
   );
 };

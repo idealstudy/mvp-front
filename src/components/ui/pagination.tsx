@@ -1,18 +1,232 @@
+import { createContextFactory } from '@/lib/context';
 import { cn } from '@/lib/utils';
 
-type Props = {
+type PaginationProps = Omit<React.ComponentPropsWithRef<'nav'>, 'onChange'> & {
   page: number;
+  onPageChange: (page: number) => void;
   totalPages: number;
+};
+
+interface PaginationItem extends React.ComponentPropsWithoutRef<'button'> {
+  page: number;
+}
+
+const PaginationItem = ({ page, ...props }: PaginationItem) => {
+  const { page: currentPage, onPageChange } = usePaginationContext();
+
+  const isActive = page === currentPage;
+
+  const onClick = () => {
+    onPageChange(page);
+  };
+
+  return (
+    <button
+      className={cn(
+        'bg-gray-scale-white text-text-sub1 hover:bg-background-gray flex size-[28px] cursor-pointer items-center justify-center rounded-[4px]',
+        isActive && 'text-key-color-primary bg-background-orange font-medium'
+      )}
+      aria-label="페이지 이동"
+      aria-current={isActive ? 'page' : undefined}
+      onClick={onClick}
+      {...props}
+    >
+      {page}
+    </button>
+  );
+};
+
+const Pagination = ({
+  className,
+  page,
+  onPageChange,
+  totalPages,
+  ...props
+}: PaginationProps) => {
+  const currentPage = page;
+
+  const renderPages = () => {
+    if (totalPages <= 10) {
+      return Array(totalPages)
+        .fill(0)
+        .map((_, index) => (
+          <PaginationItem
+            key={index}
+            page={index + 1}
+          />
+        ));
+    }
+
+    if (page <= 5) {
+      return (
+        <>
+          <PaginationItem page={1} />
+          <PaginationItem page={2} />
+          <PaginationItem page={3} />
+          <PaginationItem page={4} />
+          <PaginationItem page={5} />
+          <PaginationItem page={6} />
+          <PaginationEllipsis />
+          <PaginationItem page={totalPages - 1} />
+          <PaginationItem page={totalPages} />
+        </>
+      );
+    }
+
+    if (page >= 6 && page <= totalPages - 5) {
+      return (
+        <>
+          <PaginationItem page={1} />
+          <PaginationItem page={2} />
+          <PaginationEllipsis />
+          <PaginationItem page={currentPage - 1} />
+          <PaginationItem page={currentPage} />
+          <PaginationItem page={currentPage + 1} />
+          <PaginationEllipsis />
+
+          <PaginationItem page={totalPages - 1} />
+          <PaginationItem page={totalPages} />
+        </>
+      );
+    }
+
+    return (
+      <>
+        <PaginationItem page={1} />
+        <PaginationItem page={2} />
+        <PaginationEllipsis />
+        <PaginationItem page={totalPages - 5} />
+        <PaginationItem page={totalPages - 4} />
+        <PaginationItem page={totalPages - 3} />
+        <PaginationItem page={totalPages - 2} />
+        <PaginationItem page={totalPages - 1} />
+        <PaginationItem page={totalPages} />
+      </>
+    );
+  };
+
+  const value = {
+    page,
+    onPageChange,
+  };
+
+  if (totalPages === 0) return null;
+
+  return (
+    <PaginationContext.Provider value={value}>
+      <nav
+        className={cn('text-sub flex items-center gap-2', className)}
+        {...props}
+      >
+        <Navigation
+          aria-label="처음 페이지로 이동"
+          onClick={() => onPageChange(1)}
+          disabled={page === 1}
+        >
+          <ChevronsLeftIcon />
+        </Navigation>
+        <Navigation
+          aria-label="이전 페이지로 이동"
+          onClick={() => onPageChange(page - 1)}
+          disabled={page === 1}
+        >
+          <ChevronLeftIcon />
+        </Navigation>
+        <div className="bg-background flex items-center gap-1 p-1">
+          {renderPages()}
+        </div>
+        <Navigation
+          aria-label="다음 페이지로 이동"
+          onClick={() => onPageChange(page + 1)}
+          disabled={page === totalPages}
+        >
+          <ChevronRightIcon />
+        </Navigation>
+        <Navigation
+          aria-label="마지막 페이지로 이동"
+          onClick={() => onPageChange(totalPages)}
+          disabled={page === totalPages}
+        >
+          <ChevronsRightIcon />
+        </Navigation>
+      </nav>
+    </PaginationContext.Provider>
+  );
+};
+
+type NavigationProps = React.ComponentPropsWithoutRef<'button'>;
+
+const Navigation = ({ className, children, ...props }: NavigationProps) => {
+  return (
+    <button
+      className={cn(
+        'text-text-sub1 hover:bg-background-gray flex size-[28px] cursor-pointer items-center justify-center rounded-[4px]',
+        'disabled:text-text-inactive disabled:pointer-events-none',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+const PaginationEllipsis = () => {
+  return (
+    <p className="flex size-[28px] items-center justify-center rounded-[4px]">
+      <EllipsisIcon />
+    </p>
+  );
+};
+
+const EllipsisIcon = () => {
+  return (
+    <svg
+      className="mt-2"
+      width="10"
+      height="3"
+      viewBox="0 0 10 3"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1.78906 2.08203C1.31055 2.08203 0.900391 1.68555 0.914062 1.19336C0.900391 0.714844 1.31055 0.318359 1.78906 0.318359C2.26758 0.318359 2.66406 0.714844 2.66406 1.19336C2.66406 1.68555 2.26758 2.08203 1.78906 2.08203ZM5.34375 2.08203C4.86523 2.08203 4.45508 1.68555 4.46875 1.19336C4.45508 0.714844 4.86523 0.318359 5.34375 0.318359C5.82227 0.318359 6.21875 0.714844 6.21875 1.19336C6.21875 1.68555 5.82227 2.08203 5.34375 2.08203ZM8.89844 2.08203C8.41992 2.08203 8.00977 1.68555 8.02344 1.19336C8.00977 0.714844 8.41992 0.318359 8.89844 0.318359C9.37695 0.318359 9.77344 0.714844 9.77344 1.19336C9.77344 1.68555 9.37695 2.08203 8.89844 2.08203Z"
+        fill="#111111"
+      />
+    </svg>
+  );
+};
+
+type PaginationContextValue = {
+  page: number;
   onPageChange: (page: number) => void;
 };
 
-const LeftSortIcon = ({
-  active,
-  onClick,
-}: {
-  active?: boolean;
-  onClick?: () => void;
-}) => {
+const [PaginationContext, usePaginationContext] =
+  createContextFactory<PaginationContextValue>('Pagination');
+
+export { Pagination };
+
+const ChevronLeftIcon = () => {
+  return (
+    <svg
+      width="10"
+      height="16"
+      viewBox="0 0 10 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
+    >
+      <path
+        d="M8.36328 1.63672L1.99932 8.00068L8.36328 14.3646"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
+const ChevronsLeftIcon = () => {
   return (
     <svg
       width="24"
@@ -20,28 +234,53 @@ const LeftSortIcon = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      className={cn(active && 'text-black', 'mr-2 cursor-pointer')}
-      onClick={onClick}
+      stroke="currentColor"
+    >
+      <g clipPath="url(#clip0_4495_11343)">
+        <path
+          d="M11.3633 5.63672L4.99932 12.0007L11.3633 18.3646"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M19.3633 5.63672L12.9993 12.0007L19.3633 18.3646"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_4495_11343">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+const ChevronRightIcon = () => {
+  return (
+    <svg
+      width="9"
+      height="16"
+      viewBox="0 0 9 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
     >
       <path
-        d="M15 6L9 12L15 18"
-        stroke="currentColor"
-        strokeWidth="2"
+        d="M1.36328 14.3633L7.72724 7.99932L1.36328 1.63536"
+        strokeWidth="1.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
 };
 
-const RightSortIcon = ({
-  active,
-  onClick,
-}: {
-  active?: boolean;
-  onClick?: () => void;
-}) => {
+const ChevronsRightIcon = () => {
   return (
     <svg
       width="24"
@@ -49,109 +288,29 @@ const RightSortIcon = ({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      className={cn(active && 'text-black', 'ml-2 cursor-pointer')}
-      onClick={onClick}
+      stroke="currentColor"
     >
-      <path
-        d="M9 6L15 12L9 18"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <g clipPath="url(#clip0_4495_11369)">
+        <path
+          d="M5.36328 18.3633L11.7272 11.9993L5.36328 5.63536"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M13.3633 18.3633L19.7272 11.9993L13.3633 5.63536"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_4495_11369">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+          />
+        </clipPath>
+      </defs>
     </svg>
-  );
-};
-
-export const Pagination = ({ page, totalPages, onPageChange }: Props) => {
-  const currentPage = page + 1;
-
-  const getPages = (current: number, total: number) => {
-    const pages: (number | string)[] = [];
-
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) pages.push(i);
-      return pages;
-    }
-
-    if (current <= 4) {
-      const endPage = Math.min(9, total);
-      for (let i = 1; i <= endPage; i++) pages.push(i);
-      if (endPage < total) pages.push('ellipsis', total);
-    } else if (current >= total - 4) {
-      pages.push(1, 'ellipsis');
-      for (let i = Math.max(1, total - 8); i <= total; i++) pages.push(i);
-    } else {
-      pages.push(1, 'ellipsis');
-      for (
-        let i = Math.max(1, current - 4);
-        i <= Math.min(total, current + 4);
-        i++
-      )
-        pages.push(i);
-      if (current + 3 < total) pages.push('ellipsis', total);
-    }
-
-    return pages;
-  };
-
-  const pages = getPages(currentPage, totalPages);
-
-  return (
-    <div className="flex items-center justify-center py-4">
-      <button
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 2)}
-        className="cursor-pointer px-2 disabled:cursor-not-allowed disabled:text-gray-400"
-      >
-        <LeftSortIcon active={currentPage !== 1} />
-      </button>
-
-      {pages.map((p, idx) => (
-        <button
-          key={idx}
-          onClick={() => typeof p === 'number' && onPageChange(p - 1)}
-          disabled={p === 'ellipsis'}
-          className={`h-7 cursor-pointer rounded px-2 ${p === currentPage ? 'bg-orange-scale-orange-1 text-key-color-primary rounded-[4px] font-bold' : 'text-gray-500'} ${p === 'ellipsis' ? 'cursor-default' : p !== currentPage ? 'hover:bg-gray-scale-gray-5' : ''} `}
-        >
-          {p === 'ellipsis' ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="gray"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                cx="5"
-                cy="12"
-                r="1.5"
-              />
-              <circle
-                cx="12"
-                cy="12"
-                r="1.5"
-              />
-              <circle
-                cx="19"
-                cy="12"
-                r="1.5"
-              />
-            </svg>
-          ) : (
-            p
-          )}
-        </button>
-      ))}
-
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage)}
-        className="cursor-pointer px-2 disabled:cursor-not-allowed disabled:text-gray-400"
-      >
-        <RightSortIcon active={currentPage !== totalPages} />
-      </button>
-    </div>
   );
 };

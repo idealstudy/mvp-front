@@ -28,7 +28,7 @@ export const Disabled: Story = {
     return (
       <Checkbox.Label>
         <Checkbox disabled />
-        스타일 구현 안됨
+        체크박스 텍스트
       </Checkbox.Label>
     );
   },
@@ -42,7 +42,7 @@ export const DisabledChecked: Story = {
           checked
           disabled
         />
-        스타일 구현 안됨
+        체크박스 텍스트
       </Checkbox.Label>
     );
   },
@@ -54,6 +54,17 @@ export const WithLabel: Story = {
       <Checkbox.Label>
         <Checkbox />
         체크박스 텍스트
+      </Checkbox.Label>
+    );
+  },
+};
+
+export const Invalid: Story = {
+  render: () => {
+    return (
+      <Checkbox.Label>
+        <Checkbox aria-invalid />
+        스타일 미구현
       </Checkbox.Label>
     );
   },
