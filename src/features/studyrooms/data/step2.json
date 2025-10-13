@@ -1,0 +1,114 @@
+{
+  "data": [
+    {
+      "id": "q1",
+      "name": "modality",
+      "title": "은 어디에서 수업을 진행하나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "ONLINE",
+          "label": "온라인"
+        },
+        {
+          "value": "OFFLINE",
+          "label": "오프라인"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "name": "classForm",
+      "title": "어떤 수업을 위해 만들어졌나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "ONE_ON_ONE",
+          "label": "1:1 수업 (과외, 멘토링)",
+          "subLabel": "한 명을 대상으로 하는 수업이에요"
+        },
+        {
+          "value": "ONE_TO_MANY",
+          "label": "1:N 수업 (학원 등)",
+          "subLabel": "다수를 대상으로 하는 수업이에요"
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "name": "subjectType",
+      "title": "어떤 과목을 수업하시나요?",
+      "type": "radio",
+      "options": [
+        {
+          "value": "KOREAN",
+          "label": "국어"
+        },
+        {
+          "value": "ENGLISH",
+          "label": "영어"
+        },
+        {
+          "value": "MATH",
+          "label": "수학"
+        },
+        {
+          "value": "OTHER",
+          "label": "기타"
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "name": "schoolInfo",
+      "title": "몇 학년을 대상으로 수업하시나요?",
+      "type": "select",
+      "options": {
+        "school": [
+          {
+            "value": "HIGH",
+            "label": "고등학교"
+          },
+          {
+            "value": "MIDDLE",
+            "label": "중학교"
+          },
+          {
+            "value": "ELEMENTARY",
+            "label": "초등학교"
+          },
+          {
+            "value": "OTHER",
+            "label": "기타"
+          }
+        ],
+        "grade": [
+          {
+            "value": "1",
+            "label": "1학년"
+          },
+          {
+            "value": "2",
+            "label": "2학년"
+          },
+          {
+            "value": "3",
+            "label": "3학년"
+          },
+          {
+            "value": "4",
+            "label": "4학년"
+          },
+          {
+            "value": "5",
+            "label": "5학년"
+          },
+          {
+            "value": "6",
+            "label": "6학년"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { Pageable, PaginationMeta } from '@/lib/api';
 import { infiniteQueryOptions } from '@tanstack/react-query';
 
-import type { StudyNoteGroup } from '../components/types';
+import type { StudyNoteGroup } from '../types';
 import { getStudyNoteGroup } from './api';
 
 export const StudyRoomsGroupQueryKey = {

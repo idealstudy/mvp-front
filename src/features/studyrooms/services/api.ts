@@ -1,7 +1,8 @@
-import { CommonResponse, PaginationMeta, apiClient } from '@/lib/api';
+import { StudyRoomFormValues } from '@/features/studyrooms/schemas/create';
+import { CommonResponse, PaginationMeta, api, apiClient } from '@/lib/api';
 import { Pageable } from '@/lib/api';
 
-import type { StudyNoteGroup } from '../components/types';
+import type { ApiResponse, StudyNoteGroup, StudyRoom } from '../types';
 
 // 수업노트 그룹 조회
 export const getStudyNoteGroup = async (args: {
@@ -23,4 +24,14 @@ export const getStudyNoteGroup = async (args: {
     })
   ).data;
   return response.data;
+};
+
+export const studyroomApi = {
+  create: async (payload: StudyRoomFormValues): Promise<StudyRoom> => {
+    const response = await api.post<ApiResponse<StudyRoom>>(
+      '/teacher/study-rooms',
+      payload
+    );
+    return response.data;
+  },
 };
