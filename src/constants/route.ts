@@ -5,11 +5,18 @@ export const ROUTE = {
   DASHBOARD: {
     HOME: '/dashboard',
     STUDYROOM: {
-      DETAIL: (id: number) => `/dashboard/study-rooms/${id}`,
-      CREATE: '/dashboard/study-rooms/create',
+      DETAIL: (id: number) => `/studyrooms/${id}/studynotes`,
+      CREATE: '/studyrooms/create',
+    },
+    STUDYNOTE: {
+      CREATE: '/dashboard/studynote/create',
+      DETAIL: (id: number) => `/dashboard/studynote/${id}`,
     },
     QUESTIONS: {
-      LIST: '/dashboard/questions',
+      DETAIL: (studyroomId: number, contextId: number) =>
+        `/dashboard/studyrooms/${studyroomId}/qna/${contextId}`,
+      CREATE: (studyroomId: number) =>
+        `/dashboard/studyrooms/${studyroomId}/qna/write`,
     },
     SETTINGS: '/dashboard/settings',
   },

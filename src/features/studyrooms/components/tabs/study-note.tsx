@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ROUTE } from '@/constants/route';
 
 export const StudyNote = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ export const StudyNote = () => {
     localStorage.setItem('studynote-title', value);
     try {
       setIsLoading(true);
-      router.push('/studynotes/new');
+      router.push(ROUTE.DASHBOARD.STUDYNOTE.CREATE);
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';

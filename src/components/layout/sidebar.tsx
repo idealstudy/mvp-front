@@ -90,12 +90,6 @@ export const Sidebar = () => {
             })}
           </ul>
 
-          {/* 학생 질문보기 */}
-          <SidebarItem href={ROUTE.DASHBOARD.QUESTIONS.LIST}>
-            <StudyTextIcon />
-            <SidebarItemText>학생 질문보기</SidebarItemText>
-          </SidebarItem>
-
           {/* 환경설정 */}
           <SidebarItem href={ROUTE.DASHBOARD.SETTINGS}>
             <SettingsIcon />
