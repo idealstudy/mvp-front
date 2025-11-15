@@ -21,8 +21,8 @@ const DASHBOARD = {
  * STUDY ROOM
  * ────────────────────────────────────────────────────*/
 const ROOM = {
-  DETAIL: (id: number) => `/study-room/${id}/note`,
-  CREATE: '/study-room/new',
+  DETAIL: (id: number) => `/study-rooms/${id}/note`,
+  CREATE: '/study-rooms/new',
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -30,8 +30,8 @@ const ROOM = {
  * ────────────────────────────────────────────────────*/
 const QUESTIONS = {
   DETAIL: (studyroomId: number, contextId: number) =>
-    `/study-room/${studyroomId}/qna/${contextId}`,
-  CREATE: (studyroomId: number) => `/study-room/${studyroomId}/qna/new`,
+    `/study-rooms/${studyroomId}/qna/${contextId}`,
+  CREATE: (studyroomId: number) => `/study-rooms/${studyroomId}/qna/new`,
 } as const;
 
 /* ─────────────────────────────────────────────────────
