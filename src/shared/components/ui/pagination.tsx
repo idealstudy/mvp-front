@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/shared/lib';
 import { createContextFactory } from '@/shared/lib/context';
 
