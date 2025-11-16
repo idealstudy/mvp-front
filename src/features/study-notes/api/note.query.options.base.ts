@@ -27,15 +27,18 @@ export const createNotesListQueryOptions = <TList>(
   const list = (args: {
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
+    enabled?: boolean;
   }) => {
     const {
       studyRoomId,
       pageable: { page, size, sortKey },
+      enabled = true,
     } = args;
     return queryOptions({
       queryKey: StudyNoteQueryKey.list(studyRoomId, page, size, sortKey),
       queryFn: () =>
         api.getNotes({ studyRoomId, pageable: { page, size, sortKey } }),
+      enabled,
       ...opt,
     });
   };

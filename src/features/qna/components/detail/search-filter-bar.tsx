@@ -20,6 +20,9 @@ type Props = {
   onFilterChange?: (value: QnAFilter) => void;
 };
 
+// TODO: sort 타입 임시로 캐스팅 추후 바꿀 예정(노트랑 중복)
+// TODO: src/app/(private)/study-rooms/[id]/(study-note)/note/page.tsx
+// TODO: 중복 변수있음 삭제할꺼임
 const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
   { value: 'LATEST', label: '최신순' },
   { value: 'OLDEST', label: '오래된순' },

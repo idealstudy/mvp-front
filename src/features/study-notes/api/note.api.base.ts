@@ -6,6 +6,10 @@ import { api } from '@/shared/api';
 import type { CommonResponse } from '@/types/http';
 
 type Role = 'ROLE_TEACHER' | 'ROLE_STUDENT';
+const rolePathMap: Record<Role, 'teacher' | 'student'> = {
+  ROLE_TEACHER: 'teacher',
+  ROLE_STUDENT: 'student',
+};
 
 export interface NotesBaseApi<TList> {
   getNotes(args: {
@@ -21,8 +25,9 @@ export interface NotesBaseApi<TList> {
 }
 
 export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
+  const rolePath = rolePathMap[role];
   const roomPath = (studyRoomId: number) =>
-    `/${role}/study-rooms/${studyRoomId}`;
+    `/${rolePath}/study-rooms/${studyRoomId}`;
 
   return {
     async getNotes({ studyRoomId, pageable }) {

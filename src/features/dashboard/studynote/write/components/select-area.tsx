@@ -41,7 +41,7 @@ const SelectArea = () => {
   return (
     <ColumnLayout.Left className="border-line-line1 h-fit rounded-xl border bg-white px-8 py-10">
       <Image
-        src="/studyroom/study-room-profile.svg"
+        src="/studyroom/profile.svg"
         alt="select-area"
         width={300}
         height={300}

@@ -40,7 +40,7 @@ export const Default: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST"
+        sort="LATEST_EDITED"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}
@@ -98,7 +98,7 @@ export const StudyroomStudentsListItem: Story = {
     <div className="w-[740px]">
       <StudyRoomDetailLayout
         search=""
-        sort="LATEST"
+        sort="LATEST_EDITED"
         limit={20}
         onSearch={() => {}}
         onSortChange={() => {}}

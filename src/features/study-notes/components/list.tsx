@@ -115,7 +115,7 @@ export const StudyNotesList = ({
           keyword={keyword}
         />
       }
-      href={`/dashboard/studynote/${item.id}`}
+      href={`/study-note/${item.id}`}
       id={item.id}
     />
   ));

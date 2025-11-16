@@ -20,10 +20,10 @@ export interface StudyNoteDetails extends StudyNote {
 }
 
 export type StudyNoteSortKey =
-  | 'LATEST'
-  | 'OLDEST'
-  // | 'TITLE'
-  | 'ALPHABETICAL';
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'TITLE_ASC'
+  | 'TAUGHT_AT_ASC';
 
 export type StudyNoteLimit = 20 | 30;
 

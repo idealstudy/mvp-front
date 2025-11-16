@@ -32,20 +32,19 @@ export default function StudyNotePage() {
 
   const currentPage = useMemo(() => {
     const raw = searchParams.get('page');
-    const n = raw == null ? 0 : Number(raw);
-    return Number.isFinite(n) && n >= 0 ? n : 0;
+    const n = raw == null ? 1 : Number(raw);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
   }, [searchParams]);
 
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST');
+  const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
 
   const { role } = useRole();
   const { id } = useParams();
   const studyRoomId = Number(id);
-
   const pageable: StudyNoteGroupPageable = {
-    page: currentPage,
+    page: currentPage - 1,
     size: limit,
     sortKey: sort,
   };
@@ -73,19 +72,22 @@ export default function StudyNotePage() {
   // 그룹별 목록 조회
   // TODO: 추후 엔티티분리
   // ------------------------------------------------------------------
-  const isGroupSelected = selectedGroupId !== 'all';
-  const teachingNoteGroupId = Number(selectedGroupId);
+  const teachingNoteGroupId = Number.isFinite(Number(selectedGroupId))
+    ? Number(selectedGroupId)
+    : null;
+  const isGroupSelected = teachingNoteGroupId != null;
+  const groupQueryId = teachingNoteGroupId ?? -1;
 
   const teacherByGroupQuery = useGetTeacherNotesByGroup({
     studyRoomId,
-    teachingNoteGroupId,
+    teachingNoteGroupId: groupQueryId,
     pageable,
     enabled: isGroupSelected && role === 'ROLE_TEACHER',
   });
 
   const studentByGroupQuery = useGetStudentNotesByGroup({
     studyRoomId,
-    teachingNoteGroupId,
+    teachingNoteGroupId: groupQueryId,
     pageable,
     enabled: isGroupSelected && role === 'ROLE_STUDENT',
   });
@@ -111,22 +113,22 @@ export default function StudyNotePage() {
 
   const handleSearch = (value: string) => {
     setSearch(value);
-    setPage(0, { replace: true }); // 히스토리 누적 방지
+    setPage(1, { replace: true }); // 히스토리 누적 방지
   };
 
   const handleSortChange = (value: StudyNoteSortKey) => {
     setSort(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
   const handleLimitChange = (value: StudyNoteLimit) => {
     setLimit(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
   // Todo: 재설계 예정 -> 그룹 변경 시 page=0 (URL만 수정)
   useEffect(() => {
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   }, [selectedGroupId, setPage]);
 
   const page = {
@@ -138,6 +140,7 @@ export default function StudyNotePage() {
     onPageChange: handlePageChange,
   };
 
+  // TODO: sort 타입 임시로 캐스팅 추후 리팩토링 예정
   return (
     <StudyRoomDetailLayout
       search={search}

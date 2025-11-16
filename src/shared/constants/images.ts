@@ -1,4 +1,4 @@
-export const IMG = {
+const IMG = {
   CHARACTER: {
     TEACHER: {
       label: '선생님',
