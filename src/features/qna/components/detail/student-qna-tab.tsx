@@ -24,7 +24,7 @@ export default function StudentQuestionSession({ studyRoomId }: Props) {
     if (value) sessionStorage.setItem('qna-title', value);
     try {
       setIsLoading(true);
-      router.push(`/studyrooms/${studyRoomId}/qna/write`);
+      router.push(`/study-rooms/${studyRoomId}/qna/new`);
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';

@@ -94,8 +94,8 @@ export default function CreateStudyRoomFlow() {
 
   const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
     condition === 'invite'
-      ? `/studyrooms/${id}/invite-member`
-      : `/studyrooms/${id}/studynotes`;
+      ? `/study-rooms/${id}/invite-member`
+      : `/study-rooms/${id}/note`;
 
   const handleSubmitCondition = React.useCallback(
     (condition: 'invite' | 'dashboard') => {

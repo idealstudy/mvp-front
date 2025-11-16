@@ -25,8 +25,7 @@ const InviteMemberPage = () => {
     sendInvitation(
       { studyRoomId, emails },
       {
-        onSuccess: () =>
-          router.replace(`/studyrooms/${studyRoomId}/studynotes`),
+        onSuccess: () => router.replace(`/study-rooms/${studyRoomId}/note`),
       }
     );
   };

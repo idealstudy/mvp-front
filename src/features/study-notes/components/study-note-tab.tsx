@@ -29,7 +29,7 @@ export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
         }
 
         const isActive = path === tab.href;
-        const href = `/studyrooms/${studyRoomId}/${tab.href}`;
+        const href = `/study-rooms/${studyRoomId}/${tab.href}`;
 
         return (
           <li key={tab.value}>

@@ -1,6 +1,6 @@
 import type { Preview } from '@storybook/react';
 
-import '../src/features/editor/styles/text-editor.css';
+import '../src/shared/components/editor/styles/text-editor.css';
 import './index.css';
 
 const preview: Preview = {
