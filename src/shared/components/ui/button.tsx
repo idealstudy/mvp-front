@@ -55,6 +55,7 @@ export const Button = ({
   size,
   children,
   asChild = false,
+  disabled,
   ...props
 }: ButtonProps) => {
   const Component = asChild ? Slot.Root : 'button';
@@ -63,6 +64,8 @@ export const Button = ({
     <Component
       type={asChild ? undefined : 'button'}
       className={cn(buttonVariants({ variant, size }), className)}
+      aria-disabled={disabled}
+      disabled={disabled}
       {...props}
     >
       {children}
