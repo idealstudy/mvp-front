@@ -1,9 +1,9 @@
 import { member } from '@/entities/member';
 import { z } from 'zod';
 
-// 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자 포함
+// 8~16자, 최소 하나의 대문자, 하나의 소문자, 하나의 숫자, 하나의 특수문자 포함
 const PASSWORD_REGEX =
-  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
+  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
 
 export type RegisterForm = z.infer<typeof RegisterForm>;
 export const RegisterForm = z
@@ -20,7 +20,7 @@ export const RegisterForm = z
       })
       .regex(PASSWORD_REGEX, {
         message:
-          '비밀번호는 8~16자, 최소 하나의 문자, 하나의 숫자, 하나의 특수문자를 포함해야 합니다.',
+          '비밀번호는 8~16자, 최소 하나의 대문자, 소문자, 숫자, 특수문자를 하나 이상 포함해야 합니다.',
       }),
     confirmPassword: z.string(),
     role: member.domain.role,
