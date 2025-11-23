@@ -11,6 +11,6 @@ interface MemberState {
 export const useMemberStore = create<MemberState>((set) => ({
   member: null,
   isAuthenticated: false,
-  setMember: (member) => set({ member }),
-  clearMember: () => set({ member: null }),
+  setMember: (member) => set({ member, isAuthenticated: !!member }),
+  clearMember: () => set({ member: null, isAuthenticated: false }),
 }));
