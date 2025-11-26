@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -36,6 +36,26 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
 
   const { form, termsCheckboxGroup, isAllRequiredTermsChecked } =
     useRegisterFormContext();
+
+  // ---------비밀번호 실시간 확인---------
+  const passwordValue = form.watch('password');
+  const confirmPasswordValue = form.watch('confirmPassword');
+
+  useEffect(() => {
+    if (!confirmPasswordValue) {
+      form.clearErrors('confirmPassword');
+      return;
+    }
+
+    if (passwordValue === confirmPasswordValue) {
+      form.clearErrors('confirmPassword');
+    } else {
+      form.setError('confirmPassword', {
+        type: 'manual',
+        message: '비밀번호가 일치하지 않습니다.',
+      });
+    }
+  }, [passwordValue, confirmPasswordValue, form]);
 
   const onSendButtonClick = () => {
     if (isCheckingEmailDuplicate) return;
@@ -119,7 +139,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
               disabled={emailCodeVerified}
               maxLength={VERIFICATION_CODE_LENGTH}
               className="border-r-0"
-              placeholder="이메일로 전송된 숫자 코드 여섯자리"
+              placeholder="이메일로 전송된 코드 여섯자리"
               {...form.register('verificationCode')}
             />
           </Form.Control>
