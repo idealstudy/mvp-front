@@ -1,6 +1,10 @@
 import { useCallback } from 'react';
 
-import { DialogKind, DialogScope, DialogState } from './types';
+import {
+  DialogKind,
+  DialogScope,
+  DialogState,
+} from '@/shared/components/dialog';
 
 export const isDialogMatching = (
   dialog: DialogState,

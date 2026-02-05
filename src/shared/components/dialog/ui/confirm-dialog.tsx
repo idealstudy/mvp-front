@@ -2,11 +2,10 @@
 
 import React from 'react';
 
+import { DialogAction } from '@/shared/components/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn } from '@/shared/lib';
-
-import { DialogAction } from '../model/types';
 
 // TODO: 스터디룸/공용 내 다이얼로그 컴포넌트를 공용컴포넌트로 분리해볼 예정
 type ConfirmDialogVariant = 'ok' | 'confirm' | 'confirm-cancel' | 'delete';

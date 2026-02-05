@@ -1,8 +1,7 @@
+import { DialogAction } from '@/shared/components/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn } from '@/shared/lib/utils';
-
-import { DialogAction } from '../model/types';
 
 export const StudyroomConfirmDialog = ({
   type,
