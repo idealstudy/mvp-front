@@ -1,4 +1,4 @@
-import StudyroomSectionContent from '@/features/dashboard/components/teacher/section-content/studyroom-section-content';
+import StudyroomSectionContent from '@/features/dashboard/components/section-content/studyroom-section-content';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const mockStudyRooms: { id: number; name: string }[] = [

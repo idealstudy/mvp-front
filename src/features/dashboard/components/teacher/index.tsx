@@ -8,13 +8,13 @@ import { PRIVATE } from '@/shared/constants';
 
 import { useDashboardQuery } from '../../hooks';
 import DashboardHeader from '../header';
+import NoteSectionContent from '../section-content/note-section-content';
+import QnASectionContent from '../section-content/qna-section-content';
+import StudentsSectionContent from '../section-content/student-section-content';
+import StudyroomSectionContent from '../section-content/studyroom-section-content';
 import SingleSection from '../section/single-section';
 import TabbedSection from '../section/tabbed-section';
 import Onboarding from './onboarding';
-import NoteSectionContent from './section-content/note-section-content';
-import QnASectionContent from './section-content/qna-section-content';
-import StudentsSectionContent from './section-content/student-section-content';
-import StudyroomSectionContent from './section-content/studyroom-section-content';
 
 const DashboardTeacher = () => {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import StudentsSectionContent from '@/features/dashboard/components/teacher/section-content/student-section-content';
+import StudentsSectionContent from '@/features/dashboard/components/section-content/student-section-content';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

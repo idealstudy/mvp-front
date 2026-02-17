@@ -1,4 +1,4 @@
-import NoteSectionContent from '@/features/dashboard/components/teacher/section-content/note-section-content';
+import NoteSectionContent from '@/features/dashboard/components/section-content/note-section-content';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const mockNotes = [

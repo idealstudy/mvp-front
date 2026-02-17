@@ -1,4 +1,4 @@
-import QnASectionContent from '@/features/dashboard/components/teacher/section-content/qna-section-content';
+import QnASectionContent from '@/features/dashboard/components/section-content/qna-section-content';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
