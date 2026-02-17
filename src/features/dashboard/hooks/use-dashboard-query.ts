@@ -1,3 +1,4 @@
+import { studentKeys, studentRepository } from '@/entities/student';
 import { teacherKeys, teacherRepository } from '@/entities/teacher';
 import type { Dashboard } from '@/features/dashboard';
 import { options } from '@/features/dashboard/api';
@@ -26,6 +27,17 @@ export const useTeacherDashboardReportQuery = (options?: {
   return useQuery({
     queryKey: teacherKeys.report(),
     queryFn: () => teacherRepository.getTeacherReport(),
+    staleTime: 1000 * 60 * 5,
+    enabled: options?.enabled ?? true,
+  });
+};
+
+export const useStudentDashboardReportQuery = (options?: {
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: studentKeys.report(),
+    queryFn: () => studentRepository.getStudentReport(),
     staleTime: 1000 * 60 * 5,
     enabled: options?.enabled ?? true,
   });

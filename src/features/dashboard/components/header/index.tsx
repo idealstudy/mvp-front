@@ -2,16 +2,66 @@
 
 import Image from 'next/image';
 
+import {
+  useStudentDashboardReportQuery,
+  useTeacherDashboardReportQuery,
+} from '@/features/dashboard/hooks/use-dashboard-query';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
 
-import { TeacherReport } from './teacher-report';
+import { HeaderReport } from './report';
 
-const DashboardHeader = ({ isTeacher = false }: { isTeacher?: boolean }) => {
+const DashboardHeader = () => {
   const member = useMemberStore((s) => s.member);
-  const teacherName = member?.name || '선생님';
 
-  if (!isTeacher) return null;
+  const isTeacher = member?.role === 'ROLE_TEACHER';
+
+  const { data: teacherReport } = useTeacherDashboardReportQuery({
+    enabled: isTeacher,
+  });
+  const { data: studentReport } = useStudentDashboardReportQuery({
+    enabled: !isTeacher,
+  });
+
+  const teacherStats = [
+    {
+      value: teacherReport?.studyRoomCount ?? 0,
+      unit: '개',
+      label: '스터디룸',
+    },
+    {
+      value: teacherReport?.teachingNoteCount ?? 0,
+      unit: '개',
+      label: '수업노트',
+    },
+    { value: teacherReport?.studentCount ?? 0, unit: '명', label: '학생' },
+    { value: teacherReport?.qnaCount ?? 0, unit: '개', label: '질문' },
+  ];
+
+  const studentStats = [
+    {
+      value: studentReport?.studyRoomCount ?? 0,
+      unit: '개',
+      label: '스터디룸',
+    },
+    {
+      value: studentReport?.questionCount ?? 0,
+      unit: '개',
+      label: '나의 질문',
+    },
+    {
+      value: 0,
+      unit: '개',
+      label: '수집한 답변',
+    },
+    {
+      value: studentReport?.submittedHomeworkCount ?? 0,
+      unit: '개',
+      label: '제출한 과제',
+    },
+  ];
+
+  const stats = member?.role === 'ROLE_TEACHER' ? teacherStats : studentStats;
 
   return (
     <div
@@ -34,11 +84,17 @@ const DashboardHeader = ({ isTeacher = false }: { isTeacher?: boolean }) => {
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className="font-bold">{teacherName}</span> 선생님,
+            <span className="font-bold">{member?.name}</span>{' '}
+            {isTeacher ? '선생님' : '님'},
             <br />
-            오늘은 어떤 수업을 진행하세요?
+            {isTeacher
+              ? '오늘은 어떤 수업을 진행하세요?'
+              : '학습기록이 차곡차곡 쌓이고 있어요'}
           </p>
-          <TeacherReport className="tablet:flex hidden" />
+          <HeaderReport
+            className="tablet:flex hidden"
+            stats={stats}
+          />
         </div>
 
         {/* 오른쪽: 일러스트 */}
@@ -56,7 +112,10 @@ const DashboardHeader = ({ isTeacher = false }: { isTeacher?: boolean }) => {
           />
         </div>
       </div>
-      <TeacherReport className="tablet:hidden flex" />
+      <HeaderReport
+        className="tablet:hidden flex"
+        stats={stats}
+      />
     </div>
   );
 };

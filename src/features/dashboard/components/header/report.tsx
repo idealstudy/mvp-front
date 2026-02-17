@@ -1,26 +1,17 @@
 'use client';
 
-import { useTeacherDashboardReportQuery } from '@/features/dashboard/hooks/use-dashboard-query';
 import { cn } from '@/shared/lib';
 
-export const TeacherReport = ({ className = '' }: { className?: string }) => {
-  const { data: teacherReport } = useTeacherDashboardReportQuery();
+interface HeaderReportProps {
+  stats: {
+    value: number;
+    unit: string;
+    label: string;
+  }[];
+  className?: string;
+}
 
-  const teacherStats = [
-    {
-      value: teacherReport?.studyRoomCount ?? 0,
-      unit: '개',
-      label: '스터디룸',
-    },
-    {
-      value: teacherReport?.teachingNoteCount ?? 0,
-      unit: '개',
-      label: '수업노트',
-    },
-    { value: teacherReport?.studentCount ?? 0, unit: '명', label: '학생' },
-    { value: teacherReport?.qnaCount ?? 0, unit: '개', label: '질문' },
-  ];
-
+export const HeaderReport = ({ stats, className = '' }: HeaderReportProps) => {
   return (
     <div
       className={cn(
@@ -29,7 +20,7 @@ export const TeacherReport = ({ className = '' }: { className?: string }) => {
         className
       )}
     >
-      {teacherStats.map((stat, index) => (
+      {stats.map((stat, index) => (
         <div
           key={stat.label}
           className="tablet:gap-5 flex items-center gap-2"
@@ -44,12 +35,12 @@ export const TeacherReport = ({ className = '' }: { className?: string }) => {
               {stat.value.toLocaleString()}
               {stat.unit}
             </span>
-            <span className="text-gray-8 font-caption-normal tablet:font-label-normal">
+            <span className="text-gray-8 font-caption-normal tablet:font-label-normal tracking-[-0.05em]">
               {stat.label}
             </span>
           </div>
 
-          {index !== teacherStats.length - 1 && (
+          {index !== stats.length - 1 && (
             <div className="bg-gray-3 h-full w-[1px]" />
           )}
         </div>
