@@ -106,7 +106,7 @@ export default function EditProfileCard({
           <Form.Control>
             <Input
               {...register('name')}
-              placeholder="이름를 입력해 주세요."
+              placeholder="이름을 입력해 주세요."
             />
           </Form.Control>
           {errors.name?.message && (
