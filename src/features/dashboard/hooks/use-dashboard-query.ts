@@ -1,4 +1,4 @@
-import { teacherKeys, teacherRepository } from '@/entities/teacher';
+import { repository, teacherKeys } from '@/entities/teacher';
 import type { Dashboard } from '@/features/dashboard';
 import { options } from '@/features/dashboard/api';
 import type { BaseQueryOptions } from '@/shared/lib/query/types';
@@ -25,7 +25,7 @@ export const useTeacherDashboardReportQuery = (options?: {
 }) => {
   return useQuery({
     queryKey: teacherKeys.report(),
-    queryFn: () => teacherRepository.getTeacherReport(),
+    queryFn: () => repository.getTeacherReport(),
     staleTime: 1000 * 60 * 5,
     enabled: options?.enabled ?? true,
   });

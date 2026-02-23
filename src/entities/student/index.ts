@@ -1,34 +1,22 @@
-import { api } from '@/shared/api';
-import { unwrapEnvelope } from '@/shared/lib/api-utils';
-
-import { dto } from './teacher.dto';
+import { domain } from '@/entities/student/core';
+import { dto, payload } from '@/entities/student/infrastructure';
 
 /* ─────────────────────────────────────────────────────
- * 선생님 통계 조회
+ * API
  * ────────────────────────────────────────────────────*/
-const getTeacherReport = async () => {
-  const response = await api.private.get(`/teacher/me/report`);
-  return unwrapEnvelope(response, dto.teacherReport);
-};
+export * from './infrastructure';
+export * from './core';
 
 /* ─────────────────────────────────────────────────────
- * 선생님 수업 노트 전체 목록 조회
+ * 스키마
  * ────────────────────────────────────────────────────*/
-const getTeacherNoteList = async () => {
-  const response = await api.private.get(`/teacher/me/teaching-notes`);
-  return unwrapEnvelope(response, dto.teacherNoteList);
+export const student = {
+  dto,
+  domain,
+  payload,
 };
 
 /* ─────────────────────────────────────────────────────
- * 선생님 스터디룸 전체 목록 조회
+ * 타입
  * ────────────────────────────────────────────────────*/
-const getTeacherStudyRoomList = async () => {
-  const response = await api.private.get(`/teacher/me/study-rooms`);
-  return unwrapEnvelope(response, dto.teacherStudyRoomList);
-};
-
-export const teacherRepository = {
-  getTeacherNoteList,
-  getTeacherStudyRoomList,
-  getTeacherReport,
-};
+export * from './types';

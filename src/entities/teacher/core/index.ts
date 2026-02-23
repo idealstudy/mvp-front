@@ -1,1 +1,1 @@
-export * from './teacher.domain';
+export { domain } from './teacher.domain';

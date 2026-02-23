@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 
-import Image from 'next/image';
-
+import StudyNoteVisibilityIcon from '@/features/study-notes/components/studynote-visibility-icon';
 import type {
   StudyNote,
   StudyNoteGroupPageable,
 } from '@/features/study-notes/model';
-import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { MiniSpinner } from '@/shared/components/loading';
+import { ListItem } from '@/shared/components/ui/list-item';
 import { formatMMDDWeekday, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { StudyNotesDropdown } from './dropdown';
@@ -37,63 +36,6 @@ export const StudyNotesList = ({
 
   const handleOpen = (id: number) => {
     setOpen(open === id ? 0 : id);
-  };
-
-  const image = (item: StudyNote) => {
-    switch (item.visibility) {
-      case 'PUBLIC':
-        return (
-          <Image
-            src="/studynotes/read-global.svg"
-            width={28}
-            height={28}
-            alt="study-notes"
-            className="h-[28px] w-[28px] cursor-pointer"
-          />
-        );
-      case 'SPECIFIC_STUDENTS_ONLY':
-        return (
-          <Image
-            src="/studynotes/read-students.svg"
-            width={28}
-            height={28}
-            alt="study-notes"
-            className="h-[28px] w-[28px] cursor-pointer"
-          />
-        );
-      case 'SPECIFIC_STUDENTS_AND_PARENTS':
-        return (
-          <Image
-            src="/studynotes/read-students.svg"
-            width={28}
-            height={28}
-            alt="study-notes"
-            className="h-[28px] w-[28px] cursor-pointer"
-          />
-        );
-      case 'STUDY_ROOM_STUDENTS_AND_PARENTS':
-        return (
-          <Image
-            src="/studynotes/read-students.svg"
-            width={28}
-            height={28}
-            alt="study-notes"
-            className="h-[28px] w-[28px] cursor-pointer"
-          />
-        );
-      case 'TEACHER_ONLY':
-        return (
-          <Image
-            src="/studynotes/read-secret.svg"
-            width={28}
-            height={28}
-            alt="study-notes"
-            className="h-[28px] w-[28px] cursor-pointer"
-          />
-        );
-      default:
-        return null;
-    }
   };
 
   if (isPending) {
@@ -131,7 +73,7 @@ export const StudyNotesList = ({
           </p>
         )
       }
-      icon={image(item)}
+      icon={<StudyNoteVisibilityIcon visibility={item.visibility} />}
       subtitle={
         item.updatedAt === item.taughtAt
           ? `${getRelativeTimeString(item.taughtAt)} 작성`

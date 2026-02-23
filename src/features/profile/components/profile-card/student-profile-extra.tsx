@@ -9,7 +9,7 @@ export default function StudentProfileExtra({
     <>
       <div>
         <h4 className="font-body1-heading mb-2">학습 목표</h4>
-        <p>{learningGoal}</p>
+        <p className="break-words">{learningGoal}</p>
       </div>
 
       {/* <div>
