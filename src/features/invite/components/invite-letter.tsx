@@ -1,14 +1,27 @@
 import Image from 'next/image';
 
+import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui';
 
 export const InviteLetter = ({
   teacherName,
   studyRoomName,
+  onOpenLoginModal,
 }: {
   teacherName: string;
   studyRoomName: string;
+  onOpenLoginModal: () => void;
 }) => {
+  const { member } = useAuth();
+
+  const handleParticipate = () => {
+    if (member) {
+      // 참여하기 로직 추가 예정
+    } else {
+      onOpenLoginModal();
+    }
+  };
+
   return (
     <>
       <div className="tablet:w-125 relative flex w-90 flex-col">
@@ -56,6 +69,7 @@ export const InviteLetter = ({
               variant="primary"
               className="font-label-normal h-[35px] rounded-sm px-9"
               size="xsmall"
+              onClick={handleParticipate}
             >
               참여하기
             </Button>
@@ -73,6 +87,7 @@ export const InviteLetter = ({
         <Button
           variant="primary"
           className="font-body2-normal flex-1"
+          onClick={handleParticipate}
         >
           참여하기
         </Button>

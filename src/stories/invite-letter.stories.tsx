@@ -27,6 +27,7 @@ export const Default: Story = {
   args: {
     teacherName: '김영희',
     studyRoomName: '영어 회화 스터디',
+    onOpenLoginModal: () => {},
   },
 };
 
@@ -34,6 +35,7 @@ export const LongNames: Story = {
   args: {
     teacherName: '박수학',
     studyRoomName: '2024년 수능 대비 수학 심화반',
+    onOpenLoginModal: () => {},
   },
 };
 
@@ -41,5 +43,6 @@ export const ShortNames: Story = {
   args: {
     teacherName: '이',
     studyRoomName: '영어',
+    onOpenLoginModal: () => {},
   },
 };
