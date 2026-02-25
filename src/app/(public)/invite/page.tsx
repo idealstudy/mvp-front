@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { InviteLetter } from '@/features/invite/components/invite-letter';
 import { InviteLoginModal } from '@/features/invite/components/invite-login-modal';
+import { INVITE_VISITED_KEY } from '@/features/invite/constants';
 
 export default function InvitePage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function InvitePage() {
       router.replace('/');
       return;
     }
-    sessionStorage.setItem('invite_visited', Date.now().toString());
+    sessionStorage.setItem(INVITE_VISITED_KEY, Date.now().toString());
   }, [inviteToken, router]);
 
   if (!inviteToken) {

@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { InviteSuccessContent } from '@/features/invite/components/invite-success-content';
-
-const INVITE_VISITED_KEY = 'invite_visited';
-const INVITE_VALIDITY_MS = 10 * 60 * 1000; // 10분
+import {
+  INVITE_VALIDITY_MS,
+  INVITE_VISITED_KEY,
+} from '@/features/invite/constants';
 
 export default function SuccessPage() {
   const router = useRouter();
