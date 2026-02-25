@@ -17,7 +17,9 @@ export default function InvitePage() {
   useEffect(() => {
     if (!inviteToken) {
       router.replace('/');
+      return;
     }
+    sessionStorage.setItem('invite_visited', Date.now().toString());
   }, [inviteToken, router]);
 
   if (!inviteToken) {
