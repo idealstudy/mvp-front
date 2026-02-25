@@ -12,7 +12,7 @@ export default function InvitePage() {
   const searchParams = useSearchParams();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const inviteToken = searchParams.get('inviteToken');
+  const inviteToken = searchParams.get('token');
 
   useEffect(() => {
     if (!inviteToken) {
