@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { mockStudyRoomDetail } from '../../mocks/mocks-data';
 import { InfoItem } from './contents-info-item';
 
-export const PublicStudyroomsContents = () => {
+export const StudyroomPreviewContents = () => {
   const data = mockStudyRoomDetail;
 
   const [visibleData, setVisibleData] = useState(3);

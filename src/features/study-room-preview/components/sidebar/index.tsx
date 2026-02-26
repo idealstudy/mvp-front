@@ -3,7 +3,7 @@
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { SidebarButton } from '@/shared/components/sidebar';
 
-import { PublicStudyroomSidebarHeader } from './header';
+import { StudyroomPreviewSidebarHeader } from './header';
 import { TeacherOtherStudyrooms } from './teacher-other-studyrooms';
 
 const studyRoomDetail = {
@@ -17,10 +17,10 @@ const studyRoomDetail = {
 const onClick = () => {
   alert('성공');
 };
-export const PublicStudyroomSidebar = () => {
+export const StudyroomPreviewSidebar = () => {
   return (
     <>
-      <PublicStudyroomSidebarHeader
+      <StudyroomPreviewSidebarHeader
         studyRoomName={studyRoomDetail?.name}
         teacherName={studyRoomDetail?.teacherName}
       />

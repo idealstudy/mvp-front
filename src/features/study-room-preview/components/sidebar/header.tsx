@@ -5,7 +5,7 @@ type PublicStudyroomSidebarHeaderProps = {
   teacherName?: string;
 };
 
-export const PublicStudyroomSidebarHeader = ({
+export const StudyroomPreviewSidebarHeader = ({
   studyRoomName,
   teacherName,
 }: PublicStudyroomSidebarHeaderProps) => {
