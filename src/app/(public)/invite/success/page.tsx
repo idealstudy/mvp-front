@@ -37,7 +37,7 @@ export default function SuccessPage() {
   }, [studyRoomId, router]);
 
   return (
-    <main className="bg-gray-white tablet:pt-58 desktop:pt-30 mx-auto flex h-[calc(100vh-var(--spacing-header-height))] w-full justify-center pt-35">
+    <main className="bg-gray-white mx-auto flex h-[calc(100vh-var(--spacing-header-height))] w-full items-center justify-center">
       {isAllowed && <InviteSuccessContent studyRoomId={Number(studyRoomId)} />}
     </main>
   );

@@ -14,6 +14,11 @@ const reasonText: Record<ErrorReason, { title: string; description: string }> =
       title: '이미 참여 중인 스터디룸이에요',
       description: '',
     },
+    STUDY_ROOM_CAPACITY_EXCEEDED: {
+      title: '가득 찬 스터디룸이에요',
+      description:
+        '이미 스터디룸이 가득 찼어요.\n다른 스터디룸을 둘러보실 수 있어요.',
+    },
     CLOSED: {
       title: '종료된 스터디룸입니다.',
       description:
@@ -35,7 +40,7 @@ export const InviteErrorContent = ({ reason }: { reason: ErrorReason }) => {
     : '/invite/img_invite_fail.png';
 
   return (
-    <div className="tablet:gap-0 flex flex-col items-center gap-3">
+    <div className="tablet:gap-0 flex h-fit flex-col items-center gap-3">
       <Image
         src={errorCardImageSrc}
         alt="error-card"

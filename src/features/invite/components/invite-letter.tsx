@@ -1,37 +1,53 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { InvitationInfoDTO } from '@/entities/study-room';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/shared/components/ui';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
+
+import { useAcceptInvitation } from '../hooks';
 
 export const InviteLetter = ({
-  teacherName,
-  studyRoomName,
   onOpenLoginModal,
+  data,
+  isLoading,
+  token,
 }: {
-  teacherName: string;
-  studyRoomName: string;
   onOpenLoginModal: () => void;
+  data: InvitationInfoDTO | null;
+  isLoading: boolean;
+  token: string;
 }) => {
   const { member } = useAuth();
   const router = useRouter();
+  const { acceptInvitation } = useAcceptInvitation();
 
   const handleReject = () => {
     // 거절하기 로직 추가 예정
     if (member) {
-      router.push('/dashboard');
+      router.push(PRIVATE.DASHBOARD.INDEX);
     } else {
-      router.push('/');
+      router.push(PUBLIC.CORE.INDEX);
     }
   };
 
-  const handleParticipate = () => {
+  const handleAccept = () => {
     if (member) {
       // 참여하기 로직 추가 예정
+      if (member.role === 'ROLE_STUDENT') {
+        acceptInvitation(token ?? '');
+      } else {
+        router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
+      }
     } else {
       onOpenLoginModal();
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <>
@@ -53,18 +69,18 @@ export const InviteLetter = ({
         <div className="tablet:top-36 tablet:gap-7 absolute top-25 left-0 flex w-full flex-col gap-4">
           <div className="tablet:gap-4.5 flex w-full flex-col gap-3">
             <p className="font-label-heading tablet:font-body2-heading text-gray-12 w-full text-center">
-              From. {teacherName}선생님
+              From. {data?.teacherName}선생님
             </p>
             <p className="font-body2-heading tablet:font-headline2-heading text-gray-12 w-full text-center">
-              {studyRoomName} 초대장
+              {data?.studyRoomName} 초대장
             </p>
           </div>
           <div className="tablet:gap-2 flex w-full flex-col gap-1">
             <p className="font-label-normal tablet:font-body2-heading text-gray-12 w-full text-center">
-              스터디룸에 초대되었습니다.
+              {data?.message.split('\n')[0]}
             </p>
             <p className="font-label-normal tablet:font-body2-heading text-gray-12 w-full text-center">
-              새로운 배움이 시작될 순간이에요.
+              {data?.message.split('\n')[1]}
             </p>
           </div>
           {/* tablet ~ desktop 버튼*/}
@@ -81,7 +97,7 @@ export const InviteLetter = ({
               variant="primary"
               className="font-label-normal h-[35px] rounded-sm px-9"
               size="xsmall"
-              onClick={handleParticipate}
+              onClick={handleAccept}
             >
               참여하기
             </Button>
@@ -100,7 +116,7 @@ export const InviteLetter = ({
         <Button
           variant="primary"
           className="font-body2-normal flex-1"
-          onClick={handleParticipate}
+          onClick={handleAccept}
         >
           참여하기
         </Button>

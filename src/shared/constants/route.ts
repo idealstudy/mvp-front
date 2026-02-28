@@ -10,6 +10,10 @@ const CORE = {
     STUDY_ROOMS: '/list/study-rooms',
   },
   BIZ: '#',
+  INVITE: {
+    ERROR: (reason: string) => `/invite/error?reason=${reason}`,
+    SUCCESS: '/invite/success',
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────

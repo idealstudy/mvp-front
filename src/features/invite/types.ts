@@ -4,6 +4,7 @@ type InviteLinkErrorReason = (typeof INVITE_LINK_ERROR_REASONS)[number];
 const ERROR_REASONS = [
   'ROLE_NOT_MATCH',
   'ALREADY_PARTICIPATED',
+  'STUDY_ROOM_CAPACITY_EXCEEDED',
   'CLOSED',
   ...INVITE_LINK_ERROR_REASONS,
 ] as const;

@@ -9,13 +9,17 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
-    teacherName: {
-      control: 'text',
-      description: '선생님 이름',
+    data: {
+      control: 'object',
+      description: '초대장 정보',
     },
-    studyRoomName: {
+    isLoading: {
+      control: 'boolean',
+      description: '로딩 상태',
+    },
+    token: {
       control: 'text',
-      description: '스터디룸 이름',
+      description: '초대 토큰',
     },
   },
 } satisfies Meta<typeof InviteLetter>;
@@ -25,24 +29,48 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    teacherName: '김영희',
-    studyRoomName: '영어 회화 스터디',
+    data: {
+      teacherName: '김영희',
+      studyRoomName: '영어 회화 스터디',
+      message: '스터디룸에 초대합니다.',
+    },
+    isLoading: false,
+    token: 'sample-token',
     onOpenLoginModal: () => {},
   },
 };
 
 export const LongNames: Story = {
   args: {
-    teacherName: '박수학',
-    studyRoomName: '2024년 수능 대비 수학 심화반',
+    data: {
+      teacherName: '박수학',
+      studyRoomName: '2024년 수능 대비 수학 심화반',
+      message: '스터디룸에 초대합니다.',
+    },
+    isLoading: false,
+    token: 'sample-token',
     onOpenLoginModal: () => {},
   },
 };
 
 export const ShortNames: Story = {
   args: {
-    teacherName: '이',
-    studyRoomName: '영어',
+    data: {
+      teacherName: '이',
+      studyRoomName: '영어',
+      message: '스터디룸에 초대합니다.',
+    },
+    isLoading: false,
+    token: 'sample-token',
+    onOpenLoginModal: () => {},
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    data: null,
+    isLoading: true,
+    token: 'sample-token',
     onOpenLoginModal: () => {},
   },
 };
