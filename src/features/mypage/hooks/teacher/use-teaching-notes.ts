@@ -1,8 +1,4 @@
-import {
-  UpdateTeacherTeachingNoteRepresentativePayload,
-  repository,
-  teacherKeys,
-} from '@/entities/teacher';
+import { repository, teacherKeys } from '@/entities/teacher';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -24,12 +20,16 @@ export const useUpdateTeacherNoteRepresentative = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (
-      teachingNoteRepresentative: UpdateTeacherTeachingNoteRepresentativePayload
-    ) =>
-      repository.teachingNote.setTeacherNoteRepresentative(
-        teachingNoteRepresentative
-      ),
+    mutationFn: ({
+      teachingNoteId,
+      representative,
+    }: {
+      teachingNoteId: number;
+      representative: boolean;
+    }) =>
+      repository.teachingNote.setTeacherNoteRepresentative(teachingNoteId, {
+        representative,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: teacherKeys.noteList(),

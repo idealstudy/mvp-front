@@ -94,7 +94,7 @@ const TeacherCareerListDtoSchema = z.array(TeacherCareerListItemDtoSchema);
  * 선생님 기본 정보 Payload
  * UPDATE
  * ────────────────────────────────────────────────────*/
-const UpdateBasicInfoPayloadSchema = z.object({
+const BasicInfoPayloadSchema = z.object({
   name: z.string(),
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string(),
@@ -104,8 +104,7 @@ const UpdateBasicInfoPayloadSchema = z.object({
  * 선생님 대표 수업노트 Payload
  * UPDATE
  * ────────────────────────────────────────────────────*/
-const UpdateTeachingNoteRepresentativePayloadSchema = z.object({
-  teachingNoteId: z.number(),
+const TeachingNoteRepresentativePayloadSchema = z.object({
   representative: z.boolean(),
 });
 
@@ -143,9 +142,8 @@ export const dto = {
 };
 
 export const payload = {
-  updateBasicInfo: UpdateBasicInfoPayloadSchema,
-  updateTeachingNoteRepresentative:
-    UpdateTeachingNoteRepresentativePayloadSchema,
+  basicInfo: BasicInfoPayloadSchema,
+  teachingNoteRepresentative: TeachingNoteRepresentativePayloadSchema,
   career: CareerPayloadSchema,
 };
 

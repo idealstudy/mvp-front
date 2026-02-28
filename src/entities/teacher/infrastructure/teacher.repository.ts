@@ -55,7 +55,7 @@ const getBasicInfo = async (): Promise<FrontendTeacherBasicInfo> => {
 const updateBasicInfo = async (
   basicInfo: UpdateTeacherBasicInfoPayload
 ): Promise<void> => {
-  const validated = payload.updateBasicInfo.parse(basicInfo);
+  const validated = payload.basicInfo.parse(basicInfo);
   await api.private.patch('/teacher/me/basic-info', validated);
 };
 
@@ -79,11 +79,13 @@ const getTeacherNoteList = async () => {
  * [Update] 선생님 수업 노트 대표 설정/해제
  * ────────────────────────────────────────────────────*/
 const setTeacherNoteRepresentative = async (
-  teachingNoteRepresentative: UpdateTeacherTeachingNoteRepresentativePayload
+  teachingNoteId: number,
+  data: UpdateTeacherTeachingNoteRepresentativePayload
 ) => {
+  const validated = payload.teachingNoteRepresentative.parse(data);
   await api.private.patch(
-    `/teacher/me/teaching-notes/${teachingNoteRepresentative.teachingNoteId}/representative`,
-    { representative: teachingNoteRepresentative.representative }
+    `/teacher/me/teaching-notes/${teachingNoteId}/representative`,
+    validated
   );
 };
 

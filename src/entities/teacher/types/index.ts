@@ -47,11 +47,9 @@ export type FrontendTeacherCareerList = z.infer<
 /* ─────────────────────────────────────────────────────
  * Payload
  * ────────────────────────────────────────────────────*/
-export type UpdateTeacherBasicInfoPayload = z.infer<
-  typeof payload.updateBasicInfo
->;
+export type UpdateTeacherBasicInfoPayload = z.infer<typeof payload.basicInfo>;
 export type UpdateTeacherTeachingNoteRepresentativePayload = z.infer<
-  typeof payload.updateTeachingNoteRepresentative
+  typeof payload.teachingNoteRepresentative
 >;
 export type CareerPayload = z.infer<typeof payload.career>;
 
