@@ -1,11 +1,15 @@
+'use client';
+
+import AddCareerDialog from '@/features/mypage/components/add-career-dialog';
 import SelectTeachingnotesDialog from '@/features/mypage/components/select-teachingnotes-dialog';
+import { useTeacherCareers } from '@/features/mypage/hooks/teacher/use-careers';
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import { useTeacherReviews } from '@/features/mypage/hooks/teacher/use-reviews';
 import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
 import { useTeacherTeachingNotes } from '@/features/mypage/hooks/teacher/use-teaching-notes';
-import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
+import CareerSection from '@/features/profile/components/teacher/career-section';
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
@@ -44,6 +48,13 @@ export default function TeacherSections() {
     isError: isTeachingnotesError,
   } = useTeacherTeachingNotes();
 
+  // 경력
+  const {
+    data: careers,
+    isLoading: isCareersLoading,
+    isError: isCareersError,
+  } = useTeacherCareers();
+
   return (
     <>
       <SectionContainer
@@ -68,8 +79,23 @@ export default function TeacherSections() {
         )}
       </SectionContainer>
 
-      <SectionContainer title="경력">
-        <ComingSoonSection />
+      <SectionContainer
+        title="경력"
+        isOwner
+        action={<AddCareerDialog />}
+        isLoading={isCareersLoading}
+        isError={isCareersError}
+      >
+        {careers && CareerSection.length > 0 ? (
+          <CareerSection
+            careers={careers}
+            isOwner
+          />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            등록된 경력이 없습니다.
+          </p>
+        )}
       </SectionContainer>
 
       <SectionContainer

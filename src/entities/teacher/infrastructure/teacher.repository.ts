@@ -15,15 +15,16 @@ import { CommonResponse } from '@/types';
 
 import { dto, payload, query } from './teacher.dto';
 
-/**
- * isProfilePublic -> 한글 변환 헬퍼
- */
+// 날짜 형식 변환
+const toDateString = (iso: string) => iso?.split('T')[0] || '';
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 선생님 기본 정보 조회
+ * ────────────────────────────────────────────────────*/
 const getProfilePublicKorean = (isPublic: boolean): '공개' | '비공개' =>
   isPublic ? '공개' : '비공개';
 
-/**
- * basicInfo DTO를 Domain 객체로 변환
- */
+// basicInfo DTO를 Domain 객체로 변환
 const transformBasicInfoToFrontend = (
   basicInfoDto: TeacherBasicInfoDTO
 ): FrontendTeacherBasicInfo =>
@@ -36,9 +37,6 @@ const transformBasicInfoToFrontend = (
     profilePublicKorean: getProfilePublicKorean(basicInfoDto.isProfilePublic),
   });
 
-/* ─────────────────────────────────────────────────────
- * [Read] 선생님 기본 정보 조회
- * ────────────────────────────────────────────────────*/
 const getBasicInfo = async (): Promise<FrontendTeacherBasicInfo> => {
   const response = await api.private.get<CommonResponse<TeacherBasicInfoDTO>>(
     '/teacher/me/basic-info'
@@ -119,12 +117,24 @@ const postTeacherCareer = async (careerData: CareerPayload): Promise<void> => {
 /* ─────────────────────────────────────────────────────
  * [Read] 선생님 경력 전체 목록 조회
  * ────────────────────────────────────────────────────*/
+// careers DTO를 Domain 객체로 변환
+const transformCareersToFrontend = (dtos: TeacherCareerListDTO) => {
+  return dtos.map((dto) =>
+    domain.teacherCareerListItem.parse({
+      ...dto,
+      startDate: toDateString(dto.startDate),
+      endDate: dto.endDate ? toDateString(dto.endDate) : '',
+    })
+  );
+};
+
 const getTeacherCareerList = async (): Promise<FrontendTeacherCareerList> => {
   const response = await api.private.get<CommonResponse<TeacherCareerListDTO>>(
     '/teacher/me/careers'
   );
 
-  return unwrapEnvelope(response, dto.teacherCareerList);
+  const dtos = unwrapEnvelope(response, dto.teacherCareerList);
+  return transformCareersToFrontend(dtos);
 };
 
 /* ─────────────────────────────────────────────────────

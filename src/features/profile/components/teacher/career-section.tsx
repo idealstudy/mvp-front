@@ -1,30 +1,33 @@
-export default function CareerSection() {
-  const experiences = [
-    {
-      id: 1,
-      title: '00학원 전임 강사',
-      startDate: '2021-01-01',
-      endDate: null,
-      summary: '중고등학생 수학 담당',
-    },
-  ];
+import { FrontendTeacherCareerList } from '@/entities/teacher';
+import { CareerDropdown } from '@/features/mypage/components/career-dropdown';
 
+export default function CareerSection({
+  careers,
+  isOwner = false,
+}: {
+  careers: FrontendTeacherCareerList;
+  isOwner?: boolean;
+}) {
   return (
     <>
-      {experiences.map((experience) => (
+      {careers.map((career) => (
         <div
-          key={experience.id}
-          className="px-4 py-3"
+          key={career.id}
+          className="flex items-center justify-between"
         >
-          <div className="mb-1 flex items-baseline gap-1">
-            <span className="font-body2-heading">{experience.title}</span>
-            <span className="font-caption-normal text-text-sub2">
-              {experience.startDate} ~ {experience.endDate ?? '진행 중'}
-            </span>
+          <div className="px-4 py-3">
+            <div className="mb-1 flex items-baseline gap-1">
+              <span className="font-body2-heading">{career.name}</span>
+              <span className="font-caption-normal text-text-sub2">
+                {career.startDate} ~{' '}
+                {career.current ? '진행 중' : career.endDate}
+              </span>
+            </div>
+            <ul>
+              <li className="whitespace-pre-wrap">{career.description}</li>
+            </ul>
           </div>
-          <ul>
-            <li className="">- {experience.summary}</li>
-          </ul>
+          {isOwner && <CareerDropdown career={career} />}
         </div>
       ))}
     </>

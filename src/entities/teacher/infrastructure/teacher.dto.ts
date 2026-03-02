@@ -82,10 +82,10 @@ const TeacherReviewListDtoSchema = z.object({
 const TeacherCareerListItemDtoSchema = z.object({
   id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   startDate: z.string(),
-  endDate: z.string(),
-  current: z.boolean(),
+  endDate: z.string().nullable(),
+  current: z.boolean().nullable(),
 });
 
 const TeacherCareerListDtoSchema = z.array(TeacherCareerListItemDtoSchema);
@@ -114,10 +114,10 @@ const TeachingNoteRepresentativePayloadSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const CareerPayloadSchema = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   startDate: z.string(),
-  endDate: z.string(),
-  isCurrent: z.boolean(),
+  endDate: z.string().optional(),
+  isCurrent: z.boolean().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
