@@ -22,7 +22,7 @@ const TeacherReportDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 선생님 수업 노트 전체 목록 조회 DTO
+ * 선생님 전체 수업 노트 목록 조회 DTO
  * ────────────────────────────────────────────────────*/
 const TeacherNoteListItemDtoSchema = z.object({
   id: z.number(),
@@ -35,7 +35,31 @@ const TeacherNoteListItemDtoSchema = z.object({
   representative: z.boolean(),
 });
 
-const TeacherNoteListDtoSchema = z.array(TeacherNoteListItemDtoSchema);
+const TeacherNoteListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherNoteListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대표 수업 노트 목록 조회 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherRepresentativeNoteListItemDtoSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  qnaCount: z.number(),
+  viewCount: z.number(),
+  modDate: z.string(),
+  representative: z.boolean(),
+});
+
+const TeacherRepresentativeNoteListDtoSchema = z.array(
+  TeacherRepresentativeNoteListItemDtoSchema
+);
 
 /* ─────────────────────────────────────────────────────
  * 선생님 스터디룸 전체 목록 조회 응답 DTO
@@ -123,10 +147,21 @@ const CareerPayloadSchema = z.object({
 /* ─────────────────────────────────────────────────────
  * 선생님 후기 목록 조회 Query
  * ────────────────────────────────────────────────────*/
-const TeacherReviewQuerySchema = z.object({
+const TeacherReviewListQuerySchema = z.object({
   page: z.number(),
   size: z.number(),
   type: z.enum(['STUDYROOM_REVIEW', 'HANDWRITTEN_LETTER']),
+});
+
+const TeacherNoteListSchema = z.object({
+  page: z.number(),
+  size: z.number(),
+  sortKey: z.enum([
+    'LATEST_EDITED',
+    'OLDEST_EDITED',
+    'TITLE_ASC',
+    'TAUGHT_AT_ASC',
+  ]),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -136,6 +171,7 @@ export const dto = {
   basicInfo: BasicInfoDtoSchema,
   teacherReport: TeacherReportDtoSchema,
   teacherNoteList: TeacherNoteListDtoSchema,
+  teacherRepresentativeNoteList: TeacherRepresentativeNoteListDtoSchema,
   teacherStudyRoomList: TeacherStudyRoomListDtoSchema,
   teacherReviewList: TeacherReviewListDtoSchema,
   teacherCareerList: TeacherCareerListDtoSchema,
@@ -148,5 +184,6 @@ export const payload = {
 };
 
 export const query = {
-  teacherReview: TeacherReviewQuerySchema,
+  teacherReviewList: TeacherReviewListQuerySchema,
+  teacherNoteList: TeacherNoteListSchema,
 };

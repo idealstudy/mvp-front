@@ -1,10 +1,10 @@
-import { FrontendTeacherNoteList } from '@/entities/teacher';
+import { FrontendTeacherRepresentativeNoteList } from '@/entities/teacher';
 import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
 
 export default function StudynotesSection({
   teachingnotes,
 }: {
-  teachingnotes: FrontendTeacherNoteList;
+  teachingnotes: FrontendTeacherRepresentativeNoteList;
 }) {
   return (
     <>

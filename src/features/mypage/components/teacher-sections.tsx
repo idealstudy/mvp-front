@@ -6,7 +6,7 @@ import { useTeacherCareers } from '@/features/mypage/hooks/teacher/use-careers';
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import { useTeacherReviews } from '@/features/mypage/hooks/teacher/use-reviews';
 import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
-import { useTeacherTeachingNotes } from '@/features/mypage/hooks/teacher/use-teaching-notes';
+import { useTeacherRepresentativeTeachingNotes } from '@/features/mypage/hooks/teacher/use-teaching-notes';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
@@ -46,7 +46,7 @@ export default function TeacherSections() {
     data: teachingnotes,
     isLoading: isTeachingnotesLoading,
     isError: isTeachingnotesError,
-  } = useTeacherTeachingNotes();
+  } = useTeacherRepresentativeTeachingNotes();
 
   // 경력
   const {
@@ -86,7 +86,7 @@ export default function TeacherSections() {
         isLoading={isCareersLoading}
         isError={isCareersError}
       >
-        {careers && CareerSection.length > 0 ? (
+        {careers && careers.length > 0 ? (
           <CareerSection
             careers={careers}
             isOwner

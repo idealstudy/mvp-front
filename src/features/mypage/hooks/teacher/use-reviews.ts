@@ -1,15 +1,11 @@
-import {
-  GetTeacherReviewListQuery,
-  repository,
-  teacherKeys,
-} from '@/entities/teacher';
+import { ReviewListQuery, repository, teacherKeys } from '@/entities/teacher';
 import { useQuery } from '@tanstack/react-query';
 
 /**
  * [GET] 선생님 리뷰 조회
  */
 export const useTeacherReviews = (
-  params: GetTeacherReviewListQuery,
+  params: ReviewListQuery,
   options?: { enabled?: boolean }
 ) =>
   useQuery({

@@ -3,7 +3,8 @@ import {
   CareerPayload,
   FrontendTeacherBasicInfo,
   FrontendTeacherCareerList,
-  GetTeacherReviewListQuery,
+  NoteListQuery,
+  ReviewListQuery,
   TeacherBasicInfoDTO,
   TeacherCareerListDTO,
   UpdateTeacherBasicInfoPayload,
@@ -66,11 +67,24 @@ const getTeacherReport = async () => {
 };
 
 /* ─────────────────────────────────────────────────────
- * [Read] 선생님 수업 노트 전체 목록 조회
+ * [Read] 선생님 전체 수업 노트 목록 조회
  * ────────────────────────────────────────────────────*/
-const getTeacherNoteList = async () => {
-  const response = await api.private.get(`/teacher/me/teaching-notes`);
+const getTeacherNoteList = async (params: NoteListQuery) => {
+  const validated = query.teacherNoteList.parse(params);
+  const response = await api.private.get(`/teacher/me/teaching-notes`, {
+    params: validated,
+  });
   return unwrapEnvelope(response, dto.teacherNoteList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 선생님 대표 수업 노트 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getTeacherRepresentativeNoteList = async () => {
+  const response = await api.private.get(
+    `/teacher/me/teaching-notes/representative`
+  );
+  return unwrapEnvelope(response, dto.teacherRepresentativeNoteList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -98,8 +112,8 @@ const getTeacherStudyRoomList = async () => {
 /* ─────────────────────────────────────────────────────
  * [Read] 선생님 후기 전체 목록 조회
  * ────────────────────────────────────────────────────*/
-const getTeacherReviewList = async (params: GetTeacherReviewListQuery) => {
-  const validated = query.teacherReview.parse(params);
+const getTeacherReviewList = async (params: ReviewListQuery) => {
+  const validated = query.teacherReviewList.parse(params);
   const response = await api.private.get(`/teacher/me/reviews`, {
     params: validated,
   });
@@ -165,6 +179,7 @@ export const repository = {
   },
   teachingNote: {
     getTeacherNoteList,
+    getTeacherRepresentativeNoteList,
     setTeacherNoteRepresentative,
   },
   getTeacherStudyRoomList,

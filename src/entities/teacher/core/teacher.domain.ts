@@ -24,7 +24,7 @@ const TeacherReportDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 선생님 수업 노트 전체 Domain 스키마
+ * 선생님 수업 노트 Domain 스키마
  * ────────────────────────────────────────────────────*/
 const TeacherNoteListItemDomainSchema = z.object({
   id: z.number(),
@@ -37,7 +37,23 @@ const TeacherNoteListItemDomainSchema = z.object({
   representative: z.boolean(),
 });
 
-const TeacherNoteListDomainSchema = z.array(TeacherNoteListItemDomainSchema);
+/* ─────────────────────────────────────────────────────
+ * 선생님 전체 수업 노트 목록 Domain 스키마 (페이지네이션)
+ * ────────────────────────────────────────────────────*/
+const TeacherNoteListDomainSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherNoteListItemDomainSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대표 수업 노트 목록 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherRepresentativeNoteListDomainSchema = z.array(
+  TeacherNoteListItemDomainSchema
+);
 
 /* ─────────────────────────────────────────────────────
  * 선생님 스터디룸 전체 Domain 스키마
@@ -103,6 +119,7 @@ export const domain = {
   teacherReport: TeacherReportDomainSchema,
   teacherNoteListItem: TeacherNoteListItemDomainSchema,
   teacherNoteList: TeacherNoteListDomainSchema,
+  teacherRepresentativeNoteList: TeacherRepresentativeNoteListDomainSchema,
   teacherStudyRoomListItem: TeacherStudyRoomListItemDomainSchema,
   teacherStudyRoomList: TeacherStudyRoomListDomainSchema,
   teacherReviewListItem: TeacherReviewListItemDomainSchema,

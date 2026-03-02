@@ -19,6 +19,14 @@ import { Icon } from './icon';
 // https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
 // https://www.radix-ui.com/primitives/docs/components/accordion
 
+// TODO: 작업중
+// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
+// https://www.radix-ui.com/primitives/docs/components/accordion
+
+// TODO: 작업중
+// https://github.com/radix-ui/primitives/blob/main/packages/react/accordion/src/accordion.tsx
+// https://www.radix-ui.com/primitives/docs/components/accordion
+
 /* ─────────────────────────────────────────────────────
  * Accordion Type
  * ────────────────────────────────────────────────────*/
@@ -67,7 +75,7 @@ const AccordionTrigger = forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        'flex flex-1 items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-base font-semibold transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+        'flex flex-1 items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-base font-semibold transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 [&[data-state=open]>svg]:rotate-180',
         className
       )}
       {...props}
@@ -75,7 +83,7 @@ const AccordionTrigger = forwardRef<
       <span className="flex flex-col gap-1">{children}</span>
       <Icon.ChevronDown
         aria-hidden
-        className="h-4 w-4 shrink-0 transition-transform data-[state=open]:rotate-180"
+        className="shrink-0 transition-transform"
       />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
