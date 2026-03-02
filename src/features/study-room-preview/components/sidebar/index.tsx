@@ -1,9 +1,13 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
+import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
 
 import { usePreviewSideInfo } from '../../hooks/use-preview';
+import { PreviewSideSkeleton } from '../preview-skeleton';
 import { StudyroomPreviewSidebarHeader } from './header';
 import { TeacherOtherStudyrooms } from './teacher-other-studyrooms';
 
@@ -11,6 +15,8 @@ type StudyroomPreviewContentsProps = {
   teacherId: number;
   studyRoomId: number;
 };
+
+const PENDING_SKELETON_DELAY = 150;
 
 const onClick = () => {
   alert('준비중 입니다.');
@@ -24,14 +30,36 @@ export const StudyroomPreviewSidebar = ({
     teacherId,
     studyRoomId
   );
+  const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
+
+  useEffect(() => {
+    if (!isPending) {
+      setShowPendingSkeleton(false);
+      return;
+    }
+
+    const timer = setTimeout(
+      () => setShowPendingSkeleton(true),
+      PENDING_SKELETON_DELAY
+    );
+    return () => clearTimeout(timer);
+  }, [isPending]);
 
   const otherRooms =
     data?.otherStudyRooms
       .filter((room) => room.id !== studyRoomId)
       .map((room) => ({ id: room.id, name: room.name })) ?? [];
 
+  if (isPending && showPendingSkeleton) {
+    return <PreviewSideSkeleton />;
+  }
+
   if (isPending) {
-    return <div className="text-gray-7 px-2 py-3 text-sm">불러오는 중...</div>;
+    return (
+      <div className="flex justify-center py-6">
+        <MiniSpinner />
+      </div>
+    );
   }
 
   if (isError) {

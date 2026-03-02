@@ -1,10 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import Image from 'next/image';
 
+import { MiniSpinner } from '@/shared/components/loading';
 import { getRelativeTimeString } from '@/shared/lib';
 
 import { usePreviewMainInfo } from '../../hooks/use-preview';
+import { PreviewMainSkeleton } from '../preview-skeleton';
 import { InfoItem } from './contents-info-item';
 
 type StudyroomPreviewContentsProps = {
@@ -12,16 +16,35 @@ type StudyroomPreviewContentsProps = {
 };
 
 const REVIEW_TAGS = ['#친절해요', '#피드백빠름', '#체계적수업'] as const;
+const PENDING_SKELETON_DELAY = 150;
 
 export const StudyroomPreviewContents = ({
   studyRoomId,
 }: StudyroomPreviewContentsProps) => {
   const { data, isPending, isError } = usePreviewMainInfo(studyRoomId);
+  const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
+
+  useEffect(() => {
+    if (!isPending) {
+      setShowPendingSkeleton(false);
+      return;
+    }
+
+    const timer = setTimeout(
+      () => setShowPendingSkeleton(true),
+      PENDING_SKELETON_DELAY
+    );
+    return () => clearTimeout(timer);
+  }, [isPending]);
+
+  if (isPending && showPendingSkeleton) {
+    return <PreviewMainSkeleton />;
+  }
 
   if (isPending) {
     return (
-      <div className="font-label-normal text-gray-7 px-6 py-8">
-        불러오는 중...
+      <div className="flex justify-center py-6">
+        <MiniSpinner />
       </div>
     );
   }
