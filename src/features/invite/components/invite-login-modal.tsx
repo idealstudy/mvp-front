@@ -32,9 +32,9 @@ export const InviteLoginModal = ({
             />
           </button>
           <div className="tablet:gap-4 flex w-full flex-col gap-1">
-            <p className="font-body2-heading tablet:font-headline1-heading text-gray-12 text-center">
+            <Dialog.Title className="font-body2-heading tablet:font-headline1-heading text-gray-12 text-center">
               디에듀에 로그인하시겠습니까?
-            </p>
+            </Dialog.Title>
             <p className="font-label-normal tablet:font-headline2-normal text-gray-10 text-center">
               스터디룸에 참여하려면 로그인이 필요해요.
             </p>
@@ -42,7 +42,7 @@ export const InviteLoginModal = ({
         </Dialog.Header>
         <Dialog.Body className="tablet:px-6">
           <Link
-            href={`${PUBLIC.CORE.LOGIN}?inviteToken=${encodeURIComponent(inviteToken)}`}
+            href={`${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`}
           >
             <Button
               size="small"

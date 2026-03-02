@@ -84,11 +84,7 @@ export const studyRoomRepository = {
     },
     acceptInvitation: async (token: string) => {
       const response = (await api.private.post(
-        `/student/study-rooms/invitation/accept`,
-        { token },
-        {
-          withCredentials: true,
-        }
+        `/student/study-room-invites/${token}/respond`
       )) as { status: number; message?: string; code?: string; data: unknown };
 
       if (response.status < 200 || response.status >= 300) {
@@ -96,6 +92,8 @@ export const studyRoomRepository = {
           code: response.code,
         });
       }
+
+      return dto.student.inviteRespond.parse(response.data);
     },
   },
 };

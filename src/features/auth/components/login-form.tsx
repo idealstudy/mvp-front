@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 import SocialLoginButton from '@/features/auth/components/social-login-button';
 import { useAuth } from '@/features/auth/hooks/use-auth';
@@ -22,6 +23,9 @@ const LoginFormtwStyles = {
 };
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const {
     register,
     handleSubmit,
@@ -103,7 +107,11 @@ export default function LoginForm() {
         <div className="flex justify-center gap-2">
           <span>아직 회원이 아니신가요?</span>
           <Link
-            href={PUBLIC.CORE.SIGNUP}
+            href={
+              inviteToken
+                ? `${PUBLIC.CORE.SIGNUP}?token=${encodeURIComponent(inviteToken)}`
+                : PUBLIC.CORE.SIGNUP
+            }
             className={LoginFormtwStyles.link}
           >
             회원가입

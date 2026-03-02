@@ -12,7 +12,8 @@ const CORE = {
   BIZ: '#',
   INVITE: {
     ERROR: (reason: string) => `/invite/error?reason=${reason}`,
-    SUCCESS: '/invite/success',
+    SUCCESS: (studyRoomId: number) =>
+      `/invite/success?studyRoomId=${studyRoomId}`,
   },
 } as const;
 

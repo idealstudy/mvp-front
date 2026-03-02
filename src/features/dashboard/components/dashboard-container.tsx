@@ -6,6 +6,7 @@ import { DashboardCompleted } from '@/features/dashboard/components/completed';
 import { DashboardOnboarding } from '@/features/dashboard/components/onboarding';
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 import { useOnboardingStatus } from '@/features/dashboard/hooks/use-onboarding-status';
+import { useInviteTokenHandler } from '@/features/invite/hooks';
 import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 import { trackPageView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
@@ -13,6 +14,8 @@ import { useMemberStore } from '@/store';
 import DashboardTeacher from './teacher';
 
 export const DashboardContainer = () => {
+  useInviteTokenHandler();
+
   const session = useMemberStore((s) => s.member);
   const role = session?.role;
   const isTeacher = role === 'ROLE_TEACHER';

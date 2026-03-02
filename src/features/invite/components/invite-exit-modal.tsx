@@ -33,9 +33,9 @@ export const InviteExitModal = ({
             <div className="bg-orange-2 flex size-10 items-center justify-center rounded-full">
               <ExclamationIcon className="text-orange-6" />
             </div>
-            <p className="font-body2-heading tablet:font-headline1-heading text-gray-12 text-center">
+            <Dialog.Title className="font-body2-heading tablet:font-headline1-heading text-gray-12 text-center">
               스터디룸 초대를 거절하시겠어요?
-            </p>
+            </Dialog.Title>
             <p className="font-label-normal tablet:font-headline2-normal text-gray-10 text-center">
               초대를 거절하면 <br className="tablet:hidden" />
               스터디룸에 참여할 수 없어요.
