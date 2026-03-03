@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
+import { useMemberStore } from '@/store';
 
 import { usePreviewSideInfo } from '../../hooks/use-preview';
 import { PreviewSideSkeleton } from '../preview-skeleton';
@@ -18,10 +21,6 @@ type StudyroomPreviewContentsProps = {
 
 const PENDING_SKELETON_DELAY = 150;
 
-const onClick = () => {
-  alert('준비중 입니다.');
-};
-
 export const StudyroomPreviewSidebar = ({
   teacherId,
   studyRoomId,
@@ -30,7 +29,21 @@ export const StudyroomPreviewSidebar = ({
     teacherId,
     studyRoomId
   );
+  const router = useRouter();
+
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
+  const member = useMemberStore((s) => s.member);
+
+  const isMyStudyRoom =
+    member?.role === 'ROLE_TEACHER' && member.id === teacherId;
+
+  const onInquiryClick = () => {
+    alert('준비중 입니다.');
+  };
+
+  const moveToStudyRoom = () => {
+    router.push(`/study-rooms/${studyRoomId}/note`);
+  };
 
   useEffect(() => {
     if (!isPending) {
@@ -90,8 +103,8 @@ export const StudyroomPreviewSidebar = ({
         numberOfQuestion={data.numberOfQuestions}
       />
       <SidebarButton
-        onClick={onClick}
-        btnName="수업 문의하기"
+        onClick={isMyStudyRoom ? moveToStudyRoom : onInquiryClick}
+        btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 문의하기`}
       />
       {data.otherStudyRooms.length ? (
         <TeacherOtherStudyrooms

@@ -1,8 +1,15 @@
+'use client';
+
 import { ReactNode } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+import { useRole } from '@/shared/hooks';
+import { useMemberStore } from '@/store';
 
 type BaseHeaderProps = {
+  studyRoomId?: number;
   studyRoomName?: string;
   teacherName?: string;
   teacherSuffix?: string;
@@ -15,6 +22,7 @@ type BaseHeaderProps = {
 };
 
 export const BaseHeader = ({
+  studyRoomId,
   studyRoomName,
   teacherName,
   teacherSuffix = '',
@@ -25,6 +33,14 @@ export const BaseHeader = ({
   imageWrapperClassName = 'bg-orange-scale-orange-1 relative h-[200px] w-full overflow-hidden rounded-[12px]',
   rightSlot,
 }: BaseHeaderProps) => {
+  const { role } = useRole();
+  const router = useRouter();
+  const teacherId = useMemberStore((s) => s.member?.id);
+
+  const onMoveToPreview = () => {
+    router.push(`/study-room-preview/${studyRoomId}/${teacherId}`);
+  };
+
   return (
     <div className={wrapperClassName}>
       <div className="flex flex-col gap-1">
@@ -42,6 +58,21 @@ export const BaseHeader = ({
         )}
       </div>
       <div className={imageWrapperClassName}>
+        {role === 'ROLE_TEACHER' ? (
+          <button
+            type="button"
+            className="border-gray-5 bg-gray-12/40 font-label-normal absolute top-2 left-[208px] z-10 flex h-8 w-20 cursor-pointer items-center justify-center gap-2 rounded-[8px] border pt-1 pr-2.5 pb-1 pl-1.5 text-white"
+            onClick={onMoveToPreview}
+          >
+            <Image
+              src="/studyroom/ic-direct.png"
+              alt="direct-preview"
+              width={14}
+              height={14}
+            />
+            프리뷰
+          </button>
+        ) : null}
         <Image
           src="/studyroom/profile.svg"
           alt="study-room-profile"

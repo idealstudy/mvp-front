@@ -10,17 +10,20 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 export const StudyroomSidebarHeader = ({
   dispatch,
+  studyRoomId,
   studyRoomName,
   teacherName,
   canManage,
 }: {
   dispatch: Dispatch<DialogAction>;
+  studyRoomId: number;
   studyRoomName?: string;
   teacherName?: string;
   canManage?: boolean;
 }) => {
   return (
     <BaseHeader
+      studyRoomId={studyRoomId}
       studyRoomName={studyRoomName}
       teacherName={!canManage ? teacherName : undefined}
       teacherSuffix="선생님"

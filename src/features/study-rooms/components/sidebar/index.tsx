@@ -185,10 +185,12 @@ export const StudyroomSidebar = ({
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader
           dispatch={dispatch}
+          studyRoomId={studyRoomId}
           studyRoomName={studyRoomDetail?.name}
           teacherName={studyRoomDetail?.teacherName}
           canManage={canManage}
         />
+
         <StudyStats
           numberOfTeachingNote={studyRoomDetail?.numberOfTeachingNote}
           numberOfStudents={studyRoomDetail?.studentNames?.length}
