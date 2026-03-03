@@ -101,10 +101,10 @@ const TeacherReviewListDomainSchema = z.object({
 const TeacherCareerListItemDomainSchema = z.object({
   id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   startDate: z.string(),
   endDate: z.string(),
-  current: z.boolean(),
+  current: z.boolean().nullable(),
 });
 
 const TeacherCareerListDomainSchema = z.array(
