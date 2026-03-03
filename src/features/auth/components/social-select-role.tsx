@@ -25,7 +25,7 @@ export const SocialSelectRole = () => {
     resolver: zodResolver(SocialRegisterForm),
     mode: 'onChange',
     defaultValues: {
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
     },
   });

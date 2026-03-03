@@ -48,6 +48,10 @@ export const RegisterFormContextProvider = ({
 }) => {
   const termsCheckboxGroup = useCheckboxGroup(TERMS.map((term) => term.value));
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
     mode: 'onChange', // 실시간 검증 활성화
@@ -56,14 +60,10 @@ export const RegisterFormContextProvider = ({
       verificationCode: '',
       password: '',
       confirmPassword: '',
-      role: 'ROLE_TEACHER',
+      role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
     },
   });
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const inviteToken = searchParams.get('token');
 
   const { mutate: signUp, isPending } = useSignUp();
 
