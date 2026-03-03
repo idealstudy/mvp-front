@@ -3,6 +3,7 @@
 import { useReducer, useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { FrontendTeacherCareerListItem } from '@/entities/teacher';
 import CareerDialog from '@/features/mypage/components/career-dialog';
@@ -13,12 +14,15 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui';
+import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
 export function CareerDropdown({
   career,
 }: {
   career: FrontendTeacherCareerListItem;
 }) {
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isCareerDialogOpen, setIsCareerDialogOpen] = useState(false);
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
@@ -26,7 +30,28 @@ export function CareerDropdown({
   const deleteTeacherCareerMutation = useDeleteTeacherCareer();
 
   const handleDelete = () => {
-    deleteTeacherCareerMutation.mutate(career.id);
+    deleteTeacherCareerMutation.mutate(career.id, {
+      onSuccess: () => {
+        dispatch({ type: 'CLOSE' });
+      },
+      onError: (error) => {
+        handleApiError(error, classifyMypageError, {
+          onContext: () => {
+            // CAREER_NOT_EXIST
+            router.refresh();
+            dispatch({ type: 'CLOSE' });
+          },
+          onAuth: () => {
+            // CAREER_AND_TEACHER_NOT_MATCH
+            // MEMBER_NOT_EXIST
+            setTimeout(() => {
+              router.replace('/login');
+            }, 1500);
+          },
+          onUnknown: () => {},
+        });
+      },
+    });
   };
 
   return (

@@ -2,6 +2,8 @@
 
 import { Controller, useForm } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import {
   CareerPayload,
   FrontendTeacherCareerListItem,
@@ -20,6 +22,7 @@ import {
   RequiredMark,
   Textarea,
 } from '@/shared/components/ui';
+import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CareerDialogProps {
@@ -33,6 +36,8 @@ export default function CareerDialog({
   isOpen,
   onOpenChange,
 }: CareerDialogProps) {
+  const router = useRouter();
+
   const isEditMode = !!career;
 
   const updateTeacherCareerMutation = useUpdateTeacherCareer();
@@ -44,6 +49,7 @@ export default function CareerDialog({
     reset,
     control,
     watch,
+    setError,
     formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<CareerForm>({
     resolver: zodResolver(CareerFormSchema),
@@ -57,7 +63,7 @@ export default function CareerDialog({
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: CareerForm) => {
+  const onSubmit = (data: CareerForm) => {
     const payload: CareerPayload = {
       ...data,
       startDate: new Date(data.startDate).toISOString(),
@@ -65,16 +71,65 @@ export default function CareerDialog({
     };
 
     if (isEditMode) {
-      await updateTeacherCareerMutation.mutateAsync({
-        careerId: career.id,
-        careerData: payload,
-      });
+      updateTeacherCareerMutation.mutate(
+        {
+          careerId: career.id,
+          careerData: payload,
+        },
+        {
+          onSuccess: () => {
+            reset();
+            onOpenChange(false);
+          },
+          onError: (error) => {
+            handleApiError(error, classifyMypageError, {
+              onField: (msg) => {
+                // IS_CURRENT_CANNOT_BE_SET_WITH_END_DATE
+                setError('root', { message: msg });
+              },
+              onContext: () => {
+                // CAREER_NOT_EXIST
+                router.refresh();
+                setTimeout(() => {
+                  onOpenChange(false);
+                }, 1500);
+              },
+              onAuth: () => {
+                // MEMBER_NOT_EXIST
+                // CAREER_AND_TEACHER_NOT_MATCH
+                setTimeout(() => {
+                  router.replace('/login');
+                }, 1500);
+              },
+              onUnknown: () => {},
+            });
+          },
+        }
+      );
     } else {
-      await postTeacherCareerMutation.mutateAsync(payload);
+      postTeacherCareerMutation.mutate(payload, {
+        onSuccess: () => {
+          reset();
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          handleApiError(error, classifyMypageError, {
+            onField: (msg) => {
+              // IS_CURRENT_CANNOT_BE_SET_WITH_END_DATE
+              // CAREER_LIMIT_EXCEEDED
+              setError('root', { message: msg });
+            },
+            onAuth: () => {
+              // MEMBER_NOT_EXIST
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
+        },
+      });
     }
-
-    reset();
-    onOpenChange(false);
   };
 
   return (
@@ -186,26 +241,30 @@ export default function CareerDialog({
                 </Form.Control>
               </Form.Item>
             </Dialog.Body>
-            <Dialog.Footer className="self-end">
-              <div className="flex justify-end gap-2">
-                <Dialog.Close asChild>
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    size="small"
-                  >
-                    취소
-                  </Button>
-                </Dialog.Close>
+            <Dialog.Footer className="items-baseline self-end">
+              {errors.root?.message && (
+                <div className="font-caption-normal text-system-warning">
+                  {errors.root.message}
+                </div>
+              )}
+
+              <Dialog.Close asChild>
                 <Button
-                  type="submit"
-                  variant="secondary"
+                  type="button"
+                  variant="outlined"
                   size="small"
-                  disabled={isSubmitting || !isDirty || !isValid}
                 >
-                  저장
+                  취소
                 </Button>
-              </div>
+              </Dialog.Close>
+              <Button
+                type="submit"
+                variant="secondary"
+                size="small"
+                disabled={isSubmitting || !isDirty || !isValid}
+              >
+                저장
+              </Button>
             </Dialog.Footer>
           </Form>
         </Dialog.Content>

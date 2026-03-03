@@ -4,6 +4,7 @@ import { useReducer } from 'react';
 import { toast } from 'react-toastify';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {
   useTeacherRepresentativeTeachingNotes,
@@ -13,8 +14,11 @@ import {
 import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Accordion, Dialog } from '@/shared/components/ui';
+import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
 export default function SelectTeachingnotesDialog() {
+  const router = useRouter();
+
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   // 대표 수업노트
@@ -46,7 +50,33 @@ export default function SelectTeachingnotesDialog() {
       return;
     }
 
-    updateRepresentative({ teachingNoteId: id, representative: !current });
+    updateRepresentative(
+      { teachingNoteId: id, representative: !current },
+      {
+        onError: (error) => {
+          handleApiError(error, classifyMypageError, {
+            onField: () => {
+              // REPRESENTATIVE_LIMIT_EXCEEDED
+              // 클라이언트에서 선 차단, 서버 에러는 toast 자동 표시
+            },
+            onContext: () => {
+              // TEACHING_NOTE_NOT_EXIST
+              router.refresh();
+              setTimeout(() => {
+                dispatch({ type: 'CLOSE' });
+              }, 1500);
+            },
+            onAuth: () => {
+              // MEMBER_NOT_EXIST
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
+        },
+      }
+    );
   };
 
   return (

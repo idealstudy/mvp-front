@@ -41,7 +41,6 @@ export default function EditProfileCard({
   const {
     register,
     handleSubmit,
-    // setError,
     reset,
     control,
     formState: { errors, isSubmitting, isDirty, isValid },
@@ -62,32 +61,55 @@ export default function EditProfileCard({
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: BasicInfoForm) => {
-    try {
-      if (basicInfo.role === 'ROLE_TEACHER') {
-        await updateTeacherBasicInfoMutation.mutateAsync({
+  const onSubmit = (data: BasicInfoForm) => {
+    if (basicInfo.role === 'ROLE_TEACHER') {
+      updateTeacherBasicInfoMutation.mutate(
+        {
           name: data.name,
           isProfilePublic: data.isProfilePublic,
           simpleIntroduction: data.simpleIntroduction ?? '',
-        });
-      } else if (basicInfo.role === 'ROLE_STUDENT') {
-        await updateStudentBasicInfoMutation.mutateAsync({
+        },
+        {
+          onSuccess: () => {
+            setIsEditMode(false);
+          },
+          onError: (error) => {
+            handleApiError(error, classifyMypageError, {
+              onAuth: () => {
+                // MEMBER_NOT_EXIST
+                setTimeout(() => {
+                  router.replace('/login');
+                }, 1500);
+              },
+              onUnknown: () => {},
+            });
+          },
+        }
+      );
+    } else if (basicInfo.role === 'ROLE_STUDENT') {
+      updateStudentBasicInfoMutation.mutate(
+        {
           name: data.name,
           isProfilePublic: data.isProfilePublic,
           learningGoal: data.learningGoal ?? '',
-        });
-      }
-
-      setIsEditMode(false);
-    } catch (error) {
-      handleApiError(error, classifyMypageError, {
-        onAuth: () => {
-          setTimeout(() => {
-            router.replace('/login');
-          }, 1500);
         },
-        onUnknown: () => {},
-      });
+        {
+          onSuccess: () => {
+            setIsEditMode(false);
+          },
+          onError: (error) => {
+            handleApiError(error, classifyMypageError, {
+              onAuth: () => {
+                // MEMBER_NOT_EXIST
+                setTimeout(() => {
+                  router.replace('/login');
+                }, 1500);
+              },
+              onUnknown: () => {},
+            });
+          },
+        }
+      );
     }
   };
 

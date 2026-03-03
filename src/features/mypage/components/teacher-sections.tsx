@@ -20,6 +20,7 @@ export default function TeacherSections() {
     data: report,
     isLoading: isReportLoading,
     isError: isReportError,
+    refetch: refetchReport,
   } = useTeacherReport();
 
   // 스터디룸
@@ -27,6 +28,7 @@ export default function TeacherSections() {
     data: studyRooms,
     isLoading: isStudyRoomsLoading,
     isError: isStudyRoomsError,
+    refetch: refetchStudyRooms,
   } = useTeacherStudyRooms();
 
   // 리뷰
@@ -34,6 +36,7 @@ export default function TeacherSections() {
     data: reviews,
     isLoading: isReviewsLoading,
     isError: isReviewsError,
+    refetch: refetchReviews,
   } = useTeacherReviews({
     type: 'STUDYROOM_REVIEW',
     // 페이지네이션 고정
@@ -46,6 +49,7 @@ export default function TeacherSections() {
     data: teachingnotes,
     isLoading: isTeachingnotesLoading,
     isError: isTeachingnotesError,
+    refetch: refetchTeachingnotes,
   } = useTeacherRepresentativeTeachingNotes();
 
   // 경력
@@ -53,6 +57,7 @@ export default function TeacherSections() {
     data: careers,
     isLoading: isCareersLoading,
     isError: isCareersError,
+    refetch: refetchCareers,
   } = useTeacherCareers();
 
   return (
@@ -61,6 +66,7 @@ export default function TeacherSections() {
         title="활동 요약"
         isLoading={isReportLoading}
         isError={isReportError}
+        onRetry={refetchReport}
       >
         {report && <ActivitySummarySection summary={report} />}
       </SectionContainer>
@@ -69,6 +75,7 @@ export default function TeacherSections() {
         title="후기"
         isLoading={isReviewsLoading}
         isError={isReviewsError}
+        onRetry={refetchReviews}
       >
         {reviews && reviews.content.length > 0 ? (
           <ReviewSection reviews={reviews} />
@@ -85,6 +92,7 @@ export default function TeacherSections() {
         action={<AddCareerDialog />}
         isLoading={isCareersLoading}
         isError={isCareersError}
+        onRetry={refetchCareers}
       >
         {careers && careers.length > 0 ? (
           <CareerSection
@@ -104,6 +112,7 @@ export default function TeacherSections() {
         action={<SelectTeachingnotesDialog />}
         isLoading={isTeachingnotesLoading}
         isError={isTeachingnotesError}
+        onRetry={refetchTeachingnotes}
       >
         {/* 대표 수업노트가 없는 경우, 최신 수업노트 5개를 보여주므로 길이를 확인하지 않음 */}
         {teachingnotes && <StudynotesSection teachingnotes={teachingnotes} />}
@@ -113,6 +122,7 @@ export default function TeacherSections() {
         title="운영중인 스터디룸"
         isLoading={isStudyRoomsLoading}
         isError={isStudyRoomsError}
+        onRetry={refetchStudyRooms}
       >
         {studyRooms && studyRooms?.length ? (
           <StudyroomSection studyrooms={studyRooms} />
