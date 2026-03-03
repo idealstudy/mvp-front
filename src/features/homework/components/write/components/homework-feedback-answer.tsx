@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
@@ -13,6 +13,7 @@ import { DialogAction, DialogState } from '@/shared/components/dialog';
 import {
   TextEditor,
   TextViewer,
+  mergeResolvedContentWithMediaIds,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
@@ -26,6 +27,7 @@ import { HomeworkDialog } from '../../dialog';
 
 type Props = {
   content: string;
+  rawContent?: string;
   regDate: string;
   studyRoomId: number;
   homeworkStudentId: number;
@@ -36,6 +38,7 @@ type Props = {
 
 export const FeedbackAnswer = ({
   content,
+  rawContent,
   regDate,
   studyRoomId,
   homeworkStudentId,
@@ -60,11 +63,28 @@ export const FeedbackAnswer = ({
   const { isPending: isDeleting } = useRemoveTeacherHomeworkFeedback();
 
   // JSONContent 파싱
-  const parsedContent = parseEditorContent(localContent);
+  const parsedDisplayContent = useMemo(
+    () => parseEditorContent(localContent),
+    [localContent]
+  );
+  const parsedRawContent = useMemo(
+    () => parseEditorContent(rawContent ?? localContent),
+    [rawContent, localContent]
+  );
+  const parsedEditorContent = useMemo(
+    () =>
+      rawContent
+        ? mergeResolvedContentWithMediaIds(
+            parsedRawContent,
+            parsedDisplayContent
+          )
+        : parsedDisplayContent,
+    [rawContent, parsedRawContent, parsedDisplayContent]
+  );
 
   const handleEdit = () => {
     setIsEditing(true);
-    setEditContent(parsedContent);
+    setEditContent(parsedEditorContent);
     setIsOpen(false);
   };
 
@@ -180,7 +200,7 @@ export const FeedbackAnswer = ({
         {isEditing ? (
           <div className="space-y-3">
             <TextEditor
-              value={editContent || parsedContent}
+              value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
               targetType="HOMEWORK"
@@ -206,7 +226,7 @@ export const FeedbackAnswer = ({
         ) : (
           <>
             <div className="font-body2-normal">
-              <TextViewer value={parsedContent} />
+              <TextViewer value={parsedDisplayContent} />
             </div>
             <span className="font-caption-normal text-gray-scale-gray-60 self-end">
               {getRelativeTimeString(regDate) + ' 작성'}

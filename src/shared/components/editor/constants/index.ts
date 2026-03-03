@@ -1,4 +1,7 @@
-import { SlashCommandGroup } from '../types';
+import { api } from '@/shared/api';
+
+import { getEmbedTypeFromUrl } from '../model/embed-extension';
+import { LinkEmbedResponse, SlashCommandGroup } from '../types';
 
 // ============================================================================
 // Image Upload Config
@@ -230,32 +233,125 @@ export const SLASH_COMMAND_GROUPS: SlashCommandGroup[] = [
           }
         },
       },
-      /**
-       * TODO: 백엔드 구현 후 주석 해제
-       */
-      // {
-      //   id: 'linkPreview',
-      //   title: '링크 미리보기',
-      //   description: 'URL의 미리보기 카드를 삽입합니다.',
-      //   icon: 'externalLink',
-      //   keywords: ['preview', 'card', 'og', '미리보기', '카드', '프리뷰'],
-      //   command: (editor) => {
-      //     const url = window.prompt('URL을 입력하세요:');
-      //     if (url) {
-      //       editor
-      //         .chain()
-      //         .focus()
-      //         .insertContent({
-      //           type: 'linkPreview',
-      //           attrs: {
-      //             url,
-      //             loading: true,
-      //           },
-      //         })
-      //         .run();
-      //     }
-      //   },
-      // },
+      {
+        id: 'linkPreview',
+        title: '링크 미리보기',
+        description: 'URL의 미리보기 카드를 삽입합니다.',
+        icon: 'externalLink',
+        keywords: ['preview', 'card', 'og', '미리보기', '카드', '프리뷰'],
+        command: async (editor) => {
+          const url = window.prompt('URL을 입력하세요:');
+          if (url) {
+            try {
+              // 로딩 상태로 먼저 삽입
+              editor
+                .chain()
+                .focus()
+                .insertContent({
+                  type: 'linkPreview',
+                  attrs: {
+                    url,
+                    loading: true,
+                  },
+                })
+                .run();
+
+              // API 호출
+              const result = await api.private.post<LinkEmbedResponse>(
+                '/common/link-embeds/preview',
+                { url }
+              );
+
+              // 문서에서 loading=true인 linkPreview 노드를 찾아서 교체
+              const { state } = editor;
+              let foundPos: number | null = null;
+
+              state.doc.descendants((node, pos) => {
+                if (
+                  node.type.name === 'linkPreview' &&
+                  node.attrs.url === url &&
+                  node.attrs.loading === true
+                ) {
+                  foundPos = pos;
+                  return false; // 찾았으면 순회 중단
+                }
+              });
+
+              if (foundPos !== null) {
+                const tr = state.tr;
+                if (result.data.available && result.data.embed) {
+                  const { embed } = result.data;
+                  if (
+                    embed.embedType === 'OEMBED' &&
+                    embed.embedUrl &&
+                    state.schema.nodes.embed
+                  ) {
+                    tr.setNodeMarkup(foundPos, state.schema.nodes.embed, {
+                      url: embed.url,
+                      type: getEmbedTypeFromUrl(embed.embedUrl),
+                      embedUrl: embed.embedUrl,
+                      title: embed.title,
+                    });
+                  } else {
+                    // available: true → 링크 미리보기 카드로 업데이트
+                    tr.setNodeMarkup(foundPos, undefined, {
+                      url: embed.url,
+                      title: embed.title,
+                      description: embed.description,
+                      image: embed.imageUrl,
+                      siteName: embed.siteName,
+                      loading: false,
+                    });
+                  }
+                } else {
+                  // available: false → 노드 삭제하고 일반 링크로 교체
+                  const node = state.doc.nodeAt(foundPos);
+                  if (node && state.schema.marks.link) {
+                    tr.delete(foundPos, foundPos + node.nodeSize);
+                    tr.insertText(url, foundPos);
+                    tr.addMark(
+                      foundPos,
+                      foundPos + url.length,
+                      state.schema.marks.link.create({ href: url })
+                    );
+                  }
+                }
+                editor.view.dispatch(tr);
+              }
+            } catch {
+              // 에러 발생 시 loading 노드 찾아서 일반 링크로 교체
+              const { state } = editor;
+              let foundPos: number | null = null;
+
+              state.doc.descendants((node, pos) => {
+                if (
+                  node.type.name === 'linkPreview' &&
+                  node.attrs.url === url &&
+                  node.attrs.loading === true
+                ) {
+                  foundPos = pos;
+                  return false;
+                }
+              });
+
+              if (foundPos !== null) {
+                const tr = state.tr;
+                const node = state.doc.nodeAt(foundPos);
+                if (node && state.schema.marks.link) {
+                  tr.delete(foundPos, foundPos + node.nodeSize);
+                  tr.insertText(url, foundPos);
+                  tr.addMark(
+                    foundPos,
+                    foundPos + url.length,
+                    state.schema.marks.link.create({ href: url })
+                  );
+                }
+                editor.view.dispatch(tr);
+              }
+            }
+          }
+        },
+      },
     ],
   },
   {

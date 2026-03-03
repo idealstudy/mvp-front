@@ -126,6 +126,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   key={msg.id}
                   id={Number(msg.id)}
                   content={msg.resolvedContent?.content || msg.content}
+                  rawContent={msg.content}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}
                   contextId={contextId}
@@ -138,6 +139,7 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
                   key={msg.id}
                   id={Number(msg.id)}
                   content={msg.resolvedContent?.content || msg.content}
+                  rawContent={msg.content}
                   authorName={msg.authorName}
                   regDate={msg.regDate}
                   studyRoomId={studyRoomId}

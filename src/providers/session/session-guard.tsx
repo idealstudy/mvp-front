@@ -31,7 +31,11 @@ export const SessionGuard = ({
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.replace(redirectTo);
+      const token = new URLSearchParams(window.location.search).get('token');
+      const loginUrl = token
+        ? `${redirectTo}?token=${encodeURIComponent(token)}`
+        : redirectTo;
+      router.replace(loginUrl);
     }
   }, [status, router, redirectTo]);
 

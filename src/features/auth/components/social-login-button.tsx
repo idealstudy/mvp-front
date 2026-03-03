@@ -7,8 +7,12 @@ import { env, serverEnv } from '@/shared/constants/api';
 export default function SocialLoginButton() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
+  const inviteToken = searchParams.get('token');
 
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
+  const kakaoBaseUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code`;
+  const kakaoAuthUrl = inviteToken
+    ? `${kakaoBaseUrl}&state=${encodeURIComponent(`inviteToken:${inviteToken}`)}`
+    : kakaoBaseUrl;
 
   return (
     <div className="my-4 block items-center">

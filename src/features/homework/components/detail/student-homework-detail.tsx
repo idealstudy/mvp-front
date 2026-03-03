@@ -114,6 +114,7 @@ export const StudentHomeworkDetail = ({
                     item.data.submission?.content ??
                     '-'
                   }
+                  rawContent={item.data.submission?.content ?? '-'}
                   authorName={item.data.studentName}
                   regDate={item.data.submission?.modifiedSubmissionAt ?? '-'}
                   submitStatus={item.data.status}
@@ -130,6 +131,7 @@ export const StudentHomeworkDetail = ({
                       item.data.feedback.content ??
                       ''
                     }
+                    rawContent={item.data.feedback.content ?? ''}
                     regDate={item.data.feedback.modifiedFeedbackAt ?? ''}
                     studyRoomId={studyRoomId}
                     homeworkId={homeworkId}

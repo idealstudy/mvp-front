@@ -6,6 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useConnectMembers } from '@/features/dashboard/studynote/write/services/query';
 import { useGetTeacherHomeworkDetail } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
 import { useGetTeacherNotesList } from '@/features/study-notes/hooks';
+import { mergeResolvedContentWithMediaIds } from '@/shared/components/editor';
 import { nowForInput } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -59,16 +60,25 @@ export const HomeworkFormProvider = ({
 
     const { homework } = homeworkDetail;
 
-    const contentString = homework.resolvedContent?.content || homework.content;
-    let content;
-    try {
-      content = JSON.parse(contentString);
-    } catch {
-      content = {
-        type: 'doc',
-        content: [{ type: 'paragraph' }],
-      };
-    }
+    const rawContentString = homework.content;
+    const resolvedContentString = homework.resolvedContent?.content;
+    const emptyDoc = { type: 'doc', content: [{ type: 'paragraph' }] };
+    const parseContent = (value: string) => {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return emptyDoc;
+      }
+    };
+
+    const rawContent = parseContent(rawContentString);
+    const resolvedContent = parseContent(
+      resolvedContentString ?? rawContentString
+    );
+
+    const content = resolvedContentString
+      ? mergeResolvedContentWithMediaIds(rawContent, resolvedContent)
+      : rawContent;
 
     // 서버: 2026-01-20T01:13:00
     // input: 2026-01-20T01:13

@@ -23,6 +23,7 @@ export type {
   RoomClassFormDTO,
   RoomSchoolLevelDTO,
   RoomSubjectDTO,
+  InvitationInfoDTO,
 } from './room.types';
 
 /* ─────────────────────────────────────────────────────
@@ -35,4 +36,6 @@ export type {
   TeacherRoomCUDResDTO,
   StudentRoomListItemDTO,
   RoomMemberPageDTO,
+  InvitationTokenDTO,
+  StudyRoomInviteRespondDTO,
 } from './room.types';

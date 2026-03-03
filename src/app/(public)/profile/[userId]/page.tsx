@@ -11,10 +11,5 @@ export default async function ProfilePage({ params }: PageProps) {
 
   if (!userId) redirect('/');
 
-  return (
-    <ProfileMain
-      mode="viewer"
-      userId={userId}
-    />
-  );
+  return <ProfileMain userId={userId} />;
 }

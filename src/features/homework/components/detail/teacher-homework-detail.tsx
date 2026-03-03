@@ -85,6 +85,7 @@ export const TeacherHomeworkDetail = ({
                     student.feedback.content ??
                     ''
                   }
+                  rawContent={student.feedback.content ?? ''}
                   regDate={student.feedback.modifiedFeedbackAt ?? ''}
                   studyRoomId={studyRoomId}
                   homeworkId={homeworkId}

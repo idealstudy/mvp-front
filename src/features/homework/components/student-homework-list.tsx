@@ -1,7 +1,7 @@
 'use client';
 
-import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { MiniSpinner } from '@/shared/components/loading';
+import { ListItem } from '@/shared/components/ui/list-item';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
 
 import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../model/constants';

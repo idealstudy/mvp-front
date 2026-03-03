@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-import { ListItem } from '@/features/study-rooms/components/common/list-item';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { ListItem } from '@/shared/components/ui/list-item';
 import type { Meta, StoryObj } from '@storybook/react';
 
 type ListItemStoryArgs = {

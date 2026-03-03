@@ -6,6 +6,7 @@ import { DashboardCompleted } from '@/features/dashboard/components/completed';
 import { DashboardOnboarding } from '@/features/dashboard/components/onboarding';
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 import { useOnboardingStatus } from '@/features/dashboard/hooks/use-onboarding-status';
+import { useInviteTokenHandler } from '@/features/invite/hooks';
 import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 import { trackPageView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
@@ -13,6 +14,8 @@ import { useMemberStore } from '@/store';
 import DashboardTeacher from './teacher';
 
 export const DashboardContainer = () => {
+  const { isProcessing: isInviteProcessing } = useInviteTokenHandler();
+
   const session = useMemberStore((s) => s.member);
   const role = session?.role;
   const isTeacher = role === 'ROLE_TEACHER';
@@ -41,8 +44,8 @@ export const DashboardContainer = () => {
   const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
     useOnboardingStatus({ rooms });
 
-  // 로딩 중일 때
-  if (isLoading) {
+  // 초대 토큰 처리 중이거나 로딩 중일 때
+  if (isInviteProcessing || isLoading) {
     return (
       <div className="bg-system-background">
         <div className="mx-auto flex w-full max-w-[1120px] items-center justify-center px-6 pt-12 pb-24">

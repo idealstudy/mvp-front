@@ -178,6 +178,140 @@ type TransformResult = {
   mediaIds: string[];
 };
 
+const EMPTY_EDITOR_DOC: EditorContent = {
+  type: 'doc',
+  content: [{ type: 'paragraph' }],
+};
+
+const MEDIA_PROTOCOL = 'media://';
+
+const extractMediaId = (
+  attrs: Record<string, unknown> | undefined,
+  key: 'src' | 'url'
+): string | undefined => {
+  if (!attrs) return undefined;
+
+  const mediaId = attrs.mediaId;
+  if (typeof mediaId === 'string' && mediaId) {
+    return mediaId;
+  }
+
+  const value = attrs[key];
+  if (typeof value === 'string' && value.startsWith(MEDIA_PROTOCOL)) {
+    return value.slice(MEDIA_PROTOCOL.length);
+  }
+
+  return undefined;
+};
+
+/**
+ * resolvedContent에 원본 content의 mediaId를 주입합니다.
+ * - resolvedContent는 이미지/파일 URL이 S3로 치환되어 있기 때문에
+ *   저장 시 필요한 mediaId를 다시 붙여줍니다.
+ */
+export const mergeResolvedContentWithMediaIds = (
+  sourceContent: EditorContent,
+  resolvedContent: EditorContent
+): EditorContent => {
+  const collectMediaIds = (
+    node: EditorContent | undefined,
+    key: 'src' | 'url',
+    mediaIds: string[]
+  ) => {
+    if (!node) return;
+
+    const isTargetNode =
+      (key === 'src' && node.type === 'image') ||
+      (key === 'url' && node.type === 'fileAttachment');
+
+    if (isTargetNode) {
+      const mediaId = extractMediaId(node.attrs, key);
+      if (mediaId) {
+        mediaIds.push(mediaId);
+      }
+    }
+
+    if (Array.isArray(node.content)) {
+      node.content.forEach((child) => collectMediaIds(child, key, mediaIds));
+    }
+  };
+
+  const imageMediaIds: string[] = [];
+  const fileMediaIds: string[] = [];
+
+  collectMediaIds(sourceContent, 'src', imageMediaIds);
+  collectMediaIds(sourceContent, 'url', fileMediaIds);
+
+  const mergeNode = (resolvedNode: EditorContent): EditorContent => {
+    const mergedNode: EditorContent = { ...resolvedNode };
+
+    if (resolvedNode.type === 'image') {
+      const currentMediaId = extractMediaId(resolvedNode.attrs, 'src');
+      const mediaId = currentMediaId ?? imageMediaIds.shift();
+      if (mediaId) {
+        mergedNode.attrs = {
+          ...(resolvedNode.attrs ?? {}),
+          mediaId,
+        };
+      }
+    }
+
+    if (resolvedNode.type === 'fileAttachment') {
+      const currentMediaId = extractMediaId(resolvedNode.attrs, 'url');
+      const mediaId = currentMediaId ?? fileMediaIds.shift();
+      if (mediaId) {
+        mergedNode.attrs = {
+          ...(resolvedNode.attrs ?? {}),
+          mediaId,
+        };
+      }
+    }
+
+    if (Array.isArray(resolvedNode.content)) {
+      mergedNode.content = resolvedNode.content.map(mergeNode);
+    }
+
+    return mergedNode;
+  };
+
+  return mergeNode(resolvedContent);
+};
+
+/**
+ * 문자열 content를 JSONContent 형태로 파싱합니다.
+ * JSON 파싱 실패 또는 유효하지 않은 구조면 텍스트 노드로 래핑합니다.
+ */
+export const parseEditorContent = (content: string): EditorContent => {
+  if (!content) return EMPTY_EDITOR_DOC;
+
+  try {
+    const parsed = JSON.parse(content);
+    if (parsed && typeof parsed === 'object' && 'type' in parsed) {
+      return parsed as EditorContent;
+    }
+
+    return {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: String(content) }],
+        },
+      ],
+    };
+  } catch {
+    return {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: content }],
+        },
+      ],
+    };
+  }
+};
+
 /**
  * 에디터 content를 저장용으로 변환합니다.
  * - 이미지 노드의 src를 media://{mediaId} 형식으로 변환

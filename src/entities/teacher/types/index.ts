@@ -1,9 +1,11 @@
-import { dto } from '@/entities/teacher/infrasturcture';
+import { domain } from '@/entities/teacher/core/teacher.domain';
+import { dto, payload } from '@/entities/teacher/infrastructure/teacher.dto';
 import { z } from 'zod';
 
-export type TeacherReportDTO = z.infer<typeof dto.teacherReport>;
-export type TeacherNoteListDTO = z.infer<typeof dto.teacherNoteList>;
-export type TeacherStudyRoomListDTO = z.infer<typeof dto.teacherStudyRoomList>;
+export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
 
-export type TeacherNoteListItemDTO = TeacherNoteListDTO[number];
-export type TeacherStudyRoomListItemDTO = TeacherStudyRoomListDTO[number];
+export type FrontendTeacherBasicInfo = z.infer<typeof domain.basicInfo>;
+
+export type UpdateTeacherBasicInfoPayload = z.infer<
+  typeof payload.updateBasicInfo
+>;

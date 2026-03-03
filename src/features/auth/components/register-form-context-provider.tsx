@@ -2,8 +2,9 @@
 
 import { useForm } from 'react-hook-form';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
+import { useAcceptInvitation } from '@/features/invite/hooks';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
@@ -62,6 +63,9 @@ export const RegisterFormContextProvider = ({
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('token');
+  const { acceptInvitation } = useAcceptInvitation();
 
   const { mutate: signUp, isPending } = useSignUp();
 
@@ -86,7 +90,15 @@ export const RegisterFormContextProvider = ({
         onSuccess: () => {
           // 회원가입 성공 이벤트
           trackSignupSuccess(data.role ?? null);
-          router.replace(PUBLIC.CORE.INDEX);
+          if (inviteToken) {
+            if (data.role === 'ROLE_STUDENT') {
+              acceptInvitation(inviteToken);
+            } else {
+              router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
+            }
+          } else {
+            router.replace(PUBLIC.CORE.INDEX);
+          }
         },
         onError: () => {
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');

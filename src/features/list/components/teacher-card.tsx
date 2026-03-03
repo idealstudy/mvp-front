@@ -47,7 +47,7 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
         showDivider
         footer={
           <div className="group-hover:text-orange-7 text-gray-10 mt-1 flex items-center justify-end text-[14px] transition-colors md:text-[14px]">
-            스터디룸 바로가기
+            프로필 바로가기
             <IoIosArrowForward className="ml-1 h-[16px] w-[16px]" />
           </div>
         }

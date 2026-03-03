@@ -6,6 +6,7 @@ import {
   FILE_UPLOAD_CONFIG,
   IMAGE_UPLOAD_CONFIG,
 } from '@/shared/components/editor/constants';
+import { useLinkPreview } from '@/shared/components/editor/model/use-link-preview';
 import { validateAttachmentFile } from '@/shared/components/editor/utils';
 import { cn } from '@/shared/lib';
 import { Editor, useEditorState } from '@tiptap/react';
@@ -41,6 +42,7 @@ type EditorToolbarProps = {
   darkMode?: boolean;
   onImageUpload?: (file: File) => void;
   onFileUpload?: (file: File) => void;
+  onOpenLinkDialog?: () => void;
 };
 
 export const EditorToolbar = ({
@@ -48,13 +50,14 @@ export const EditorToolbar = ({
   darkMode = false,
   onImageUpload,
   onFileUpload,
+  onOpenLinkDialog,
 }: EditorToolbarProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState('');
   const [showEmbedInput, setShowEmbedInput] = useState(false);
   const [embedUrl, setEmbedUrl] = useState('');
+
+  const { fetchPreviewAsync } = useLinkPreview();
 
   const editorState = useEditorState({
     editor,
@@ -119,29 +122,16 @@ export const EditorToolbar = ({
     [onFileUpload]
   );
 
-  const handleLinkSubmit = useCallback(() => {
-    if (linkUrl) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange('link')
-        .setLink({ href: linkUrl })
-        .run();
-    }
-    setShowLinkInput(false);
-    setLinkUrl('');
-  }, [editor, linkUrl]);
-
   const handleRemoveLink = useCallback(() => {
     editor.chain().focus().unsetLink().run();
-    setShowLinkInput(false);
-    setLinkUrl('');
   }, [editor]);
 
   const handleEmbedSubmit = useCallback(async () => {
     if (embedUrl) {
       // YouTube, Vimeo 등의 URL 파싱
-      const { parseEmbedUrl } = await import('../model/embed-extension');
+      const { parseEmbedUrl, getEmbedTypeFromUrl } = await import(
+        '../model/embed-extension'
+      );
       const parsed = parseEmbedUrl(embedUrl);
 
       if (parsed) {
@@ -158,23 +148,115 @@ export const EditorToolbar = ({
           })
           .run();
       } else {
-        // 지원하지 않는 URL인 경우 링크 미리보기로 삽입
-        editor
-          .chain()
-          .focus()
-          .insertContent({
-            type: 'linkPreview',
-            attrs: {
-              url: embedUrl,
-              loading: true,
-            },
-          })
-          .run();
+        try {
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: 'linkPreview',
+              attrs: {
+                url: embedUrl,
+                loading: true,
+              },
+            })
+            .run();
+
+          // API 호출
+          const result = await fetchPreviewAsync(embedUrl);
+
+          // 문서에서 loading=true인 linkPreview 노드를 찾아서 교체
+          const { state } = editor;
+          let foundPos: number | null = null;
+
+          state.doc.descendants((node, pos) => {
+            if (
+              node.type.name === 'linkPreview' &&
+              node.attrs.url === embedUrl &&
+              node.attrs.loading === true
+            ) {
+              foundPos = pos;
+              return false; // 찾았으면 순회 중단
+            }
+          });
+
+          if (foundPos !== null) {
+            const tr = state.tr;
+            if (result.available && result.data) {
+              if (
+                result.data.embedType === 'OEMBED' &&
+                result.data.embedUrl &&
+                state.schema.nodes.embed
+              ) {
+                tr.setNodeMarkup(foundPos, state.schema.nodes.embed, {
+                  url: result.data.url,
+                  type: getEmbedTypeFromUrl(result.data.embedUrl),
+                  embedUrl: result.data.embedUrl,
+                  title: result.data.title,
+                });
+              } else {
+                // available: true → 링크 미리보기 카드로 업데이트
+                tr.setNodeMarkup(foundPos, undefined, {
+                  url: result.data.url,
+                  title: result.data.title,
+                  description: result.data.description,
+                  image: result.data.image,
+                  siteName: result.data.siteName,
+                  loading: false,
+                });
+              }
+            } else {
+              // available: false → 노드 삭제하고 일반 링크로 교체
+              const node = state.doc.nodeAt(foundPos);
+              const linkMark = state.schema.marks.link;
+              if (node && linkMark) {
+                tr.delete(foundPos, foundPos + node.nodeSize);
+                tr.insertText(embedUrl, foundPos);
+                tr.addMark(
+                  foundPos,
+                  foundPos + embedUrl.length,
+                  linkMark.create({ href: embedUrl })
+                );
+              }
+            }
+            editor.view.dispatch(tr);
+          }
+        } catch {
+          // 에러 발생 시 loading 노드 찾아서 일반 링크로 교체
+          const { state } = editor;
+          let foundPos: number | null = null;
+
+          state.doc.descendants((node, pos) => {
+            if (
+              node.type.name === 'linkPreview' &&
+              node.attrs.url === embedUrl &&
+              node.attrs.loading === true
+            ) {
+              foundPos = pos;
+              return false;
+            }
+          });
+
+          if (foundPos !== null) {
+            const tr = state.tr;
+            const node = state.doc.nodeAt(foundPos);
+            const linkMark = state.schema.marks.link;
+            if (node && linkMark) {
+              tr.delete(foundPos, foundPos + node.nodeSize);
+              tr.insertText(embedUrl, foundPos);
+              tr.addMark(
+                foundPos,
+                foundPos + embedUrl.length,
+                linkMark.create({ href: embedUrl })
+              );
+            }
+            editor.view.dispatch(tr);
+          }
+        }
       }
     }
     setShowEmbedInput(false);
     setEmbedUrl('');
-  }, [editor, embedUrl]);
+  }, [editor, embedUrl, fetchPreviewAsync]);
 
   return (
     <div
@@ -371,64 +453,20 @@ export const EditorToolbar = ({
             />
           </>
         )}
-        <div className="relative">
-          <ToolbarButton
-            active={editorState.isLink || showLinkInput}
-            onClick={() => {
-              if (editorState.isLink) {
-                handleRemoveLink();
-              } else {
-                setShowLinkInput(!showLinkInput);
-              }
-            }}
-            darkMode={darkMode}
-            title={editorState.isLink ? '링크 제거' : '링크 추가 (Ctrl+K)'}
-          >
-            <Link size={16} />
-          </ToolbarButton>
-          {showLinkInput && (
-            <div
-              className={cn(
-                'absolute top-full left-0 z-50 mt-1 flex items-center gap-1 rounded-md border p-1 shadow-lg',
-                darkMode
-                  ? 'border-gray-scale-gray-70 bg-gray-scale-gray-80'
-                  : 'border-line-line2 bg-gray-scale-white'
-              )}
-            >
-              <input
-                type="url"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="URL 입력"
-                className={cn(
-                  'w-48 rounded px-2 py-1 text-sm outline-none',
-                  darkMode
-                    ? 'bg-gray-scale-gray-90 text-gray-scale-white placeholder:text-gray-scale-gray-50'
-                    : 'bg-background-gray text-text-main placeholder:text-text-sub'
-                )}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleLinkSubmit();
-                  } else if (e.key === 'Escape') {
-                    setShowLinkInput(false);
-                    setLinkUrl('');
-                  }
-                }}
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={handleLinkSubmit}
-                className={cn(
-                  'rounded px-2 py-1 text-xs font-medium',
-                  'bg-key-color-primary text-gray-scale-white hover:bg-key-color-primary/80'
-                )}
-              >
-                확인
-              </button>
-            </div>
-          )}
-        </div>
+        <ToolbarButton
+          active={editorState.isLink}
+          onClick={() => {
+            if (editorState.isLink) {
+              handleRemoveLink();
+              return;
+            }
+            onOpenLinkDialog?.();
+          }}
+          darkMode={darkMode}
+          title={editorState.isLink ? '링크 제거' : '링크 추가 (Ctrl+K)'}
+        >
+          <Link size={16} />
+        </ToolbarButton>
         <div className="relative">
           <ToolbarButton
             active={showEmbedInput}

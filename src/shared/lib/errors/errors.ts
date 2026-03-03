@@ -50,3 +50,14 @@ export function classifyHomeworkError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// mypage 관련 에러
+export function classifyMypageError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

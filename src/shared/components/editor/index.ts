@@ -44,6 +44,8 @@ export {
   getFileExtension,
   getAllSlashCommands,
   filterSlashCommands,
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
   transformContentForSave,
   prepareContentForSave,
 } from './utils';

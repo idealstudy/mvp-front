@@ -18,7 +18,7 @@ export default function SectionContainer({
   return (
     <div
       className={cn(
-        'border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8',
+        'border-line-line1 flex flex-col gap-2 rounded-xl border bg-white px-8 py-6',
         className
       )}
     >
