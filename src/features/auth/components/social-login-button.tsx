@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { useSearchParams } from 'next/navigation';
 
 import { env, serverEnv } from '@/shared/constants/api';
@@ -7,14 +9,19 @@ import { env, serverEnv } from '@/shared/constants/api';
 export default function SocialLoginButton() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
-  const inviteToken = searchParams.get('inviteToken');
+  const inviteToken = searchParams.get('token');
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const stateParts = [`origin:${origin}`];
-  if (inviteToken) stateParts.push(`inviteToken:${inviteToken}`);
-  const state = encodeURIComponent(stateParts.join('|'));
+  const [kakaoAuthUrl, setKakaoAuthUrl] = useState('');
 
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code&state=${state}`;
+  useEffect(() => {
+    const state = inviteToken
+      ? `origin:${window.location.origin}|inviteToken:${inviteToken}`
+      : `origin:${window.location.origin}`;
+
+    setKakaoAuthUrl(
+      `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code&state=${encodeURIComponent(state)}`
+    );
+  }, [inviteToken]);
 
   return (
     <div className="my-4 block items-center">

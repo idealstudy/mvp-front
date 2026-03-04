@@ -8,14 +8,16 @@ import { fetchMemberRole } from '@/shared/lib/server';
 
 export default async function DashboardLayout({
   children,
+  searchParams,
 }: Readonly<{
   children: ReactNode;
+  searchParams?: Promise<{ token?: string }>;
 }>) {
   const session = await fetchMemberRole();
+  const { token } = (await searchParams) ?? {};
 
-  if (session.status === 'stale') redirect('/api/v1/auth/clear-session');
-  if (session.status === 'guest') redirect('/login');
-  if (session.role === 'ROLE_MEMBER') redirect('/select-role');
+  if (session.status === 'authenticated' && session.role === 'ROLE_MEMBER')
+    redirect(token ? `/select-role?token=${token}` : '/select-role');
 
   return (
     <SessionGuard>

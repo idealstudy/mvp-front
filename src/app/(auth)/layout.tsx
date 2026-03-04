@@ -10,8 +10,6 @@ export default async function AuthLayout({
 }>) {
   const session = await fetchMemberRole();
 
-  if (session.status === 'stale') redirect('/api/v1/auth/clear-session');
-
   if (session.status === 'authenticated') {
     if (session.role === 'ROLE_MEMBER') redirect('/select-role');
     else redirect('/dashboard');
