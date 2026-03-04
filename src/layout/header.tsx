@@ -82,7 +82,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="h-header-height fixed top-0 right-0 left-0 z-10 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
+    <header className="h-header-height fixed top-0 right-0 left-0 z-50 flex items-center border-b border-gray-200 bg-[#1A1A1A] px-8">
       <div className="mx-auto flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Link

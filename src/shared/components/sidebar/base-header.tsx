@@ -3,9 +3,9 @@
 import { ReactNode } from 'react';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
-import { useRole } from '@/shared/hooks';
+import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 
 type BaseHeaderProps = {
@@ -33,9 +33,10 @@ export const BaseHeader = ({
   imageWrapperClassName = 'bg-orange-scale-orange-1 relative h-[200px] w-full overflow-hidden rounded-[12px]',
   rightSlot,
 }: BaseHeaderProps) => {
-  const { role } = useRole();
   const router = useRouter();
   const teacherId = useMemberStore((s) => s.member?.id);
+  const pathname = usePathname();
+  const isPreviewPage = pathname.includes('study-room-preview');
 
   const onMoveToPreview = () => {
     router.push(`/study-room-preview/${studyRoomId}/${teacherId}`);
@@ -58,10 +59,12 @@ export const BaseHeader = ({
         )}
       </div>
       <div className={imageWrapperClassName}>
-        {role === 'ROLE_TEACHER' ? (
+        {!isPreviewPage ? (
           <button
             type="button"
-            className="border-gray-5 bg-gray-12/40 font-label-normal absolute top-2 left-[208px] z-10 flex h-8 w-20 cursor-pointer items-center justify-center gap-2 rounded-[8px] border pt-1 pr-2.5 pb-1 pl-1.5 text-white"
+            className={cn(
+              'border-gray-5 bg-gray-12/40 font-label-normal absolute top-2 right-2 z-10 flex h-8 w-20 cursor-pointer items-center justify-center gap-2 rounded-[8px] border pt-1 pr-2.5 pb-1 pl-1.5 text-white'
+            )}
             onClick={onMoveToPreview}
           >
             <Image
