@@ -7,7 +7,7 @@ const BasicInfoDtoSchema = z.object({
   name: z.string(),
   email: z.string(),
   isProfilePublic: z.boolean(),
-  simpleIntroduction: z.string(),
+  simpleIntroduction: z.string().nullable(),
 });
 
 /* ─────────────────────────────────────────────────────

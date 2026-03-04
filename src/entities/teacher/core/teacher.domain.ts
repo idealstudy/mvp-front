@@ -7,7 +7,7 @@ const BasicInfoDomainSchema = z.object({
   name: z.string(),
   email: z.string(),
   isProfilePublic: z.boolean(),
-  simpleIntroduction: z.string(),
+  simpleIntroduction: z.string().nullable(),
   role: z.literal('ROLE_TEACHER'),
   profilePublicKorean: z.enum(['공개', '비공개']),
 });

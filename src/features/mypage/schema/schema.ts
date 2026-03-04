@@ -7,12 +7,12 @@ export const BasicInfoFormSchema = z.object({
     .string()
     .trim()
     .max(300, '소개는 300자 이내로 작성해주세요.')
-    .optional(),
+    .nullish(),
   learningGoal: z
     .string()
     .trim()
     .max(300, '목표는 300자 이내로 작성해주세요.')
-    .optional(),
+    .nullish(),
 });
 
 export type BasicInfoForm = z.infer<typeof BasicInfoFormSchema>;
