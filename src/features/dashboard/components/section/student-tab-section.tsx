@@ -2,24 +2,24 @@
 
 import { useState } from 'react';
 
-import Link from 'next/link';
-
 import {
   useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
   useStudentDashboardStudyRoomListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
-import { PRIVATE } from '@/shared/constants';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
+import NoteSectionContent from '../section-content/note-section-content';
 import TabbedSection from './tabbed-section';
 
 // ─── 수업노트 탭 ───────────────────────────────────────────────────────────────
 
 const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
+  const [page, setPage] = useState(0);
+
   const { data } = useStudentDashboardNoteListQuery({
     studyRoomId,
-    page: 0,
+    page,
     size: 6,
     sortKey: 'LATEST_EDITED',
   });
@@ -34,27 +34,12 @@ const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
   }
 
   return (
-    <div className="tablet:grid flex w-full grid-cols-2 grid-rows-3 flex-col gap-3">
-      {notes.map((note) => (
-        <Link
-          key={note.id}
-          href={PRIVATE.NOTE.DETAIL(note.studyRoomId, note.id)}
-          className="bg-orange-1 border-orange-3 flex w-full flex-col gap-3 rounded-lg border px-7 py-7"
-        >
-          <div className="flex flex-col gap-1">
-            <span className="font-label-heading text-orange-7">
-              {note.studyRoomName}
-            </span>
-            <span className="font-body1-heading text-gray-12 line-clamp-2 leading-tight">
-              {note.title}
-            </span>
-          </div>
-          <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
-            {note.contentPreview}
-          </span>
-        </Link>
-      ))}
-    </div>
+    <NoteSectionContent
+      notes={notes}
+      page={page}
+      totalPages={data?.totalPages ?? 0}
+      onPageChange={setPage}
+    />
   );
 };
 

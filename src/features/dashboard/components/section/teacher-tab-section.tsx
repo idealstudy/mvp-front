@@ -2,27 +2,33 @@
 
 import { useState } from 'react';
 
-import Link from 'next/link';
-
 import {
   useTeacherDashboardHomeworkListQuery,
   useTeacherDashboardMemberListQuery,
   useTeacherDashboardNoteListQuery,
   useTeacherDashboardStudyRoomListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
-import { PRIVATE } from '@/shared/constants';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
+import NoteSectionContent from '../section-content/note-section-content';
 import StudentsSectionContent from '../section-content/student-section-content';
 import TabbedSection from './tabbed-section';
 
 // ─── 수업노트 탭 ───────────────────────────────────────────────────────────────
 
-const TeacherNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
+const TeacherNoteTabContent = ({
+  studyRoomId,
+  lastStudyRoomId,
+}: {
+  studyRoomId?: number;
+  lastStudyRoomId?: number;
+}) => {
+  const [page, setPage] = useState(0);
+
   const { data } = useTeacherDashboardNoteListQuery({
     studyRoomId,
-    page: 0,
-    size: 4,
+    page,
+    size: 5,
     sortKey: 'LATEST_EDITED',
   });
   const notes = data?.content ?? [];
@@ -38,25 +44,13 @@ const TeacherNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-3">
-      {notes.map((note) => (
-        <Link
-          key={note.id}
-          href={PRIVATE.NOTE.DETAIL(note.studyRoomId, note.id)}
-          className="bg-orange-1 border-orange-3 flex w-full flex-col gap-1 rounded-lg border px-7 py-7"
-        >
-          <span className="font-label-heading text-orange-7">
-            {note.studyRoomName}
-          </span>
-          <span className="font-body1-heading text-gray-12 line-clamp-2 leading-tight">
-            {note.title}
-          </span>
-          <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
-            {note.contentPreview}
-          </span>
-        </Link>
-      ))}
-    </div>
+    <NoteSectionContent
+      notes={notes}
+      page={page}
+      totalPages={data?.totalPages ?? 0}
+      onPageChange={setPage}
+      lastStudyRoomId={lastStudyRoomId}
+    />
   );
 };
 
@@ -124,6 +118,7 @@ const TeacherTabSection = ({ className }: { className?: string }) => {
     <TeacherNoteTabContent
       key="note"
       studyRoomId={selectedId ?? undefined}
+      lastStudyRoomId={selectedId ?? studyRooms[0]?.id}
     />,
     <TeacherMemberTabContent
       key="member"
