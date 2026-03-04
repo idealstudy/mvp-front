@@ -19,7 +19,7 @@ export default function SocialLoginButton() {
       : `origin:${window.location.origin}`;
 
     setKakaoAuthUrl(
-      `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code&state=${state}`
+      `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code&state=${encodeURIComponent(state)}`
     );
   }, [inviteToken]);
 
