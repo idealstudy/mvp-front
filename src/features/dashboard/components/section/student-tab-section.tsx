@@ -17,13 +17,26 @@ import TabbedSection from './tabbed-section';
 const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
   const [page, setPage] = useState(0);
 
-  const { data } = useStudentDashboardNoteListQuery({
+  const { data, isPending } = useStudentDashboardNoteListQuery({
     studyRoomId,
     page,
     size: 6,
     sortKey: 'LATEST_EDITED',
   });
   const notes = data?.content ?? [];
+
+  if (isPending) {
+    return (
+      <div className="tablet:grid tablet:grid-cols-2 tablet:grid-rows-3 flex w-full flex-col gap-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-3 h-[120px] w-full animate-pulse rounded-lg"
+          />
+        ))}
+      </div>
+    );
+  }
 
   if (notes.length === 0) {
     return (
@@ -52,12 +65,25 @@ const StudentHomeworkTabContent = ({
 }) => {
   const [page, setPage] = useState(1);
 
-  const { data } = useStudentDashboardHomeworkListQuery({
+  const { data, isPending } = useStudentDashboardHomeworkListQuery({
     studyRoomId,
     page: page - 1,
     size: 8,
     sortKey: 'DEADLINE_IMMINENT',
   });
+
+  if (isPending) {
+    return (
+      <div className="flex w-full flex-col gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-3 h-14 w-full animate-pulse rounded-xl"
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <HomeworkSectionContent

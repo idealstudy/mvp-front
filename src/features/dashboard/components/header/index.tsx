@@ -15,12 +15,16 @@ const DashboardHeader = () => {
   const member = useMemberStore((s) => s.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
 
-  const { data: teacherReport } = useTeacherDashboardReportQuery({
-    enabled: isTeacher,
-  });
-  const { data: studentReport } = useStudentDashboardReportQuery({
-    enabled: member?.role === 'ROLE_STUDENT',
-  });
+  const { data: teacherReport, isPending: teacherIsPending } =
+    useTeacherDashboardReportQuery({
+      enabled: isTeacher,
+    });
+  const { data: studentReport, isPending: studentIsPending } =
+    useStudentDashboardReportQuery({
+      enabled: member?.role === 'ROLE_STUDENT',
+    });
+
+  const isPending = isTeacher ? teacherIsPending : studentIsPending;
 
   const teacherStats = [
     {
@@ -94,6 +98,7 @@ const DashboardHeader = () => {
           <HeaderReport
             className="tablet:flex hidden"
             stats={stats}
+            isPending={isPending}
           />
         </div>
 
@@ -115,6 +120,7 @@ const DashboardHeader = () => {
       <HeaderReport
         className="tablet:hidden flex"
         stats={stats}
+        isPending={isPending}
       />
     </div>
   );

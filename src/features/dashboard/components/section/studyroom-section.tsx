@@ -21,17 +21,18 @@ const StudyroomSection = ({ className }: Props) => {
   const { member } = useAuth();
   const isTeacher = member?.role === 'ROLE_TEACHER';
 
-  const { data: studentStudyRooms = [] } =
+  const { data: studentStudyRooms = [], isPending: isStudentPending } =
     useStudentDashboardStudyRoomListQuery({
       enabled: member?.role === 'ROLE_STUDENT',
     });
 
-  const { data: teacherStudyRooms = [] } =
+  const { data: teacherStudyRooms = [], isPending: isTeacherPending } =
     useTeacherDashboardStudyRoomListQuery({
       enabled: isTeacher,
     });
 
   const rooms = isTeacher ? teacherStudyRooms : studentStudyRooms;
+  const isPending = isTeacher ? isTeacherPending : isStudentPending;
   const handleStudyRoomClick = useCallback(
     (studyRoomId: number) => {
       router.push(PRIVATE.ROOM.DETAIL(studyRoomId));
@@ -49,10 +50,17 @@ const StudyroomSection = ({ className }: Props) => {
       }
       className={className}
     >
-      <StudyroomSectionContent
-        studyRooms={rooms}
-        onStudyRoomClick={handleStudyRoomClick}
-      />
+      {isPending ? (
+        <div className="flex w-full flex-col items-center gap-8">
+          <div className="tablet:h-[300px] tablet:w-[300px] bg-gray-3 h-[200px] w-[200px] animate-pulse rounded-2xl" />
+          <div className="bg-gray-3 h-8 w-40 animate-pulse rounded-lg" />
+        </div>
+      ) : (
+        <StudyroomSectionContent
+          studyRooms={rooms}
+          onStudyRoomClick={handleStudyRoomClick}
+        />
+      )}
     </DashboardSection>
   );
 };

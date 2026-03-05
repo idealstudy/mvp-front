@@ -25,13 +25,26 @@ const TeacherNoteTabContent = ({
 }) => {
   const [page, setPage] = useState(0);
 
-  const { data } = useTeacherDashboardNoteListQuery({
+  const { data, isPending } = useTeacherDashboardNoteListQuery({
     studyRoomId,
     page,
     size: 5,
     sortKey: 'LATEST_EDITED',
   });
   const notes = data?.content ?? [];
+
+  if (isPending) {
+    return (
+      <div className="tablet:grid tablet:grid-cols-2 tablet:grid-rows-3 flex w-full flex-col gap-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-3 h-[120px] w-full animate-pulse rounded-lg"
+          />
+        ))}
+      </div>
+    );
+  }
 
   if (notes.length === 0) {
     return (
@@ -60,12 +73,31 @@ const TeacherNoteTabContent = ({
 const TeacherMemberTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
   const [page, setPage] = useState(0);
 
-  const { data } = useTeacherDashboardMemberListQuery({
+  const { data, isPending } = useTeacherDashboardMemberListQuery({
     studyRoomId,
     page,
     size: 10,
     sortKey: 'LATEST',
   });
+
+  if (isPending) {
+    return (
+      <div className="flex w-full flex-col">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 px-3 py-3"
+          >
+            <div className="bg-gray-3 h-9 w-9 shrink-0 animate-pulse rounded-full" />
+            <div className="flex flex-1 flex-col gap-1.5">
+              <div className="bg-gray-3 h-4 w-24 animate-pulse rounded" />
+              <div className="bg-gray-3 h-3 w-40 animate-pulse rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <StudentsSectionContent
@@ -84,12 +116,25 @@ const TeacherHomeworkTabContent = ({
 }: {
   studyRoomId?: number;
 }) => {
-  const { data } = useTeacherDashboardHomeworkListQuery({
+  const { data, isPending } = useTeacherDashboardHomeworkListQuery({
     studyRoomId,
     page: 0,
     size: 4,
     sortKey: 'DEADLINE_IMMINENT',
   });
+
+  if (isPending) {
+    return (
+      <div className="flex w-full flex-col gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-3 h-14 w-full animate-pulse rounded-xl"
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <HomeworkSectionContent

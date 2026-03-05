@@ -16,21 +16,24 @@ type Props = {
 const QnASection = ({ className }: Props) => {
   const { member } = useAuth();
   const isTeacher = member?.role === 'ROLE_TEACHER';
-  const { data: teacherQnaData } = useTeacherDashboardQnaListQuery({
-    page: 0,
-    size: 3,
-    sortKey: 'LATEST',
-    enabled: isTeacher,
-  });
-  const { data: studentQnaData } = useStudentDashboardQnaListQuery({
-    page: 0,
-    size: 3,
-    sortKey: 'LATEST',
-    enabled: !isTeacher,
-  });
+  const { data: teacherQnaData, isPending: isTeacherPending } =
+    useTeacherDashboardQnaListQuery({
+      page: 0,
+      size: 3,
+      sortKey: 'LATEST',
+      enabled: isTeacher,
+    });
+  const { data: studentQnaData, isPending: isStudentPending } =
+    useStudentDashboardQnaListQuery({
+      page: 0,
+      size: 3,
+      sortKey: 'LATEST',
+      enabled: !isTeacher,
+    });
 
   const questions =
     (isTeacher ? teacherQnaData : studentQnaData)?.content ?? [];
+  const isPending = isTeacher ? isTeacherPending : isStudentPending;
 
   return (
     <DashboardSection
@@ -42,7 +45,18 @@ const QnASection = ({ className }: Props) => {
       isMore={true}
       isMoreHref="/dashboard/qna"
     >
-      <QnASectionContent questions={questions} />
+      {isPending ? (
+        <div className="flex w-full flex-col gap-1">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-gray-3 h-12 w-full animate-pulse rounded-lg"
+            />
+          ))}
+        </div>
+      ) : (
+        <QnASectionContent questions={questions} />
+      )}
     </DashboardSection>
   );
 };
