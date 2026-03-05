@@ -15,6 +15,7 @@ export type DialogKind =
   | 'group-move'
   | 'delete'
   | 'onConfirm'
+  | 'cancel'
   | 'create'
   | 'invite'
   | 'select-representative';

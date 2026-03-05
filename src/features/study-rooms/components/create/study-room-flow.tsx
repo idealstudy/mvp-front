@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import {
   CreateStudyRoomSchema,
+  teacherStudyRoomQueryOptions,
   useCreateStudyRoom,
 } from '@/features/study-rooms';
 import type { StudyRoomFormValues } from '@/features/study-rooms';
@@ -29,9 +30,15 @@ import { Form } from '@/shared/components/ui/form';
 import { trackStudyroomCreateSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 
 export const ORDER = ['basic', 'profile'] as const;
 export type Step = (typeof ORDER)[number];
+type StudyRoomFlowProps = {
+  mode: 'create' | 'edit';
+  initialValues?: Partial<StudyRoomFormValues>;
+  studyRoomId?: number;
+};
 
 /**
  * - basic : 스터디룸의 메타데이터
@@ -48,7 +55,11 @@ export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
   ],
 };
 
-export default function CreateStudyRoomFlow() {
+export default function StudyRoomFlow({
+  mode,
+  initialValues,
+  studyRoomId,
+}: StudyRoomFlowProps) {
   const router = useRouter();
   const [state, dispatch] = React.useReducer(
     stepperReducer,
@@ -72,6 +83,7 @@ export default function CreateStudyRoomFlow() {
     defaultValues: {
       name: '',
       description: '',
+      characteristic: '',
       visibility: 'PUBLIC',
       modality: undefined,
       classForm: undefined,
@@ -80,8 +92,36 @@ export default function CreateStudyRoomFlow() {
         schoolLevel: undefined,
         grade: undefined as unknown as number,
       },
+      ...initialValues,
     },
   });
+
+  const { data } = useQuery({
+    ...teacherStudyRoomQueryOptions.teacherDetail(studyRoomId!),
+    enabled: mode === 'edit' && !!studyRoomId,
+  });
+
+  useEffect(() => {
+    if (mode !== 'edit' || !data) return;
+
+    methods.reset({
+      name: data.name ?? '',
+      description: data.description ?? '',
+      characteristic: data.characteristic ?? '',
+      visibility: data.visibility,
+      modality: data.modality === 'HYBRID' ? 'ONLINE' : data.modality,
+      classForm: data.classForm === 'GROUP' ? 'ONE_TO_MANY' : 'ONE_ON_ONE',
+      subjectType: data.subjectType as StudyRoomFormValues['subjectType'],
+      schoolInfo: {
+        schoolLevel: data.schoolInfo
+          .schoolLevel as StudyRoomFormValues['schoolInfo']['schoolLevel'],
+        grade: data.schoolInfo.grade,
+      },
+    });
+  }, [mode, data, methods]);
+
+  void mode;
+  void studyRoomId;
 
   const { isStepValid } = useStepValidate(methods, step);
   const { mutate, isPending } = useCreateStudyRoom();
@@ -128,6 +168,11 @@ export default function CreateStudyRoomFlow() {
     [isPending, methods, mutate, router, session, sendOnboarding]
   );
 
+  // TODO: 수정 버튼 연결
+  const onConfirmClick = () => {
+    alert('수정끝');
+  };
+
   return (
     <section className="flex flex-col">
       <div className="mx-auto w-fit">
@@ -137,9 +182,14 @@ export default function CreateStudyRoomFlow() {
           onMove={handleIndicatorMove}
         />
         <h2 className="mt-8 text-center text-4xl font-semibold">
-          스터디룸 만들기
+          스터디룸 기본 정보
         </h2>
       </div>
+      {mode === 'edit' && (
+        <p className="font-body1-heading text-orange-7 flex justify-end">
+          수정
+        </p>
+      )}
       <FormProvider {...methods}>
         <Form
           onSubmit={(e) => e.preventDefault()}
@@ -153,6 +203,7 @@ export default function CreateStudyRoomFlow() {
           )}
           {step === 'profile' && (
             <StepTwo
+              mode={mode}
               disabled={isPending}
               onRequestSubmit={() =>
                 dialogDispatch({
@@ -161,12 +212,27 @@ export default function CreateStudyRoomFlow() {
                   kind: 'onConfirm',
                 })
               }
+              onRequestEdit={() =>
+                dialogDispatch({
+                  type: 'OPEN',
+                  scope: 'studyroom',
+                  kind: 'onConfirm',
+                })
+              }
+              onCancel={() =>
+                dialogDispatch({
+                  type: 'OPEN',
+                  scope: 'studyroom',
+                  kind: 'cancel',
+                })
+              }
             />
           )}
         </Form>
       </FormProvider>
 
-      {dialog.status === 'open' &&
+      {mode === 'create' &&
+        dialog.status === 'open' &&
         dialog.scope === 'studyroom' &&
         dialog.kind === 'onConfirm' && (
           <ConfirmDialog
@@ -180,6 +246,38 @@ export default function CreateStudyRoomFlow() {
             pending={isPending}
             onConfirm={() => handleSubmitCondition('invite')}
             onCancel={() => handleSubmitCondition('dashboard')}
+          />
+        )}
+
+      {mode === 'edit' &&
+        dialog.status === 'open' &&
+        dialog.scope === 'studyroom' &&
+        dialog.kind === 'onConfirm' && (
+          <ConfirmDialog
+            open
+            dispatch={dialogDispatch}
+            variant="confirm-cancel"
+            title="수정하시겠습니까?"
+            description="수정이 완료되면 프리뷰 페이지로 돌아갑니다."
+            confirmText="확인"
+            cancelText="취소"
+            onConfirm={onConfirmClick}
+            pending={isPending}
+          />
+        )}
+      {mode === 'edit' &&
+        dialog.status === 'open' &&
+        dialog.scope === 'studyroom' &&
+        dialog.kind === 'cancel' && (
+          <ConfirmDialog
+            open
+            dispatch={dialogDispatch}
+            variant="confirm-cancel"
+            title="수정 내용을 취소할까요?"
+            description="취소하면 이전 페이지로 이동하며 변경사항은 저장되지 않습니다."
+            confirmText="나가기"
+            cancelText="계속 수정"
+            onConfirm={() => router.back()}
           />
         )}
     </section>

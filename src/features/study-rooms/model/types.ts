@@ -26,10 +26,12 @@ export type StudyRoom = {
   visibility: 'PUBLIC' | 'PRIVATE';
 };
 
+// TODO: 특징 변수 맞추기
 export type StudyRoomDetail = {
   id: number;
   name: string;
   description: string;
+  characteristic: string;
   teacherId: number;
   teacherName: string;
   visibility: 'PUBLIC' | 'PRIVATE';

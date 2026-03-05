@@ -3,7 +3,7 @@ import { UseFormReturn, useWatch } from 'react-hook-form';
 import {
   Step,
   fieldsPerStep,
-} from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
+} from '@/features/study-rooms/components/create/study-room-flow';
 import { StudyRoomFormValues } from '@/features/study-rooms/model';
 
 export const useStepValidate = (

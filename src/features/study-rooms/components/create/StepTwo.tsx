@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import step2 from '@/features/study-rooms/data/step2.json';
@@ -48,21 +48,38 @@ const { data } = step2 as FileSchema;
 export default function StepTwo({
   disabled,
   onRequestSubmit,
+  onRequestEdit,
+  onCancel,
+  mode,
 }: {
   disabled?: boolean;
   onRequestSubmit?: () => void;
+  onRequestEdit?: () => void;
+  onCancel?: () => void;
+  mode: 'edit' | 'create';
 }) {
   const {
     control,
     getValues,
     setValue,
-    formState: { isValid },
+
+    formState: { isValid, isDirty },
   } = useFormContext();
   const title = getValues('basic.title') ?? '';
   const school = useWatch({ control, name: 'schoolInfo.schoolLevel' });
+  const prevSchoolRef = useRef<string | undefined>(undefined);
 
-  React.useEffect(() => {
-    setValue('schoolInfo.grade', undefined, { shouldValidate: true });
+  useEffect(() => {
+    if (prevSchoolRef.current === undefined) {
+      prevSchoolRef.current = school;
+      return;
+    }
+
+    if (prevSchoolRef.current !== school) {
+      setValue('schoolInfo.grade', undefined, { shouldValidate: true });
+    }
+
+    prevSchoolRef.current = school;
   }, [school, setValue]);
 
   return (
@@ -149,9 +166,9 @@ export default function StepTwo({
                     rules={{ required: school !== 'OTHER' }}
                     render={({ field }) => (
                       <Select
-                        value={field.value ?? ''}
+                        value={field.value != null ? String(field.value) : ''}
                         name={field.name}
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => field.onChange(Number(value))}
                       >
                         <Select.Trigger
                           placeholder="학년을 선택하세요"
@@ -187,14 +204,34 @@ export default function StepTwo({
         <p className="text-muted-foreground bg-key-color-secondary text-text-sub2 rounded-md p-2 text-sm">
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
-        <Button
-          type="button"
-          className="max-desktop:w-full w-48 self-end"
-          disabled={disabled || !isValid}
-          onClick={onRequestSubmit}
-        >
-          {disabled ? '생성 중...' : '완료'}
-        </Button>
+        {mode === 'edit' ? (
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              className="max-desktop:w-full text-orange-7 border-orange-7 hover:bg-orange-7/10 w-48 self-end bg-white"
+              onClick={onCancel}
+            >
+              취소
+            </Button>
+            <Button
+              type="button"
+              className="max-desktop:w-full w-48 self-end"
+              disabled={disabled || !isValid || !isDirty}
+              onClick={onRequestEdit}
+            >
+              {disabled ? '수정 중...' : '수정하기'}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            className="max-desktop:w-full w-48 self-end"
+            disabled={disabled || !isValid}
+            onClick={onRequestSubmit}
+          >
+            {disabled ? '생성 중...' : '완료'}
+          </Button>
+        )}
       </div>
     </>
   );

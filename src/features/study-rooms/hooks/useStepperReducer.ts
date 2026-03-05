@@ -1,4 +1,4 @@
-import { Step } from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
+import { Step } from '@/features/study-rooms/components/create/study-room-flow';
 
 /**
  * order - 스텝 순서

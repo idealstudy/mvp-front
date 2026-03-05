@@ -34,7 +34,7 @@ export const deleteStudyNoteGroup = async ({
 };
 
 // 스터디룸 제목 변경
-export const updateStudyRoom = async ({
+export const updateStudyRoomTitle = async ({
   studyRoomId,
   others,
   name,
@@ -46,6 +46,18 @@ export const updateStudyRoom = async ({
   return await api.private.put(`/teacher/study-rooms/${studyRoomId}`, {
     ...others,
     name,
+  });
+};
+
+export const updateStudyRoom = async ({
+  studyRoomId,
+  others,
+}: {
+  studyRoomId: number;
+  others: StudyRoomDetail;
+}) => {
+  return await api.private.put(`/teacher/study-rooms/${studyRoomId}`, {
+    ...others,
   });
 };
 

@@ -6,13 +6,15 @@ import Image from 'next/image';
 
 import { CreateStepForm } from '@/features/study-rooms';
 import { TextEditor } from '@/shared/components/editor';
+import { RequiredMark } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Select } from '@/shared/components/ui/select';
 
 export default function StepOne({ onNext, disabled }: CreateStepForm) {
-  const { register, control } = useFormContext();
+  const { register, control, watch } = useFormContext();
+  const description = watch('description') ?? '';
 
   return (
     <>
@@ -27,8 +29,9 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
         src="/studyroom/study-room-hero.svg"
       />
       <Form.Item className="mt-8">
-        <Form.Label className="text-2xl font-semibold">
+        <Form.Label className="font-headline1-heading text-gray-11">
           스터디룸 이름을 지어주세요
+          <RequiredMark />
         </Form.Label>
         <Input
           className="border-line-line2"
@@ -36,26 +39,45 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
           required
         />
       </Form.Item>
+
       <Form.Item className="mt-8">
-        <Form.Label className="text-2xl font-semibold">
-          스터디룸 설명을 지어주세요
+        <Form.Label className="font-headline1-heading text-gray-11">
+          스터디룸을 간단하게 소개해주세요
+          <RequiredMark />
+        </Form.Label>
+        <textarea
+          placeholder="(예: 내신 성적 향상을 목표로 과목별 학습과 문제풀이를 함께 진행하는 고등학생 전용 스터디룸입니다. 체계적인 관리로 꾸준한 학습 습관을 만듭니다.)"
+          className="border-line-line2 placeholder:text-gray-scale-gray-50 focus-visible:border-line-line3 disabled:border-text-inactive disabled:bg-gray-scale-gray-1 disabled:text-text-inactive read-only:border-light-gray-30 read-only:gray-scale-gray-5 read-only:text-gray-scale-gray-50 h-[140px] w-full resize-none rounded-[4px] border px-[24px] py-[16px] align-top outline-none"
+          maxLength={200}
+          {...register('description')}
+          required
+        />
+        <p className="text-gray-scale-gray-60 mt-2 text-right text-sm">
+          {description.length}/200
+        </p>
+      </Form.Item>
+
+      <Form.Item className="mt-8">
+        <Form.Label className="font-headline1-heading text-gray-11">
+          스터디룸의 특징을 소개해주세요
         </Form.Label>
         <div className="w-full">
           <Controller
-            name="description"
+            name="characteristic"
             control={control}
+            defaultValue=""
             render={({ field }) => (
               <TextEditor
-                value={field.value}
+                value={field.value ?? ''}
                 onChange={field.onChange}
-                placeholder="수업 내용을 작성해보세요."
+                placeholder={`이미지나 링크를 활용해 학습 방식, 분위기, 성과를 함께 보여주면 더 효과적이에요!\n (예: 커리큘럼 이미지, 실제 후기, 성적 향상 사례 링크 등)`}
               />
             )}
           />
         </div>
       </Form.Item>
       <Form.Item className="mt-8">
-        <Form.Label className="text-2xl font-semibold">
+        <Form.Label className="font-headline1-heading text-gray-11">
           스터디룸의 공개 범위
         </Form.Label>
         <Controller

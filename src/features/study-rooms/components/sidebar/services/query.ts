@@ -12,6 +12,7 @@ import {
   deleteStudyRoom,
   updateStudyNoteGroup,
   updateStudyRoom,
+  updateStudyRoomTitle,
 } from './api';
 
 export const useCreateStudyNoteGroup = () => {
@@ -156,7 +157,8 @@ export const useDeleteStudyNoteGroup = () => {
   });
 };
 
-export const useUpdateStudyRoom = () => {
+// 스터디룸 제목 수정
+export const useUpdateStudyRoomTitle = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -164,7 +166,7 @@ export const useUpdateStudyRoom = () => {
       studyRoomId: number;
       name: string;
       others: StudyRoomDetail;
-    }) => updateStudyRoom(args),
+    }) => updateStudyRoomTitle(args),
 
     onMutate: async ({ studyRoomId, name }) => {
       // 이전 데이터 백업
@@ -176,6 +178,54 @@ export const useUpdateStudyRoom = () => {
       queryClient.setQueryData<StudyRoomDetail | undefined>(
         StudyRoomsQueryKey.detail(studyRoomId),
         (old) => (old ? { ...old, name } : undefined)
+      );
+
+      return { previous };
+    },
+
+    onError: (_, variables, context) => {
+      // 실패 시 롤백
+      queryClient.setQueryData(
+        StudyRoomsQueryKey.detail(variables.studyRoomId),
+        context?.previous
+      );
+    },
+
+    onSettled: (_, __, variables) => {
+      // 서버 데이터와 동기화
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.detail(variables.studyRoomId),
+      });
+
+      // 사이드바 갱신
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.teacherList,
+      });
+      queryClient.invalidateQueries({
+        queryKey: StudyRoomsQueryKey.studentList,
+      });
+    },
+  });
+};
+
+// 스터디룸 수정
+export const useUpdateStudyRoom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: { studyRoomId: number; others: StudyRoomDetail }) =>
+      updateStudyRoom(args),
+
+    onMutate: async ({ studyRoomId }) => {
+      // 이전 데이터 백업
+      const previous = queryClient.getQueryData(
+        StudyRoomsQueryKey.detail(studyRoomId)
+      );
+
+      // Optimistic Update: UI 즉시 반영
+      queryClient.setQueryData<StudyRoomDetail | undefined>(
+        StudyRoomsQueryKey.detail(studyRoomId),
+        (old) => (old ? { ...old } : undefined)
       );
 
       return { previous };

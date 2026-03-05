@@ -1,4 +1,4 @@
-import { ORDER } from '@/features/study-rooms/components/create/CreateStudyRoomFlow';
+import { ORDER } from '@/features/study-rooms/components/create/study-room-flow';
 
 export default function ProgressIndicator({
   current,

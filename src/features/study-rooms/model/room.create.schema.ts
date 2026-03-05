@@ -11,10 +11,15 @@ const toPlainText = (node: unknown): string => {
 
 export const CreateStudyRoomSchema = z.object({
   name: z.string().min(1, '스터디룸 이름을 입력해주세요.'),
-  description: z.preprocess((val) => {
-    if (typeof val === 'string') return val;
-    return toPlainText(val);
-  }, z.string().optional()),
+  description: z
+    .string()
+    .min(1, '스터디룸을 간단 소개를 입력해주세요.')
+    .max(200),
+  characteristic: z.preprocess((val) => {
+    const text = typeof val === 'string' ? val : toPlainText(val);
+    const trimmed = text.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }, z.string().max(200).optional()),
   visibility: z.enum(['PUBLIC', 'PRIVATE'], {
     required_error: '공개 범위를 선택해주세요.',
   }),

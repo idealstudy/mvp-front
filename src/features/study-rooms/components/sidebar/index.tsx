@@ -24,7 +24,7 @@ import { useRole } from '@/shared/hooks/use-role';
 
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
-import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
+import { useDeleteStudyRoom, useUpdateStudyRoomTitle } from './services/query';
 import { StudyIntro, StudyStats } from './status';
 
 export const StudyroomSidebar = ({
@@ -50,7 +50,7 @@ export const StudyroomSidebar = ({
     useState('수업노트 그룹이 삭제되었습니다.');
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
-  const { mutate: updateRoomName } = useUpdateStudyRoom();
+  const { mutate: updateRoomName } = useUpdateStudyRoomTitle();
 
   // 스터디룸 상세 정보 조회 (선생님)
   const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(

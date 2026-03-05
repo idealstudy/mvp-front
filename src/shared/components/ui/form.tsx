@@ -27,7 +27,7 @@ const FormLabel = ({
   return (
     <Label.Root
       htmlFor={id}
-      className={cn('mb-2 w-fit text-[20px] font-medium', className)}
+      className={cn('mb-2 w-fit', className)}
       {...props}
     >
       {children}
