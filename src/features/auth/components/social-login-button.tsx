@@ -15,11 +15,11 @@ export default function SocialLoginButton() {
 
   useEffect(() => {
     const state = inviteToken
-      ? `origin:${window.location.origin}|inviteToken:${inviteToken}`
-      : `origin:${window.location.origin}`;
+      ? `&state=${encodeURIComponent(`inviteToken:${inviteToken}`)}`
+      : '';
 
     setKakaoAuthUrl(
-      `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code&state=${encodeURIComponent(state)}`
+      `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code${state}`
     );
   }, [inviteToken]);
 
