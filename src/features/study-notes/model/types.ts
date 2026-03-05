@@ -77,6 +77,7 @@ export type ListArgs = {
   studyRoomId: number;
   pageable: StudyNoteGroupPageable;
   enabled?: boolean;
+  keyword?: string;
 };
 
 export type ByGroupArgs = {
@@ -84,4 +85,5 @@ export type ByGroupArgs = {
   teachingNoteGroupId: number;
   pageable: StudyNoteGroupPageable;
   enabled?: boolean;
+  keyword?: string;
 };

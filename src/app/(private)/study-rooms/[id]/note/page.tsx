@@ -62,12 +62,14 @@ export default function StudyNotePage() {
   const teacherListQuery = useGetTeacherNotesList({
     studyRoomId,
     pageable,
+    keyword: search,
     enabled: role === 'ROLE_TEACHER',
   });
 
   const studentListQuery = useGetStudentNotesList({
     studyRoomId,
     pageable,
+    keyword: search,
     enabled: role === 'ROLE_STUDENT',
   });
 
@@ -82,6 +84,7 @@ export default function StudyNotePage() {
     studyRoomId,
     teachingNoteGroupId,
     pageable,
+    keyword: search,
     enabled: isGroupSelected && role === 'ROLE_TEACHER',
   });
 
@@ -89,6 +92,7 @@ export default function StudyNotePage() {
     studyRoomId,
     teachingNoteGroupId,
     pageable,
+    keyword: search,
     enabled: isGroupSelected && role === 'ROLE_STUDENT',
   });
 

@@ -8,11 +8,13 @@ export type NotesListApi<TList> = {
   getNotes(args: {
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
+    keyword?: string;
   }): Promise<TList>;
   getNotesByGroup(args: {
     studyRoomId: number;
     teachingNoteGroupId: number;
     pageable: StudyNoteGroupPageable;
+    keyword?: string;
   }): Promise<TList>;
   getDetail(teachingNoteId: number): Promise<unknown>;
 };
@@ -28,16 +30,28 @@ export const createNotesListQueryOptions = <TList>(
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
     enabled?: boolean;
+    keyword?: string;
   }) => {
     const {
       studyRoomId,
       pageable: { page, size, sortKey },
       enabled = true,
+      keyword,
     } = args;
     return queryOptions({
-      queryKey: StudyNoteQueryKey.list(studyRoomId, page, size, sortKey),
+      queryKey: StudyNoteQueryKey.list(
+        studyRoomId,
+        page,
+        size,
+        sortKey,
+        keyword
+      ),
       queryFn: () =>
-        api.getNotes({ studyRoomId, pageable: { page, size, sortKey } }),
+        api.getNotes({
+          studyRoomId,
+          pageable: { page, size, sortKey },
+          keyword,
+        }),
       ...opt,
       enabled,
     });
@@ -47,11 +61,13 @@ export const createNotesListQueryOptions = <TList>(
     studyRoomId: number;
     teachingNoteGroupId: number;
     pageable: StudyNoteGroupPageable;
+    keyword?: string;
   }) => {
     const {
       studyRoomId,
       teachingNoteGroupId,
       pageable: { page, size, sortKey },
+      keyword,
     } = args;
     return queryOptions({
       queryKey: StudyNoteQueryKey.byGroupId(
@@ -59,13 +75,15 @@ export const createNotesListQueryOptions = <TList>(
         teachingNoteGroupId,
         page,
         size,
-        sortKey
+        sortKey,
+        keyword
       ),
       queryFn: () =>
         api.getNotesByGroup({
           studyRoomId,
           teachingNoteGroupId,
           pageable: { page, size, sortKey },
+          keyword,
         }),
       ...opt,
     });
