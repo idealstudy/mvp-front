@@ -4,10 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { TeacherDashboardMemberListItemDTO } from '@/entities/teacher';
-import { DropdownMenu, Pagination } from '@/shared/components/ui';
-import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { Pagination } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
-import { EllipsisVertical } from 'lucide-react';
 
 export interface StudentsSectionContentProps {
   students: TeacherDashboardMemberListItemDTO[];
@@ -138,7 +137,7 @@ const StudentsSectionContent = ({
               </div>
 
               {/* 더보기 */}
-              <DropdownMenu>
+              {/* <DropdownMenu>
                 <DropdownMenu.Trigger className="text-gray-5 hover:bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
                   <EllipsisVertical className="h-5 w-5" />
                 </DropdownMenu.Trigger>
@@ -149,7 +148,7 @@ const StudentsSectionContent = ({
                     </Link>
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
-              </DropdownMenu>
+              </DropdownMenu> */}
             </div>
           );
         })}
