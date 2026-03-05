@@ -44,6 +44,7 @@ const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
       {
         studyNoteId: Number(id),
         studyRoomId: data.studyRoomId,
+        groupId: data.groupId ?? null,
         // DeleteMutationVar 타입에 pageable이 필수라 전달하지만, 실제 캐시 무효화는 listPrefix(studyRoomId)로 처리되므로 값은 사용되지 않음
         pageable: { page: 0, size: 20, sortKey: 'LATEST_EDITED' },
       },

@@ -62,12 +62,14 @@ export const createNotesListQueryOptions = <TList>(
     teachingNoteGroupId: number;
     pageable: StudyNoteGroupPageable;
     keyword?: string;
+    enabled?: boolean;
   }) => {
     const {
       studyRoomId,
       teachingNoteGroupId,
       pageable: { page, size, sortKey },
       keyword,
+      enabled = true,
     } = args;
     return queryOptions({
       queryKey: StudyNoteQueryKey.byGroupId(
@@ -86,6 +88,7 @@ export const createNotesListQueryOptions = <TList>(
           keyword,
         }),
       ...opt,
+      enabled,
     });
   };
 

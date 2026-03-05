@@ -78,7 +78,7 @@ export default function StudyNotePage() {
   // TODO: 추후 엔티티분리
   // ------------------------------------------------------------------
   const isGroupSelected = selectedGroupId !== 'all';
-  const teachingNoteGroupId = Number(selectedGroupId);
+  const teachingNoteGroupId = isGroupSelected ? Number(selectedGroupId) : 0;
 
   const teacherByGroupQuery = useGetTeacherNotesByGroup({
     studyRoomId,

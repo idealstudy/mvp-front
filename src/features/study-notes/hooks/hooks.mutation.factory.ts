@@ -12,8 +12,7 @@ export const createTeacherStudyNoteMutations = () => {
       ...teacherMutationOptions.update(),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.all,
         });
       },
     });
@@ -27,8 +26,7 @@ export const createTeacherStudyNoteMutations = () => {
       ...teacherMutationOptions.moveToGroup(),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.all,
         });
       },
     });
@@ -42,8 +40,7 @@ export const createTeacherStudyNoteMutations = () => {
       ...teacherMutationOptions.removeFromGroup(),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [StudyNoteQueryKey.list],
-          exact: false,
+          queryKey: StudyNoteQueryKey.all,
         });
       },
     });
@@ -58,6 +55,14 @@ export const createTeacherStudyNoteMutations = () => {
         queryClient.invalidateQueries({
           queryKey: StudyNoteQueryKey.listPrefix(variables.studyRoomId),
         });
+        if (variables.groupId != null) {
+          queryClient.invalidateQueries({
+            queryKey: StudyNoteQueryKey.byGroupPrefix(
+              variables.studyRoomId,
+              variables.groupId
+            ),
+          });
+        }
         queryClient.invalidateQueries({
           queryKey: studyRoomsQueryKey.detail(variables.studyRoomId),
         });
