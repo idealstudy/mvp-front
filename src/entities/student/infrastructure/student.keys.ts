@@ -12,4 +12,5 @@ export const studentKeys = {
     homeworkList: (studyRoomId?: number) =>
       [...studentKeys.dashboard.all(), 'homeworkList', studyRoomId] as const,
   },
+  basicInfo: () => [...studentKeys.all, 'basicInfo'] as const,
 };

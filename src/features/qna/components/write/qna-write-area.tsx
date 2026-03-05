@@ -168,10 +168,7 @@ const WriteArea = ({ studyRoomId }: Props) => {
 
           {/* 수업노트 연결 1:1 */}
           <Form.Item error={!!errors.relatedTeachingNoteId}>
-            <Form.Label>
-              수업노트 연결
-              <RequiredMark />
-            </Form.Label>
+            <Form.Label>수업노트 연결</Form.Label>
 
             <Form.Control>
               <Controller

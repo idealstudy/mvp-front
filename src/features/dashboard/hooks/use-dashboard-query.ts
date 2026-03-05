@@ -1,11 +1,14 @@
-import { studentKeys, studentRepository } from '@/entities/student';
+import {
+  studentKeys,
+  repository as studentRepository,
+} from '@/entities/student';
 import {
   DashboardHomeworkSortKey,
   DashboardMemberSortKey,
   DashboardQnASortKey,
   DashboardTeachingNotesSortKey,
   teacherKeys,
-  teacherRepository,
+  repository as teacherRepository,
 } from '@/entities/teacher';
 import type { Dashboard } from '@/features/dashboard';
 import { options } from '@/features/dashboard/api';

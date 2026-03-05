@@ -14,7 +14,7 @@ interface StudyRoomCardProps {
 export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
   return (
     <Link
-      href={`/study-rooms/${studyRoom.id}`}
+      href={`/study-room-preview/${studyRoom.id}/${studyRoom.teacherId}`}
       className={cn(
         'border-gray-scale-gray-10 overflow-hidden rounded-2xl border-[1.5px] bg-white transition-all duration-300',
         'hover:scale-105 hover:shadow-xl'

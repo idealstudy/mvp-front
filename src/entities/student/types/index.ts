@@ -1,4 +1,5 @@
-import { dto } from '@/entities/student/infrastructure';
+import { domain } from '@/entities/student/core/student.domain';
+import { dto, payload } from '@/entities/student/infrastructure/student.dto';
 import { z } from 'zod';
 
 export type DashboardTeachingNotesSortKey =
@@ -37,3 +38,11 @@ export type StudentDashboardQnaListItemDTO =
   StudentDashboardQnaListDTO['content'][number];
 export type StudentDashboardHomeworkListItemDTO =
   StudentDashboardHomeworkListDTO['content'][number];
+
+export type StudentBasicInfoDTO = z.infer<typeof dto.basicInfo>;
+
+export type FrontendStudentBasicInfo = z.infer<typeof domain.basicInfo>;
+
+export type UpdateStudentBasicInfoPayload = z.infer<
+  typeof payload.updateBasicInfo
+>;

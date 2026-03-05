@@ -16,3 +16,8 @@ export type FrontendTeacherProfile = z.infer<typeof domain.teacher>;
 export type FrontendStudentProfile = z.infer<typeof domain.student>;
 export type FrontendParentProfile = z.infer<typeof domain.parent>;
 export type FrontendProfile = z.infer<typeof domain.schema>;
+
+export type ProfileWithMeta = FrontendProfile & {
+  id: string;
+  role: ProfileRole;
+};

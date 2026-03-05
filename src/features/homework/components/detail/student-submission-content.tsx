@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -7,6 +7,7 @@ import { DialogAction, DialogState } from '@/shared/components/dialog';
 import {
   TextEditor,
   TextViewer,
+  mergeResolvedContentWithMediaIds,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
@@ -27,6 +28,7 @@ import { HomeworkDialog } from '../dialog';
 type Props = {
   homeworkStudentId: number;
   content: string;
+  rawContent?: string;
   authorName: string;
   regDate: string;
   submitStatus?: HomeworkSubmitStatus;
@@ -42,6 +44,7 @@ export const StudentSubmissionContent = ({
   studyRoomId,
   homeworkId,
   content,
+  rawContent,
   authorName,
   regDate,
   submitStatus,
@@ -59,7 +62,24 @@ export const StudentSubmissionContent = ({
     setLocalContent(content);
   }, [content]);
 
-  const parsedContent = parseEditorContent(localContent);
+  const parsedDisplayContent = useMemo(
+    () => parseEditorContent(localContent),
+    [localContent]
+  );
+  const parsedRawContent = useMemo(
+    () => parseEditorContent(rawContent ?? localContent),
+    [rawContent, localContent]
+  );
+  const parsedEditorContent = useMemo(
+    () =>
+      rawContent
+        ? mergeResolvedContentWithMediaIds(
+            parsedRawContent,
+            parsedDisplayContent
+          )
+        : parsedDisplayContent,
+    [rawContent, parsedRawContent, parsedDisplayContent]
+  );
 
   const { isPending: isDeleting } = useRemoveStudentHomework();
   const { mutate: updateHomework, isPending: isUpdating } =
@@ -67,7 +87,7 @@ export const StudentSubmissionContent = ({
 
   const handleUpdate = () => {
     setIsEditing(true);
-    setEditContent(parsedContent);
+    setEditContent(parsedEditorContent);
   };
 
   const handleSave = () => {
@@ -181,7 +201,7 @@ export const StudentSubmissionContent = ({
         {isEditing ? (
           <div className="space-y-3">
             <TextEditor
-              value={editContent || parsedContent}
+              value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
               targetType="HOMEWORK"
@@ -205,7 +225,7 @@ export const StudentSubmissionContent = ({
         ) : (
           <>
             <div className="font-body2-normal">
-              <TextViewer value={parsedContent} />
+              <TextViewer value={parsedDisplayContent} />
             </div>
             <span className="font-caption-normal text-gray-scale-gray-60 self-end">
               {getRelativeTimeString(regDate) + ' 작성'}

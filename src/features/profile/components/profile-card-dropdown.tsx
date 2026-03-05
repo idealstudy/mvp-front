@@ -1,36 +1,16 @@
 'use client';
 
-import { Dispatch, SetStateAction, useReducer, useState } from 'react';
+import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { ProfileAccessProps } from '@/features/profile/types';
-import {
-  InputDialog,
-  dialogReducer,
-  initialDialogState,
-} from '@/shared/components/dialog';
+import { ProfileWithMeta } from '@/entities/profile';
 import { Button, Dialog, DropdownMenu } from '@/shared/components/ui';
 
-type Props = ProfileAccessProps & {
-  setIsEditMode: Dispatch<SetStateAction<boolean>>;
-};
-
-export function ProfileCardDropdown({
-  isOwner,
-  profile,
-  setIsEditMode,
-}: Props) {
+export function ProfileCardDropdown({ profile }: { profile: ProfileWithMeta }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [renameDialog, renameDispatch] = useReducer(
-    dialogReducer,
-    initialDialogState
-  );
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
-  // const handleRename = (name: string) => {
-  //   console.log(name);
-  // };
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const copyProfileLink = (userId: string) => {
     navigator.clipboard.writeText(
@@ -61,50 +41,8 @@ export function ProfileCardDropdown({
           >
             <p>공유하기</p>
           </DropdownMenu.Item>
-
-          {/* 배포 환경에서 숨김 처리 (false) */}
-          {false && isOwner && (
-            <>
-              <DropdownMenu.Item
-                onClick={() => setIsEditMode((state) => !state)}
-                className="justify-center"
-              >
-                수정하기
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                onClick={() => {
-                  renameDispatch({
-                    type: 'OPEN',
-                    scope: 'profile',
-                    kind: 'rename',
-                    payload: {
-                      initialTitle: profile.name,
-                    },
-                  });
-                }}
-                className="justify-center"
-              >
-                <p className="text-nowrap">이름 변경하기</p>
-              </DropdownMenu.Item>
-            </>
-          )}
         </DropdownMenu.Content>
       </DropdownMenu>
-
-      {/* 이름 변경하기 다이얼로그 */}
-      {renameDialog.status === 'open' && renameDialog.kind === 'rename' && (
-        <InputDialog
-          isOpen={true}
-          placeholder={profile.name || ''}
-          onOpenChange={() => renameDispatch({ type: 'CLOSE' })}
-          title="이름 변경하기"
-          onSubmit={
-            () => {}
-            // (name) => handleRename(name)
-          }
-          // disabled={isUpdating}
-        />
-      )}
 
       {/* 공유하기 다이얼로그 */}
       <Dialog

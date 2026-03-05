@@ -64,10 +64,10 @@ export const LinkPreviewNode = ({
         <button
           type="button"
           onClick={handleOpenLink}
-          className="flex w-full text-left"
+          className="flex w-full items-center text-left"
         >
           {image && !imageError && (
-            <div className="relative hidden h-24 w-36 shrink-0 overflow-hidden sm:block">
+            <div className="relative hidden h-32 w-32 shrink-0 overflow-hidden sm:block">
               <Image
                 src={image}
                 alt={title || '링크 미리보기'}
@@ -78,7 +78,7 @@ export const LinkPreviewNode = ({
               />
             </div>
           )}
-          <div className="flex min-w-0 flex-1 flex-col justify-center p-3">
+          <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
             {title && (
               <h4 className="line-clamp-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                 {title}

@@ -13,6 +13,7 @@ export type RoomModalityDTO = z.infer<typeof base.modality>;
 export type RoomClassFormDTO = z.infer<typeof base.classForm>;
 export type RoomSchoolLevelDTO = z.infer<typeof base.schoolInfo>;
 export type RoomSubjectDTO = z.infer<typeof base.subject>;
+export type InvitationInfoDTO = z.infer<typeof dto.invitationInfo>;
 
 /* ─────────────────────────────────────────────────────
  * DTO - 선생님 타입
@@ -22,11 +23,15 @@ export type TeacherRoomDetailDTO = z.infer<typeof dto.teacher.detail>;
 export type TeacherRoomCUReqDTO = z.infer<typeof dto.teacher.cuRequest>;
 export type TeacherRoomCUDResDTO = z.infer<typeof dto.teacher.cuResponse>;
 export type RoomMemberPageDTO = z.infer<typeof dto.teacher.memberPage>;
+export type InvitationTokenDTO = z.infer<typeof dto.teacher.inviteToken>;
 
 /* ─────────────────────────────────────────────────────
  * DTO - 학생 타입
  * ────────────────────────────────────────────────────*/
 export type StudentRoomListItemDTO = z.infer<typeof dto.student.listItem>;
+export type StudyRoomInviteRespondDTO = z.infer<
+  typeof dto.student.inviteRespond
+>;
 
 /* ─────────────────────────────────────────────────────
  * 도메인 타입 정의 (Domain Layer)

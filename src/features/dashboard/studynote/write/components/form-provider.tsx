@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import { mergeResolvedContentWithMediaIds } from '@/shared/components/editor';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { StudyNoteForm, studyNoteFormSchema } from '../schemas/note';
@@ -44,22 +45,25 @@ export const StudyNoteFormProvider = ({
   // 편집 모드일 때 기존 데이터로 폼 초기화
   useEffect(() => {
     if (isEditMode && noteDetail && !isLoading) {
-      const contentString =
-        noteDetail.resolvedContent?.content || noteDetail.content;
-      let content = {};
-      try {
-        content = JSON.parse(contentString);
-      } catch {
-        // 파싱 실패 시 기본값 사용
-        content = {
-          type: 'doc',
-          content: [
-            {
-              type: 'paragraph',
-            },
-          ],
-        };
-      }
+      const rawContentString = noteDetail.content;
+      const resolvedContentString = noteDetail.resolvedContent?.content;
+      const emptyDoc = { type: 'doc', content: [{ type: 'paragraph' }] };
+      const parseContent = (value: string) => {
+        try {
+          return JSON.parse(value);
+        } catch {
+          return emptyDoc;
+        }
+      };
+
+      const rawContent = parseContent(rawContentString);
+      const resolvedContent = parseContent(
+        resolvedContentString ?? rawContentString
+      );
+
+      const content = resolvedContentString
+        ? mergeResolvedContentWithMediaIds(rawContent, resolvedContent)
+        : rawContent;
 
       // visibility 변환: 'PUBLIC' | 'PRIVATE' -> 폼 스키마 타입
       const visibility =

@@ -16,3 +16,4 @@ export { Accordion } from './accordion';
 export { Dialog } from './dialog';
 export { RequiredMark } from './required-mark';
 export { ScrollToTopButton } from './scroll-to-top-button';
+export { Toggle } from './toggle';

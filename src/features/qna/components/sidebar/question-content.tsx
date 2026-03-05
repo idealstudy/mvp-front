@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useMemo, useReducer, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,8 @@ import {
 import {
   TextEditor,
   TextViewer,
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
@@ -33,6 +35,7 @@ import { QnADetailResponse } from '../../types';
 type Props = {
   id: number;
   content: string;
+  rawContent?: string;
   authorName: string;
   regDate: string;
   studyRoomId: number;
@@ -43,6 +46,7 @@ type Props = {
 const QuestionContent = ({
   id,
   content,
+  rawContent,
   authorName,
   regDate,
   studyRoomId,
@@ -74,43 +78,28 @@ const QuestionContent = ({
     setEditContent(null);
   };
 
-  // JSONContent 파싱
-  let parsedContent: JSONContent = {
-    type: 'doc',
-    content: [{ type: 'paragraph' }],
-  };
-  try {
-    const parsed = JSON.parse(content);
-    if (parsed && typeof parsed === 'object' && 'type' in parsed) {
-      parsedContent = parsed as JSONContent;
-    } else {
-      // JSON이지만 JSONContent 형식이 아니면 기본 구조로 변환
-      parsedContent = {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [{ type: 'text', text: String(content) }],
-          },
-        ],
-      };
-    }
-  } catch {
-    // JSON 파싱 실패 시 기본 구조로 변환
-    parsedContent = {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [{ type: 'text', text: content }],
-        },
-      ],
-    };
-  }
+  const parsedDisplayContent = useMemo(
+    () => parseEditorContent(content),
+    [content]
+  );
+  const parsedRawContent = useMemo(
+    () => parseEditorContent(rawContent ?? content),
+    [rawContent, content]
+  );
+  const parsedEditorContent = useMemo(
+    () =>
+      rawContent
+        ? mergeResolvedContentWithMediaIds(
+            parsedRawContent,
+            parsedDisplayContent
+          )
+        : parsedDisplayContent,
+    [rawContent, parsedRawContent, parsedDisplayContent]
+  );
 
   const handleEdit = () => {
     setIsEditing(true);
-    setEditContent(parsedContent);
+    setEditContent(parsedEditorContent);
     setIsOpen(false);
   };
 
@@ -288,7 +277,7 @@ const QuestionContent = ({
         {isEditing ? (
           <div className="space-y-3">
             <TextEditor
-              value={editContent || parsedContent}
+              value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
               targetType="QNA"
@@ -312,7 +301,7 @@ const QuestionContent = ({
         ) : (
           <>
             <div className="font-body2-normal">
-              <TextViewer value={parsedContent} />
+              <TextViewer value={parsedDisplayContent} />
             </div>
             <span className="font-caption-normal text-gray-scale-gray-60 self-end">
               {getRelativeTimeString(regDate) + ' 작성'}

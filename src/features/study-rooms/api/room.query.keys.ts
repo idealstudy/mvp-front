@@ -6,6 +6,12 @@ export const StudyRoomsQueryKey = {
   detail: (id: number) => ['studyRooms', 'detail', id] as const, // 상세지만 계층구조를 위해 studyRooms 으로 유지 (성진)
 };
 
+// 초대 토큰
+export const InvitationTokenQueryKey = {
+  detail: (studyRoomId: number) =>
+    ['studyRooms', 'invitationToken', studyRoomId] as const,
+};
+
 // 학생 초대
 export const InvitationQueryKey = {
   all: ['invitations'] as const,

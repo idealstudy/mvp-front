@@ -2,14 +2,8 @@ import {
   FrontendParentProfile,
   FrontendStudentProfile,
   FrontendTeacherProfile,
-  ProfileRole,
+  ProfileWithMeta,
 } from '@/entities/profile';
-
-type ProfileWithMeta = (
-  | FrontendTeacherProfile
-  | FrontendStudentProfile
-  | FrontendParentProfile
-) & { id: string; role: ProfileRole };
 
 export function isTeacherProfile(
   profile: ProfileWithMeta

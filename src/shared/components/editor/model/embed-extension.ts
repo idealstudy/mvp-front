@@ -74,6 +74,28 @@ export const parseEmbedUrl = (
   }
 };
 
+export const getEmbedTypeFromUrl = (embedUrl: string): EmbedType => {
+  const normalized = embedUrl.toLowerCase();
+
+  if (normalized.includes('youtube.com') || normalized.includes('youtu.be')) {
+    return 'youtube';
+  }
+
+  if (normalized.includes('vimeo.com')) {
+    return 'vimeo';
+  }
+
+  if (normalized.includes('twitter.com') || normalized.includes('x.com')) {
+    return 'twitter';
+  }
+
+  if (normalized.includes('instagram.com')) {
+    return 'instagram';
+  }
+
+  return 'generic';
+};
+
 export const Embed = Node.create<EmbedOptions>({
   name: 'embed',
 

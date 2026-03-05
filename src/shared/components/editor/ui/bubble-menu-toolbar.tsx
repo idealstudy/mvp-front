@@ -6,30 +6,28 @@ import { cn } from '@/shared/lib';
 import { Editor, useEditorState } from '@tiptap/react';
 import {
   Bold,
-  Check,
   Code,
   Highlighter,
   Italic,
   Link,
   Strikethrough,
   Underline,
-  X,
 } from 'lucide-react';
 
 type BubbleMenuToolbarProps = {
   editor: Editor;
   darkMode?: boolean;
+  onOpenLinkDialog?: () => void;
 };
 
 export const BubbleMenuToolbar = ({
   editor,
   darkMode = false,
+  onOpenLinkDialog,
 }: BubbleMenuToolbarProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkUrl, setLinkUrl] = useState('');
 
   const editorState = useEditorState({
     editor,
@@ -53,8 +51,6 @@ export const BubbleMenuToolbar = ({
       // 선택 영역이 없거나 코드블록 내부면 숨김
       if (empty || editor.isActive('codeBlock')) {
         setIsVisible(false);
-        setShowLinkInput(false);
-        setLinkUrl('');
         return;
       }
 
@@ -99,8 +95,6 @@ export const BubbleMenuToolbar = ({
       setTimeout(() => {
         if (!menuRef.current?.contains(document.activeElement)) {
           setIsVisible(false);
-          setShowLinkInput(false);
-          setLinkUrl('');
         }
       }, 200);
     };
@@ -116,23 +110,8 @@ export const BubbleMenuToolbar = ({
     };
   }, [editor]);
 
-  const handleLinkSubmit = useCallback(() => {
-    if (linkUrl) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange('link')
-        .setLink({ href: linkUrl })
-        .run();
-    }
-    setShowLinkInput(false);
-    setLinkUrl('');
-  }, [editor, linkUrl]);
-
   const handleRemoveLink = useCallback(() => {
     editor.chain().focus().unsetLink().run();
-    setShowLinkInput(false);
-    setLinkUrl('');
   }, [editor]);
 
   if (!isVisible) return null;
@@ -151,117 +130,70 @@ export const BubbleMenuToolbar = ({
       style={{ top: position.top, left: position.left }}
       onMouseDown={(e) => e.preventDefault()} // 클릭 시 에디터 blur 방지
     >
-      {showLinkInput ? (
-        <div className="flex items-center gap-1">
-          <input
-            type="url"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="URL 입력"
-            className={cn(
-              'w-40 rounded px-2 py-1 text-sm outline-none',
-              darkMode
-                ? 'bg-gray-scale-gray-90 text-gray-scale-white placeholder:text-gray-scale-gray-50'
-                : 'bg-background-gray text-text-main placeholder:text-text-sub'
-            )}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleLinkSubmit();
-              } else if (e.key === 'Escape') {
-                setShowLinkInput(false);
-                setLinkUrl('');
-              }
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            autoFocus
-          />
-          <BubbleButton
-            onClick={handleLinkSubmit}
-            darkMode={darkMode}
-            title="확인"
-          >
-            <Check size={14} />
-          </BubbleButton>
-          <BubbleButton
-            onClick={() => {
-              setShowLinkInput(false);
-              setLinkUrl('');
-            }}
-            darkMode={darkMode}
-            title="취소"
-          >
-            <X size={14} />
-          </BubbleButton>
-        </div>
-      ) : (
-        <>
-          <BubbleButton
-            active={editorState.isBold}
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            darkMode={darkMode}
-            title="굵게"
-          >
-            <Bold size={14} />
-          </BubbleButton>
-          <BubbleButton
-            active={editorState.isItalic}
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            darkMode={darkMode}
-            title="기울임"
-          >
-            <Italic size={14} />
-          </BubbleButton>
-          <BubbleButton
-            active={editorState.isUnderline}
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            darkMode={darkMode}
-            title="밑줄"
-          >
-            <Underline size={14} />
-          </BubbleButton>
-          <BubbleButton
-            active={editorState.isStrike}
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            darkMode={darkMode}
-            title="취소선"
-          >
-            <Strikethrough size={14} />
-          </BubbleButton>
-          <BubbleDivider darkMode={darkMode} />
-          <BubbleButton
-            active={editorState.isCode}
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            darkMode={darkMode}
-            title="인라인 코드"
-          >
-            <Code size={14} />
-          </BubbleButton>
-          <BubbleButton
-            active={editorState.isHighlight}
-            onClick={() => editor.chain().focus().toggleHighlight().run()}
-            darkMode={darkMode}
-            title="하이라이트"
-          >
-            <Highlighter size={14} />
-          </BubbleButton>
-          <BubbleDivider darkMode={darkMode} />
-          <BubbleButton
-            active={editorState.isLink}
-            onClick={() => {
-              if (editorState.isLink) {
-                handleRemoveLink();
-              } else {
-                setShowLinkInput(true);
-              }
-            }}
-            darkMode={darkMode}
-            title={editorState.isLink ? '링크 제거' : '링크 추가'}
-          >
-            <Link size={14} />
-          </BubbleButton>
-        </>
-      )}
+      <BubbleButton
+        active={editorState.isBold}
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        darkMode={darkMode}
+        title="굵게"
+      >
+        <Bold size={14} />
+      </BubbleButton>
+      <BubbleButton
+        active={editorState.isItalic}
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        darkMode={darkMode}
+        title="기울임"
+      >
+        <Italic size={14} />
+      </BubbleButton>
+      <BubbleButton
+        active={editorState.isUnderline}
+        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        darkMode={darkMode}
+        title="밑줄"
+      >
+        <Underline size={14} />
+      </BubbleButton>
+      <BubbleButton
+        active={editorState.isStrike}
+        onClick={() => editor.chain().focus().toggleStrike().run()}
+        darkMode={darkMode}
+        title="취소선"
+      >
+        <Strikethrough size={14} />
+      </BubbleButton>
+      <BubbleDivider darkMode={darkMode} />
+      <BubbleButton
+        active={editorState.isCode}
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        darkMode={darkMode}
+        title="인라인 코드"
+      >
+        <Code size={14} />
+      </BubbleButton>
+      <BubbleButton
+        active={editorState.isHighlight}
+        onClick={() => editor.chain().focus().toggleHighlight().run()}
+        darkMode={darkMode}
+        title="하이라이트"
+      >
+        <Highlighter size={14} />
+      </BubbleButton>
+      <BubbleDivider darkMode={darkMode} />
+      <BubbleButton
+        active={editorState.isLink}
+        onClick={() => {
+          if (editorState.isLink) {
+            handleRemoveLink();
+            return;
+          }
+          onOpenLinkDialog?.();
+        }}
+        darkMode={darkMode}
+        title={editorState.isLink ? '링크 제거' : '링크 추가'}
+      >
+        <Link size={14} />
+      </BubbleButton>
     </div>
   );
 };

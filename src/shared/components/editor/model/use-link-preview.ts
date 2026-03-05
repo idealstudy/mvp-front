@@ -1,27 +1,59 @@
+import { api } from '@/shared/api';
 import { useMutation } from '@tanstack/react-query';
 
-import { LinkPreviewData, UseLinkPreviewOptions } from '../types';
+import {
+  LinkEmbedResponse,
+  LinkPreviewData,
+  UseLinkPreviewOptions,
+} from '../types';
 
-// TODO: 실제 API 엔드포인트로 교체 필요
-// 서버에서 OG 태그를 파싱해서 반환해야 함 (CORS 문제로 클라이언트에서 직접 요청 불가)
-const fetchLinkPreview = async (url: string): Promise<LinkPreviewData> => {
-  // TODO: 실제 API 엔드포인트로 교체
-  const response = await fetch(
-    `/api/link-preview?url=${encodeURIComponent(url)}`
+type FetchLinkPreviewResult = {
+  available: boolean;
+  data?: LinkPreviewData;
+};
+
+/**
+ * 링크 임베드 미리보기 API 호출
+ * POST /common/link-embeds/preview
+ */
+const fetchLinkPreview = async (
+  url: string
+): Promise<FetchLinkPreviewResult> => {
+  const result = await api.private.post<LinkEmbedResponse>(
+    '/common/link-embeds/preview',
+    { url }
   );
 
-  if (!response.ok) {
-    throw new Error('링크 미리보기를 불러오는데 실패했습니다.');
+  // available이 false면 데이터 없이 반환
+  if (!result.data.available || !result.data.embed) {
+    return {
+      available: false,
+    };
   }
 
-  return response.json();
+  // available이 true면 embed 데이터를 LinkPreviewData 형식으로 변환
+  const { embed } = result.data;
+  return {
+    available: true,
+    data: {
+      url: embed.url,
+      title: embed.title,
+      description: embed.description,
+      image: embed.imageUrl,
+      siteName: embed.siteName,
+      embedType: embed.embedType,
+      embedUrl: embed.embedUrl,
+    },
+  };
 };
 
 export const useLinkPreview = (options?: UseLinkPreviewOptions) => {
   const mutation = useMutation({
     mutationFn: fetchLinkPreview,
-    onSuccess: (data) => {
-      options?.onSuccess?.(data);
+    onSuccess: (result) => {
+      if (result.available && result.data) {
+        options?.onSuccess?.(result.data);
+      }
     },
     onError: (error: Error) => {
       options?.onError?.(error);
@@ -33,7 +65,7 @@ export const useLinkPreview = (options?: UseLinkPreviewOptions) => {
     fetchPreviewAsync: mutation.mutateAsync,
     isLoading: mutation.isPending,
     error: mutation.error,
-    data: mutation.data,
+    result: mutation.data,
     reset: mutation.reset,
   };
 };

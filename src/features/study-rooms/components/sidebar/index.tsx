@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
+import { toast } from 'react-toastify';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { StudyroomGroups } from '@/features/study-rooms/components/sidebar/groups';
-import { InvitationDialog } from '@/features/study-rooms/components/student-invitation/InvitationDialog';
 import {
   useStudentStudyRoomDetailQuery,
   useTeacherStudyRoomDetailQuery,
@@ -20,10 +20,15 @@ import {
   initialDialogState,
 } from '@/shared/components/dialog/model/dialog-reducer';
 import { SidebarButton } from '@/shared/components/sidebar';
+import { Toggle } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks/use-role';
+import { Info, X } from 'lucide-react';
 
+import { useInvitationQuery } from '../../hooks/use-invitation-query';
+import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
 import { StudyRoomDetail } from '../../model';
 import { StudyroomSidebarHeader } from './header';
+import { InfoTooltipToast } from './info-tooltip';
 import { useDeleteStudyRoom, useUpdateStudyRoom } from './services/query';
 import { StudyIntro, StudyStats } from './status';
 
@@ -41,16 +46,21 @@ export const StudyroomSidebar = ({
   const router = useRouter();
 
   // 초대 다이얼로그 open 확인
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const isOpenInvite = searchParams.get('invite') === 'open';
+  // const pathname = usePathname();
+  // const searchParams = useSearchParams();
+  // const isOpenInvite = searchParams.get('invite') === 'open';
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
+  const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoom();
+  const { data: invitation, isLoading: isInvitationLoading } =
+    useInvitationQuery(studyRoomId, { enabled: role === 'ROLE_TEACHER' });
+  const { mutate: toggleInvitation, isPending: isInvitationPending } =
+    useToggleInvitation(studyRoomId);
 
   // 스터디룸 상세 정보 조회 (선생님)
   const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(
@@ -103,31 +113,41 @@ export const StudyroomSidebar = ({
     router.push('/dashboard');
   };
 
-  // 초대 다이얼로그 열기
-  const openInvitation = () => {
-    const params = new URLSearchParams(searchParams);
-    params.set('invite', 'open');
-    router.replace(`${pathname}?${params.toString()}`);
-  };
+  // 초대 링크 복사 후 Bottom Toast 표시, token 수정 필요
+  const handleCopyInviteLink = async () => {
+    if (invitation === undefined) return;
 
-  // 초대 다이얼로그 닫기
-  const closeInvitation = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete('invite');
-    router.replace(`${pathname}${params.size ? `?${params.toString()}` : ''}`);
+    const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=${invitation.token}`;
+    await navigator.clipboard.writeText(inviteLink);
+    toast(
+      ({ closeToast }) => (
+        <div className="bg-gray-11 tablet:w-max tablet:gap-2 tablet:px-6 tablet:py-4 flex w-82 items-center justify-between gap-1 rounded-lg px-3 py-3">
+          <p className="font-label-normal tablet:font-body1-normal flex-1 leading-relaxed text-white">
+            학생 초대 링크가 복사됐어요. 링크를 공유해보세요
+          </p>
+          <button
+            type="button"
+            onClick={closeToast}
+            className="shrink-0 text-white hover:opacity-80"
+            aria-label="닫기"
+          >
+            <X
+              className="tablet:size-6 h-4 w-4"
+              strokeWidth={2}
+            />
+          </button>
+        </div>
+      ),
+      {
+        containerId: 'bottom-center',
+        position: 'bottom-center',
+        autoClose: 10000,
+        closeButton: false,
+        hideProgressBar: true,
+        className: '!bg-transparent !shadow-none !p-0 !min-h-0',
+      }
+    );
   };
-
-  useEffect(() => {
-    if (isOpenInvite) {
-      dispatch({
-        type: 'OPEN',
-        kind: 'invite',
-        scope: 'studyroom',
-      });
-    } else {
-      dispatch({ type: 'CLOSE' });
-    }
-  }, [isOpenInvite]);
 
   if (!segment) return null;
   return (
@@ -170,18 +190,6 @@ export const StudyroomSidebar = ({
           />
         )}
 
-      {dialog.status === 'open' &&
-        dialog.kind === 'invite' &&
-        dialog.scope === 'studyroom' && (
-          <InvitationDialog
-            isOpen={true}
-            title="스터디룸에 학생 초대"
-            placeholder="초대할 학생을 검색 후 선택해 주세요."
-            studyRoomId={studyRoomId}
-            onOpenChange={closeInvitation}
-          />
-        )}
-
       <ColumnLayout.Left className="border-line-line1 flex h-fit flex-col gap-5 rounded-xl border bg-white px-8 py-8">
         <StudyroomSidebarHeader
           dispatch={dispatch}
@@ -197,11 +205,45 @@ export const StudyroomSidebar = ({
         <StudyIntro description={studyRoomDetail?.description} />
         {/* 학생 초대 버튼 - 선생님만 노출 */}
         {canManage && (
-          <SidebarButton
-            onClick={openInvitation}
-            btnName="학생 초대하기"
-            imgUrl="/studynotes/invite_student.svg"
-          />
+          <div className="flex flex-col gap-4">
+            <SidebarButton
+              onClick={handleCopyInviteLink}
+              btnName="학생 초대하기"
+              imgUrl="/studynotes/invite_student.svg"
+              disabled={!invitation?.enabled}
+            />
+            <div className="flex gap-2">
+              <Toggle
+                checked={invitation?.enabled}
+                onCheckedChange={toggleInvitation}
+                disabled={isInvitationLoading || isInvitationPending}
+              />
+              <div className="flex flex-1 flex-col gap-0.5">
+                <div className="text-gray-10 flex items-center gap-1">
+                  <p className="font-label-heading tablet:font-body2-heading">
+                    초대 링크 활성화
+                  </p>
+                  <div className="relative flex items-center justify-center">
+                    <button
+                      type="button"
+                      onMouseEnter={() => setIsInfoToastOpen(true)}
+                      aria-label="초대 링크 활성화 안내"
+                    >
+                      <Info className="h-4 w-4" />
+                    </button>
+                    <InfoTooltipToast
+                      toggleEnabled={invitation?.enabled ?? false}
+                      isOpen={isInfoToastOpen}
+                      onClose={() => setIsInfoToastOpen(false)}
+                    />
+                  </div>
+                </div>
+                <p className="text-gray-7 font-caption-normal tablet:font-label-normal">
+                  링크를 비활성화하면, 학생을 초대할 수 없어요.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (

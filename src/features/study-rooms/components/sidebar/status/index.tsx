@@ -9,19 +9,6 @@ export const StudyStats = ({
 }) => {
   return (
     <ul className="flex items-center justify-between px-3 py-4">
-      {/* TODO : 스터디룸 개수 api 연결펼요 */}
-      <li
-        key={'studyroom'}
-        className="flex flex-col items-center gap-1"
-      >
-        <p className="font-headline2-heading text-gray-12 text-center">
-          {numberOfTeachingNote != null ? `${numberOfTeachingNote}개` : '0개'}
-        </p>
-        <p className="text-gray-scale-gray-60 font-label-normal text-center">
-          스터디룸
-        </p>
-      </li>
-      <div className="bg-gray-3 w-px self-stretch" />
       <li
         key={'studyNote'}
         className="flex flex-col items-center gap-1"

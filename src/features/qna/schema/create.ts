@@ -29,17 +29,7 @@ export const QnaACreateFormSchema = z.object({
     .min(1, '질문 제목을 작성해 주세요!')
     .max(50, '질문 제목은 30자 이하로 입력해주세요.'),
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
-  relatedTeachingNoteId: z
-    .number()
-    .nullable()
-    .superRefine((v, ctx) => {
-      if (v === null) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: '연결할 수업노트를 선택해 주세요.',
-        });
-      }
-    }),
+  relatedTeachingNoteId: z.number().nullable(),
   visibility: z.enum(['STUDENT_AND_PARENT', 'STUDENT_ONLY'], {
     required_error: '공개 범위를 선택해주세요.',
   }),
