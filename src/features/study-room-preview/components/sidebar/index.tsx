@@ -32,6 +32,7 @@ export const StudyroomPreviewSidebar = ({
   const router = useRouter();
 
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
+  const [loading, setLoading] = useState(false);
   const member = useMemberStore((s) => s.member);
 
   const isMyStudyRoom =
@@ -42,7 +43,18 @@ export const StudyroomPreviewSidebar = ({
   };
 
   const moveToStudyRoom = () => {
+    if (loading) return;
+
+    setLoading(true);
     router.push(`/study-rooms/${studyRoomId}/note`);
+  };
+
+  const handleBtnClick = () => {
+    if (isMyStudyRoom) {
+      moveToStudyRoom();
+    } else {
+      onInquiryClick();
+    }
   };
 
   useEffect(() => {
@@ -100,8 +112,9 @@ export const StudyroomPreviewSidebar = ({
         numberOfQuestion={data.numberOfQuestions}
       />
       <SidebarButton
-        onClick={isMyStudyRoom ? moveToStudyRoom : onInquiryClick}
+        onClick={handleBtnClick}
         btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 문의하기`}
+        disabled={loading}
       />
       {data.otherStudyRooms.length ? (
         <TeacherOtherStudyrooms
