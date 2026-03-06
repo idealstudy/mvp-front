@@ -99,10 +99,16 @@ const TeacherMemberTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
     );
   }
 
+  // TODO: 서버 데이터 정제 후 제거
+  const students = (data?.content ?? []).filter(
+    (student, index, self) =>
+      self.findIndex((s) => s.id === student.id) === index
+  );
+
   return (
     <StudentsSectionContent
       studyRoomId={studyRoomId}
-      students={data?.content ?? []}
+      students={students}
       page={page}
       totalPages={data?.totalPages ?? 0}
       onPageChange={setPage}
