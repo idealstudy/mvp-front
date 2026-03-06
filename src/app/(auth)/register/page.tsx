@@ -1,5 +1,5 @@
-import PageViewTracker from '@/app/(private)/study-rooms/[id]/note/[noteId]/page-view-tracker';
 import { RegisterFunnel } from '@/features/auth/components/register-funnel';
+import { PageViewTracker } from '@/shared/components/gtm';
 
 export default function RegisterPage() {
   return (

@@ -1,5 +1,5 @@
-import PageViewTracker from '@/app/(private)/study-rooms/[id]/note/[noteId]/page-view-tracker';
 import LoginForm from '@/features/auth/components/login-form';
+import { PageViewTracker } from '@/shared/components/gtm';
 
 export default function LoginPage() {
   return (
