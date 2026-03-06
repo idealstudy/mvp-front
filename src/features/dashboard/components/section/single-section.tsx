@@ -27,7 +27,6 @@ const DashboardSection = ({
   return (
     <div
       className={cn('flex w-full flex-col gap-6', 'tablet:gap-8', className)}
-      aria-labelledby={`dashboard-section-${title}`}
     >
       <div className="flex justify-between">
         <div className="flex flex-col gap-1">
