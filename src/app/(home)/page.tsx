@@ -1,3 +1,4 @@
+import PageViewTracker from '@/app/(private)/study-rooms/[id]/note/[noteId]/page-view-tracker';
 import {
   Session1,
   Session2,
@@ -18,6 +19,7 @@ export default function HomePage() {
   return (
     <>
       <StructuredData />
+      <PageViewTracker pageName="home" />
 
       <main className="flex flex-col">
         <Session1 />

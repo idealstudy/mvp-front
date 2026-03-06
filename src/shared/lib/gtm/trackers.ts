@@ -521,8 +521,8 @@ export const trackStudynoteListSearchClick = (
 };
 
 // ==================== 홈 이벤트 ====================
-export const trackHomeDedu101Click = () => {
-  pushEvent(GA4_EVENTS.HOME_DEDU101_CLICK, withUserType({}));
+export const trackHomeDedu101Click = (source: 'hero' | 'floating_cta') => {
+  pushEvent(GA4_EVENTS.HOME_DEDU101_CLICK, withUserType({ source }));
 };
 
 export const trackHomeStartClick = () => {
