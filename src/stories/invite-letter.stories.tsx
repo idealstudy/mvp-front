@@ -73,7 +73,7 @@ export const ShortNames: Story = {
 
 export const Loading: Story = {
   args: {
-    data: null,
+    data: undefined,
     isLoading: true,
     token: 'sample-token',
     onOpenLoginModal: () => {},

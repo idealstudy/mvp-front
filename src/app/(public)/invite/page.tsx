@@ -8,9 +8,9 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { InviteExitModal } from '@/features/invite/components/invite-exit-modal';
 import { InviteLetter } from '@/features/invite/components/invite-letter';
 import { InviteLoginModal } from '@/features/invite/components/invite-login-modal';
-import { INVITE_ERROR_CODE } from '@/features/invite/constants';
 import { useInvitation } from '@/features/invite/hooks';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { isAxiosError } from 'axios';
 
 export default function InvitePage() {
   const router = useRouter();
@@ -38,8 +38,8 @@ export default function InvitePage() {
 
   useEffect(() => {
     if (!error) return;
-    const message = error.response?.data?.message ?? '';
-    if (message === INVITE_ERROR_CODE.INVITATION_EXPIRED) {
+    const code = isAxiosError(error) ? error.response?.data?.code : undefined;
+    if (code === 'INVITATION_EXPIRED') {
       router.push(PUBLIC.CORE.INVITE.ERROR('EXPIRED_LINK'));
     } else {
       router.push(PUBLIC.CORE.INVITE.ERROR('INVALID_LINK'));
