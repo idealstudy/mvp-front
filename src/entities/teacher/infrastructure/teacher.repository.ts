@@ -185,7 +185,9 @@ const getTeacherDashboardMemberList = async ({
   size: number;
   sortKey: DashboardMemberSortKey;
 }) => {
-  const params = { studyRoomId, page, size, sortKey };
+  const params = studyRoomId
+    ? { studyRoomId, page, size, sortKey }
+    : { page, size, sortKey };
   const response = await api.private.get(`/teacher/dashboard/members`, {
     params,
   });
