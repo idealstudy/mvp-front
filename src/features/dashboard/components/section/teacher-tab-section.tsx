@@ -101,6 +101,7 @@ const TeacherMemberTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
 
   return (
     <StudentsSectionContent
+      studyRoomId={studyRoomId}
       students={data?.content ?? []}
       page={page}
       totalPages={data?.totalPages ?? 0}

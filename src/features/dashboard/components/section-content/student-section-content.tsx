@@ -10,7 +10,7 @@ import { cn } from '@/shared/lib';
 
 export interface StudentsSectionContentProps {
   students: TeacherDashboardMemberListItemDTO[];
-  lastStudyroomId?: number;
+  studyRoomId?: number;
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -43,33 +43,25 @@ const getDaysSince = (dateStr: string): number => {
 
 const StudentsSectionContent = ({
   students,
-  lastStudyroomId,
+  studyRoomId,
   page,
   totalPages,
   onPageChange,
 }: StudentsSectionContentProps) => {
   if (students.length === 0) {
     return (
-      <div className="flex h-22 w-full flex-col items-center justify-center gap-3">
-        <p
-          className={cn(
-            'font-body2-normal text-orange-7',
-            (lastStudyroomId ?? 0) > 0 && 'text-gray-8'
-          )}
-        >
-          상단을 참고해 스터디룸을 생성하고 학생을 초대해주세요.
+      <div className="flex h-22 w-full flex-col justify-center gap-3">
+        <p className="font-body2-normal text-gray-8">
+          스터디룸의 초대 링크로 학생을 초대해주세요.
         </p>
-        <Link
-          href={PRIVATE.ROOM.DETAIL(lastStudyroomId ?? 0)}
-          className={cn(
-            'tablet:flex font-headline2-normal bg-gray-white border-gray-5 desktop:py-5 hidden w-full items-center justify-center rounded-[8px] border-1 py-4',
-            (lastStudyroomId ?? 0) > 0
-              ? 'text-gray-12'
-              : 'text-gray-5 pointer-events-none'
-          )}
-        >
-          학생 초대하러 가기
-        </Link>
+        {studyRoomId && (
+          <Link
+            href={PRIVATE.ROOM.DETAIL(studyRoomId!)}
+            className="font-body2-normal tablet:font-headline2-normal bg-gray-white border-gray-5 desktop:py-5 text-gray-12 hover:bg-gray-1 flex w-full items-center justify-center rounded-[8px] border-1 py-4"
+          >
+            학생 초대하러 가기
+          </Link>
+        )}
       </div>
     );
   }
