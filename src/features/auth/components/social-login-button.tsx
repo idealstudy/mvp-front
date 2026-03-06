@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 
 import { env, serverEnv } from '@/shared/constants/api';
+import { trackAuthKakaoLoginClick } from '@/shared/lib/gtm/trackers';
 
 export default function SocialLoginButton() {
   const searchParams = useSearchParams();
@@ -24,6 +25,7 @@ export default function SocialLoginButton() {
 
       <a
         href={kakaoAuthUrl}
+        onClick={trackAuthKakaoLoginClick}
         aria-label="카카오로 로그인"
         className="block h-14 rounded-xl bg-[#FEE500] bg-[url('/auth/kakao_login_large_narrow.png')] bg-contain bg-center bg-no-repeat"
       ></a>

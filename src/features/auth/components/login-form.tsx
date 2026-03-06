@@ -12,6 +12,10 @@ import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { PUBLIC } from '@/shared/constants';
 import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
+import {
+  trackAuthLoginClick,
+  trackAuthLoginFail,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 
@@ -39,8 +43,11 @@ export default function LoginForm() {
   const { login, isLoggingIn } = useAuth();
 
   const onSubmit = async (data: LoginFormValues) => {
+    trackAuthLoginClick();
+
     login(data, {
       onError: (error) => {
+        trackAuthLoginFail();
         let message = '로그인에 실패하였습니다. 잠시 후 다시 시도하주세요.';
 
         if (error instanceof AxiosError) {
