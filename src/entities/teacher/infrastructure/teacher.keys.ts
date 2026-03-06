@@ -16,7 +16,7 @@ export const teacherKeys = {
       [...teacherKeys.dashboard.all(), 'noteList', studyRoomId] as const,
     studyRoomList: () =>
       [...teacherKeys.dashboard.all(), 'studyRoomList'] as const,
-    QnaList: () => [...teacherKeys.dashboard.all(), 'QnaList'] as const,
+    qnaList: () => [...teacherKeys.dashboard.all(), 'qnaList'] as const,
     memberList: (studyRoomId?: number) =>
       [...teacherKeys.dashboard.all(), 'memberList', studyRoomId] as const,
     homeworkList: (studyRoomId?: number) =>

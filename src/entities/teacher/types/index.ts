@@ -38,7 +38,7 @@ export type TeacherDashboardNoteListDTO = z.infer<
 export type TeacherDashboardStudyRoomListDTO = z.infer<
   typeof dto.dashboard.studyRoomList
 >;
-export type TeacherDashboardQnaListDTO = z.infer<typeof dto.dashboard.QnaList>;
+export type TeacherDashboardQnaListDTO = z.infer<typeof dto.dashboard.qnaList>;
 export type TeacherDashboardMemberListDTO = z.infer<
   typeof dto.dashboard.memberList
 >;

@@ -78,7 +78,7 @@ const getStudentDashboardQnaList = async ({
   const response = await api.private.get(`/student/dashboard/qna`, {
     params,
   });
-  return unwrapEnvelope(response, dto.dashboard.QnaList);
+  return unwrapEnvelope(response, dto.dashboard.qnaList);
 };
 
 /* ─────────────────────────────────────────────────────

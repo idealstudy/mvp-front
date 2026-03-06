@@ -124,7 +124,7 @@ export const dto = {
     report: StudentDashboardReportDtoSchema,
     noteList: StudentDashboardNoteListDtoSchema,
     studyRoomList: StudentDashboardStudyRoomListDtoSchema,
-    QnaList: StudentDashboardQnaListDtoSchema,
+    qnaList: StudentDashboardQnaListDtoSchema,
     homeworkList: StudentDashboardHomeworkListDtoSchema,
   },
 };

@@ -41,7 +41,7 @@ const TeacherNoteListItemDomainSchema = z.object({
 const TeacherDashboardReportShape = dto.dashboard.report;
 const TeacherDashboardNoteListShape = dto.dashboard.noteList;
 const TeacherDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
-const TeacherDashboardQnaListShape = dto.dashboard.QnaList;
+const TeacherDashboardQnaListShape = dto.dashboard.qnaList;
 const TeacherDashboardMemberListShape = dto.dashboard.memberList;
 const TeacherDashboardHomeworkListShape = dto.dashboard.homeworkList;
 
@@ -134,7 +134,7 @@ export const domain = {
     report: TeacherDashboardReportShape,
     noteList: TeacherDashboardNoteListShape,
     studyRoomList: TeacherDashboardStudyRoomListShape,
-    QnaList: TeacherDashboardQnaListShape,
+    qnaList: TeacherDashboardQnaListShape,
     memberList: TeacherDashboardMemberListShape,
     homeworkList: TeacherDashboardHomeworkListShape,
   },

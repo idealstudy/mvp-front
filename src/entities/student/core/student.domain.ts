@@ -7,7 +7,7 @@ const StudentReportShape = dto.studentReport;
 const StudentDashboardReportShape = dto.dashboard.report;
 const StudentDashboardNoteListShape = dto.dashboard.noteList;
 const StudentDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
-const StudentDashboardQnaListShape = dto.dashboard.QnaList;
+const StudentDashboardQnaListShape = dto.dashboard.qnaList;
 const StudentDashboardHomeworkListShape = dto.dashboard.homeworkList;
 
 /* ─────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ export const domain = {
     report: StudentDashboardReportShape,
     noteList: StudentDashboardNoteListShape,
     studyRoomList: StudentDashboardStudyRoomListShape,
-    QnaList: StudentDashboardQnaListShape,
+    qnaList: StudentDashboardQnaListShape,
     homeworkList: StudentDashboardHomeworkListShape,
   },
 };

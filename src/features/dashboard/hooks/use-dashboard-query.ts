@@ -130,7 +130,7 @@ export const useTeacherDashboardQnaListQuery = ({
   enabled?: boolean;
 }) => {
   return useQuery({
-    queryKey: [...teacherKeys.dashboard.QnaList(), page, size, sortKey],
+    queryKey: [...teacherKeys.dashboard.qnaList(), page, size, sortKey],
     queryFn: () =>
       teacherRepository.dashboard.getQnaList({ page, size, sortKey }),
     ...settings,
@@ -250,7 +250,7 @@ export const useStudentDashboardQnaListQuery = ({
   enabled?: boolean;
 }) => {
   return useQuery({
-    queryKey: [...studentKeys.dashboard.QnaList(), page, size, sortKey],
+    queryKey: [...studentKeys.dashboard.qnaList(), page, size, sortKey],
     queryFn: () =>
       studentRepository.dashboard.getQnaList({ page, size, sortKey }),
     ...settings,

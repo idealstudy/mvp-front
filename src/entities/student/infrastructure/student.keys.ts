@@ -8,7 +8,7 @@ export const studentKeys = {
       [...studentKeys.dashboard.all(), 'noteList', studyRoomId] as const,
     studyRoomList: () =>
       [...studentKeys.dashboard.all(), 'studyRoomList'] as const,
-    QnaList: () => [...studentKeys.dashboard.all(), 'QnaList'] as const,
+    qnaList: () => [...studentKeys.dashboard.all(), 'qnaList'] as const,
     homeworkList: (studyRoomId?: number) =>
       [...studentKeys.dashboard.all(), 'homeworkList', studyRoomId] as const,
   },

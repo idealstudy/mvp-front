@@ -168,7 +168,7 @@ const getTeacherDashboardQnaList = async ({
   const response = await api.private.get(`/teacher/dashboard/qna`, {
     params,
   });
-  return unwrapEnvelope(response, dto.dashboard.QnaList);
+  return unwrapEnvelope(response, dto.dashboard.qnaList);
 };
 
 /* ─────────────────────────────────────────────────────
