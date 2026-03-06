@@ -47,12 +47,15 @@ export const trackAuthSignupClick = () => {
   pushEvent(GA4_EVENTS.AUTH_SIGNUP_CLICK, withUserType({}));
 };
 
-export const trackAuthSignupSuccess = (role?: Role | null) => {
-  pushEvent(GA4_EVENTS.AUTH_SIGNUP_SUCCESS, withUserType({}, role));
+export const trackAuthSignupSuccess = (
+  role?: Role | null,
+  method: 'email' | 'kakao' = 'email'
+) => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_SUCCESS, withUserType({ method }, role));
 };
 
-export const trackAuthSignupFail = () => {
-  pushEvent(GA4_EVENTS.AUTH_SIGNUP_FAIL, withUserType({}));
+export const trackAuthSignupFail = (method: 'email' | 'kakao' = 'email') => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_FAIL, withUserType({ method }));
 };
 
 export const trackAuthSignupStepEnter = (

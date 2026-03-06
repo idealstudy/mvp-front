@@ -92,7 +92,7 @@ export const RegisterFormContextProvider = ({
       {
         onSuccess: () => {
           // 회원가입 성공 이벤트
-          trackAuthSignupSuccess(data.role ?? null);
+          trackAuthSignupSuccess(data.role ?? null, 'email');
           if (inviteToken) {
             if (data.role === 'ROLE_STUDENT') {
               acceptInvitation(inviteToken);
@@ -104,7 +104,7 @@ export const RegisterFormContextProvider = ({
           }
         },
         onError: () => {
-          trackAuthSignupFail();
+          trackAuthSignupFail('email');
           alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       }
