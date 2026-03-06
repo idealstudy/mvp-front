@@ -5,3 +5,11 @@ export const extractErrorMessage = (payload: unknown): string | undefined => {
 
   return undefined;
 };
+
+export const extractErrorCode = (payload: unknown): string | undefined => {
+  if (payload && typeof payload === 'object' && 'code' in payload) {
+    return (payload as { code: string }).code;
+  }
+
+  return undefined;
+};

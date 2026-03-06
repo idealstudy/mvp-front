@@ -5,4 +5,4 @@ export {
   applySetCookies,
 } from './utils.cookies';
 
-export { extractErrorMessage } from './utils.message';
+export { extractErrorMessage, extractErrorCode } from './utils.message';
