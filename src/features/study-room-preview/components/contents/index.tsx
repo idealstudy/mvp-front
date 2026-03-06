@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+
+// import { useRouter } from 'next/navigation';
 
 import { MiniSpinner } from '@/shared/components/loading';
 import { cn, getRelativeTimeString } from '@/shared/lib';
@@ -25,7 +26,7 @@ export const StudyroomPreviewContents = ({
   studyRoomId,
   teacherId,
 }: StudyroomPreviewContentsProps) => {
-  const router = useRouter();
+  // const router = useRouter();
   const { data, isPending, isError } = usePreviewMainInfo(studyRoomId);
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
@@ -35,9 +36,9 @@ export const StudyroomPreviewContents = ({
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
-  const moveToStudyRoomEditPage = () => {
-    router.push(`/study-rooms/${studyRoomId}/edit`);
-  };
+  // const moveToStudyRoomEditPage = () => {
+  //   router.push(`/study-rooms/${studyRoomId}/edit`);
+  // };
 
   useEffect(() => {
     if (!isPending) {
@@ -97,7 +98,7 @@ export const StudyroomPreviewContents = ({
               'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
               'hover:border-orange-7 hover:text-orange-7 transition'
             )}
-            onClick={moveToStudyRoomEditPage}
+            onClick={() => alert('준비중인 서비스 입니다.')}
             onMouseEnter={() => setIsEditButtonHovered(true)}
             onMouseLeave={() => setIsEditButtonHovered(false)}
           >
@@ -147,7 +148,7 @@ export const StudyroomPreviewContents = ({
                 'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
                 'hover:bg-orange-7/10 transition'
               )}
-              onClick={moveToStudyRoomEditPage}
+              onClick={() => alert('준비중인 서비스 입니다.')}
             >
               작성하러 가기
             </button>
