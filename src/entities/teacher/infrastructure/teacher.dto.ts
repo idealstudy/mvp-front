@@ -188,10 +188,6 @@ const TeacherDashboardHomeworkListDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 선생님 기본 정보 DTO
-
-
-/* ─────────────────────────────────────────────────────
  * 선생님 후기 전체 목록 조회 응답 DTO
  * ────────────────────────────────────────────────────*/
 const TeacherReviewListItemDtoSchema = z.object({
