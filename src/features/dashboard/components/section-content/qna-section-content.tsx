@@ -42,6 +42,7 @@ const QnASectionContent = ({
             <QnASectionListItem
               key={question.id}
               question={question}
+              isTeacher
             />
           ))}
         </div>

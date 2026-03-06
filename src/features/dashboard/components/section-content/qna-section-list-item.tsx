@@ -2,7 +2,6 @@ import Link from 'next/link';
 
 import { StudentDashboardQnaListItemDTO } from '@/entities/student';
 import { TeacherDashboardQnaListItemDTO } from '@/entities/teacher';
-import { useAuth } from '@/features/auth/hooks/use-auth';
 import { PRIVATE } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { trackDashboardQnaClick } from '@/shared/lib/gtm/trackers';
@@ -10,13 +9,13 @@ import { Check } from 'lucide-react';
 
 interface QnASectionListItemProps {
   question: TeacherDashboardQnaListItemDTO | StudentDashboardQnaListItemDTO;
+  isTeacher: boolean;
 }
 
-export const QnASectionListItem = ({ question }: QnASectionListItemProps) => {
-  const { member } = useAuth();
-
-  const isTeacher = member?.role === 'ROLE_TEACHER';
-
+export const QnASectionListItem = ({
+  question,
+  isTeacher,
+}: QnASectionListItemProps) => {
   return (
     <Link
       key={question.id}
@@ -25,7 +24,11 @@ export const QnASectionListItem = ({ question }: QnASectionListItemProps) => {
         'bg-gray-white hover:bg-gray-1 flex w-full flex-col gap-2 rounded-lg p-3'
       )}
       onClick={() =>
-        trackDashboardQnaClick(question.studyRoomId, question.id, member?.role)
+        trackDashboardQnaClick(
+          question.studyRoomId,
+          question.id,
+          isTeacher ? 'ROLE_TEACHER' : 'ROLE_STUDENT'
+        )
       }
     >
       {/* 스터디룸 이름 : 수정 필요 */}
