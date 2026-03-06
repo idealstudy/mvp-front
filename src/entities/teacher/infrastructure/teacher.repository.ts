@@ -8,6 +8,7 @@ import {
   TeacherBasicInfoDTO,
   TeacherCareerListDTO,
   UpdateTeacherBasicInfoPayload,
+  UpdateTeacherDescriptionPayload,
   UpdateTeacherTeachingNoteRepresentativePayload,
 } from '@/entities/teacher/types';
 import { api } from '@/shared/api';
@@ -56,6 +57,24 @@ const updateBasicInfo = async (
 ): Promise<void> => {
   const validated = payload.basicInfo.parse(basicInfo);
   await api.private.patch('/teacher/me/basic-info', validated);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 선생님 특징 조회
+ * ────────────────────────────────────────────────────*/
+const getTeacherDescription = async () => {
+  const response = await api.private.get(`/teacher/me/description`);
+  return unwrapEnvelope(response, dto.teacherDescription);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Update] 선생님 특징 변경
+ * ────────────────────────────────────────────────────*/
+const updateDescription = async (
+  description: UpdateTeacherDescriptionPayload
+): Promise<void> => {
+  const validated = payload.description.parse(description);
+  await api.private.patch('/teacher/me/description', validated);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -177,6 +196,7 @@ export const repository = {
     getBasicInfo,
     updateBasicInfo,
   },
+  description: { getTeacherDescription, updateDescription },
   teachingNote: {
     getTeacherNoteList,
     getTeacherRepresentativeNoteList,

@@ -3,6 +3,7 @@ import { NoteListQuery, ReviewListQuery } from '@/entities/teacher/types';
 export const teacherKeys = {
   all: ['teacher'] as const,
   report: () => [...teacherKeys.all, 'report'] as const,
+  description: () => [...teacherKeys.all, 'description'] as const,
   noteListAll: () => [...teacherKeys.all, 'noteList'] as const,
   noteList: (params: NoteListQuery) =>
     [...teacherKeys.all, 'noteList', params] as const,

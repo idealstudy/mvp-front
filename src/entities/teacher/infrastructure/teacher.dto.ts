@@ -11,6 +11,17 @@ const BasicInfoDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 특징 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherDescriptionDtoSchema = z.object({
+  description: z.string().nullable(),
+  resolvedDescription: z.object({
+    content: z.string().nullable(),
+    expiresAt: z.string().nullable(),
+  }),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 통계 조회 DTO
  * ──────────────────────────────────────────────────── */
 const TeacherReportDtoSchema = z.object({
@@ -125,6 +136,15 @@ const BasicInfoPayloadSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 특징 Payload
+ * UPDATE
+ * ────────────────────────────────────────────────────*/
+const DescriptionPayloadSchema = z.object({
+  description: z.string(),
+  mediaIds: z.string().array(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 대표 수업노트 Payload
  * UPDATE
  * ────────────────────────────────────────────────────*/
@@ -169,6 +189,7 @@ const TeacherNoteListSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const dto = {
   basicInfo: BasicInfoDtoSchema,
+  teacherDescription: TeacherDescriptionDtoSchema,
   teacherReport: TeacherReportDtoSchema,
   teacherNoteList: TeacherNoteListDtoSchema,
   teacherRepresentativeNoteList: TeacherRepresentativeNoteListDtoSchema,
@@ -179,6 +200,7 @@ export const dto = {
 
 export const payload = {
   basicInfo: BasicInfoPayloadSchema,
+  description: DescriptionPayloadSchema,
   teachingNoteRepresentative: TeachingNoteRepresentativePayloadSchema,
   career: CareerPayloadSchema,
 };

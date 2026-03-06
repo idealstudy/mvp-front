@@ -10,6 +10,7 @@ import { z } from 'zod';
  * DTO
  * ────────────────────────────────────────────────────*/
 export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
+export type TeacherdescriptionDTO = z.infer<typeof dto.teacherDescription>;
 export type TeacherReportDTO = z.infer<typeof dto.teacherReport>;
 export type TeacherNoteListDTO = z.infer<typeof dto.teacherNoteList>;
 export type TeacherRepresentativeNoteListDTO = z.infer<
@@ -23,6 +24,9 @@ export type TeacherCareerListDTO = z.infer<typeof dto.teacherCareerList>;
  * Domain
  * ────────────────────────────────────────────────────*/
 export type FrontendTeacherBasicInfo = z.infer<typeof domain.basicInfo>;
+export type FrontendTeacherDescription = z.infer<
+  typeof domain.teacherDescription
+>;
 export type FrontendTeacherReport = z.infer<typeof domain.teacherReport>;
 export type FrontendTeacherNoteListItem = z.infer<
   typeof domain.teacherNoteListItem
@@ -54,6 +58,9 @@ export type FrontendTeacherCareerList = z.infer<
  * Payload
  * ────────────────────────────────────────────────────*/
 export type UpdateTeacherBasicInfoPayload = z.infer<typeof payload.basicInfo>;
+export type UpdateTeacherDescriptionPayload = z.infer<
+  typeof payload.description
+>;
 export type UpdateTeacherTeachingNoteRepresentativePayload = z.infer<
   typeof payload.teachingNoteRepresentative
 >;

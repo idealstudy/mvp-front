@@ -1,8 +1,10 @@
 'use client';
 
 import AddCareerDialog from '@/features/mypage/components/add-career-dialog';
+import EditHighlightDialog from '@/features/mypage/components/edit-description-dialog';
 import SelectTeachingnotesDialog from '@/features/mypage/components/select-teachingnotes-dialog';
 import { useTeacherCareers } from '@/features/mypage/hooks/teacher/use-careers';
+import { useTeacherDescription } from '@/features/mypage/hooks/teacher/use-description';
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import { useTeacherReviews } from '@/features/mypage/hooks/teacher/use-reviews';
 import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
@@ -10,6 +12,7 @@ import { useTeacherRepresentativeTeachingNotes } from '@/features/mypage/hooks/t
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
+import CharacteristicsSection from '@/features/profile/components/teacher/description-section';
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
@@ -22,6 +25,15 @@ export default function TeacherSections() {
     isError: isReportError,
     refetch: refetchReport,
   } = useTeacherReport();
+
+  // 특징
+  const {
+    data: description,
+    isLoading: isDescriptionLoading,
+    isFetching: isDescriptionFetching,
+    isError: isDescriptionError,
+    refetch: refetchDescription,
+  } = useTeacherDescription();
 
   // 스터디룸
   const {
@@ -62,6 +74,23 @@ export default function TeacherSections() {
 
   return (
     <>
+      <SectionContainer
+        title="선생님 특징"
+        isOwner
+        action={<EditHighlightDialog description={description} />}
+        isLoading={isDescriptionLoading || isDescriptionFetching}
+        isError={isDescriptionError}
+        onRetry={refetchDescription}
+      >
+        {description?.description ? (
+          <CharacteristicsSection description={description} />
+        ) : (
+          <p className="text-text-sub2 my-4 text-center">
+            등록된 선생님 특징이 없습니다.
+          </p>
+        )}
+      </SectionContainer>
+
       <SectionContainer
         title="활동 요약"
         isLoading={isReportLoading}
