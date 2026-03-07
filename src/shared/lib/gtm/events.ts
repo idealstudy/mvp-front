@@ -189,6 +189,13 @@ export const GA4_EVENTS = {
   DASHBOARD_STUDYROOM_CREATE_CLICK: 'dashboard_studyroom_create_click',
   DASHBOARD_MAIN_BANNER_CLICK: 'dashboard_main_banner_click',
   DASHBOARD_STUDYNOTE_CLICK: 'dashboard_studynote_click',
+  DASHBOARD_TAB_CLICK: 'dashboard_tab_click',
+  DASHBOARD_STUDYROOM_FILTER: 'dashboard_studyroom_filter',
+  DASHBOARD_STUDYROOM_CLICK: 'dashboard_studyroom_click',
+  DASHBOARD_NOTE_CLICK: 'dashboard_note_click',
+  DASHBOARD_HOMEWORK_CLICK: 'dashboard_homework_click',
+  DASHBOARD_QNA_CLICK: 'dashboard_qna_click',
+  DASHBOARD_QNA_MORE_CLICK: 'dashboard_qna_more_click',
 
   // Page View
   DASHBOARD_PAGE_VIEW: 'dashboard_page_view',
@@ -273,6 +280,56 @@ export const GA4_EVENTS = {
   HOME_DEDU101_CLICK: 'home_dedu101_click',
   HOME_START_CLICK: 'home_start_click',
 } as const;
+
+/**
+ * 대시보드 탭 타입
+ */
+export type DashboardTab = 'studynote' | 'member' | 'homework';
+
+/**
+ * 대시보드 탭 클릭 이벤트 파라미터
+ */
+export interface DashboardTabClickParams extends CommonEventParams {
+  tab: DashboardTab;
+}
+
+/**
+ * 대시보드 스터디룸 필터 선택 이벤트 파라미터
+ */
+export interface DashboardStudyroomFilterParams extends CommonEventParams {
+  room_id: number | null;
+}
+
+/**
+ * 대시보드 스터디룸 클릭 이벤트 파라미터
+ */
+export interface DashboardStudyroomClickParams extends CommonEventParams {
+  room_id: number;
+}
+
+/**
+ * 대시보드 수업노트 클릭 이벤트 파라미터
+ */
+export interface DashboardNoteClickParams extends CommonEventParams {
+  room_id: number;
+  note_id: number;
+}
+
+/**
+ * 대시보드 과제 클릭 이벤트 파라미터
+ */
+export interface DashboardHomeworkClickParams extends CommonEventParams {
+  room_id: number;
+  homework_id: number;
+}
+
+/**
+ * 대시보드 QnA 클릭 이벤트 파라미터
+ */
+export interface DashboardQnaClickParams extends CommonEventParams {
+  room_id: number;
+  question_id: number;
+}
 
 /**
  * user_type을 자동으로 추가하는 헬퍼 함수

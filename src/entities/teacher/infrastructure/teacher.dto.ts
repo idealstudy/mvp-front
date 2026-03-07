@@ -77,6 +77,117 @@ const TeacherStudyRoomListDtoSchema = z.array(
 );
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 활동 통계 조회 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardReportDtoSchema = z.object({
+  studyRoomCount: z.number(),
+  teachingNoteCount: z.number(),
+  studentCount: z.number(),
+  qnaCount: z.number(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 수업 노트 전체 목록 조회 DTO
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardNoteListItemDtoSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  studyRoomId: z.number(),
+  studyRoomName: z.string(),
+  contentPreview: z.string(),
+});
+
+const TeacherDashboardNoteListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(TeacherDashboardNoteListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 스터디룸 목록 조회
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardStudyRoomListDtoSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string(),
+  })
+);
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 답변 하지 않은 질문 목록 조회
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardQnaListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(
+    z.object({
+      id: z.number(),
+      studentId: z.number(),
+      studentName: z.string(),
+      studyRoomId: z.number(),
+      studyRoomName: z.string(),
+      title: z.string(),
+      contentPreview: z.string(),
+      regDate: z.string(), //"2026-03-04T18:37:44.993Z"
+    })
+  ),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 멤버 목록 조회
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardMemberListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(
+    z.object({
+      role: z.enum([
+        'ROLE_ADMIN',
+        'ROLE_TEACHER',
+        'ROLE_STUDENT',
+        'ROLE_PARENT',
+        'ROLE_MEMBER',
+      ]),
+      id: z.number(),
+      name: z.string(),
+      email: z.string(),
+      joinDate: z.string(), //"2026-03-04T18:37:44.993Z"
+      state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+      studyRoomId: z.number(),
+      studyRoomName: z.string(),
+    })
+  ),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 선생님 대시보드 과제 목록 조회
+ * ────────────────────────────────────────────────────*/
+const TeacherDashboardHomeworkListDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      studyRoomId: z.number(),
+      studyRoomName: z.string(),
+      regDate: z.string(), //"2026-03-04T18:37:44.993Z"
+      deadlineLabel: z.enum(['UPCOMING', 'TODAY', 'OVERDUE']),
+      submittedRatePercent: z.number(), // 0~100
+      dday: z.number(), // 마감까지 D-day (음수면 마감 지남)
+    })
+  ),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 후기 전체 목록 조회 응답 DTO
  * ────────────────────────────────────────────────────*/
 const TeacherReviewListItemDtoSchema = z.object({
@@ -173,6 +284,14 @@ export const dto = {
   teacherNoteList: TeacherNoteListDtoSchema,
   teacherRepresentativeNoteList: TeacherRepresentativeNoteListDtoSchema,
   teacherStudyRoomList: TeacherStudyRoomListDtoSchema,
+  dashboard: {
+    report: TeacherDashboardReportDtoSchema,
+    noteList: TeacherDashboardNoteListDtoSchema,
+    studyRoomList: TeacherDashboardStudyRoomListDtoSchema,
+    qnaList: TeacherDashboardQnaListDtoSchema,
+    memberList: TeacherDashboardMemberListDtoSchema,
+    homeworkList: TeacherDashboardHomeworkListDtoSchema,
+  },
   teacherReviewList: TeacherReviewListDtoSchema,
   teacherCareerList: TeacherCareerListDtoSchema,
 };

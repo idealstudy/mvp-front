@@ -22,7 +22,6 @@ const StudyroomSectionContent = ({
     IMAGE_SIZE_TABLET,
     IMAGE_GAP,
     BUTTON_WIDTH,
-    TITLE_ROW_GAP,
     ANIMATION_DURATION,
     TABLET_BREAKPOINT,
   } = STUDYROOM_SECTION_CONSTANTS;
@@ -40,7 +39,8 @@ const StudyroomSectionContent = ({
   // 이미지 크기, 슬라이드 거리, 타이틀 뷰포트 너비 계산
   const imageSize = isTablet ? IMAGE_SIZE_TABLET : IMAGE_SIZE_MOBILE;
   const slideStep = imageSize + IMAGE_GAP;
-  const titleViewportWidth = imageSize - BUTTON_WIDTH * 2 - TITLE_ROW_GAP * 2;
+  const titleViewportWidth =
+    totalCount > 1 ? imageSize - BUTTON_WIDTH * 2 : imageSize;
   const titleSlideStep = titleViewportWidth + IMAGE_GAP;
   const titleTranslateX = translateX * (titleSlideStep / slideStep);
 
@@ -109,7 +109,7 @@ const StudyroomSectionContent = ({
     );
 
   const studyRoomTitleClassName =
-    'font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-6 tablet:font-headline1-heading text-balance';
+    'font-headline2-heading text-gray-12 min-w-0 shrink-0 truncate text-center leading-none tablet:font-headline1-heading tablet:leading-none';
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
@@ -149,70 +149,80 @@ const StudyroomSectionContent = ({
       </div>
 
       {/* 스터디룸 타이틀 */}
-      <div className="tablet:w-[300px] mx-auto flex h-6 w-[200px] items-center gap-2 select-none">
-        <button
-          type="button"
-          className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
-          onClick={(e) => {
-            e.stopPropagation();
-            moveTo('prev');
-          }}
-          aria-label="이전 스터디룸"
-          disabled={totalCount <= 1}
-        >
-          <ChevronLeftIcon className="h-6 w-6" />
-        </button>
+      <div className="tablet:w-[300px] tablet:min-h-12 relative mx-auto flex min-h-10 w-[200px] items-center gap-2 select-none">
+        {totalCount > 1 && (
+          <button
+            type="button"
+            className="absolute flex h-full w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              moveTo('prev');
+            }}
+            aria-label="이전 스터디룸"
+            disabled={totalCount <= 1}
+          >
+            <ChevronLeftIcon className="h-6 w-6" />
+          </button>
+        )}
 
         <button
           type="button"
-          className="h-6 min-w-0 flex-1 cursor-pointer overflow-hidden"
+          className={`tablet:min-h-12 flex min-h-10 min-w-0 flex-1 cursor-pointer items-center ${totalCount > 1 ? 'px-8' : ''}`}
           onClick={() => onStudyRoomClick(studyRooms[currentIndex]?.id ?? 0)}
           aria-label={`${studyRooms[currentIndex]?.name ?? '스터디룸'} 스터디룸으로 이동`}
         >
-          <div
-            className="flex flex-nowrap items-center"
-            style={{
-              width: titleSlideStep * 3 - IMAGE_GAP,
-              gap: IMAGE_GAP,
-              transform: `translateX(${titleTranslateX}px)`,
-              transition: isAnimating
-                ? `transform ${ANIMATION_DURATION}ms cubic-bezier(0.65, 0, 0.35, 1)`
-                : 'none',
-            }}
-          >
+          <div className="min-w-0 flex-1 overflow-x-hidden">
             <div
-              className={studyRoomTitleClassName}
-              style={{ width: titleViewportWidth, height: 24 }}
+              className="flex flex-nowrap items-center justify-center"
+              style={{
+                width: titleSlideStep * 3 - IMAGE_GAP,
+                gap: IMAGE_GAP,
+                transform: `translateX(${titleTranslateX}px)`,
+                transition: isAnimating
+                  ? `transform ${ANIMATION_DURATION}ms cubic-bezier(0.65, 0, 0.35, 1)`
+                  : 'none',
+              }}
             >
-              {studyRooms[prevIndex]?.name}
-            </div>
-            <div
-              className={studyRoomTitleClassName}
-              style={{ width: titleViewportWidth, height: 24 }}
-            >
-              {studyRooms[currentIndex]?.name}
-            </div>
-            <div
-              className={studyRoomTitleClassName}
-              style={{ width: titleViewportWidth, height: 24 }}
-            >
-              {studyRooms[nextIndex]?.name}
+              {totalCount > 1 && (
+                <div
+                  className={studyRoomTitleClassName}
+                  style={{ width: titleViewportWidth }}
+                >
+                  {studyRooms[prevIndex]?.name}
+                </div>
+              )}
+              <div
+                className={studyRoomTitleClassName}
+                style={{ width: titleViewportWidth }}
+              >
+                {studyRooms[currentIndex]?.name}
+              </div>
+              {totalCount > 1 && (
+                <div
+                  className={studyRoomTitleClassName}
+                  style={{ width: titleViewportWidth }}
+                >
+                  {studyRooms[nextIndex]?.name}
+                </div>
+              )}
             </div>
           </div>
         </button>
 
-        <button
-          type="button"
-          className="flex h-6 w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
-          onClick={(e) => {
-            e.stopPropagation();
-            moveTo('next');
-          }}
-          aria-label="다음 스터디룸"
-          disabled={totalCount <= 1}
-        >
-          <ChevronRightIcon className="h-6 w-6" />
-        </button>
+        {totalCount > 1 && (
+          <button
+            type="button"
+            className="absolute right-0 flex h-full w-8 shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent px-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              moveTo('next');
+            }}
+            aria-label="다음 스터디룸"
+            disabled={totalCount <= 1}
+          >
+            <ChevronRightIcon className="h-6 w-6" />
+          </button>
+        )}
       </div>
     </div>
   );
