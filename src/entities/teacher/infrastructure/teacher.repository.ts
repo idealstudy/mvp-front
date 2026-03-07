@@ -210,6 +210,24 @@ const getProfileDescription = async (teacherId: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 기본 정보 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileReport = async (teacherId: number) => {
+  const response = await api.public.get(`/public/teachers/${teacherId}/report`);
+  return unwrapEnvelope(response, dto.teacherReport);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 리뷰 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileReviews = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/reviews`
+  );
+  return unwrapEnvelope(response, dto.teacherReviewList);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -232,5 +250,10 @@ export const repository = {
     updateTeacherCareer,
     deleteTeacherCareer,
   },
-  profile: { getProfileCareers, getProfileDescription },
+  profile: {
+    getProfileCareers,
+    getProfileDescription,
+    getProfileReport,
+    getProfileReviews,
+  },
 };

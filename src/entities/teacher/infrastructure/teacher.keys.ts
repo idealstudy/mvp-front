@@ -23,5 +23,10 @@ export const teacherKeys = {
       [...teacherKeys.all, 'profile', teacherId, 'careers'] as const,
     description: (teacherId: number) =>
       [...teacherKeys.all, 'profile', teacherId, 'description'] as const,
+    report: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'report'] as const,
+    // page/size/type 추가 필요
+    reviews: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'reviews'] as const,
   },
 };
