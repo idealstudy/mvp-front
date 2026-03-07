@@ -25,5 +25,10 @@ export default function ProfileMain({ userId }: { userId: string }) {
     return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
   }
 
-  return <ProfileLayout basicInfo={MOCK_PROFILE_DATA} />;
+  return (
+    <ProfileLayout
+      basicInfo={MOCK_PROFILE_DATA}
+      userId={Number(userId)}
+    />
+  );
 }

@@ -189,6 +189,27 @@ const deleteTeacherCareer = async (careerId: number): Promise<void> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 경력 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileCareers = async (teacherId: number) => {
+  const response = await api.public.get<CommonResponse<TeacherCareerListDTO>>(
+    `/public/teachers/${teacherId}/careers`
+  );
+  const dtos = unwrapEnvelope(response, dto.teacherCareerList);
+  return transformCareersToFrontend(dtos);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 특징 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileDescription = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/description`
+  );
+  return unwrapEnvelope(response, dto.teacherDescription);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -211,4 +232,5 @@ export const repository = {
     updateTeacherCareer,
     deleteTeacherCareer,
   },
+  profile: { getProfileCareers, getProfileDescription },
 };

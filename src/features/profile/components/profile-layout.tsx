@@ -5,14 +5,16 @@ import { ColumnLayout } from '@/layout';
 
 export default function ProfileLayout({
   basicInfo,
+  userId,
 }: {
   basicInfo: UserBasicInfo;
+  userId: number;
 }) {
   let sections;
 
   switch (basicInfo.role) {
     case 'ROLE_TEACHER':
-      sections = <TeacherSections />;
+      sections = <TeacherSections teacherId={userId} />;
       break;
     // case 'ROLE_STUDENT':
     //   sections = <StudentSections />;

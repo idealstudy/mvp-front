@@ -14,4 +14,14 @@ export const teacherKeys = {
   review: (params: ReviewListQuery) =>
     [...teacherKeys.all, 'review', params] as const,
   careers: () => [...teacherKeys.all, 'careers'] as const,
+
+  // 공개 프로필
+  profile: {
+    all: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId] as const,
+    careers: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'careers'] as const,
+    description: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'description'] as const,
+  },
 };
