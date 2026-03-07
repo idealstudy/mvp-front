@@ -1,4 +1,5 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
+import { teacherKeys } from '@/entities/teacher';
 import {
   InvitationQueryKey,
   StudyRoomsQueryKey,
@@ -51,6 +52,9 @@ export const createTeacherStudyRoomHooks = (
       mutationFn: (payload: StudyRoomFormValues) => api.create(payload),
       onSuccess: () => {
         void qc.invalidateQueries({ queryKey: StudyRoomsQueryKey.teacherList });
+        void qc.invalidateQueries({
+          queryKey: teacherKeys.dashboard.studyRoomList(),
+        });
       },
     });
   };

@@ -1,3 +1,3 @@
-export { dto, payload } from './student.dto';
-export { repository } from './student.repository';
-export { studentKeys } from './student.keys';
+export * from './student.repository';
+export * from './student.keys';
+export * from './student.dto';
