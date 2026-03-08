@@ -1,5 +1,6 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { StudyRoomsGroupQueryKey } from '@/entities/study-note-group/infrastructure';
+import { teacherKeys } from '@/entities/teacher';
 import type { StudyNote } from '@/features/study-notes/model';
 import { StudyRoomDetail, StudyRoomsQueryKey } from '@/features/study-rooms';
 import type { PaginationData } from '@/types/http';
@@ -204,6 +205,13 @@ export const useUpdateStudyRoomTitle = () => {
       queryClient.invalidateQueries({
         queryKey: StudyRoomsQueryKey.studentList,
       });
+
+      // 마이페이지 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: teacherKeys.studyRoomList() });
+      queryClient.invalidateQueries({ queryKey: teacherKeys.noteListAll() });
+      queryClient.invalidateQueries({
+        queryKey: teacherKeys.representativeNoteList(),
+      });
     },
   });
 };
@@ -273,6 +281,9 @@ export const useDeleteStudyRoom = () => {
       queryClient.invalidateQueries({
         queryKey: StudyRoomsQueryKey.studentList,
       });
+
+      // 마이페이지 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: teacherKeys.all });
     },
   });
 };

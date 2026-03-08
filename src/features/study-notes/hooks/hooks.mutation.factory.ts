@@ -1,5 +1,6 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { studyRoomsQueryKey } from '@/entities/study-room';
+import { teacherKeys } from '@/entities/teacher';
 import { teacherMutationOptions } from '@/features/study-notes/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -14,6 +15,12 @@ export const createTeacherStudyNoteMutations = () => {
         queryClient.invalidateQueries({
           queryKey: [StudyNoteQueryKey.list],
           exact: false,
+        });
+
+        // 마이페이지 캐시 무효화
+        queryClient.invalidateQueries({ queryKey: teacherKeys.noteListAll() });
+        queryClient.invalidateQueries({
+          queryKey: teacherKeys.representativeNoteList(),
         });
       },
     });
@@ -62,6 +69,9 @@ export const createTeacherStudyNoteMutations = () => {
         queryClient.invalidateQueries({
           queryKey: studyRoomsQueryKey.detail(variables.studyRoomId),
         });
+
+        // 마이페이지 캐시 무효화
+        queryClient.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };
