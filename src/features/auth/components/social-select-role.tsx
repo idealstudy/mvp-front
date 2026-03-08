@@ -59,6 +59,9 @@ export const SocialSelectRole = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
+      <h1 className="text-gray-black tablet:mt-[117px] tablet:mb-[57px] tablet:text-[32px] mt-[57px] mb-[27px] text-[24px] font-bold">
+        <span className="text-orange-7">프로필</span> 만들기
+      </h1>
       <ProfileForm
         form={form}
         buttonText={isPending ? '처리 중...' : '프로필 완성'}
