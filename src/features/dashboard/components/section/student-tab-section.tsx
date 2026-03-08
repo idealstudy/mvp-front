@@ -15,11 +15,11 @@ import TabbedSection from './tabbed-section';
 // ─── 수업노트 탭 ───────────────────────────────────────────────────────────────
 
 const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
   const { data, isPending } = useStudentDashboardNoteListQuery({
     studyRoomId,
-    page,
+    page: page - 1,
     size: 6,
     sortKey: 'LATEST_EDITED',
   });

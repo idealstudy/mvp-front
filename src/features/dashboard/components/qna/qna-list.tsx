@@ -13,16 +13,16 @@ import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 
 export const QnAList = ({ isTeacher }: { isTeacher: boolean }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
   const teacherQuery = useTeacherDashboardQnaListQuery({
-    page,
+    page: page - 1,
     size: 10,
     sortKey: 'LATEST',
     enabled: isTeacher,
   });
   const studentQuery = useStudentDashboardQnaListQuery({
-    page,
+    page: page - 1,
     size: 10,
     sortKey: 'LATEST',
     enabled: !isTeacher,

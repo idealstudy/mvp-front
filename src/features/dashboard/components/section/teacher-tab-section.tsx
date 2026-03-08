@@ -23,11 +23,11 @@ const TeacherNoteTabContent = ({
   studyRoomId?: number;
   lastStudyRoomId?: number;
 }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
   const { data, isPending } = useTeacherDashboardNoteListQuery({
     studyRoomId,
-    page,
+    page: page - 1,
     size: 5,
     sortKey: 'LATEST_EDITED',
   });
@@ -71,11 +71,11 @@ const TeacherNoteTabContent = ({
 // studyRoomId가 null(전체)이면 0을 전달해 전체 멤버를 조회합니다.
 
 const TeacherMemberTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
   const { data, isPending } = useTeacherDashboardMemberListQuery({
     studyRoomId,
-    page,
+    page: page - 1,
     size: 10,
     sortKey: 'LATEST',
   });
