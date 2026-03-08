@@ -25,13 +25,8 @@ export const useWriteStudyNoteMutation = () => {
   return useMutation({
     mutationFn: (data: StudyNote) => writeStudyNote(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [
-          ...StudyNoteQueryKey.all,
-          ...teacherKeys.dashboard.all(),
-          'noteList',
-        ],
-      });
+      queryClient.invalidateQueries({ queryKey: StudyNoteQueryKey.all });
+      queryClient.invalidateQueries({ queryKey: teacherKeys.dashboard.all() });
     },
   });
 };
