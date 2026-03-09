@@ -22,16 +22,18 @@ export default function ProfileCard({
 
   switch (basicInfo.role) {
     case 'ROLE_TEACHER':
-      if (!teacherReport || !memberId) return null;
-      profileExtra = (
-        <TeacherProfileExtra
-          teacherNoteCount={teacherReport.teachingNoteCount}
-          studentCount={teacherReport.studentCount}
-          reviewCount={teacherReport.reviewCount}
-          description={basicInfo.simpleIntroduction || ''}
-          teacherId={memberId}
-        />
-      );
+      if (!memberId) return null;
+      if (teacherReport) {
+        profileExtra = (
+          <TeacherProfileExtra
+            teacherNoteCount={teacherReport.teachingNoteCount}
+            studentCount={teacherReport.studentCount}
+            reviewCount={teacherReport.reviewCount}
+            description={basicInfo.simpleIntroduction || ''}
+            teacherId={memberId}
+          />
+        );
+      }
       break;
     case 'ROLE_STUDENT':
       profileExtra = (

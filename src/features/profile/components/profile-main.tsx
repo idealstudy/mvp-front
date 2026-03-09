@@ -11,15 +11,13 @@ export default function ProfileMain({
   basicInfo,
   memberId,
   role,
-  isPrivate,
 }: {
   basicInfo?: FrontendTeacherBasicInfo;
   memberId: number;
   role: Role;
-  isPrivate?: boolean;
 }) {
   const teacherReportQuery = useProfileReport(memberId, {
-    enabled: role === 'ROLE_TEACHER' && !isPrivate,
+    enabled: role === 'ROLE_TEACHER',
   });
 
   let sections;
@@ -42,11 +40,7 @@ export default function ProfileMain({
     <>
       <ColumnLayout.Left>
         <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-          {teacherReportQuery.isLoading && (
-            <div className="text-center">로딩중...</div>
-          )}
-
-          {basicInfo && teacherReportQuery.data && (
+          {basicInfo && (
             <ProfileCard
               basicInfo={basicInfo}
               teacherReport={teacherReportQuery.data}
