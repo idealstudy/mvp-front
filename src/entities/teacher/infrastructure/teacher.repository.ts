@@ -189,6 +189,18 @@ const deleteTeacherCareer = async (careerId: number): Promise<void> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 기본 정보 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileBasicInfo = async (teacherId: number) => {
+  const response = await api.public.get<CommonResponse<TeacherBasicInfoDTO>>(
+    `/public/teachers/${teacherId}/basic-info`
+  );
+
+  const dtos = unwrapEnvelope(response, dto.basicInfo);
+  return transformBasicInfoToFrontend(dtos);
+};
+
+/* ─────────────────────────────────────────────────────
  * [Read] 공개 프로필 - 선생님 경력 목록 조회
  * ────────────────────────────────────────────────────*/
 const getProfileCareers = async (teacherId: number) => {
@@ -277,5 +289,6 @@ export const repository = {
     getProfileReviews,
     getProfileTeachingNotes,
     getProfileStudyRooms,
+    getProfileBasicInfo,
   },
 };

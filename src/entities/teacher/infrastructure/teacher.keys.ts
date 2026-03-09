@@ -32,5 +32,7 @@ export const teacherKeys = {
       [...teacherKeys.all, 'profile', teacherId, 'teachingNotes'] as const,
     studyRooms: (teacherId: number) =>
       [...teacherKeys.all, 'profile', teacherId, 'studyRooms'] as const,
+    basicInfo: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'basicInfo'] as const,
   },
 };
