@@ -11,11 +11,13 @@ export interface NotesBaseApi<TList> {
   getNotes(args: {
     studyRoomId: number;
     pageable: StudyNoteGroupPageable;
+    keyword?: string;
   }): Promise<TList>;
   getNotesByGroup(args: {
     studyRoomId: number;
     teachingNoteGroupId: number;
     pageable: StudyNoteGroupPageable;
+    keyword?: string;
   }): Promise<TList>;
   getDetail(teachingNoteId: number): Promise<StudyNoteDetails>;
 }
@@ -28,18 +30,23 @@ export const createNotesBaseApi = <TList>(role: Role): NotesBaseApi<TList> => {
     `/${rolePath}/study-rooms/${studyRoomId}`;
 
   return {
-    async getNotes({ studyRoomId, pageable }) {
+    async getNotes({ studyRoomId, pageable, keyword }) {
       const res = await api.private.get<CommonResponse<TList>>(
         `${roomPath(studyRoomId)}/teaching-notes`,
-        { params: pageable }
+        { params: { ...pageable, ...(keyword && { keyword }) } }
       );
       return res.data;
     },
 
-    async getNotesByGroup({ studyRoomId, teachingNoteGroupId, pageable }) {
+    async getNotesByGroup({
+      studyRoomId,
+      teachingNoteGroupId,
+      pageable,
+      keyword,
+    }) {
       const res = await api.private.get<CommonResponse<TList>>(
         `${roomPath(studyRoomId)}/teaching-note-groups/${teachingNoteGroupId}/teaching-notes`,
-        { params: pageable }
+        { params: { ...pageable, ...(keyword && { keyword }) } }
       );
       return res.data;
     },

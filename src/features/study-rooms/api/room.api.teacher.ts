@@ -85,11 +85,42 @@ export const createTeacherStudyRoomApi = (
     return response.data;
   };
 
+  // 학생 내보내기
+  const removeMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.delete(
+      `${base.teacherBasePath}/${args.studyRoomId}/members/${args.studentId}`
+    );
+  };
+
+  const terminateMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.post(
+      `${base.teacherBasePath}/${args.studyRoomId}/terminate/${args.studentId}`
+    );
+  };
+
+  const resumeMember = async (args: {
+    studyRoomId: number;
+    studentId: number;
+  }): Promise<void> => {
+    await base.client.post(
+      `${base.teacherBasePath}/${args.studyRoomId}/resume/${args.studentId}`
+    );
+  };
+
   return {
     getStudyRooms,
     getStudyRoomDetail,
     create,
     invitations: { send: sendInvitation, search: searchInvitation },
     getStudyNoteGroup,
+    removeMember,
+    terminateMember,
+    resumeMember,
   };
 };

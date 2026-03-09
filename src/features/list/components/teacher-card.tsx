@@ -6,16 +6,35 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
+import { trackDedu101TeacherClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 import { PublicTeacherProfile } from '../types/teacher.types';
 import { TeacherInfoBlock } from './teacher-info-block';
 
 interface TeacherCardProps {
   teacher: PublicTeacherProfile;
+  cardIndex: number;
+  sort: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
+  subject?: string;
 }
 
-export const TeacherCard = ({ teacher }: TeacherCardProps) => {
+export const TeacherCard = ({
+  teacher,
+  cardIndex,
+  sort,
+  subject,
+}: TeacherCardProps) => {
   const teacherImg = teacher.id % 2 === 0 ? '1' : '2';
+
+  const role = useMemberStore((s) => s.member?.role ?? null);
+
+  const handleTeacherClick = () => {
+    trackDedu101TeacherClick(
+      { teacher_id: teacher.id, card_index: cardIndex, sort, subject },
+      role
+    );
+  };
 
   return (
     <Link
@@ -24,6 +43,7 @@ export const TeacherCard = ({ teacher }: TeacherCardProps) => {
         'group border-gray-3 relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border bg-white p-4 transition-all duration-300 md:p-6',
         'hover:scale-105 hover:shadow-xl'
       )}
+      onClick={handleTeacherClick}
     >
       <div className="border-gray-12 relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-full border bg-gray-50 p-1 md:h-[100px] md:w-[100px]">
         <div className="relative h-full w-full overflow-hidden rounded-full">

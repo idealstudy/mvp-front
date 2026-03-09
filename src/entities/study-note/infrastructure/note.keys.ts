@@ -1,6 +1,12 @@
 export const StudyNoteQueryKey = {
   all: ['studyNotes'] as const,
-  list: (studyRoomId: number, page: number, size: number, sortKey: string) =>
+  list: (
+    studyRoomId: number,
+    page: number,
+    size: number,
+    sortKey: string,
+    keyword?: string
+  ) =>
     [
       ...StudyNoteQueryKey.all,
       'list',
@@ -8,13 +14,15 @@ export const StudyNoteQueryKey = {
       page,
       size,
       sortKey,
+      ...(keyword ? [keyword] : []),
     ] as const,
   byGroupId: (
     studyRoomId: number,
     groupId: number,
     page: number,
     size: number,
-    sortKey: string
+    sortKey: string,
+    keyword?: string
   ) =>
     [
       ...StudyNoteQueryKey.all,
@@ -24,6 +32,7 @@ export const StudyNoteQueryKey = {
       page,
       size,
       sortKey,
+      ...(keyword ? [keyword] : []),
     ] as const,
   detail: (teachingNoteId: number) =>
     [...StudyNoteQueryKey.all, 'detail', teachingNoteId] as const,

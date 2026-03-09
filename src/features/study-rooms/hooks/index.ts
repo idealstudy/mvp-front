@@ -27,4 +27,7 @@ export const {
   useSearchInvitation,
   useCreateStudyRoom,
   useSendInvitation,
+  useRemoveMember,
+  useTerminateMember,
+  useResumeMember,
 } = teacherHooks;

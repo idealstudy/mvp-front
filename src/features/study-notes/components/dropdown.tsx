@@ -31,10 +31,6 @@ export const StudyNotesDropdown = ({
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
-  const handleCopy = () => {
-    // TODO: 수업노트 복제 API 호출 후 상태 업데이트 로직 넣기
-  };
-
   const handleDelete = () => {
     dispatch({
       type: 'OPEN',
@@ -111,14 +107,6 @@ export const StudyNotesDropdown = ({
             >
               편집하기
             </Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            className="justify-center"
-            onClick={() => {
-              handleCopy();
-            }}
-          >
-            복제하기
           </DropdownMenu.Item>
           <DropdownMenu.Item
             variant="danger"

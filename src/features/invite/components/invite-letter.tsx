@@ -17,7 +17,7 @@ export const InviteLetter = ({
 }: {
   onOpenLoginModal: () => void;
   onOpenExitModal: () => void;
-  data: InvitationInfoDTO | null;
+  data: InvitationInfoDTO | undefined;
   isLoading: boolean;
   token: string;
 }) => {

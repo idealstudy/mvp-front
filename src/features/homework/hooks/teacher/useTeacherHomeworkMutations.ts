@@ -1,3 +1,4 @@
+import { teacherKeys } from '@/entities/teacher';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -24,6 +25,9 @@ export const useTeacherCreateHomework = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: TeacherHomeworkQueryKey.listBase(variables.studyRoomId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...teacherKeys.dashboard.all(), 'homeworkList'],
       });
     },
   });

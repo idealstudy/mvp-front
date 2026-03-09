@@ -11,6 +11,10 @@ import { useAcceptInvitation } from '@/features/invite/hooks';
 import { useSession } from '@/providers';
 import { Form } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import {
+  trackAuthSignupFail,
+  trackAuthSignupSuccess,
+} from '@/shared/lib/gtm/trackers';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const SocialSelectRole = () => {
@@ -33,6 +37,8 @@ export const SocialSelectRole = () => {
   const handleSubmit = form.handleSubmit(async (data) => {
     updateProfile(data, {
       onSuccess: async () => {
+        trackAuthSignupSuccess(data.role, 'kakao');
+
         await session.refresh();
         if (inviteToken) {
           if (data.role === 'ROLE_STUDENT') {
@@ -45,6 +51,7 @@ export const SocialSelectRole = () => {
         }
       },
       onError: () => {
+        trackAuthSignupFail('kakao');
         alert('프로필 완성에 실패했습니다. 다시 시도해주세요.');
       },
     });

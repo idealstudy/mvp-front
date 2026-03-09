@@ -3,6 +3,8 @@
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
+import { trackDedu101StudyroomFeatureClick } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 import { PublicStudyRoom } from '../types/teacher.types';
 import { TeacherInfoBlock } from './teacher-info-block';
@@ -12,6 +14,19 @@ interface StudyRoomCardProps {
 }
 
 export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
+  const role = useMemberStore((s) => s.member?.role ?? null);
+
+  const handleStudyRoomClick = () => {
+    trackDedu101StudyroomFeatureClick(
+      {
+        room_id: studyRoom.id,
+        feature_type: 'subject',
+        feature_value: studyRoom.subjectType ?? 'unknown',
+      },
+      role
+    );
+  };
+
   return (
     <Link
       href={`/study-room-preview/${studyRoom.id}/${studyRoom.teacherId}`}
@@ -19,6 +34,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
         'border-gray-scale-gray-10 overflow-hidden rounded-2xl border-[1.5px] bg-white transition-all duration-300',
         'hover:scale-105 hover:shadow-xl'
       )}
+      onClick={handleStudyRoomClick}
     >
       {/* 상단 영역 */}
       <div className="bg-orange-1 flex flex-col gap-[10px] p-6">

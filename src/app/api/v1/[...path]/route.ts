@@ -2,7 +2,12 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { serverEnv } from '@/shared/constants/api';
-import { applySetCookies, extractErrorMessage, safeJson } from '@/shared/lib';
+import {
+  applySetCookies,
+  extractErrorCode,
+  extractErrorMessage,
+  safeJson,
+} from '@/shared/lib';
 
 if (!serverEnv.backendApiUrl) throw new Error('BASE_URL is not defined');
 
@@ -122,8 +127,9 @@ async function handleRequest(
   // 에러 응답 처리
   if (!backendResponse.ok) {
     const message = extractErrorMessage(payload) ?? '요청 처리에 실패했습니다.';
+    const code = extractErrorCode(payload);
     const errorResponse = NextResponse.json(
-      { message },
+      { code, message },
       { status: backendResponse.status }
     );
     // 에러 응답에도 쿠키 적용 (리프레시 토큰 등)

@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
 import { cn, getRelativeTimeString } from '@/shared/lib';
+import { trackDedu101StudyroomInfoView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 
 import { usePreviewMainInfo } from '../../hooks/use-preview';
@@ -18,6 +19,8 @@ type StudyroomPreviewContentsProps = {
   studyRoomId: number;
   teacherId: number;
 };
+
+type TrackedSection = 'intro' | 'curriculum' | 'review';
 
 const REVIEW_TAGS = ['#친절해요', '#피드백빠름', '#체계적수업'] as const;
 const PENDING_SKELETON_DELAY = 150;
@@ -30,6 +33,12 @@ export const StudyroomPreviewContents = ({
   const { data, isPending, isError } = usePreviewMainInfo(studyRoomId);
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
+  const introSectionRef = useRef<HTMLElement | null>(null);
+  const curriculumSectionRef = useRef<HTMLElement | null>(null);
+  const reviewSectionRef = useRef<HTMLElement | null>(null);
+  const sectionStartTimeRef = useRef<Partial<Record<TrackedSection, number>>>(
+    {}
+  );
 
   const member = useMemberStore((s) => s.member);
 
@@ -62,6 +71,80 @@ export const StudyroomPreviewContents = ({
     );
     return () => clearTimeout(timer);
   }, [isPending]);
+
+  useEffect(() => {
+    if (isPending || isError || !data) return;
+
+    const sectionElements: Array<{
+      key: TrackedSection;
+      element: HTMLElement | null;
+    }> = [
+      { key: 'intro', element: introSectionRef.current },
+      { key: 'curriculum', element: curriculumSectionRef.current },
+      { key: 'review', element: reviewSectionRef.current },
+    ];
+
+    const emitViewDuration = (section: TrackedSection, durationMs: number) => {
+      if (durationMs <= 0) return;
+
+      trackDedu101StudyroomInfoView(
+        {
+          room_id: studyRoomId,
+          section,
+          view_ms: durationMs,
+        },
+        member?.role ?? null
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const now = Date.now();
+
+        entries.forEach((entry) => {
+          const section = entry.target.getAttribute(
+            'data-track-section'
+          ) as TrackedSection | null;
+          if (!section) return;
+
+          if (entry.isIntersecting) {
+            if (!sectionStartTimeRef.current[section]) {
+              sectionStartTimeRef.current[section] = now;
+            }
+            return;
+          }
+
+          const start = sectionStartTimeRef.current[section];
+          if (!start) return;
+
+          emitViewDuration(section, now - start);
+          delete sectionStartTimeRef.current[section];
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    sectionElements.forEach(({ key, element }) => {
+      if (!element) return;
+      element.setAttribute('data-track-section', key);
+      observer.observe(element);
+    });
+
+    return () => {
+      const now = Date.now();
+
+      (Object.keys(sectionStartTimeRef.current) as TrackedSection[]).forEach(
+        (section) => {
+          const start = sectionStartTimeRef.current[section];
+          if (!start) return;
+          emitViewDuration(section, now - start);
+        }
+      );
+
+      sectionStartTimeRef.current = {};
+      observer.disconnect();
+    };
+  }, [isPending, isError, data, studyRoomId, member?.role]);
 
   if (isPending && showPendingSkeleton) {
     return <PreviewMainSkeleton />;
@@ -100,7 +183,10 @@ export const StudyroomPreviewContents = ({
 
   return (
     <section className="flex w-full flex-col gap-6">
-      <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+      <article
+        ref={introSectionRef}
+        className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6"
+      >
         {isMyStudyRoom && (
           <button
             type="button"
@@ -169,7 +255,10 @@ export const StudyroomPreviewContents = ({
         </article>
       )}
 
-      <article className="bg-system-background-alt flex flex-col gap-1 rounded-xl p-6">
+      <article
+        ref={curriculumSectionRef}
+        className="bg-system-background-alt flex flex-col gap-1 rounded-xl p-6"
+      >
         <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
           스터디룸 운영 방식
         </p>
@@ -201,7 +290,10 @@ export const StudyroomPreviewContents = ({
         </div>
       </article>
 
-      <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+      <article
+        ref={reviewSectionRef}
+        className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6"
+      >
         <header className="flex flex-col gap-1">
           <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
             스터디룸 후기

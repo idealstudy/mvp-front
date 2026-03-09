@@ -10,6 +10,7 @@ import { homeMetadata } from '@/features/home/metadata';
 import { StructuredData } from '@/features/home/structured-data';
 import FloatingCTA from '@/features/home/ui/floating-cta';
 import { Footer } from '@/layout/footer';
+import { PageViewTracker } from '@/shared/components/gtm';
 import { cn } from '@/shared/lib';
 
 export const metadata = homeMetadata;
@@ -18,6 +19,7 @@ export default function HomePage() {
   return (
     <>
       <StructuredData />
+      <PageViewTracker pageName="home" />
 
       <main className="flex flex-col">
         <Session1 />

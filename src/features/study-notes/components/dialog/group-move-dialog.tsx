@@ -82,7 +82,11 @@ export const GroupMoveDialog = ({
       dispatch({ type: 'CLOSE' });
     };
 
-    if (selectedGroup === null || selectedGroup === 'none') {
+    if (
+      selectedGroup === null ||
+      selectedGroup === 'none' ||
+      selectedGroup === 'all'
+    ) {
       removeNoteMutation({ ...mutationArgs, groupId: null }, { onSuccess });
     } else {
       moveNoteMutation(

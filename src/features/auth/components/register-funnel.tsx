@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { trackAuthSignupStepEnter } from '@/shared/lib/gtm/trackers';
 
 import { CredentialStep } from './credential-step';
 import { EmailStep } from './email-step';
@@ -11,6 +13,11 @@ type Step = 'email' | 'credential' | 'profile';
 
 export const RegisterFunnel = () => {
   const [step, setStep] = useState<Step>('email');
+
+  // GA 회원가입 단계 추적 (이탈 단계 분석)
+  useEffect(() => {
+    trackAuthSignupStepEnter(step);
+  }, [step]);
 
   return (
     <RegisterFormContextProvider>

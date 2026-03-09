@@ -62,10 +62,12 @@ export default async function TeachersListPage({
 
   return (
     <ListGrid>
-      {data.content.map((teacher) => (
+      {data.content.map((teacher, i) => (
         <TeacherCard
           key={teacher.id}
           teacher={teacher}
+          cardIndex={i + 1}
+          sort={sort}
         />
       ))}
     </ListGrid>

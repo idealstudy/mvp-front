@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { MemberListItem } from '@/features/member/member-list-item';
+import { MemberListItem } from '@/features/member/components/member-list-item';
 import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
 import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
 import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
@@ -60,11 +60,11 @@ export default function MembersPanel({ studyRoomId }: Props) {
             사용자가 없습니다.
           </li>
         ) : (
-          filteredMembers.map((member, idx) => (
+          filteredMembers.map((member) => (
             <MemberListItem
               key={member.id}
               member={member}
-              isHighlighted={idx === 4}
+              studyRoomId={studyRoomId}
             />
           ))
         )}

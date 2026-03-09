@@ -16,5 +16,6 @@ export const transformMembersData = (
       'ko-KR'
     ),
     guardianCount: member.parentInfo ? 1 : 0,
+    isTerminated: member.studentInfo.outDate !== null,
   }));
 };

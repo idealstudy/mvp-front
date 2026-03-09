@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -15,6 +15,8 @@ import { SortKey } from '@/features/qna/types';
 import { useSession } from '@/providers';
 import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
+import { trackDedu101ListScrollDepth } from '@/shared/lib/gtm/trackers';
+import { useMemberStore } from '@/store';
 
 export default function ListLayoutClient({
   children,
@@ -25,7 +27,9 @@ export default function ListLayoutClient({
   const searchParams = useSearchParams();
   const router = useRouter();
   const { status } = useSession();
+  const role = useMemberStore((s) => s.member?.role ?? null);
   const [isPending, startTransition] = useTransition();
+  const trackedDepthsRef = useRef<Set<25 | 50 | 75 | 100>>(new Set());
 
   const isAuthenticated = status === 'authenticated';
   const sortBy = searchParams.get('sort') ?? 'LATEST';
@@ -66,6 +70,44 @@ export default function ListLayoutClient({
       router.push(`${pathname}?${params.toString()}`);
     });
   };
+
+  useEffect(() => {
+    // 목록 페이지(선생님/스터디룸) 진입 시 depth 전송 상태 초기화
+    trackedDepthsRef.current.clear();
+
+    const thresholds: Array<25 | 50 | 75 | 100> = [25, 50, 75, 100];
+
+    const handleScrollDepth = () => {
+      const doc = document.documentElement;
+      const maxScroll = doc.scrollHeight - doc.clientHeight;
+
+      // 스크롤 가능한 높이가 없으면 100%로 간주
+      const depth =
+        maxScroll <= 0
+          ? 100
+          : Math.min(100, Math.round((window.scrollY / maxScroll) * 100));
+
+      thresholds.forEach((threshold) => {
+        if (depth >= threshold && !trackedDepthsRef.current.has(threshold)) {
+          trackedDepthsRef.current.add(threshold);
+          trackDedu101ListScrollDepth(
+            {
+              page: 'dedu101_list',
+              depth_percent: threshold,
+            },
+            role
+          );
+        }
+      });
+    };
+
+    handleScrollDepth();
+    window.addEventListener('scroll', handleScrollDepth, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollDepth);
+    };
+  }, [pathname, role]);
 
   return (
     <div className="flex min-h-screen w-full">

@@ -1,3 +1,4 @@
+import { dto } from '@/entities/teacher/infrastructure/teacher.dto';
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
@@ -36,6 +37,13 @@ const TeacherNoteListItemDomainSchema = z.object({
   modDate: z.string(),
   representative: z.boolean(),
 });
+
+const TeacherDashboardReportShape = dto.dashboard.report;
+const TeacherDashboardNoteListShape = dto.dashboard.noteList;
+const TeacherDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
+const TeacherDashboardQnaListShape = dto.dashboard.qnaList;
+const TeacherDashboardMemberListShape = dto.dashboard.memberList;
+const TeacherDashboardHomeworkListShape = dto.dashboard.homeworkList;
 
 /* ─────────────────────────────────────────────────────
  * 선생님 전체 수업 노트 목록 Domain 스키마 (페이지네이션)
@@ -122,6 +130,14 @@ export const domain = {
   teacherRepresentativeNoteList: TeacherRepresentativeNoteListDomainSchema,
   teacherStudyRoomListItem: TeacherStudyRoomListItemDomainSchema,
   teacherStudyRoomList: TeacherStudyRoomListDomainSchema,
+  dashboard: {
+    report: TeacherDashboardReportShape,
+    noteList: TeacherDashboardNoteListShape,
+    studyRoomList: TeacherDashboardStudyRoomListShape,
+    qnaList: TeacherDashboardQnaListShape,
+    memberList: TeacherDashboardMemberListShape,
+    homeworkList: TeacherDashboardHomeworkListShape,
+  },
   teacherReviewListItem: TeacherReviewListItemDomainSchema,
   teacherReviewList: TeacherReviewListDomainSchema,
   teacherCareerListItem: TeacherCareerListItemDomainSchema,

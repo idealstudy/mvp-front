@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import MembersPanel from '@/features/member/members-panel';
+import MembersPanel from '@/features/member/components/members-panel';
 
 type PageProps = {
   params: Promise<{ id: string }>;

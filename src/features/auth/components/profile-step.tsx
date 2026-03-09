@@ -6,6 +6,7 @@ import { useRegisterFormContext } from '@/features/auth/components/register-form
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { trackAuthSignupClick } from '@/shared/lib/gtm/trackers';
 
 import { RoleRadioGroup } from './role-radio-group';
 
@@ -39,6 +40,7 @@ export const ProfileStep = () => {
       <Button
         size="large"
         type="submit"
+        onClick={trackAuthSignupClick}
       >
         가입 완료
       </Button>

@@ -158,12 +158,68 @@ export interface StudynoteFilterParams extends RoomEventParams {
 }
 
 /**
+ * 디에듀101 목록 스크롤 깊이 이벤트 파라미터
+ */
+export interface Dedu101ScrollDepthParams extends CommonEventParams {
+  page: 'dedu101_list';
+  depth_percent: 25 | 50 | 75 | 100;
+}
+
+/**
+ * 디에듀101 강사 카드 클릭 이벤트 파라미터
+ */
+export interface Dedu101TeacherClickParams extends CommonEventParams {
+  teacher_id: number;
+  card_index: number;
+  sort?: string;
+  subject?: string;
+}
+
+/**
+ * 디에듀101 스터디룸 특징 클릭 이벤트 파라미터
+ */
+export interface Dedu101StudyroomFeatureClickParams extends CommonEventParams {
+  room_id: number;
+  feature_type: 'subject' | 'level' | 'style' | 'keyword';
+  feature_value: string;
+}
+
+/**
+ * 디에듀101 프로필 진입 이벤트 파라미터
+ */
+export interface Dedu101ProfileEnterParams extends CommonEventParams {
+  target_type: 'teacher' | 'studyroom';
+  target_id: number;
+}
+
+/**
+ * 디에듀101 스터디룸 정보 섹션 뷰 이벤트 파라미터
+ */
+export interface Dedu101StudyroomInfoViewParams extends CommonEventParams {
+  room_id: number;
+  section: 'intro' | 'curriculum' | 'review' | 'price';
+  view_ms: number;
+}
+/*
+ * 회원가입 단계 진입 이벤트 파라미터
+ */
+export interface AuthSignupStepEnterParams extends CommonEventParams {
+  step: 'email' | 'credential' | 'profile';
+}
+
+/**
  * 이벤트 이름 상수
  */
 export const GA4_EVENTS = {
   // Auth
-  SIGNUP_SUCCESS: 'signup_success',
-  LOGIN_SUCCESS: 'login_success',
+  AUTH_LOGIN_CLICK: 'auth_login_click',
+  AUTH_LOGIN_SUCCESS: 'auth_login_success',
+  AUTH_LOGIN_FAIL: 'auth_login_fail',
+  AUTH_KAKAO_LOGIN_CLICK: 'auth_kakao_login_click',
+  AUTH_SIGNUP_CLICK: 'auth_signup_click',
+  AUTH_SIGNUP_SUCCESS: 'auth_signup_success',
+  AUTH_SIGNUP_FAIL: 'auth_signup_fail',
+  AUTH_SIGNUP_STEP_ENTER: 'auth_signup_step_enter',
 
   // GNB
   GNB_LOGO_CLICK: 'gnb_logo_click',
@@ -176,6 +232,13 @@ export const GA4_EVENTS = {
   DASHBOARD_STUDYROOM_CREATE_CLICK: 'dashboard_studyroom_create_click',
   DASHBOARD_MAIN_BANNER_CLICK: 'dashboard_main_banner_click',
   DASHBOARD_STUDYNOTE_CLICK: 'dashboard_studynote_click',
+  DASHBOARD_TAB_CLICK: 'dashboard_tab_click',
+  DASHBOARD_STUDYROOM_FILTER: 'dashboard_studyroom_filter',
+  DASHBOARD_STUDYROOM_CLICK: 'dashboard_studyroom_click',
+  DASHBOARD_NOTE_CLICK: 'dashboard_note_click',
+  DASHBOARD_HOMEWORK_CLICK: 'dashboard_homework_click',
+  DASHBOARD_QNA_CLICK: 'dashboard_qna_click',
+  DASHBOARD_QNA_MORE_CLICK: 'dashboard_qna_more_click',
 
   // Page View
   DASHBOARD_PAGE_VIEW: 'dashboard_page_view',
@@ -255,7 +318,68 @@ export const GA4_EVENTS = {
   HOMEWORK_CREATE_CLICK: 'homework_create_click',
   HOMEWORK_SUBMIT_CLICK: 'homework_submit_click',
   HOMEWORK_REPLY_CREATE_CLICK: 'homework_reply_create_click',
+
+  // dedu 101
+  DEDU101_LIST_SCROLL_DEPTH: 'dedu101_list_scroll_depth',
+  DEDU101_TEACHER_CLICK: 'dedu101_teacher_click',
+  DEDU101_STUDYROOM_FEATURE_CLICK: 'dedu101_studyroom_feature_click',
+  DEDU101_PROFILE_ENTER: 'dedu101_profile_enter',
+  DEDU101_STUDYROOM_INFO_VIEW: 'dedu101_studyroom_info_view',
+
+  // Home
+  HOME_DEDU101_CLICK: 'home_dedu101_click',
+  HOME_START_CLICK: 'home_start_click',
 } as const;
+
+/**
+ * 대시보드 탭 타입
+ */
+export type DashboardTab = 'studynote' | 'member' | 'homework';
+
+/**
+ * 대시보드 탭 클릭 이벤트 파라미터
+ */
+export interface DashboardTabClickParams extends CommonEventParams {
+  tab: DashboardTab;
+}
+
+/**
+ * 대시보드 스터디룸 필터 선택 이벤트 파라미터
+ */
+export interface DashboardStudyroomFilterParams extends CommonEventParams {
+  room_id: number | null;
+}
+
+/**
+ * 대시보드 스터디룸 클릭 이벤트 파라미터
+ */
+export interface DashboardStudyroomClickParams extends CommonEventParams {
+  room_id: number;
+}
+
+/**
+ * 대시보드 수업노트 클릭 이벤트 파라미터
+ */
+export interface DashboardNoteClickParams extends CommonEventParams {
+  room_id: number;
+  note_id: number;
+}
+
+/**
+ * 대시보드 과제 클릭 이벤트 파라미터
+ */
+export interface DashboardHomeworkClickParams extends CommonEventParams {
+  room_id: number;
+  homework_id: number;
+}
+
+/**
+ * 대시보드 QnA 클릭 이벤트 파라미터
+ */
+export interface DashboardQnaClickParams extends CommonEventParams {
+  room_id: number;
+  question_id: number;
+}
 
 /**
  * user_type을 자동으로 추가하는 헬퍼 함수

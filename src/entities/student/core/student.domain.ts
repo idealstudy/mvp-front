@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+import { dto } from '../infrastructure';
+
+const StudentReportShape = dto.studentReport;
+
+const StudentDashboardReportShape = dto.dashboard.report;
+const StudentDashboardNoteListShape = dto.dashboard.noteList;
+const StudentDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
+const StudentDashboardQnaListShape = dto.dashboard.qnaList;
+const StudentDashboardHomeworkListShape = dto.dashboard.homeworkList;
+
 /* ─────────────────────────────────────────────────────
  * 학생 기본 정보 Domain 스키마
  * ────────────────────────────────────────────────────*/
@@ -17,4 +27,12 @@ const BasicInfoDomainSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const domain = {
   basicInfo: BasicInfoDomainSchema,
+  studentReport: StudentReportShape,
+  dashboard: {
+    report: StudentDashboardReportShape,
+    noteList: StudentDashboardNoteListShape,
+    studyRoomList: StudentDashboardStudyRoomListShape,
+    qnaList: StudentDashboardQnaListShape,
+    homeworkList: StudentDashboardHomeworkListShape,
+  },
 };

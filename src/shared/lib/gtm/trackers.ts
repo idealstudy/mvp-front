@@ -9,6 +9,13 @@ import type { Role } from '@/entities/member';
 import { getGaUserType, pushEvent } from '../gtm';
 import { GA4_EVENTS, withUserType } from './events';
 import type {
+  AuthSignupStepEnterParams,
+  DashboardTab,
+  Dedu101ProfileEnterParams,
+  Dedu101ScrollDepthParams,
+  Dedu101StudyroomFeatureClickParams,
+  Dedu101StudyroomInfoViewParams,
+  Dedu101TeacherClickParams,
   HomeworkCreateParams,
   HomeworkReplyParams,
   HomeworkSubmitParams,
@@ -26,13 +33,41 @@ import type {
 } from './events';
 
 // ==================== 인증 이벤트 ====================
-
-export const trackSignupSuccess = (role?: Role | null) => {
-  pushEvent(GA4_EVENTS.SIGNUP_SUCCESS, withUserType({}, role));
+export const trackAuthLoginClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_CLICK, withUserType({}));
 };
 
-export const trackLoginSuccess = (role?: Role | null) => {
-  pushEvent(GA4_EVENTS.LOGIN_SUCCESS, withUserType({}, role));
+export const trackAuthLoginSuccess = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_SUCCESS, withUserType({}, role));
+};
+
+export const trackAuthLoginFail = () => {
+  pushEvent(GA4_EVENTS.AUTH_LOGIN_FAIL, withUserType({}));
+};
+
+export const trackAuthKakaoLoginClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_KAKAO_LOGIN_CLICK, withUserType({}));
+};
+
+export const trackAuthSignupClick = () => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_CLICK, withUserType({}));
+};
+
+export const trackAuthSignupSuccess = (
+  role?: Role | null,
+  method: 'email' | 'kakao' = 'email'
+) => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_SUCCESS, withUserType({ method }, role));
+};
+
+export const trackAuthSignupFail = (method: 'email' | 'kakao' = 'email') => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_FAIL, withUserType({ method }));
+};
+
+export const trackAuthSignupStepEnter = (
+  step: AuthSignupStepEnterParams['step']
+) => {
+  pushEvent(GA4_EVENTS.AUTH_SIGNUP_STEP_ENTER, withUserType({ step }));
 };
 
 // ==================== GNB 이벤트 ====================
@@ -492,4 +527,119 @@ export const trackStudynoteListSearchClick = (
   role?: Role | null
 ) => {
   pushEvent(GA4_EVENTS.STUDYNOTE_LIST_SEARCH_CLICK, withUserType(params, role));
+};
+
+// ==================== 디에듀101 이벤트 ====================
+
+export const trackDedu101ListScrollDepth = (
+  params: Omit<Dedu101ScrollDepthParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_LIST_SCROLL_DEPTH, withUserType(params, role));
+};
+
+export const trackDedu101TeacherClick = (
+  params: Omit<Dedu101TeacherClickParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_TEACHER_CLICK, withUserType(params, role));
+};
+
+export const trackDedu101StudyroomFeatureClick = (
+  params: Omit<Dedu101StudyroomFeatureClickParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DEDU101_STUDYROOM_FEATURE_CLICK,
+    withUserType(params, role)
+  );
+};
+
+export const trackDedu101ProfileEnter = (
+  params: Omit<Dedu101ProfileEnterParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_PROFILE_ENTER, withUserType(params, role));
+};
+
+export const trackDedu101StudyroomInfoView = (
+  params: Omit<Dedu101StudyroomInfoViewParams, 'user_type'>,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DEDU101_STUDYROOM_INFO_VIEW, withUserType(params, role));
+};
+
+// ==================== 대시보드 이벤트 ====================
+
+export const trackDashboardTabClick = (
+  tab: DashboardTab,
+  role?: Role | null
+) => {
+  pushEvent(GA4_EVENTS.DASHBOARD_TAB_CLICK, withUserType({ tab }, role));
+};
+
+export const trackDashboardStudyroomFilter = (
+  roomId: number | null,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DASHBOARD_STUDYROOM_FILTER,
+    withUserType({ room_id: roomId }, role)
+  );
+};
+
+export const trackDashboardStudyroomClick = (
+  roomId: number,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DASHBOARD_STUDYROOM_CLICK,
+    withUserType({ room_id: roomId }, role)
+  );
+};
+
+export const trackDashboardNoteClick = (
+  roomId: number,
+  noteId: number,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DASHBOARD_NOTE_CLICK,
+    withUserType({ room_id: roomId, note_id: noteId }, role)
+  );
+};
+
+export const trackDashboardHomeworkClick = (
+  roomId: number,
+  homeworkId: number,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DASHBOARD_HOMEWORK_CLICK,
+    withUserType({ room_id: roomId, homework_id: homeworkId }, role)
+  );
+};
+
+export const trackDashboardQnaClick = (
+  roomId: number,
+  questionId: number,
+  role?: Role | null
+) => {
+  pushEvent(
+    GA4_EVENTS.DASHBOARD_QNA_CLICK,
+    withUserType({ room_id: roomId, question_id: questionId }, role)
+  );
+};
+
+export const trackDashboardQnaMoreClick = (role?: Role | null) => {
+  pushEvent(GA4_EVENTS.DASHBOARD_QNA_MORE_CLICK, withUserType({}, role));
+};
+
+// ==================== 홈 이벤트 ====================
+export const trackHomeDedu101Click = (source: 'hero' | 'floating_cta') => {
+  pushEvent(GA4_EVENTS.HOME_DEDU101_CLICK, withUserType({ source }));
+};
+
+export const trackHomeStartClick = () => {
+  pushEvent(GA4_EVENTS.HOME_START_CLICK, withUserType({}));
 };
