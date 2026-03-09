@@ -5,14 +5,16 @@ import { FrontendTeacherStudyRoomList } from '@/entities/teacher';
 
 export default function StudyroomSection({
   studyrooms,
+  teacherId,
 }: {
   studyrooms: FrontendTeacherStudyRoomList;
+  teacherId: number;
 }) {
   return (
     <>
       {studyrooms.map((studyroom) => (
         <Link
-          href={`/study-rooms/${studyroom.id}/note?page=0`}
+          href={`/study-room-preview/${studyroom.id}/${teacherId}`}
           className="hover:bg-gray-scale-gray-1 flex items-center gap-3 p-2 hover:rounded-xl"
           key={studyroom.id}
         >

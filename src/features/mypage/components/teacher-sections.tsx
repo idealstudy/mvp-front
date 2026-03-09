@@ -16,6 +16,7 @@ import DescriptionSection from '@/features/profile/components/teacher/descriptio
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
+import { useMemberStore } from '@/store';
 
 export default function TeacherSections() {
   // 활동 통계
@@ -71,6 +72,9 @@ export default function TeacherSections() {
     isError: isCareersError,
     refetch: refetchCareers,
   } = useTeacherCareers();
+
+  // teacherId
+  const teacherId = useMemberStore((state) => state.member?.id);
 
   return (
     <>
@@ -153,8 +157,11 @@ export default function TeacherSections() {
         isError={isStudyRoomsError}
         onRetry={refetchStudyRooms}
       >
-        {studyRooms && studyRooms.length ? (
-          <StudyroomSection studyrooms={studyRooms} />
+        {studyRooms && teacherId && studyRooms.length ? (
+          <StudyroomSection
+            studyrooms={studyRooms}
+            teacherId={teacherId}
+          />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
             운영중인 스터디룸이 없습니다.

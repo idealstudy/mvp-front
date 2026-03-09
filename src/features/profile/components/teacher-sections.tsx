@@ -139,7 +139,10 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
         onRetry={refetchStudyRooms}
       >
         {studyRooms && studyRooms.length ? (
-          <StudyroomSection studyrooms={studyRooms} />
+          <StudyroomSection
+            studyrooms={studyRooms}
+            teacherId={teacherId}
+          />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
             운영중인 스터디룸이 없습니다.
