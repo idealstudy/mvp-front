@@ -1,29 +1,25 @@
 'use client';
 
 import { Role } from '@/entities/member';
+import { FrontendTeacherBasicInfo } from '@/entities/teacher';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import TeacherSections from '@/features/profile/components/teacher-sections';
-import { useProfileBasicInfo } from '@/features/profile/hooks/use-profile-basic-info';
 import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
 import { ColumnLayout } from '@/layout';
 
 export default function ProfileMain({
+  basicInfo,
   memberId,
   role,
+  isPrivate,
 }: {
+  basicInfo?: FrontendTeacherBasicInfo;
   memberId: number;
   role: Role;
+  isPrivate?: boolean;
 }) {
-  const teacherBasicInfoQuery = useProfileBasicInfo(memberId, {
-    enabled: role === 'ROLE_TEACHER',
-  });
-  // TODO 학생 api 추가
-
-  const basicInfoQuery =
-    role === 'ROLE_TEACHER' ? teacherBasicInfoQuery : teacherBasicInfoQuery;
-
   const teacherReportQuery = useProfileReport(memberId, {
-    enabled: role === 'ROLE_TEACHER',
+    enabled: role === 'ROLE_TEACHER' && !isPrivate,
   });
 
   let sections;
@@ -46,22 +42,17 @@ export default function ProfileMain({
     <>
       <ColumnLayout.Left>
         <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-          {basicInfoQuery.isLoading ||
-            (role === 'ROLE_TEACHER' && teacherReportQuery.isLoading && (
-              <div className="text-center">로딩중...</div>
-            ))}
-          {basicInfoQuery.isError && (
-            <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>
+          {teacherReportQuery.isLoading && (
+            <div className="text-center">로딩중...</div>
           )}
-          {basicInfoQuery.data &&
-            role === 'ROLE_TEACHER' &&
-            teacherReportQuery.data && (
-              <ProfileCard
-                basicInfo={basicInfoQuery.data}
-                teacherReport={teacherReportQuery.data}
-                memberId={memberId}
-              />
-            )}
+
+          {basicInfo && teacherReportQuery.data && (
+            <ProfileCard
+              basicInfo={basicInfo}
+              teacherReport={teacherReportQuery.data}
+              memberId={memberId}
+            />
+          )}
         </div>
       </ColumnLayout.Left>
       <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
