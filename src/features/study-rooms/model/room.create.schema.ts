@@ -1,6 +1,16 @@
+import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 const toPlainText = (node: unknown): string => {
+  if (typeof node === 'string') {
+    try {
+      const parsed = JSON.parse(node);
+      return toPlainText(parsed);
+    } catch {
+      return node.trim();
+    }
+  }
+
   const buf: string[] = [];
   JSON.stringify(node, (k, v) => {
     if (k === 'text' && typeof v === 'string') buf.push(v);
@@ -15,11 +25,11 @@ export const CreateStudyRoomSchema = z.object({
     .string()
     .min(1, '스터디룸을 간단 소개를 입력해주세요.')
     .max(200),
-  characteristic: z.preprocess((val) => {
-    const text = typeof val === 'string' ? val : toPlainText(val);
-    const trimmed = text.trim();
-    return trimmed.length > 0 ? trimmed : undefined;
-  }, z.string().max(200).optional()),
+  characteristic: z
+    .custom<JSONContent>((val) => typeof val === 'object' && val !== null)
+    .refine((val) => toPlainText(val).length <= 200, {
+      message: '스터디룸 특징은 200자 이하로 입력해주세요.',
+    }),
   visibility: z.enum(['PUBLIC', 'PRIVATE'], {
     required_error: '공개 범위를 선택해주세요.',
   }),
@@ -51,3 +61,10 @@ export const CreateStudyRoomSchema = z.object({
 });
 
 export type StudyRoomFormValues = z.infer<typeof CreateStudyRoomSchema>;
+
+export type StudyRoomSubmitValues = Omit<
+  StudyRoomFormValues,
+  'characteristic'
+> & {
+  characteristic: string;
+};

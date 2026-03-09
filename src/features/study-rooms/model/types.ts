@@ -32,6 +32,10 @@ export type StudyRoomDetail = {
   name: string;
   description: string;
   characteristic: string;
+  resolvedContent?: {
+    content?: string | null;
+    expiresAt?: string | null;
+  } | null;
   teacherId: number;
   teacherName: string;
   visibility: 'PUBLIC' | 'PRIVATE';

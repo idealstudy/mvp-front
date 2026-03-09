@@ -8,6 +8,9 @@ export type PreviewSchoolInfoDTO = z.infer<typeof dto.schoolInfo>;
 export type PreviewReviewResolvedContentDTO = z.infer<
   typeof dto.reviewResolvedContent
 >;
+export type PreviewCharacteristicResolvedContentDTO = z.infer<
+  typeof dto.characteristicResolvedContent
+>;
 export type PreviewReviewItemDTO = z.infer<typeof dto.reviewItem>;
 
 // Main DTO types

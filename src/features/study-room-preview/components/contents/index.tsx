@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-// import { useRouter } from 'next/navigation';
-
+import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { useMemberStore } from '@/store';
@@ -26,7 +26,7 @@ export const StudyroomPreviewContents = ({
   studyRoomId,
   teacherId,
 }: StudyroomPreviewContentsProps) => {
-  // const router = useRouter();
+  const router = useRouter();
   const { data, isPending, isError } = usePreviewMainInfo(studyRoomId);
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
@@ -36,9 +36,19 @@ export const StudyroomPreviewContents = ({
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
-  // const moveToStudyRoomEditPage = () => {
-  //   router.push(`/study-rooms/${studyRoomId}/edit`);
-  // };
+  const moveToStudyRoomEditPage = () => {
+    router.push(`/study-rooms/${studyRoomId}/edit`);
+  };
+
+  const characteristicContent =
+    data?.resolvedContent?.content ?? data?.characteristic ?? '';
+
+  const parsedContent = useMemo(
+    () => parseEditorContent(characteristicContent),
+    [characteristicContent]
+  );
+
+  const hasCharacteristic = Boolean(characteristicContent.trim());
 
   useEffect(() => {
     if (!isPending) {
@@ -98,7 +108,7 @@ export const StudyroomPreviewContents = ({
               'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
               'hover:border-orange-7 hover:text-orange-7 transition'
             )}
-            onClick={() => alert('준비중인 서비스 입니다.')}
+            onClick={moveToStudyRoomEditPage}
             onMouseEnter={() => setIsEditButtonHovered(true)}
             onMouseLeave={() => setIsEditButtonHovered(false)}
           >
@@ -130,33 +140,36 @@ export const StudyroomPreviewContents = ({
         </p>
       </article>
 
-      {!data.characteristic && isMyStudyRoom && (
-        <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+      {(hasCharacteristic || isMyStudyRoom) && (
+        <article className="bg-system-background-alt flex flex-col gap-1 rounded-xl p-6">
           <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
             스터디룸 특징
           </p>
           <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">
             선생님이 강조한 스터디룸의 특징이에요.
           </p>
-
-          <div className="flex flex-col items-center justify-center gap-1">
-            <p className="font-body2-normal text-gray-5">
-              아직 작성된 스터디룸 특징이 없어요.
-            </p>
-            <button
-              className={cn(
-                'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
-                'hover:bg-orange-7/10 transition'
-              )}
-              onClick={() => alert('준비중인 서비스 입니다.')}
-            >
-              작성하러 가기
-            </button>
-          </div>
+          {hasCharacteristic ? (
+            <TextViewer value={parsedContent} />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-1">
+              <p className="font-body2-normal text-gray-5">
+                아직 작성된 스터디룸 특징이 없어요.
+              </p>
+              <button
+                className={cn(
+                  'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
+                  'hover:bg-orange-7/10 transition'
+                )}
+                onClick={moveToStudyRoomEditPage}
+              >
+                작성하러 가기
+              </button>
+            </div>
+          )}
         </article>
       )}
 
-      <article className="bg-system-background-alt flex flex-col gap-4 rounded-xl p-6">
+      <article className="bg-system-background-alt flex flex-col gap-1 rounded-xl p-6">
         <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
           스터디룸 운영 방식
         </p>
