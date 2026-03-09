@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { Role } from '@/entities/member';
 import { FrontendTeacherBasicInfo } from '@/entities/teacher';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
@@ -20,17 +22,16 @@ export default function ProfileMain({
   const teacherReportQuery = useProfileReport(memberId, {
     enabled: role === 'ROLE_TEACHER',
   });
-    
- useEffect(() => {
-    const targetId = Number(userId);
+
+  useEffect(() => {
+    const targetId = memberId;
     if (!Number.isFinite(targetId) || targetId <= 0) return;
 
     trackDedu101ProfileEnter(
       { target_type: 'teacher', target_id: targetId },
       role
     );
-  }, [userId, role]);
-
+  }, [memberId, role]);
 
   let sections;
 
