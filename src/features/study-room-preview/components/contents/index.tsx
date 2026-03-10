@@ -280,7 +280,7 @@ export const StudyroomPreviewContents = ({
             value={targetText}
           />
 
-          <div className="tablet:block hidden w-px self-stretch bg-gray-200" />
+          <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
 
           <InfoItem
             icon="/study-room-preview/ic-book.png"
