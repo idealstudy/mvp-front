@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { FieldPath, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
@@ -20,6 +20,12 @@ import type {
 import ProgressIndicator from '@/features/study-rooms/components/create/ProgressIndicator';
 import StepOne from '@/features/study-rooms/components/create/StepOne';
 import StepTwo from '@/features/study-rooms/components/create/StepTwo';
+import {
+  normalizeClassFormToForm,
+  normalizeModalityToForm,
+  serializeCharacteristic,
+  useCanSubmitEdit,
+} from '@/features/study-rooms/hooks/use-can-submit-edit';
 import { useStepValidate } from '@/features/study-rooms/hooks/useStepValidate';
 import {
   StepState,
@@ -34,7 +40,6 @@ import {
 import {
   mergeResolvedContentWithMediaIds,
   parseEditorContent,
-  prepareContentForSave,
 } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
@@ -51,28 +56,6 @@ type StudyRoomFlowProps = {
   mode: 'create' | 'edit';
   initialValues?: Partial<StudyRoomFormValues>;
   studyRoomId?: number;
-};
-
-const normalizeModalityToForm = (
-  modality: string | undefined
-): StudyRoomFormValues['modality'] | undefined => {
-  if (!modality) return undefined;
-  return modality === 'OFFLINE' ? 'OFFLINE' : 'ONLINE';
-};
-
-const normalizeClassFormToForm = (
-  classForm: string | undefined
-): StudyRoomFormValues['classForm'] | undefined => {
-  if (!classForm) return undefined;
-  return classForm === 'ONE_ON_ONE' ? 'ONE_ON_ONE' : 'ONE_TO_MANY';
-};
-
-const serializeCharacteristic = (value: unknown) => {
-  const parsed = parseEditorContent(
-    typeof value === 'string' ? value : JSON.stringify(value ?? '')
-  );
-  const { contentString } = prepareContentForSave(parsed);
-  return contentString;
 };
 
 const buildCharacteristicForEditor = (
@@ -182,7 +165,6 @@ export default function StudyRoomFlow({
   const { mutate: updateStudyRoom, isPending: updating } = useUpdateStudyRoom();
 
   const session = useMemberStore((s) => s.member);
-  const watchedValues = useWatch({ control: methods.control });
   const isMutating = creating || updating;
   const initialCharacteristic: StudyRoomFormValues['characteristic'] =
     mode !== 'edit' || !data
@@ -191,23 +173,12 @@ export default function StudyRoomFlow({
           data.characteristic,
           data.resolvedContent?.content ?? ''
         );
-
-  // 제출 버튼 활성화/비활성화 관련
-  const canSubmitEdit =
-    mode !== 'edit' || !data
-      ? false
-      : (watchedValues.name ?? '') !== (data.name ?? '') ||
-        (watchedValues.description ?? '') !== (data.description ?? '') ||
-        serializeCharacteristic(watchedValues.characteristic) !==
-          serializeCharacteristic(initialCharacteristic) ||
-        watchedValues.visibility !== data.visibility ||
-        normalizeModalityToForm(watchedValues.modality) !==
-          normalizeModalityToForm(data.modality) ||
-        normalizeClassFormToForm(watchedValues.classForm) !==
-          normalizeClassFormToForm(data.classForm) ||
-        watchedValues.subjectType !== data.subjectType ||
-        watchedValues.schoolInfo?.schoolLevel !== data.schoolInfo.schoolLevel ||
-        watchedValues.schoolInfo?.grade !== data.schoolInfo.grade;
+  const canSubmitEdit = useCanSubmitEdit({
+    control: methods.control,
+    mode,
+    data,
+    initialCharacteristic,
+  });
 
   const handleNext = async () => {
     const names = fieldsPerStep[step];
@@ -219,36 +190,6 @@ export default function StudyRoomFlow({
   };
 
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
-
-  // const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
-  //   condition === 'invite'
-  //     ? `/study-rooms/${id}/note?invite=open`
-  //     : `/study-rooms/${id}/note`;
-
-  // const handleSubmitCondition = React.useCallback(
-  //   (condition: 'invite' | 'dashboard') => {
-  //     if (isPending) return;
-  //     methods.handleSubmit((data: StudyRoomFormValues) => {
-  //       mutate(data, {
-  //         onSuccess: (result) => {
-  //           // 스터디룸 생성 성공 이벤트
-  //           trackStudyroomCreateSuccess(
-  //             {
-  //               user_id: session?.id ?? 0,
-  //               title_length: data.name?.length ?? 0,
-  //               description_length: data.description?.length ?? 0,
-  //             },
-  //             session?.role ?? null
-  //           );
-  //           // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
-  //           sendOnboarding(); // 온보딩 반영
-  //           router.replace(buildNextRoute(result.id, condition));
-  //         },
-  //       });
-  //     })();
-  //   },
-  //   [isPending, methods, mutate, router, session, sendOnboarding]
-  // );
 
   const handleSubmit = React.useCallback(() => {
     if (creating) return;
@@ -399,36 +340,12 @@ export default function StudyRoomFlow({
                   kind: 'cancel',
                 })
               }
-              // onRequestSubmit={() =>
-              //   dialogDispatch({
-              //     type: 'OPEN',
-              //     scope: 'studyroom',
-              //     kind: 'onConfirm',
-              //   })
-              // }
               onRequestSubmit={handleSubmit}
             />
           )}
         </Form>
       </FormProvider>
 
-      {/* {dialog.status === 'open' &&
-        dialog.scope === 'studyroom' &&
-        dialog.kind === 'onConfirm' && (
-          <ConfirmDialog
-            open
-            dispatch={dialogDispatch}
-            variant="confirm-cancel"
-            title="학생을 지금 초대하시겠어요?"
-            description="지금 초대하면 초대 화면으로, 나중에 하시면 스터디룸으로 이동합니다."
-            confirmText="지금 초대하기"
-            cancelText="나중에 할게요"
-            pending={isMutating}
-            onConfirm={() => handleSubmitCondition('invite')}
-            onCancel={() => handleSubmitCondition('dashboard')}
-          />
-        )}
-*/}
       {mode === 'edit' &&
         dialog.status === 'open' &&
         dialog.scope === 'studyroom' &&
