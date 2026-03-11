@@ -65,6 +65,7 @@ export default function ListLayoutClient({
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(key, value);
+    params.set('page', '1');
 
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
@@ -220,7 +221,6 @@ export default function ListLayoutClient({
                   </Select.Content>
                 </Select> */}
               </div>
-
               <div className="relative">
                 <div className={isPending ? 'opacity-0' : 'opacity-100'}>
                   {children}

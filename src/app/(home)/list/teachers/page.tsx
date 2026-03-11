@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { SITE_CONFIG } from '@/config/site';
 import { getPublicTeachers } from '@/features/list';
 import { ListGrid } from '@/features/list/components/list-grid';
+import { ListPagination } from '@/features/list/components/list-pagination';
 import { TeacherCard } from '@/features/list/components/teacher-card';
 
 export const metadata: Metadata = {
@@ -34,6 +35,12 @@ const parseSort = (value?: string): SortOption => {
   return 'LATEST';
 };
 
+const parsePage = (value?: string) => {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) return 1;
+  return parsed;
+};
+
 export default async function TeachersListPage({
   searchParams,
 }: {
@@ -41,12 +48,15 @@ export default async function TeachersListPage({
 }) {
   const sp = await searchParams;
   const sort = parseSort(typeof sp.sort === 'string' ? sp.sort : undefined);
+  const currentPage = parsePage(
+    typeof sp.page === 'string' ? sp.page : undefined
+  );
   /* TODO : 추후 업데이트 이후 적용 예정 */
 
   // const subject = typeof sp.subject === 'string' ? sp.subject : 'ALL';
 
   const data = await getPublicTeachers({
-    page: 0,
+    page: currentPage - 1,
     size: 20,
     sort: sort,
     // subject: subject as 'ALL' | 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER',
@@ -61,15 +71,21 @@ export default async function TeachersListPage({
   }
 
   return (
-    <ListGrid>
-      {data.content.map((teacher, i) => (
-        <TeacherCard
-          key={teacher.id}
-          teacher={teacher}
-          cardIndex={i + 1}
-          sort={sort}
-        />
-      ))}
-    </ListGrid>
+    <>
+      <ListGrid>
+        {data.content.map((teacher, i) => (
+          <TeacherCard
+            key={teacher.id}
+            teacher={teacher}
+            cardIndex={i + 1}
+            sort={sort}
+          />
+        ))}
+      </ListGrid>
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={data.totalPages}
+      />
+    </>
   );
 }
