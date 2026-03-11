@@ -3,6 +3,7 @@ import { NoteListQuery, ReviewListQuery } from '@/entities/teacher/types';
 export const teacherKeys = {
   all: ['teacher'] as const,
   report: () => [...teacherKeys.all, 'report'] as const,
+  description: () => [...teacherKeys.all, 'description'] as const,
   noteListAll: () => [...teacherKeys.all, 'noteList'] as const,
   noteList: (params: NoteListQuery) =>
     [...teacherKeys.all, 'noteList', params] as const,
@@ -26,4 +27,25 @@ export const teacherKeys = {
   review: (params: ReviewListQuery) =>
     [...teacherKeys.all, 'review', params] as const,
   careers: () => [...teacherKeys.all, 'careers'] as const,
+
+  // 공개 프로필
+  profile: {
+    all: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId] as const,
+    careers: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'careers'] as const,
+    description: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'description'] as const,
+    report: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'report'] as const,
+    // page/size/type 추가 필요
+    reviews: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'reviews'] as const,
+    teachingNotes: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'teachingNotes'] as const,
+    studyRooms: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'studyRooms'] as const,
+    basicInfo: (teacherId: number) =>
+      [...teacherKeys.all, 'profile', teacherId, 'basicInfo'] as const,
+  },
 };

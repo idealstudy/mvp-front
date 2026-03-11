@@ -46,6 +46,7 @@ export {
   filterSlashCommands,
   mergeResolvedContentWithMediaIds,
   parseEditorContent,
+  hasMeaningfulEditorContent,
   transformContentForSave,
   prepareContentForSave,
 } from './utils';

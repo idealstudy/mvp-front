@@ -5,12 +5,14 @@ import { useFormContext } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { teacherKeys } from '@/entities/teacher';
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
 import { trackStudynoteCreateSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
 import { StudyNoteVisibility } from '../../type';
@@ -22,6 +24,8 @@ export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const session = useMemberStore((s) => s.member);
   const { sendOnboarding } = useUpdateTeacherOnboarding('CREATE_CLASS_NOTE');
+
+  const queryClient = useQueryClient();
 
   const { mutate } = useWriteStudyNoteMutation();
   const { handleSubmit } = useFormContext<StudyNoteForm>();
@@ -54,6 +58,9 @@ export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
         router.replace(PRIVATE.NOTE.LIST(roomId));
         // 온보딩 반영
         sendOnboarding();
+
+        // 마이페이지 캐시 무효화
+        queryClient.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };

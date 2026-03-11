@@ -5,16 +5,27 @@ import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import { previewKeys } from '@/entities/study-room-preview';
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import {
   CreateStudyRoomSchema,
+  StudyRoomsQueryKey,
   teacherStudyRoomQueryOptions,
   useCreateStudyRoom,
 } from '@/features/study-rooms';
-import type { StudyRoomFormValues } from '@/features/study-rooms';
+import type {
+  StudyRoomFormValues,
+  StudyRoomSubmitValues,
+} from '@/features/study-rooms';
 import ProgressIndicator from '@/features/study-rooms/components/create/ProgressIndicator';
 import StepOne from '@/features/study-rooms/components/create/StepOne';
 import StepTwo from '@/features/study-rooms/components/create/StepTwo';
+import {
+  normalizeClassFormToForm,
+  normalizeModalityToForm,
+  serializeCharacteristic,
+  useCanSubmitEdit,
+} from '@/features/study-rooms/hooks/use-can-submit-edit';
 import { useStepValidate } from '@/features/study-rooms/hooks/useStepValidate';
 import {
   StepState,
@@ -26,11 +37,18 @@ import {
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog';
+import {
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
+} from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
+import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
 import { trackStudyroomCreateSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { useUpdateStudyRoom } from '../sidebar/services/query';
 
 export const ORDER = ['basic', 'profile'] as const;
 export type Step = (typeof ORDER)[number];
@@ -40,12 +58,26 @@ type StudyRoomFlowProps = {
   studyRoomId?: number;
 };
 
+const buildCharacteristicForEditor = (
+  rawCharacteristic?: string,
+  resolvedCharacteristic?: string
+) => {
+  const rawContent = parseEditorContent(rawCharacteristic ?? '');
+
+  if (!resolvedCharacteristic) {
+    return rawContent;
+  }
+
+  const resolvedContent = parseEditorContent(resolvedCharacteristic);
+  return mergeResolvedContentWithMediaIds(rawContent, resolvedContent);
+};
+
 /**
  * - basic : 스터디룸의 메타데이터
  * - profile : 스터디룸이 어떤 수업을 위한 것인지 설명하는 교육 프로필
  **/
 export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
-  basic: ['name', 'visibility', 'description'],
+  basic: ['name', 'visibility', 'description', 'characteristic'],
   profile: [
     'modality',
     'classForm',
@@ -61,6 +93,7 @@ export default function StudyRoomFlow({
   studyRoomId,
 }: StudyRoomFlowProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [state, dispatch] = React.useReducer(
     stepperReducer,
     createStepState([...ORDER] as Step[])
@@ -83,7 +116,7 @@ export default function StudyRoomFlow({
     defaultValues: {
       name: '',
       description: '',
-      characteristic: '',
+      characteristic: parseEditorContent(''),
       visibility: 'PUBLIC',
       modality: undefined,
       classForm: undefined,
@@ -107,10 +140,13 @@ export default function StudyRoomFlow({
     methods.reset({
       name: data.name ?? '',
       description: data.description ?? '',
-      characteristic: data.characteristic ?? '',
+      characteristic: buildCharacteristicForEditor(
+        data.characteristic,
+        data.resolvedContent?.content ?? ''
+      ),
       visibility: data.visibility,
-      modality: data.modality === 'HYBRID' ? 'ONLINE' : data.modality,
-      classForm: data.classForm === 'GROUP' ? 'ONE_TO_MANY' : 'ONE_ON_ONE',
+      modality: normalizeModalityToForm(data.modality),
+      classForm: normalizeClassFormToForm(data.classForm),
       subjectType: data.subjectType as StudyRoomFormValues['subjectType'],
       schoolInfo: {
         schoolLevel: data.schoolInfo
@@ -124,8 +160,25 @@ export default function StudyRoomFlow({
   void studyRoomId;
 
   const { isStepValid } = useStepValidate(methods, step);
-  const { mutate, isPending } = useCreateStudyRoom();
+  const { mutate: createStudyRoomMutate, isPending: creating } =
+    useCreateStudyRoom();
+  const { mutate: updateStudyRoom, isPending: updating } = useUpdateStudyRoom();
+
   const session = useMemberStore((s) => s.member);
+  const isMutating = creating || updating;
+  const initialCharacteristic: StudyRoomFormValues['characteristic'] =
+    mode !== 'edit' || !data
+      ? parseEditorContent('')
+      : buildCharacteristicForEditor(
+          data.characteristic,
+          data.resolvedContent?.content ?? ''
+        );
+  const canSubmitEdit = useCanSubmitEdit({
+    control: methods.control,
+    mode,
+    data,
+    initialCharacteristic,
+  });
 
   const handleNext = async () => {
     const names = fieldsPerStep[step];
@@ -138,40 +191,15 @@ export default function StudyRoomFlow({
 
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
-  // const buildNextRoute = (id: number, condition: 'invite' | 'dashboard') =>
-  //   condition === 'invite'
-  //     ? `/study-rooms/${id}/note?invite=open`
-  //     : `/study-rooms/${id}/note`;
-
-  // const handleSubmitCondition = React.useCallback(
-  //   (condition: 'invite' | 'dashboard') => {
-  //     if (isPending) return;
-  //     methods.handleSubmit((data: StudyRoomFormValues) => {
-  //       mutate(data, {
-  //         onSuccess: (result) => {
-  //           // 스터디룸 생성 성공 이벤트
-  //           trackStudyroomCreateSuccess(
-  //             {
-  //               user_id: session?.id ?? 0,
-  //               title_length: data.name?.length ?? 0,
-  //               description_length: data.description?.length ?? 0,
-  //             },
-  //             session?.role ?? null
-  //           );
-  //           // 스펙상 id는 항상 옴 (fallback은 의도적으로 생략)
-  //           sendOnboarding(); // 온보딩 반영
-  //           router.replace(buildNextRoute(result.id, condition));
-  //         },
-  //       });
-  //     })();
-  //   },
-  //   [isPending, methods, mutate, router, session, sendOnboarding]
-  // );
-
   const handleSubmit = React.useCallback(() => {
-    if (isPending) return;
+    if (creating) return;
     methods.handleSubmit((data: StudyRoomFormValues) => {
-      mutate(data, {
+      const payload: StudyRoomSubmitValues = {
+        ...data,
+        characteristic: serializeCharacteristic(data.characteristic),
+      };
+
+      createStudyRoomMutate(payload, {
         onSuccess: (result) => {
           // 스터디룸 생성 성공 이벤트
           trackStudyroomCreateSuccess(
@@ -188,12 +216,82 @@ export default function StudyRoomFlow({
         },
       });
     })();
-  }, [isPending, methods, mutate, router, session, sendOnboarding]);
+  }, [
+    creating,
+    methods,
+    createStudyRoomMutate,
+    router,
+    session,
+    sendOnboarding,
+  ]);
 
-  // TODO: 수정 버튼 연결
-  const onConfirmClick = () => {
-    alert('수정끝');
-  };
+  const onConfirmClick = React.useCallback(() => {
+    if (updating || !studyRoomId || !data) return;
+
+    methods.handleSubmit((formValues: StudyRoomFormValues) => {
+      const payload: StudyRoomSubmitValues = {
+        name: formValues.name,
+        description: formValues.description,
+        characteristic: serializeCharacteristic(formValues.characteristic),
+        visibility: formValues.visibility,
+        modality: formValues.modality,
+        classForm: formValues.classForm,
+        subjectType: formValues.subjectType,
+        schoolInfo: {
+          schoolLevel: formValues.schoolInfo.schoolLevel,
+          grade: formValues.schoolInfo.grade ?? data.schoolInfo.grade,
+        },
+      };
+
+      updateStudyRoom(
+        { studyRoomId, others: payload },
+        {
+          onSuccess: async () => {
+            queryClient.removeQueries({
+              queryKey: previewKeys.main(studyRoomId),
+            });
+            queryClient.removeQueries({
+              queryKey: previewKeys.side(data.teacherId, studyRoomId),
+            });
+            queryClient.removeQueries({
+              queryKey: StudyRoomsQueryKey.detail(studyRoomId),
+            });
+            methods.reset(formValues);
+            router.replace(
+              `/study-room-preview/${studyRoomId}/${data.teacherId}`
+            );
+          },
+          onError: (error) => {
+            handleApiError(error, classifyPreviewError, {
+              onAuth: () => {
+                setTimeout(() => {
+                  router.replace('/login');
+                }, 1500);
+              },
+
+              onContext: () => {
+                setTimeout(() => {
+                  router.replace(
+                    `/study-room-preview/${studyRoomId}/${data.teacherId}`
+                  );
+                }, 1500);
+              },
+
+              onUnknown: () => {},
+            });
+          },
+        }
+      );
+    })();
+  }, [
+    updating,
+    studyRoomId,
+    data,
+    methods,
+    updateStudyRoom,
+    queryClient,
+    router,
+  ]);
 
   return (
     <section className="flex flex-col">
@@ -226,7 +324,8 @@ export default function StudyRoomFlow({
           {step === 'profile' && (
             <StepTwo
               mode={mode}
-              disabled={isPending}
+              disabled={isMutating}
+              canSubmitEdit={canSubmitEdit}
               onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
@@ -241,36 +340,12 @@ export default function StudyRoomFlow({
                   kind: 'cancel',
                 })
               }
-              // onRequestSubmit={() =>
-              //   dialogDispatch({
-              //     type: 'OPEN',
-              //     scope: 'studyroom',
-              //     kind: 'onConfirm',
-              //   })
-              // }
               onRequestSubmit={handleSubmit}
             />
           )}
         </Form>
       </FormProvider>
 
-      {/* {dialog.status === 'open' &&
-        dialog.scope === 'studyroom' &&
-        dialog.kind === 'onConfirm' && (
-          <ConfirmDialog
-            open
-            dispatch={dialogDispatch}
-            variant="confirm-cancel"
-            title="학생을 지금 초대하시겠어요?"
-            description="지금 초대하면 초대 화면으로, 나중에 하시면 스터디룸으로 이동합니다."
-            confirmText="지금 초대하기"
-            cancelText="나중에 할게요"
-            pending={isPending}
-            onConfirm={() => handleSubmitCondition('invite')}
-            onCancel={() => handleSubmitCondition('dashboard')}
-          />
-        )}
-*/}
       {mode === 'edit' &&
         dialog.status === 'open' &&
         dialog.scope === 'studyroom' &&
@@ -284,7 +359,7 @@ export default function StudyRoomFlow({
             confirmText="확인"
             cancelText="취소"
             onConfirm={onConfirmClick}
-            pending={isPending}
+            pending={isMutating}
           />
         )}
       {mode === 'edit' &&

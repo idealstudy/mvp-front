@@ -5,17 +5,17 @@ import React, { useState } from 'react';
 import { Role } from '@/entities/member';
 import { useMemberInfo } from '@/features/member/hooks/use-queries';
 import EditProfileCard from '@/features/mypage/components/edit-profile-card';
-import { ProfileCardDropdown } from '@/features/mypage/components/profile-card-dropdown';
 import { useStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
 import { useTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
 import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
+import { Pen } from 'lucide-react';
 
 export default function EditableProfileCard({ role }: { role: Role }) {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const { data: member } = useMemberInfo();
-  const memberId = member?.id.toString();
+  const memberId = member?.id;
   const teacherBasicInfoQuery = useTeacherBasicInfo({
     enabled: role === 'ROLE_TEACHER',
   });
@@ -30,7 +30,10 @@ export default function EditableProfileCard({ role }: { role: Role }) {
   const basicInfoQuery =
     role === 'ROLE_TEACHER' ? teacherBasicInfoQuery : studentBasicInfoQuery;
 
-  if (basicInfoQuery && basicInfoQuery.isLoading) {
+  if (
+    basicInfoQuery.isLoading ||
+    (role === 'ROLE_TEACHER' && teacherReportQuery.isLoading)
+  ) {
     return <div className="text-center">로딩중...</div>;
   }
 
@@ -50,11 +53,15 @@ export default function EditableProfileCard({ role }: { role: Role }) {
     <ProfileCard
       basicInfo={basicInfoQuery.data}
       teacherReport={teacherReportQuery.data}
+      memberId={memberId}
       action={
-        <ProfileCardDropdown
-          profileId={memberId}
-          setIsEditMode={setIsEditMode}
-        />
+        <button
+          onClick={() => setIsEditMode(true)}
+          className="cursor-pointer"
+          aria-label="기본정보 수정하기"
+        >
+          <Pen />
+        </button>
       }
     />
   );

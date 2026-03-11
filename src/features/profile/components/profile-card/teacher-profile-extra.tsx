@@ -1,10 +1,17 @@
+'use client';
+
+import { useState } from 'react';
+
 import Image from 'next/image';
+
+import { Button, Dialog } from '@/shared/components/ui';
 
 interface TeacherProfileExtraProps {
   teacherNoteCount: number;
   studentCount: number;
   reviewCount: number;
   description: string;
+  teacherId: number;
 }
 
 export default function TeacherProfileExtra({
@@ -12,7 +19,17 @@ export default function TeacherProfileExtra({
   studentCount,
   reviewCount,
   description,
+  teacherId,
 }: TeacherProfileExtraProps) {
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+
+  const handleShareProfile = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/profile/teacher/${teacherId}`
+    );
+    setIsShareDialogOpen(true);
+  };
+
   return (
     <>
       <div className="flex justify-between">
@@ -60,10 +77,34 @@ export default function TeacherProfileExtra({
         </div>
       </div>
 
+      <Button onClick={handleShareProfile}>프로필 공유하기</Button>
+
       <div>
         <h4 className="font-body1-heading mb-2">간단 소개</h4>
         <p className="break-words">{description}</p>
       </div>
+
+      {/* 공유하기 다이얼로그 */}
+      <Dialog
+        isOpen={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+      >
+        <Dialog.Content className="max-w-120">
+          <Dialog.Body className="mb-8 text-center">
+            <Dialog.Title>링크가 복사되었습니다.</Dialog.Title>
+          </Dialog.Body>
+          <Dialog.Footer className="flex justify-center">
+            <Dialog.Close asChild>
+              <Button
+                size="xsmall"
+                className="w-30"
+              >
+                확인
+              </Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </>
   );
 }

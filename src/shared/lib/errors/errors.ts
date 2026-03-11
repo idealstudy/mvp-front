@@ -74,3 +74,17 @@ export function classifyMypageError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// Preview 페이지 관련 에러
+export function classifyPreviewError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'STUDY_ROOM_NOT_EXIST':
+      return 'CONTEXT';
+
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

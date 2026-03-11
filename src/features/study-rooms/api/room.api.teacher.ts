@@ -1,4 +1,4 @@
-import { StudyRoomFormValues } from '@/features/study-rooms';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms';
 import {
   TeacherStudyRoomRequests,
   createStudyRoomBaseApi,
@@ -40,7 +40,7 @@ export const createTeacherStudyRoomApi = (
   };
 
   // 스터디룸 생성
-  const create = async (payload: StudyRoomFormValues): Promise<StudyRoom> => {
+  const create = async (payload: StudyRoomSubmitValues): Promise<StudyRoom> => {
     const response = await base.client.post<ApiResponse<StudyRoom>>(
       base.teacherBasePath,
       payload

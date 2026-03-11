@@ -41,7 +41,7 @@ export const useTeacherDashboardReportQuery = (options?: {
   enabled?: boolean;
 }) => {
   return useQuery({
-    queryKey: teacherKeys.report(),
+    queryKey: teacherKeys.dashboard.report(),
     queryFn: () => teacherRepository.dashboard.getReport(),
     ...settings,
     enabled: options?.enabled ?? true,

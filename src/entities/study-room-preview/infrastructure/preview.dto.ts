@@ -14,8 +14,13 @@ const PreviewSchoolInfoSchema = z.object({
  * 공통 하위 DTO - 리뷰 해석 결과
  * ──────────────────────────────────────────────────── */
 const PreviewReviewResolvedContentSchema = z.object({
-  content: z.string(),
-  expiresAt: z.string(),
+  content: z.string().nullable().optional(),
+  expiresAt: z.string().nullable().optional(),
+});
+
+const PreviewCharacteristicResolvedContentSchema = z.object({
+  content: z.string().nullable().optional(),
+  expiresAt: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -33,7 +38,7 @@ const PreviewReviewItemSchema = z.object({
   content: z.string(),
   regDate: z.string(),
   modDate: z.string(),
-  resolvedContent: PreviewReviewResolvedContentSchema,
+  resolvedContent: PreviewReviewResolvedContentSchema.nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -44,6 +49,8 @@ const StudyRoomPreviewCoreSchema = z.object({
   name: z.string(),
   description: z.string(),
   characteristic: z.string().nullable().optional(),
+  resolvedContent:
+    PreviewCharacteristicResolvedContentSchema.nullable().optional(),
   modality: base.modality,
   classForm: base.classForm,
   subjectType: base.subject,
@@ -103,6 +110,7 @@ const StudyRoomPreviewStatsEnvelopeSchema = sharedSchema.response(
 export const dto = {
   schoolInfo: PreviewSchoolInfoSchema,
   reviewResolvedContent: PreviewReviewResolvedContentSchema,
+  characteristicResolvedContent: PreviewCharacteristicResolvedContentSchema,
   reviewItem: PreviewReviewItemSchema,
 
   core: StudyRoomPreviewCoreSchema,

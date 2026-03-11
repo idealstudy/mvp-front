@@ -6,7 +6,7 @@ import {
   TeacherStudyRoomRequests,
   createTeacherStudyRoomQueryOptions,
 } from '@/features/study-rooms/api';
-import type { StudyRoomFormValues } from '@/features/study-rooms/model';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
 import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -49,12 +49,16 @@ export const createTeacherStudyRoomHooks = (
   const useCreateStudyRoom = () => {
     const qc = useQueryClient();
     return useMutation({
-      mutationFn: (payload: StudyRoomFormValues) => api.create(payload),
+      mutationFn: (payload: StudyRoomSubmitValues) => api.create(payload),
       onSuccess: () => {
         void qc.invalidateQueries({ queryKey: StudyRoomsQueryKey.teacherList });
+
         void qc.invalidateQueries({
           queryKey: teacherKeys.dashboard.studyRoomList(),
         });
+        
+        // 마이페이지 캐시 무효화
+        void qc.invalidateQueries({ queryKey: teacherKeys.all });
       },
     });
   };

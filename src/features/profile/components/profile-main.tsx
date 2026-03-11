@@ -2,43 +2,69 @@
 
 import { useEffect } from 'react';
 
-import { UserBasicInfo } from '@/features/mypage/types';
-import ProfileLayout from '@/features/profile/components/profile-layout';
-import { useProfile } from '@/features/profile/hooks/use-profile';
+import { Role } from '@/entities/member';
+import { FrontendTeacherBasicInfo } from '@/entities/teacher';
+import ProfileCard from '@/features/profile/components/profile-card/profile-card';
+import TeacherSections from '@/features/profile/components/teacher-sections';
+import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
+import { ColumnLayout } from '@/layout';
 import { trackDedu101ProfileEnter } from '@/shared/lib/gtm/trackers';
-import { useMemberStore } from '@/store';
 
-export default function ProfileMain({ userId }: { userId: string }) {
-  // TODO 새 API 연결
-  const { data: profileData, isLoading } = useProfile(userId);
-  const role = useMemberStore((s) => s.member?.role ?? null);
+export default function ProfileMain({
+  basicInfo,
+  memberId,
+  role,
+}: {
+  basicInfo?: FrontendTeacherBasicInfo;
+  memberId: number;
+  role: Role;
+}) {
+  const teacherReportQuery = useProfileReport(memberId, {
+    enabled: role === 'ROLE_TEACHER',
+  });
 
   useEffect(() => {
-    const targetId = Number(userId);
+    const targetId = memberId;
     if (!Number.isFinite(targetId) || targetId <= 0) return;
 
     trackDedu101ProfileEnter(
       { target_type: 'teacher', target_id: targetId },
       role
     );
-  }, [userId, role]);
+  }, [memberId, role]);
 
-  const MOCK_PROFILE_DATA: UserBasicInfo = {
-    name: profileData?.name || '',
-    email: profileData?.email || '',
-    isProfilePublic: true,
-    simpleIntroduction: '',
-    role: 'ROLE_TEACHER',
-    profilePublicKorean: '공개',
-  };
+  let sections;
 
-  if (isLoading) {
-    return <div className="text-center">로딩중...</div>;
+  switch (role) {
+    case 'ROLE_TEACHER':
+      sections = <TeacherSections teacherId={memberId} />;
+      break;
+    // case 'ROLE_STUDENT':
+    //   sections = <StudentSections />;
+    //   break;
+    // case 'ROLE_PARENT':
+    //   sections = <ParentSections />;
+    //   break;
+    default:
+      sections = <div>잘못된 접근입니다.</div>;
   }
 
-  if (!profileData) {
-    return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
-  }
-
-  return <ProfileLayout basicInfo={MOCK_PROFILE_DATA} />;
+  return (
+    <>
+      <ColumnLayout.Left>
+        <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
+          {basicInfo && (
+            <ProfileCard
+              basicInfo={basicInfo}
+              teacherReport={teacherReportQuery.data}
+              memberId={memberId}
+            />
+          )}
+        </div>
+      </ColumnLayout.Left>
+      <ColumnLayout.Right className="desktop:max-w-[740px] desktop:px-8">
+        <div className="flex flex-col gap-3">{sections}</div>
+      </ColumnLayout.Right>
+    </>
+  );
 }

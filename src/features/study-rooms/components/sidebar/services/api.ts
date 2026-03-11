@@ -1,5 +1,8 @@
 // 수업노트 그룹 생성
-import { StudyRoomDetail } from '@/features/study-rooms/model';
+import type {
+  StudyRoomDetail,
+  StudyRoomSubmitValues,
+} from '@/features/study-rooms/model';
 import { api } from '@/shared/api';
 
 export const createStudyNoteGroup = async (params: {
@@ -54,7 +57,7 @@ export const updateStudyRoom = async ({
   others,
 }: {
   studyRoomId: number;
-  others: StudyRoomDetail;
+  others: StudyRoomSubmitValues;
 }) => {
   return await api.private.put(`/teacher/study-rooms/${studyRoomId}`, {
     ...others,

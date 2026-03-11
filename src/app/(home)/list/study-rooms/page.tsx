@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { SITE_CONFIG } from '@/config/site';
 import { getPublicStudyRooms } from '@/features/list';
 import { ListGrid } from '@/features/list/components/list-grid';
+import { ListPagination } from '@/features/list/components/list-pagination';
 import { StudyRoomCard } from '@/features/list/components/study-room-card';
 
 export const metadata: Metadata = {
@@ -37,6 +38,12 @@ const parseSort = (value?: string): SortOption => {
   return 'LATEST';
 };
 
+const parsePage = (value?: string) => {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) return 1;
+  return parsed;
+};
+
 export default async function StudyRoomListPage({
   searchParams,
 }: {
@@ -44,9 +51,12 @@ export default async function StudyRoomListPage({
 }) {
   const sp = await searchParams;
   const sort = parseSort(typeof sp.sort === 'string' ? sp.sort : undefined);
+  const currentPage = parsePage(
+    typeof sp.page === 'string' ? sp.page : undefined
+  );
 
   const data = await getPublicStudyRooms({
-    page: 0,
+    page: currentPage - 1,
     size: 20,
     sort: sort,
   });
@@ -60,13 +70,19 @@ export default async function StudyRoomListPage({
   }
 
   return (
-    <ListGrid>
-      {data.content.map((studyRoom) => (
-        <StudyRoomCard
-          key={studyRoom.id}
-          studyRoom={studyRoom}
-        />
-      ))}
-    </ListGrid>
+    <>
+      <ListGrid>
+        {data.content.map((studyRoom) => (
+          <StudyRoomCard
+            key={studyRoom.id}
+            studyRoom={studyRoom}
+          />
+        ))}
+      </ListGrid>
+      <ListPagination
+        currentPage={currentPage}
+        totalPages={data.totalPages}
+      />
+    </>
   );
 }

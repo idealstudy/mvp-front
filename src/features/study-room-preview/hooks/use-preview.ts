@@ -31,4 +31,5 @@ export const usePreviewMainInfo = (studyRoomId: number) =>
     queryKey: previewKeys.main(studyRoomId),
     queryFn: () => repository.preview.getPreviewMain(studyRoomId),
     staleTime: FIVE_MINUTE,
+    refetchOnMount: 'always',
   });

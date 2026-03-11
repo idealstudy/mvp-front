@@ -12,6 +12,7 @@ import {
   TeacherBasicInfoDTO,
   TeacherCareerListDTO,
   UpdateTeacherBasicInfoPayload,
+  UpdateTeacherDescriptionPayload,
   UpdateTeacherTeachingNoteRepresentativePayload,
 } from '@/entities/teacher/types';
 import { api } from '@/shared/api';
@@ -60,6 +61,24 @@ const updateBasicInfo = async (
 ): Promise<void> => {
   const validated = payload.basicInfo.parse(basicInfo);
   await api.private.patch('/teacher/me/basic-info', validated);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 선생님 특징 조회
+ * ────────────────────────────────────────────────────*/
+const getTeacherDescription = async () => {
+  const response = await api.private.get(`/teacher/me/description`);
+  return unwrapEnvelope(response, dto.teacherDescription);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Update] 선생님 특징 변경
+ * ────────────────────────────────────────────────────*/
+const updateDescription = async (
+  description: UpdateTeacherDescriptionPayload
+): Promise<void> => {
+  const validated = payload.description.parse(description);
+  await api.private.patch('/teacher/me/description', validated);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -278,6 +297,77 @@ const deleteTeacherCareer = async (careerId: number): Promise<void> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 기본 정보 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileBasicInfo = async (teacherId: number) => {
+  const response = await api.public.get<CommonResponse<TeacherBasicInfoDTO>>(
+    `/public/teachers/${teacherId}/basic-info`
+  );
+
+  const dtos = unwrapEnvelope(response, dto.basicInfo);
+  return transformBasicInfoToFrontend(dtos);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 경력 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileCareers = async (teacherId: number) => {
+  const response = await api.public.get<CommonResponse<TeacherCareerListDTO>>(
+    `/public/teachers/${teacherId}/careers`
+  );
+  const dtos = unwrapEnvelope(response, dto.teacherCareerList);
+  return transformCareersToFrontend(dtos);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 특징 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileDescription = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/description`
+  );
+  return unwrapEnvelope(response, dto.teacherDescription);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 통계 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileReport = async (teacherId: number) => {
+  const response = await api.public.get(`/public/teachers/${teacherId}/report`);
+  return unwrapEnvelope(response, dto.teacherReport);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 리뷰 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileReviews = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/reviews`
+  );
+  return unwrapEnvelope(response, dto.teacherReviewList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 대표 수업노트 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileTeachingNotes = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/teaching-notes`
+  );
+  return unwrapEnvelope(response, dto.teacherRepresentativeNoteList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 공개 프로필 - 선생님 운영중인 스터디룸 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileStudyRooms = async (teacherId: number) => {
+  const response = await api.public.get(
+    `/public/teachers/${teacherId}/study-rooms`
+  );
+  return unwrapEnvelope(response, dto.teacherStudyRoomList);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -285,6 +375,7 @@ export const repository = {
     getBasicInfo,
     updateBasicInfo,
   },
+  description: { getTeacherDescription, updateDescription },
   teachingNote: {
     getTeacherNoteList,
     getTeacherRepresentativeNoteList,
@@ -306,5 +397,14 @@ export const repository = {
     getTeacherCareerList,
     updateTeacherCareer,
     deleteTeacherCareer,
+  },
+  profile: {
+    getProfileCareers,
+    getProfileDescription,
+    getProfileReport,
+    getProfileReviews,
+    getProfileTeachingNotes,
+    getProfileStudyRooms,
+    getProfileBasicInfo,
   },
 };

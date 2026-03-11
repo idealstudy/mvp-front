@@ -195,7 +195,15 @@ export const useTextEditor = ({
 
     if (prevValueRef.current !== newContentStr) {
       prevValueRef.current = newContentStr;
-      editor.commands.setContent(value);
+      const timeoutId = window.setTimeout(() => {
+        if (!editor.isDestroyed) {
+          editor.commands.setContent(value, { emitUpdate: false });
+        }
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
   }, [editor, value]);
 

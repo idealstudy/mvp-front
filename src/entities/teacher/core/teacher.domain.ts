@@ -14,6 +14,17 @@ const BasicInfoDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 특징 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const TeacherDescriptionDomainSchema = z.object({
+  description: z.string().nullable(),
+  resolvedDescription: z.object({
+    content: z.string().nullable(),
+    expiresAt: z.string().nullable(),
+  }),
+});
+
+/* ─────────────────────────────────────────────────────
  * 선생님 통계 Domain 스키마
  * ────────────────────────────────────────────────────*/
 const TeacherReportDomainSchema = z.object({
@@ -124,6 +135,7 @@ const TeacherCareerListDomainSchema = z.array(
  * ────────────────────────────────────────────────────*/
 export const domain = {
   basicInfo: BasicInfoDomainSchema,
+  teacherDescription: TeacherDescriptionDomainSchema,
   teacherReport: TeacherReportDomainSchema,
   teacherNoteListItem: TeacherNoteListItemDomainSchema,
   teacherNoteList: TeacherNoteListDomainSchema,

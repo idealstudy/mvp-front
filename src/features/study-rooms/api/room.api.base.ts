@@ -7,8 +7,8 @@ import type {
   StudyRoom,
   StudyRoomClient,
   StudyRoomDetail,
+  StudyRoomSubmitValues,
 } from '@/features/study-rooms/model';
-import { StudyRoomFormValues } from '@/features/study-rooms/model/room.create.schema';
 import { api } from '@/shared/api';
 import { Pageable, PaginationData } from '@/types/http';
 
@@ -20,7 +20,7 @@ export type InvitationAcceptResponse = unknown;
 export interface TeacherStudyRoomRequests {
   getStudyRooms(): Promise<StudyRoom[]>;
   getStudyRoomDetail(studyRoomId: number): Promise<StudyRoomDetail>;
-  create(payload: StudyRoomFormValues): Promise<StudyRoom>;
+  create(payload: StudyRoomSubmitValues): Promise<StudyRoom>;
   invitations: {
     send(args: {
       studyRoomId: number;
@@ -51,7 +51,7 @@ export interface StudyRoomRequests {
   getStudentStudyRooms(): Promise<StudentStudyRoom[]>;
 
   // Teacher
-  create(payload: StudyRoomFormValues): Promise<StudyRoom>;
+  create(payload: StudyRoomSubmitValues): Promise<StudyRoom>;
   invitations: {
     send(args: {
       studyRoomId: number;

@@ -47,12 +47,14 @@ const { data } = step2 as FileSchema;
 
 export default function StepTwo({
   disabled,
+  canSubmitEdit,
   onRequestSubmit,
   onRequestEdit,
   onCancel,
   mode,
 }: {
   disabled?: boolean;
+  canSubmitEdit?: boolean;
   onRequestSubmit?: () => void;
   onRequestEdit?: () => void;
   onCancel?: () => void;
@@ -216,7 +218,7 @@ export default function StepTwo({
             <Button
               type="button"
               className="max-desktop:w-full w-48 self-end"
-              disabled={disabled || !isValid || !isDirty}
+              disabled={disabled || !(canSubmitEdit ?? isDirty)}
               onClick={onRequestEdit}
             >
               {disabled ? '수정 중...' : '수정하기'}

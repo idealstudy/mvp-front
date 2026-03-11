@@ -23,12 +23,15 @@ export default function SelectTeachingnotesDialog() {
 
   // 대표 수업노트
   const { data: representativeNotes } = useTeacherRepresentativeTeachingNotes();
+  // 대표 수업노트가 없을 경우, 최신 노트 5개를 받음
+  // 이를 구분하기 위한 변수 (isRepresentative)
+  const isRepresentative = representativeNotes?.[0]?.representative ?? false;
 
   // TODO 페이지네이션 또는 무한 스크롤 추가 (현재 고정)
   const { data: allNotesData } = useTeacherTeachingNotes({
-    page: 1,
+    page: 0,
     size: 30,
-    sortKey: 'LATEST_EDITED',
+    sortKey: 'TAUGHT_AT_ASC',
   });
 
   const allNotes = allNotesData?.content;
@@ -42,7 +45,11 @@ export default function SelectTeachingnotesDialog() {
   const loadingNoteId = isPending ? variables.teachingNoteId : null;
 
   const toggleNote = (id: number, current: boolean) => {
-    if (!current && (representativeNotes?.length ?? 0) >= 5) {
+    if (
+      isRepresentative &&
+      !current &&
+      (representativeNotes?.length ?? 0) >= 5
+    ) {
       toast.error('대표 수업노트는 최대 5개까지만 선택할 수 있습니다.', {
         position: 'bottom-center',
         autoClose: 2000,
@@ -121,8 +128,8 @@ export default function SelectTeachingnotesDialog() {
           <Dialog.Body>
             <div>
               {/* 상단: 대표 수업노트 */}
-              {representativeNotes && representativeNotes.length > 0 && (
-                <div className="sticky top-0 z-10 mb-2 bg-white">
+              {representativeNotes && isRepresentative && (
+                <div className="sticky top-0 mb-2 bg-white">
                   <Accordion
                     type="single"
                     collapsible
@@ -150,7 +157,7 @@ export default function SelectTeachingnotesDialog() {
                 </div>
               )}
 
-              {(representativeNotes?.length ?? 0) >= 5 && (
+              {isRepresentative && (representativeNotes?.length ?? 0) >= 5 && (
                 <div className="text-center text-sm">
                   대표 수업노트 5개가 모두 선택되었습니다. 다른 노트를
                   선택하려면 기존 선택을 해제해주세요.
@@ -165,8 +172,8 @@ export default function SelectTeachingnotesDialog() {
                       variant="selectable"
                       key={note.id}
                       teachingnote={note}
-                      checked={false}
-                      onClick={() => toggleNote(note.id, false)}
+                      checked={note.representative}
+                      onClick={() => toggleNote(note.id, note.representative)}
                       isLoading={loadingNoteId === note.id}
                     />
                   ))}

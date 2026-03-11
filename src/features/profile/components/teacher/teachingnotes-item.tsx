@@ -3,7 +3,6 @@ import { SelectedListItem } from '@/features/profile/components/teacher/selected
 import StudyNoteVisibilityIcon from '@/features/study-notes/components/studynote-visibility-icon';
 import { MiniSpinner } from '@/shared/components/loading';
 import { ListItem } from '@/shared/components/ui/list-item';
-import { getRelativeTimeString } from '@/shared/lib';
 
 type LinkVariant = {
   variant: 'link';
@@ -36,8 +35,12 @@ export default function TeachingnotesItem({
         title={teachingnote.name}
         icon={<StudyNoteVisibilityIcon visibility="PUBLIC" />}
         subtitle={`조회수 ${teachingnote.viewCount}명 | 질문수 ${teachingnote.qnaCount}개`}
-        rightSubTitle={`${getRelativeTimeString(teachingnote.modDate)} 수정`}
         href={`/study-rooms/${teachingnote.studyRoomId}/note/${teachingnote.id}`}
+        tag={
+          <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
+            {teachingnote.studyRoomName}
+          </span>
+        }
         id={teachingnote.id}
       />
     );
@@ -49,9 +52,7 @@ export default function TeachingnotesItem({
         onClick={onClick}
         icon={<StudyNoteVisibilityIcon visibility="PUBLIC" />}
         subtitle={`조회수 ${teachingnote.viewCount}명 | 질문수 ${teachingnote.qnaCount}개`}
-        rightSubTitle={
-          isLoading ? '' : `${getRelativeTimeString(teachingnote.modDate)} 수정`
-        }
+        rightSubTitle={isLoading ? '' : teachingnote.studyRoomName}
         rightIcon={isLoading && <MiniSpinner />}
         checked={checked}
       />
