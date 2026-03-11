@@ -312,6 +312,9 @@ export const parseEditorContent = (content: string): EditorContent => {
   }
 };
 
+/**
+ *빈 에디터 문서가 들어올 시 처리합니다.
+ */
 const CONTENTFUL_NODE_TYPES = new Set([
   'image',
   'fileAttachment',
