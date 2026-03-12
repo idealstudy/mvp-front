@@ -1,5 +1,5 @@
 import { FrontendTeacherCareerList } from '@/entities/teacher';
-import { CareerDropdown } from '@/features/mypage/components/career-dropdown';
+import { CareerDropdown } from '@/features/mypage/profile/components/career-dropdown';
 
 export default function CareerSection({
   careers,

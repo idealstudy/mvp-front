@@ -1,9 +1,9 @@
 'use client';
 
-import EditableProfileCard from '@/features/mypage/components/editable-profile-card';
-import ParentSections from '@/features/mypage/components/parent-sections';
-import StudentSections from '@/features/mypage/components/student-sections';
-import TeacherSections from '@/features/mypage/components/teacher-sections';
+import EditableProfileCard from '@/features/mypage/common/components/editable-profile-card';
+import ParentSections from '@/features/mypage/profile/components/parent-sections';
+import StudentSections from '@/features/mypage/profile/components/student-sections';
+import TeacherSections from '@/features/mypage/profile/components/teacher-sections';
 import { ColumnLayout } from '@/layout';
 import { useRole } from '@/shared/hooks';
 

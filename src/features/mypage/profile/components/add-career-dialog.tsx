@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import CareerDialog from '@/features/mypage/components/career-dialog';
+import CareerDialog from '@/features/mypage/profile/components/career-dialog';
 import { Plus } from 'lucide-react';
 
 export default function AddCareerDialog() {

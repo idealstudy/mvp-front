@@ -2,8 +2,8 @@ import React from 'react';
 
 import Image from 'next/image';
 
+import { UserBasicInfo } from '@/entities/member/types';
 import { FrontendTeacherReport } from '@/entities/teacher';
-import { UserBasicInfo } from '@/features/mypage/types';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 

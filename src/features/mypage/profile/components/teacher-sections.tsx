@@ -2,15 +2,15 @@
 
 import { useMemo } from 'react';
 
-import AddCareerDialog from '@/features/mypage/components/add-career-dialog';
-import EditHighlightDialog from '@/features/mypage/components/edit-description-dialog';
-import SelectTeachingnotesDialog from '@/features/mypage/components/select-teachingnotes-dialog';
-import { useTeacherCareers } from '@/features/mypage/hooks/teacher/use-careers';
-import { useTeacherDescription } from '@/features/mypage/hooks/teacher/use-description';
-import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
-import { useTeacherReviews } from '@/features/mypage/hooks/teacher/use-reviews';
-import { useTeacherStudyRooms } from '@/features/mypage/hooks/teacher/use-study-rooms';
-import { useTeacherRepresentativeTeachingNotes } from '@/features/mypage/hooks/teacher/use-teaching-notes';
+import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-report';
+import AddCareerDialog from '@/features/mypage/profile/components/add-career-dialog';
+import EditHighlightDialog from '@/features/mypage/profile/components/edit-description-dialog';
+import SelectTeachingnotesDialog from '@/features/mypage/profile/components/select-teachingnotes-dialog';
+import { useTeacherCareers } from '@/features/mypage/profile/hooks/teacher/use-careers';
+import { useTeacherDescription } from '@/features/mypage/profile/hooks/teacher/use-description';
+import { useTeacherReviews } from '@/features/mypage/profile/hooks/teacher/use-reviews';
+import { useTeacherStudyRooms } from '@/features/mypage/profile/hooks/teacher/use-study-rooms';
+import { useTeacherRepresentativeTeachingNotes } from '@/features/mypage/profile/hooks/teacher/use-teaching-notes';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
