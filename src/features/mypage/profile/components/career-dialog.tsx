@@ -9,10 +9,13 @@ import {
   FrontendTeacherCareerListItem,
 } from '@/entities/teacher';
 import {
+  CareerForm,
+  CareerFormSchema,
+} from '@/features/mypage/common/schema/schema';
+import {
   usePostTeacherCareer,
   useUpdateTeacherCareer,
-} from '@/features/mypage/hooks/teacher/use-careers';
-import { CareerForm, CareerFormSchema } from '@/features/mypage/schema/schema';
+} from '@/features/mypage/profile/hooks/teacher/use-careers';
 import {
   Button,
   Checkbox,

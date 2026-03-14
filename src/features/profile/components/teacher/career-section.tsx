@@ -1,12 +1,14 @@
-import { FrontendTeacherCareerList } from '@/entities/teacher';
-import { CareerDropdown } from '@/features/mypage/components/career-dropdown';
+import {
+  FrontendTeacherCareerList,
+  FrontendTeacherCareerListItem,
+} from '@/entities/teacher';
 
 export default function CareerSection({
   careers,
-  isOwner = false,
+  renderAction,
 }: {
   careers: FrontendTeacherCareerList;
-  isOwner?: boolean;
+  renderAction?: (career: FrontendTeacherCareerListItem) => React.ReactNode;
 }) {
   return (
     <>
@@ -27,7 +29,7 @@ export default function CareerSection({
               <li className="whitespace-pre-wrap">{career.description}</li>
             </ul>
           </div>
-          {isOwner && <CareerDropdown career={career} />}
+          {renderAction?.(career)}
         </div>
       ))}
     </>

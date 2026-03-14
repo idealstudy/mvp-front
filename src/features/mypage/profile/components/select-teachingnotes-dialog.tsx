@@ -10,7 +10,7 @@ import {
   useTeacherRepresentativeTeachingNotes,
   useTeacherTeachingNotes,
   useUpdateTeacherNoteRepresentative,
-} from '@/features/mypage/hooks/teacher/use-teaching-notes';
+} from '@/features/mypage/profile/hooks/teacher/use-teaching-notes';
 import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Accordion, Dialog } from '@/shared/components/ui';

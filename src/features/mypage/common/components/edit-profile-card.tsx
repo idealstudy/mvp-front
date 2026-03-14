@@ -6,13 +6,13 @@ import { Controller, useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { useUpdateStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
-import { useUpdateTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
+import { UserBasicInfo } from '@/entities/member/types';
+import { useUpdateStudentBasicInfo } from '@/features/mypage/common/hooks/student/use-basic-info';
+import { useUpdateTeacherBasicInfo } from '@/features/mypage/common/hooks/teacher/use-basic-info';
 import {
   BasicInfoForm,
   BasicInfoFormSchema,
-} from '@/features/mypage/schema/schema';
-import { UserBasicInfo } from '@/features/mypage/types';
+} from '@/features/mypage/common/schema/schema';
 import {
   Button,
   Form,
