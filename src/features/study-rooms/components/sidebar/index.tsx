@@ -1,7 +1,6 @@
 'use client';
 
 import { useReducer, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import { useRouter } from 'next/navigation';
 
@@ -21,8 +20,9 @@ import {
 } from '@/shared/components/dialog/model/dialog-reducer';
 import { SidebarButton } from '@/shared/components/sidebar';
 import { Toggle } from '@/shared/components/ui';
+import { showBottomToast } from '@/shared/components/ui/bottom-toast';
 import { useRole } from '@/shared/hooks/use-role';
-import { Info, X } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 import { useInvitationQuery } from '../../hooks/use-invitation-query';
 import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
@@ -119,34 +119,7 @@ export const StudyroomSidebar = ({
 
     const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/invite?token=${invitation.token}`;
     await navigator.clipboard.writeText(inviteLink);
-    toast(
-      ({ closeToast }) => (
-        <div className="bg-gray-11 tablet:w-max tablet:gap-2 tablet:px-6 tablet:py-4 flex w-82 items-center justify-between gap-1 rounded-lg px-3 py-3">
-          <p className="font-label-normal tablet:font-body1-normal flex-1 leading-relaxed text-white">
-            학생 초대 링크가 복사됐어요. 링크를 공유해보세요
-          </p>
-          <button
-            type="button"
-            onClick={closeToast}
-            className="shrink-0 text-white hover:opacity-80"
-            aria-label="닫기"
-          >
-            <X
-              className="tablet:size-6 h-4 w-4"
-              strokeWidth={2}
-            />
-          </button>
-        </div>
-      ),
-      {
-        containerId: 'bottom-center',
-        position: 'bottom-center',
-        autoClose: 10000,
-        closeButton: false,
-        hideProgressBar: true,
-        className: '!bg-transparent !shadow-none !p-0 !min-h-0',
-      }
-    );
+    showBottomToast('학생 초대 링크가 복사됐어요. 링크를 공유해보세요');
   };
 
   if (!segment) return null;
