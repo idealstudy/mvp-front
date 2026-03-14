@@ -1,44 +1,29 @@
 import { useReducer, useState } from 'react';
 
+import {
+  useClassLinkListQuery,
+  useCreateClassLink,
+  useDeleteClassLink,
+  useEditClassLink,
+} from '@/features/study-rooms/hooks';
 import { dialogReducer } from '@/shared/components/dialog/model/dialog-reducer';
 import { PlusIcon } from '@/shared/components/icons';
 import { LinkIcon } from '@/shared/components/icons';
 import { DropdownMenu } from '@/shared/components/ui';
+import { showBottomToast } from '@/shared/components/ui/bottom-toast';
 import { EllipsisVertical } from 'lucide-react';
 
 import { StudyroomClassLinksAlertDialog } from './alert-dialog';
 import { StudyroomClassLinksDeleteDialog } from './delete-dialog';
 import { StudyroomClassLinksInputDialog } from './input-dialog';
 
-const MOCK_LINKS = [
-  {
-    id: 1,
-    name: '에듀고등학교 비대면 바로가기에듀고등학교 비대면 바로가기',
-    url: 'https://zoom.us/j/123456789',
-  },
-  {
-    id: 2,
-    name: '에듀 비대면 바로가기',
-    url: 'https://zoom.us/j/234567890',
-  },
-  {
-    id: 3,
-    name: '에듀 비대면 바로가기',
-    url: 'https://zoom.us/j/345678901',
-  },
-  {
-    id: 4,
-    name: '에듀 비대면 바로가기',
-    url: 'https://zoom.us/j/456789012',
-  },
-  {
-    id: 5,
-    name: '에듀 비대면 바로가기',
-    url: 'https://zoom.us/j/567890123',
-  },
-];
-
-export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
+export const StudyRoomClassLinks = ({
+  studyRoomId,
+  canManage,
+}: {
+  studyRoomId: number;
+  canManage: boolean;
+}) => {
   const [dialog, dispatch] = useReducer(dialogReducer, {
     status: 'idle',
   });
@@ -47,6 +32,49 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
     name: string;
     url: string;
   } | null>(null);
+
+  const { data: classLinks = [] } = useClassLinkListQuery(studyRoomId);
+  const createMutation = useCreateClassLink(studyRoomId);
+  const editMutation = useEditClassLink(studyRoomId);
+  const deleteMutation = useDeleteClassLink(studyRoomId);
+
+  const handleCreate = (name: string, url: string) => {
+    createMutation.mutate(
+      { name, url },
+      {
+        onSuccess: () => {
+          setSelectedLink(null);
+          dispatch({ type: 'CLOSE' });
+          showBottomToast('수업 링크가 추가됐어요.');
+        },
+      }
+    );
+  };
+
+  const handleEdit = (name: string, url: string) => {
+    if (!selectedLink) return;
+    editMutation.mutate(
+      { linkId: selectedLink.id, body: { name, url } },
+      {
+        onSuccess: () => {
+          setSelectedLink(null);
+          dispatch({ type: 'CLOSE' });
+          showBottomToast('수업 링크가 수정됐어요.');
+        },
+      }
+    );
+  };
+
+  const handleDelete = () => {
+    if (!selectedLink) return;
+    deleteMutation.mutate(selectedLink.id, {
+      onSuccess: () => {
+        setSelectedLink(null);
+        dispatch({ type: 'CLOSE' });
+        showBottomToast('수업 링크가 삭제됐어요.');
+      },
+    });
+  };
 
   return (
     <div className="flex flex-col">
@@ -61,10 +89,7 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
               setSelectedLink(null);
               dispatch({ type: 'CLOSE' });
             }}
-            onConfirm={() => {
-              setSelectedLink(null);
-              dispatch({ type: 'CLOSE' });
-            }}
+            onConfirm={selectedLink ? handleEdit : handleCreate}
           />
         )}
 
@@ -82,8 +107,11 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
         dialog.scope === 'studyroom' && (
           <StudyroomClassLinksDeleteDialog
             isOpen={true}
-            onClose={() => dispatch({ type: 'CLOSE' })}
-            onConfirm={() => dispatch({ type: 'CLOSE' })}
+            onClose={() => {
+              setSelectedLink(null);
+              dispatch({ type: 'CLOSE' });
+            }}
+            onConfirm={handleDelete}
           />
         )}
 
@@ -98,7 +126,7 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
               dispatch({
                 type: 'OPEN',
                 scope: 'studyroom',
-                kind: MOCK_LINKS.length >= 5 ? 'alert' : 'create',
+                kind: classLinks.length >= 5 ? 'alert' : 'create',
               })
             }
           >
@@ -106,15 +134,15 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
           </button>
         )}
       </div>
-      {MOCK_LINKS.length === 0 && canManage && (
+      {classLinks.length === 0 && canManage && (
         <p className="text-gray-5 font-body2-normal flex items-center">
           <PlusIcon /> 버튼으로 링크를 추가해보세요.
         </p>
       )}
 
-      {MOCK_LINKS.length > 0 && (
+      {classLinks.length > 0 && (
         <ul className="flex flex-col rounded-md bg-[#E9F5FF] px-6 py-4.5">
-          {MOCK_LINKS.map((link) => (
+          {classLinks.map((link) => (
             <li
               key={link.id}
               className="flex items-center justify-between py-2"
@@ -159,13 +187,14 @@ export const StudyRoomClassLinks = ({ canManage }: { canManage: boolean }) => {
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
                       variant="danger"
-                      onClick={() =>
+                      onClick={() => {
+                        setSelectedLink(link);
                         dispatch({
                           type: 'OPEN',
                           scope: 'studyroom',
                           kind: 'delete',
-                        })
-                      }
+                        });
+                      }}
                     >
                       삭제하기
                     </DropdownMenu.Item>

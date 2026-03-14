@@ -18,7 +18,7 @@ export const ToastProvider = () => {
       <ToastContainer
         containerId="bottom-center"
         position="bottom-center"
-        autoClose={5000}
+        autoClose={3000}
         transition={FadeTransition}
         style={
           {

@@ -222,7 +222,10 @@ export const StudyroomSidebar = ({
           </div>
         )}
         {/* 수업 링크 */}
-        <StudyRoomClassLinks canManage={canManage} />
+        <StudyRoomClassLinks
+          studyRoomId={studyRoomId}
+          canManage={canManage}
+        />
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups

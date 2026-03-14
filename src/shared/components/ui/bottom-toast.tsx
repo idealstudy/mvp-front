@@ -52,7 +52,6 @@ export const showBottomToast = (message: string) => {
     {
       containerId: 'bottom-center',
       position: 'bottom-center',
-      autoClose: 10000,
       closeButton: false,
       hideProgressBar: true,
       className: '!bg-transparent !shadow-none !p-0 !min-h-0 tablet:!w-auto',
