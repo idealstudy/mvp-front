@@ -71,8 +71,9 @@ const TextField = ({
         <div
           className={cn(
             'bg-gray-scale-white border-line-line2 flex h-[56px] gap-6 rounded-[4px] border px-6',
-            'focus-within:border-key-color-quaternary',
-            'has-mock-invalid:focus-within:border-system-warning has-mock-invalid:border-system-warning',
+            error
+              ? 'border-system-warning focus-within:border-system-warning'
+              : 'focus-within:border-key-color-quaternary',
             'has-mock-disabled:bg-gray-scale-gray-5 has-mock-disabled:text-text-inactive has-mock-disabled:pointer-events-none'
           )}
         >

@@ -27,6 +27,7 @@ import { Info } from 'lucide-react';
 import { useInvitationQuery } from '../../hooks/use-invitation-query';
 import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
 import { StudyRoomDetail } from '../../model';
+import { StudyRoomClassLinks } from './class-links';
 import { StudyroomSidebarHeader } from './header';
 import { InfoTooltipToast } from './info-tooltip';
 import { useDeleteStudyRoom, useUpdateStudyRoomTitle } from './services/query';
@@ -220,6 +221,8 @@ export const StudyroomSidebar = ({
             </div>
           </div>
         )}
+        {/* 수업 링크 */}
+        <StudyRoomClassLinks canManage={canManage} />
         {/* 수업노트 탭에서만 보이는 컴포넌트 */}
         {segment === 'note' && (
           <StudyroomGroups
