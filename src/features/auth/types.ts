@@ -18,8 +18,11 @@ export type SignUpBody = {
   email: string;
   password: string;
   name: string;
-  acceptRequiredTerm: boolean;
-  acceptOptionalTerm: boolean;
+  agreeServiceTerms: boolean;
+  agreeMarketing: boolean;
+  agreeAgeCheck: boolean;
+  agreePrivacyTerms: boolean;
+  phoneNumber: string;
   role: Role;
 };
 

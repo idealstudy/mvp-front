@@ -5,6 +5,8 @@ import { z } from 'zod';
 const PASSWORD_REGEX =
   /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
 
+const PHONE_REGEX = /^010-\d{4}-\d{4}$/;
+
 export type RegisterForm = z.infer<typeof RegisterForm>;
 export const RegisterForm = z
   .object({
@@ -25,6 +27,9 @@ export const RegisterForm = z
     confirmPassword: z.string(),
     role: member.domain.role,
     name: z.string().min(1, { message: '이름을 입력해주세요.' }), // TODO: 최대 길이 추가
+    phoneNumber: z.string().regex(PHONE_REGEX, {
+      message: '올바른 전화번호 형식을 입력해주세요.',
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: '비밀번호가 일치하지 않습니다.',

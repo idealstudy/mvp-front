@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Controller } from 'react-hook-form';
 
 import Link from 'next/link';
 
@@ -118,6 +119,14 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     }
   }, [confirmPassword, form]);
 
+  // 전화번호 자동 하이픈 포맷팅
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <Form.Item>
@@ -125,14 +134,14 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <div className="flex">
           <Form.Control>
             <Input
-              className="border-r-0"
+              className="rounded-r-none border-r-0"
               defaultValue={form.getValues('email')}
               readOnly
             />
           </Form.Control>
           <Button
             variant="secondary"
-            className="h-[56px]"
+            className="h-[56px] rounded-l-none"
             disabled={!canResend}
             onClick={onSendButtonClick}
           >
@@ -149,14 +158,14 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
             <Input
               disabled={emailCodeVerified}
               maxLength={VERIFICATION_CODE_LENGTH}
-              className="border-r-0"
+              className="rounded-r-none border-r-0"
               placeholder="이메일로 전송된 숫자 코드 여섯자리"
               {...form.register('verificationCode')}
             />
           </Form.Control>
 
           <Button
-            className="h-[56px]"
+            className="h-[56px] rounded-l-none"
             onClick={onVerifyCodeButtonClick}
             disabled={
               emailCodeVerified ||
@@ -196,6 +205,36 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           {form.formState.errors.confirmPassword?.message}
         </Form.ErrorMessage>
       </Form.Item>
+      <Form.Item error={!!form.formState.errors.phoneNumber}>
+        <Form.Label>전화번호</Form.Label>
+        <div className="flex">
+          <Controller
+            name="phoneNumber"
+            control={form.control}
+            render={({ field }) => (
+              <Input
+                className="border-r-0"
+                placeholder="010-0000-0000"
+                value={field.value}
+                onChange={(e) =>
+                  field.onChange(formatPhoneNumber(e.target.value))
+                }
+              />
+            )}
+          />
+          <Button
+            variant="secondary"
+            className="h-[56px] rounded-l-none"
+            type="button"
+            // onClick={}
+          >
+            중복 확인
+          </Button>
+        </div>
+        <Form.ErrorMessage>
+          {form.formState.errors.phoneNumber?.message}
+        </Form.ErrorMessage>
+      </Form.Item>
       <Checkbox.Group className="border-line-line1 flex flex-col gap-6 border-y py-6">
         <Checkbox.Label className="flex-1">
           <Checkbox
@@ -207,11 +246,11 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
             <Checkbox {...termsCheckboxGroup.getCheckboxProps('terms')} />
-            [필수] 디에듀 이용약관에 동의
+            디에듀 이용약관 동의 [필수]
           </Checkbox.Label>
           <Link
             href={link.terms}
-            aria-label="이용약관 보기"
+            aria-label="이용약관 전문 보기"
             target="_blank"
           >
             <ChevronRightIcon />
@@ -220,12 +259,25 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
             <Checkbox {...termsCheckboxGroup.getCheckboxProps('privacy')} />
-            [필수] 개인정보 수집 및 이용방침에 동의
+            개인정보 수집 및 이용방침 동의 [필수]
           </Checkbox.Label>
           <Link
             href={link.privacy}
             target="_blank"
-            aria-label="개인정보 수집 및 이용방침 보기"
+            aria-label="개인정보 수집 및 이용방침 전문 보기"
+          >
+            <ChevronRightIcon />
+          </Link>
+        </div>
+        <div className="flex items-center">
+          <Checkbox.Label className="flex-1">
+            <Checkbox {...termsCheckboxGroup.getCheckboxProps('ageCheck')} />만
+            14세 이상입니다 [필수]
+          </Checkbox.Label>
+          <Link
+            href={link.ageCheck}
+            target="_blank"
+            aria-label="만 14세 이상 이용 안내 보기"
           >
             <ChevronRightIcon />
           </Link>
@@ -233,12 +285,12 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
             <Checkbox {...termsCheckboxGroup.getCheckboxProps('marketing')} />
-            [선택] 마케팅 정보 수신 및 선택적 개인정보 제공
+            혜택 및 이벤트 정보 수신 동의 [선택]
           </Checkbox.Label>
           <Link
             href={link.marketing}
             target="_blank"
-            aria-label="마케팅 정보 수신 및 선택적 개인정보 제공 보기"
+            aria-label="혜택 및 이벤트 정보 수신 동의 전문 보기"
           >
             <ChevronRightIcon />
           </Link>
