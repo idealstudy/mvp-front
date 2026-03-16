@@ -25,7 +25,7 @@ interface CommentAnswerCardProps {
   className?: string;
 }
 
-export const CommentAnswerCard = ({
+export const CommentCard = ({
   authorName,
   roleLabel,
   content,

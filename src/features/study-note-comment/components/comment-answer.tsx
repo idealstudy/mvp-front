@@ -1,10 +1,10 @@
 'use client';
 
-import { CommentAnswerCard } from './comment-answer-card';
+import { CommentCard } from './comment-card';
 
-export const CommentTeacherAnswer = () => {
+export const CommentAnswer = () => {
   return (
-    <CommentAnswerCard
+    <CommentCard
       authorName="선생님"
       content="질문의 답변이 들어갑니다 질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다질문의 답변이 들어갑니다"
       showReplyArrow

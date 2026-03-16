@@ -1,10 +1,10 @@
 'use client';
 
-import { CommentAnswerCard } from './comment-answer-card';
+import { CommentCard } from './comment-card';
 
-export const CommentStudentAnswer = () => {
+export const CommentQuestion = () => {
   return (
-    <CommentAnswerCard
+    <CommentCard
       authorName="이름"
       roleLabel="학생"
       profileImageSrc="/character/img_profile_student01.png"
