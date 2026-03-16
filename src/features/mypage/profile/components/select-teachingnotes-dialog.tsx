@@ -1,14 +1,14 @@
 'use client';
 
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { toast } from 'react-toastify';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import {
+  useInfiniteTeacherTeachingNotes,
   useTeacherRepresentativeTeachingNotes,
-  useTeacherTeachingNotes,
   useUpdateTeacherNoteRepresentative,
 } from '@/features/mypage/profile/hooks/teacher/use-teaching-notes';
 import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
@@ -18,7 +18,6 @@ import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
 export default function SelectTeachingnotesDialog() {
   const router = useRouter();
-
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   // 대표 수업노트
@@ -27,14 +26,13 @@ export default function SelectTeachingnotesDialog() {
   // 이를 구분하기 위한 변수 (isRepresentative)
   const isRepresentative = representativeNotes?.[0]?.representative ?? false;
 
-  // TODO 페이지네이션 또는 무한 스크롤 추가 (현재 고정)
-  const { data: allNotesData } = useTeacherTeachingNotes({
-    page: 0,
-    size: 30,
-    sortKey: 'TAUGHT_AT_ASC',
-  });
+  const { data, fetchNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteTeacherTeachingNotes({
+      size: 20,
+      sortKey: 'TAUGHT_AT_ASC',
+    });
 
-  const allNotes = allNotesData?.content;
+  const allNotes = data?.pages.flatMap((page) => page.content) ?? [];
 
   const {
     mutate: updateRepresentative,
@@ -85,6 +83,21 @@ export default function SelectTeachingnotesDialog() {
       }
     );
   };
+
+  // 무한 스크롤
+  const sentinelRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchNextPage();
+        }
+      });
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [fetchNextPage]
+  );
 
   return (
     <>
@@ -165,7 +178,15 @@ export default function SelectTeachingnotesDialog() {
               )}
 
               {/* 하단: 나머지 수업노트 */}
-              {allNotes && (
+              {isLoading ? (
+                <p className="text-text-sub2 my-4 text-center">
+                  불러오는 중...
+                </p>
+              ) : allNotes.length === 0 ? (
+                <p className="text-text-sub2 my-4 text-center">
+                  수업노트가 없습니다.
+                </p>
+              ) : (
                 <div className="space-y-3 overflow-y-auto px-3 py-4">
                   {allNotes.map((note) => (
                     <TeachingnotesItem
@@ -177,13 +198,15 @@ export default function SelectTeachingnotesDialog() {
                       isLoading={loadingNoteId === note.id}
                     />
                   ))}
-                </div>
-              )}
 
-              {allNotes && allNotes.length === 0 && (
-                <p className="text-text-sub2 my-4 text-center">
-                  수업노트가 없습니다.
-                </p>
+                  <div ref={sentinelRef} />
+
+                  {isFetchingNextPage && (
+                    <p className="text-text-sub2 text-center text-sm">
+                      불러오는 중...
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </Dialog.Body>

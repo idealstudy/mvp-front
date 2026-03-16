@@ -1,16 +1,30 @@
 import { NoteListQuery, repository, teacherKeys } from '@/entities/teacher';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 /**
  * [GET] 선생님 마이페이지 전체 수업노트 조회
  */
-export const useTeacherTeachingNotes = (
-  params: NoteListQuery,
+export const useInfiniteTeacherTeachingNotes = (
+  params: Omit<NoteListQuery, 'page'>,
   options?: { enabled?: boolean }
 ) =>
-  useQuery({
-    queryKey: teacherKeys.noteList(params),
-    queryFn: () => repository.teachingNote.getTeacherNoteList(params),
+  useInfiniteQuery({
+    queryKey: teacherKeys.noteList({ ...params, page: 0 }),
+    queryFn: ({ pageParam }) =>
+      repository.teachingNote.getTeacherNoteList({
+        ...params,
+        page: pageParam,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.pageNumber + 1 < lastPage.totalPages
+        ? lastPage.pageNumber + 1
+        : undefined,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: options?.enabled ?? true,
