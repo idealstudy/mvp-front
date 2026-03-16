@@ -6,14 +6,20 @@ import { Controller } from 'react-hook-form';
 import Link from 'next/link';
 
 import { useRegisterFormContext } from '@/features/auth/components/register-form-context-provider';
+import { PHONE_REGEX } from '@/features/auth/schemas/register';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { link } from '@/shared/constants/link';
 import { useCountdown } from '@/shared/hooks/use-countdown';
+import axios from 'axios';
 
-import { useCheckEmailDuplicate, useVerifyCode } from '../services/query';
+import {
+  useCheckEmailDuplicate,
+  useCheckPhoneNumberDuplicate,
+  useVerifyCode,
+} from '../services/query';
 
 const RESEND_COUNTDOWN = 30;
 const VERIFICATION_CODE_LENGTH = 6;
@@ -22,8 +28,17 @@ type CredentialStepProps = {
   onNext: () => void;
 };
 
+// 전화번호 자동 하이픈 포맷팅
+const formatPhoneNumber = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+};
+
 export const CredentialStep = ({ onNext }: CredentialStepProps) => {
   const [emailCodeVerified, setEmailCodeVerified] = useState(false);
+  const [isPhoneNumberChecked, setIsPhoneNumberChecked] = useState(false);
 
   const { countdown: resendCountdown, startCountdown } =
     useCountdown(RESEND_COUNTDOWN);
@@ -32,6 +47,11 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     useCheckEmailDuplicate();
 
   const { mutate: verifyCode, isPending: isVerifyingCode } = useVerifyCode();
+
+  const {
+    mutate: checkPhoneNumberDuplicate,
+    isPending: isCheckingPhoneNumberDuplicate,
+  } = useCheckPhoneNumberDuplicate();
 
   const canResend = resendCountdown === null;
 
@@ -101,7 +121,8 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     isAllRequiredTermsChecked &&
     emailCodeVerified &&
     isPasswordValid &&
-    isConfirmPasswordValid;
+    isConfirmPasswordValid &&
+    isPhoneNumberChecked;
 
   const verificationCodeInputValue = form.watch('verificationCode');
 
@@ -119,12 +140,37 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
     }
   }, [confirmPassword, form]);
 
-  // 전화번호 자동 하이픈 포맷팅
-  const formatPhoneNumber = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 11);
-    if (digits.length <= 3) return digits;
-    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  // 전화번호 유효성 검사
+  const phoneNumberValue = form.watch('phoneNumber');
+  const isPhoneNumberValid = PHONE_REGEX.test(phoneNumberValue);
+
+  // 전화번호 중복 검사
+  const onCheckPhoneNumberButtonClick = () => {
+    if (isCheckingPhoneNumberDuplicate) return;
+
+    checkPhoneNumberDuplicate(
+      { phone_number: form.getValues('phoneNumber').replace(/-/g, '') },
+      {
+        onSuccess: () => {
+          setIsPhoneNumberChecked(true);
+        },
+        onError: (error) => {
+          if (
+            axios.isAxiosError(error) &&
+            error.response?.data?.code === 'PHONE_NUMBER_ALREADY_EXIST'
+          ) {
+            form.setError('phoneNumber', {
+              message: '이미 사용 중인 전화번호입니다.',
+            });
+          } else {
+            form.setError('phoneNumber', {
+              message: '전화번호 확인 중 오류가 발생했습니다.',
+            });
+          }
+          setIsPhoneNumberChecked(false);
+        },
+      }
+    );
   };
 
   return (
@@ -213,12 +259,14 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
             control={form.control}
             render={({ field }) => (
               <Input
-                className="border-r-0"
+                className="rounded-r-none border-r-0"
                 placeholder="010-0000-0000"
                 value={field.value}
-                onChange={(e) =>
-                  field.onChange(formatPhoneNumber(e.target.value))
-                }
+                onChange={(e) => {
+                  field.onChange(formatPhoneNumber(e.target.value));
+                  setIsPhoneNumberChecked(false);
+                  form.clearErrors('phoneNumber');
+                }}
               />
             )}
           />
@@ -226,7 +274,12 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
             variant="secondary"
             className="h-[56px] rounded-l-none"
             type="button"
-            // onClick={}
+            onClick={onCheckPhoneNumberButtonClick}
+            disabled={
+              isPhoneNumberChecked ||
+              !isPhoneNumberValid ||
+              isCheckingPhoneNumberDuplicate
+            }
           >
             중복 확인
           </Button>

@@ -5,7 +5,7 @@ import { z } from 'zod';
 const PASSWORD_REGEX =
   /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/;
 
-const PHONE_REGEX = /^010-\d{4}-\d{4}$/;
+export const PHONE_REGEX = /^010-\d{4}-\d{4}$/;
 
 export type RegisterForm = z.infer<typeof RegisterForm>;
 export const RegisterForm = z

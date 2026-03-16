@@ -30,3 +30,7 @@ export type UpdateProfileBody = {
   name: string;
   role: Role;
 };
+
+export type CheckPhoneNumberDuplicateQuery = {
+  phone_number: string;
+};
