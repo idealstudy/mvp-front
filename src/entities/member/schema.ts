@@ -17,8 +17,14 @@ const MemberSchema = z.object({
   phoneNumber: z.string().optional().nullable(),
   // ISO: YYYY-MM-DD
   birthDate: z.string().optional().nullable(),
-  acceptRequiredTerm: z.boolean().optional().nullable(),
-  acceptOptionalTerm: z.boolean().optional().nullable(),
+  agreeServiceTerms: z.boolean().optional().nullable(),
+  agreeMarketing: z.boolean().optional().nullable(),
+  agreeAgeCheck: z.boolean().optional().nullable(),
+  agreePrivacyTerms: z.boolean().optional().nullable(),
+  isProfilePublic: z.boolean().optional().nullable(),
+  modNicknameDate: z.string().optional().nullable(),
+  deletedAt: z.string().optional().nullable(),
+  deleted: z.boolean().optional().nullable(),
   role: MemberRoleSchema,
   // ISO date-time
   regDate: z.string().optional().nullable(),
