@@ -2,7 +2,7 @@ import {
   FrontendStudentHomeworkList,
   ProfileHomeworkListSortKey,
 } from '@/entities/student';
-import { Pagination, SearchInput, Select } from '@/shared/components/ui';
+import ExpandableListSection from '@/features/profile/components/expandable-list-section';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE } from '@/shared/constants';
 
@@ -44,77 +44,38 @@ export default function HomeworkSection({
   const visibleItems = isExpanded ? items : items.slice(0, 5);
 
   return (
-    <>
-      {isExpanded && (
-        <div className="items-ceter mb-2 flex justify-between">
-          <Select
-            value={sortKey}
-            onValueChange={(value) => {
-              setSortKey(value as ProfileHomeworkListSortKey);
-              setPage(1);
-            }}
-          >
-            <Select.Trigger
-              className="font-label-normal h-12 w-auto min-w-[130px] rounded-lg pr-10 pl-3"
-              placeholder="정렬"
-            />
-            <Select.Content>
-              {HOMEWORK_SORT_OPTIONS.map((option) => (
-                <Select.Option
-                  key={option.value}
-                  value={option.value}
-                  className="font-body2-normal h-10 justify-start px-4"
-                >
-                  {option.label}
-                </Select.Option>
-              ))}
-            </Select.Content>
-          </Select>
-          <SearchInput
-            defaultValue={keyword}
-            placeholder="검색어를 입력하세요"
-            onSearch={(value) => {
-              setKeyword(value);
-              setPage(1);
-            }}
-          />
-        </div>
-      )}
-
-      <div className="flex w-full flex-col gap-3">
-        {visibleItems.map((item) => (
-          <ListItem
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            subtitle={`제출일: ${item.submittedAt ?? '-'} | 마감일 ${item.deadline}`}
-            href={PRIVATE.HOMEWORK.DETAIL(item.studyRoomId, item.id)}
-            tag={
-              <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
-                {item.studyRoomName}
-              </span>
-            }
-          />
-        ))}
-
-        {/* 페이지네이션 */}
-        {isExpanded && (data?.totalPages ?? 0) > 1 && (
-          <div className="flex justify-center">
-            <Pagination
-              page={page}
-              totalPages={data?.totalPages ?? 0}
-              onPageChange={setPage}
-            />
-          </div>
-        )}
-
-        <button
-          onClick={() => setIsExpanded(isExpanded ? false : true)}
-          className="font-label-normal hover:bg-gray-1 w-full cursor-pointer rounded-md py-2 text-center"
-        >
-          {isExpanded ? '접기' : '전체 보기'}
-        </button>
-      </div>
-    </>
+    <ExpandableListSection
+      isExpanded={isExpanded}
+      onToggle={() => setIsExpanded(!isExpanded)}
+      keyword={keyword}
+      onSearch={(value) => {
+        setKeyword(value);
+        setPage(1);
+      }}
+      sortKey={sortKey}
+      onSortChange={(value) => {
+        setSortKey(value as ProfileHomeworkListSortKey);
+        setPage(1);
+      }}
+      sortOptions={HOMEWORK_SORT_OPTIONS}
+      page={page}
+      totalPages={data?.totalPages ?? 0}
+      onPageChange={setPage}
+    >
+      {visibleItems.map((item) => (
+        <ListItem
+          key={item.id}
+          id={item.id}
+          title={item.title}
+          subtitle={`제출일: ${item.submittedAt ?? '-'} | 마감일 ${item.deadline}`}
+          href={PRIVATE.HOMEWORK.DETAIL(item.studyRoomId, item.id)}
+          tag={
+            <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
+              {item.studyRoomName}
+            </span>
+          }
+        />
+      ))}
+    </ExpandableListSection>
   );
 }
