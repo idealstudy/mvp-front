@@ -15,7 +15,12 @@ export type DashboardHomeworkSortKey =
   | 'DEADLINE_IMMINENT'
   | 'DEADLINE_RECENT';
 
-export type StudentReportDTO = z.infer<typeof dto.studentReport>;
+/* ─────────────────────────────────────────────────────
+ * DTO
+ * ────────────────────────────────────────────────────*/
+// 프로필 DTO
+export type StudentBasicInfoDTO = z.infer<typeof dto.profile.basicInfo>;
+export type StudentReportDTO = z.infer<typeof dto.profile.report>;
 
 // 대시보드 DTO
 export type StudentDashboardReportDTO = z.infer<typeof dto.dashboard.report>;
@@ -39,10 +44,14 @@ export type StudentDashboardQnaListItemDTO =
 export type StudentDashboardHomeworkListItemDTO =
   StudentDashboardHomeworkListDTO['content'][number];
 
-export type StudentBasicInfoDTO = z.infer<typeof dto.basicInfo>;
+/* ─────────────────────────────────────────────────────
+ * Domain
+ * ────────────────────────────────────────────────────*/
+export type FrontendStudentBasicInfo = z.infer<typeof domain.profile.basicInfo>;
 
-export type FrontendStudentBasicInfo = z.infer<typeof domain.basicInfo>;
-
+/* ─────────────────────────────────────────────────────
+ * Payload
+ * ────────────────────────────────────────────────────*/
 export type UpdateStudentBasicInfoPayload = z.infer<
   typeof payload.updateBasicInfo
 >;

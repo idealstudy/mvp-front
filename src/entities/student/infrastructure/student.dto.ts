@@ -1,9 +1,19 @@
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * 선생님 통계 조회 DTO
+ * 학생 기본 정보 DTO
  * ──────────────────────────────────────────────────── */
-const StudentReportDtoSchema = z.object({
+const BasicInfoDtoSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  isProfilePublic: z.boolean(),
+  learningGoal: z.string().nullable(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 통계 조회 DTO
+ * ──────────────────────────────────────────────────── */
+const StudentProfileReportDtoSchema = z.object({
   studyRoomCount: z.number(),
   questionCount: z.number(),
   totalHomeworkCount: z.number(),
@@ -94,32 +104,23 @@ const StudentDashboardHomeworkListDtoSchema = z.object({
   ),
 });
 
-/**
- * 학생 기본 정보 DTO
- * TODO nullable 확인
- */
-const BasicInfoDtoSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  isProfilePublic: z.boolean(),
-  learningGoal: z.string().nullable(),
-});
-
-/**
- * 학생 기본 정보 Payload
- */
+/* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 기본 정보 Payload
+ * ────────────────────────────────────────────────────*/
 const UpdateBasicInfoPayloadSchema = z.object({
   name: z.string(),
   isProfilePublic: z.boolean(),
   learningGoal: z.string(),
 });
 
-/**
+/* ─────────────────────────────────────────────────────
  * 내보내기
- */
+ * ────────────────────────────────────────────────────*/
 export const dto = {
-  basicInfo: BasicInfoDtoSchema,
-  studentReport: StudentReportDtoSchema,
+  profile: {
+    basicInfo: BasicInfoDtoSchema,
+    report: StudentProfileReportDtoSchema,
+  },
   dashboard: {
     report: StudentDashboardReportDtoSchema,
     noteList: StudentDashboardNoteListDtoSchema,

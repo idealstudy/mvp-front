@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 import { dto } from '../infrastructure';
 
-const StudentReportShape = dto.studentReport;
-
+/* ─────────────────────────────────────────────────────
+ * 학생 대시보드 Domain 스키마
+ * ────────────────────────────────────────────────────*/
 const StudentDashboardReportShape = dto.dashboard.report;
 const StudentDashboardNoteListShape = dto.dashboard.noteList;
 const StudentDashboardStudyRoomListShape = dto.dashboard.studyRoomList;
@@ -11,8 +12,8 @@ const StudentDashboardQnaListShape = dto.dashboard.qnaList;
 const StudentDashboardHomeworkListShape = dto.dashboard.homeworkList;
 
 /* ─────────────────────────────────────────────────────
- * 학생 기본 정보 Domain 스키마
- * ────────────────────────────────────────────────────*/
+ * 프로필 - 학생 기본 정보 Domain 스키마
+ *────────────────────────────────────────────────────*/
 const BasicInfoDomainSchema = z.object({
   name: z.string(),
   email: z.string(),
@@ -23,11 +24,24 @@ const BasicInfoDomainSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 프로필 - 학생 통계 Domain 스키마
+ * ────────────────────────────────────────────────────*/
+const StudentProfileReportDomainSchema = z.object({
+  studyRoomCount: z.number(),
+  questionCount: z.number(),
+  totalHomeworkCount: z.number(),
+  submittedHomeworkCount: z.number(),
+  homeworkCompletionRate: z.number(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const domain = {
-  basicInfo: BasicInfoDomainSchema,
-  studentReport: StudentReportShape,
+  profile: {
+    basicInfo: BasicInfoDomainSchema,
+    report: StudentProfileReportDomainSchema,
+  },
   dashboard: {
     report: StudentDashboardReportShape,
     noteList: StudentDashboardNoteListShape,
