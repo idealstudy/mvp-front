@@ -5,7 +5,9 @@ import {
 } from '@/entities/student';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// [GET] 학생 기본 정보 조회
+/**
+ * [GET] 학생 기본 정보 조회
+ */
 export const useStudentBasicInfo = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: studentKeys.mypage.basicInfo(),
@@ -15,7 +17,9 @@ export const useStudentBasicInfo = (options?: { enabled?: boolean }) =>
     enabled: options?.enabled ?? true,
   });
 
-// [PATCH] 학생 기본 정보 변경
+/**
+ * [PATCH] 학생 기본 정보 변경
+ */
 export const useUpdateStudentBasicInfo = () => {
   const queryClient = useQueryClient();
 

@@ -48,6 +48,7 @@ export type StudentDashboardHomeworkListItemDTO =
  * Domain
  * ────────────────────────────────────────────────────*/
 export type FrontendStudentBasicInfo = z.infer<typeof domain.profile.basicInfo>;
+export type FrontendStudentReport = z.infer<typeof domain.profile.report>;
 
 /* ─────────────────────────────────────────────────────
  * Payload
