@@ -1,9 +1,11 @@
 'use client';
 
+import { useStudentHomeworks } from '@/features/mypage/profile/hooks/student/use-homeworks';
 import { useStudentReport } from '@/features/mypage/profile/hooks/student/use-report';
 import ComingSoonSection from '@/features/profile/components/coming-soon-section';
 import SectionContainer from '@/features/profile/components/section-container';
 import ActivityReportSection from '@/features/profile/components/student/activity-report-section';
+import HomeworkSection from '@/features/profile/components/student/homework-section';
 
 export default function StudentSections() {
   // 누적 활동
@@ -13,6 +15,22 @@ export default function StudentSections() {
     isError: isReportError,
     refetch: refetchReport,
   } = useStudentReport();
+
+  // 과제
+  const {
+    data: homeworkData,
+    isLoading: isHomeworkLoading,
+    isError: isHomeworkError,
+    refetch: refetchHomework,
+    page: homeworkPage,
+    setPage: setHomeworkPage,
+    keyword: homeworkKeyword,
+    setKeyword: setHomeworkKeyword,
+    sortKey: homeworkSortKey,
+    setSortKey: setHomeworkSortKey,
+    isExpanded: isHomeworkExpanded,
+    setIsExpanded: setIsHomeworkExpanded,
+  } = useStudentHomeworks();
 
   return (
     <>
@@ -25,8 +43,23 @@ export default function StudentSections() {
         {report && <ActivityReportSection report={report} />}
       </SectionContainer>
 
-      <SectionContainer title="내 과제">
-        <ComingSoonSection />
+      <SectionContainer
+        title="내 과제"
+        isLoading={isHomeworkLoading}
+        isError={isHomeworkError}
+        onRetry={refetchHomework}
+      >
+        <HomeworkSection
+          data={homeworkData}
+          page={homeworkPage}
+          setPage={setHomeworkPage}
+          keyword={homeworkKeyword}
+          setKeyword={setHomeworkKeyword}
+          sortKey={homeworkSortKey}
+          setSortKey={setHomeworkSortKey}
+          isExpanded={isHomeworkExpanded}
+          setIsExpanded={setIsHomeworkExpanded}
+        />
       </SectionContainer>
 
       <SectionContainer title="내 질문">

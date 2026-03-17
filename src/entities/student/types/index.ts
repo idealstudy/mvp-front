@@ -19,6 +19,13 @@ export type DashboardHomeworkSortKey =
   | 'DEADLINE_IMMINENT'
   | 'DEADLINE_RECENT';
 
+export type ProfileHomeworkListSortKey =
+  | 'LATEST'
+  | 'LATEST_EDITED'
+  | 'OLDEST_EDITED'
+  | 'DEADLINE_IMMINENT'
+  | 'DEADLINE_RECENT';
+
 /* ─────────────────────────────────────────────────────
  * DTO
  * ────────────────────────────────────────────────────*/

@@ -15,13 +15,11 @@ const ACTIVITY_REPORT_META = [
     key: 'homeworkCompletionRate',
     label: '과제 수행률',
     unit: '%',
-    format: (v: number) => Math.round(v * 100),
   },
 ] satisfies {
   key: keyof FrontendStudentReport;
   label: string;
   unit: string;
-  format?: (v: number) => number;
 }[];
 
 export default function ActivityReportSection({
@@ -31,7 +29,7 @@ export default function ActivityReportSection({
 }) {
   const reportList = ACTIVITY_REPORT_META.map((meta) => ({
     ...meta,
-    value: meta.format ? meta.format(report[meta.key]) : report[meta.key],
+    value: report[meta.key],
   }));
 
   return (
