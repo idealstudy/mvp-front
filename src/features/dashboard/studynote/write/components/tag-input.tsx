@@ -79,31 +79,37 @@ export default function TagInput({
             ) : (
               <>
                 {/* 선택된 학생 태그들 */}
-                {selected.map((student) => (
-                  <div
-                    key={student.id}
-                    className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm py-2 pl-[12px] text-sm"
-                  >
-                    <span className="text-base text-black">{student.name}</span>
-                    <span className="text-key-color-primary">•</span>
-                    <span className="text-key-color-primary">보호자</span>
-                    <span className="text-key-color-primary">{`${student.parentCount}`}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSelect(student);
-                      }}
-                      className="ml-1 h-6 w-6 cursor-pointer text-sm leading-none text-gray-400 hover:text-gray-600"
+                {selected.map((student) => {
+                  const fullInfo =
+                    students.find((s) => s.id === student.id) ?? student;
+                  return (
+                    <div
+                      key={student.id}
+                      className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm py-2 pl-[12px] text-sm"
                     >
-                      <Image
-                        src="/common/close.svg"
-                        width={16}
-                        height={16}
-                        alt="close"
-                      />
-                    </button>
-                  </div>
-                ))}
+                      <span className="text-base text-black">
+                        {fullInfo.name}
+                      </span>
+                      <span className="text-key-color-primary">•</span>
+                      <span className="text-key-color-primary">보호자</span>
+                      <span className="text-key-color-primary">{`${fullInfo.parentCount}`}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSelect(student);
+                        }}
+                        className="ml-1 h-6 w-6 cursor-pointer text-sm leading-none text-gray-400 hover:text-gray-600"
+                      >
+                        <Image
+                          src="/common/close.svg"
+                          width={16}
+                          height={16}
+                          alt="close"
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
               </>
             )}
           </div>

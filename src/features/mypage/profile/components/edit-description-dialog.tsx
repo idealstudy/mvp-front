@@ -5,7 +5,7 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { FrontendTeacherDescription } from '@/entities/teacher';
-import { useUpdateTeacherDescription } from '@/features/mypage/hooks/teacher/use-description';
+import { useUpdateTeacherDescription } from '@/features/mypage/profile/hooks/teacher/use-description';
 import {
   ConfirmDialog,
   DialogAction,

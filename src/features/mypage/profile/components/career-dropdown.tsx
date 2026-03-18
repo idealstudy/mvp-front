@@ -6,8 +6,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { FrontendTeacherCareerListItem } from '@/entities/teacher';
-import CareerDialog from '@/features/mypage/components/career-dialog';
-import { useDeleteTeacherCareer } from '@/features/mypage/hooks/teacher/use-careers';
+import CareerDialog from '@/features/mypage/profile/components/career-dialog';
+import { useDeleteTeacherCareer } from '@/features/mypage/profile/hooks/teacher/use-careers';
 import {
   ConfirmDialog,
   dialogReducer,

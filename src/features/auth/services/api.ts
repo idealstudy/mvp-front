@@ -3,6 +3,7 @@ import { factory } from '@/entities/member/core';
 import { adapters } from '@/entities/member/infrastructure/member.adapters';
 import {
   CheckEmailDuplicateBody,
+  CheckPhoneNumberDuplicateQuery,
   LoginBody,
   SignUpBody,
   UpdateProfileBody,
@@ -54,5 +55,8 @@ export const authService = {
   },
   updateProfile: async (body: UpdateProfileBody) => {
     return api.private.put('/member/members/profile', body);
+  },
+  checkPhoneNumberDuplicate: async (params: CheckPhoneNumberDuplicateQuery) => {
+    return api.public.get('/public/phone-number/check-duplicate', { params });
   },
 };

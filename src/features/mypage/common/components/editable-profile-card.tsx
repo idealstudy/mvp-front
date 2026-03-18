@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 
 import { Role } from '@/entities/member';
 import { useMemberInfo } from '@/features/member/hooks/use-queries';
-import EditProfileCard from '@/features/mypage/components/edit-profile-card';
-import { useStudentBasicInfo } from '@/features/mypage/hooks/student/use-basic-info';
-import { useTeacherBasicInfo } from '@/features/mypage/hooks/teacher/use-basic-info';
-import { useTeacherReport } from '@/features/mypage/hooks/teacher/use-report';
+import EditProfileCard from '@/features/mypage/common/components/edit-profile-card';
+import { useStudentBasicInfo } from '@/features/mypage/common/hooks/student/use-basic-info';
+import { useTeacherBasicInfo } from '@/features/mypage/common/hooks/teacher/use-basic-info';
+import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-report';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import { Pen } from 'lucide-react';
 

@@ -25,3 +25,9 @@ export const useUpdateProfile = () => {
     mutationFn: authService.updateProfile,
   });
 };
+
+export const useCheckPhoneNumberDuplicate = () => {
+  return useMutation({
+    mutationFn: authService.checkPhoneNumberDuplicate,
+  });
+};

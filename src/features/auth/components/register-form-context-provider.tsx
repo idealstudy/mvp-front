@@ -26,6 +26,7 @@ const TERMS = [
     value: 'privacy',
     required: true,
   },
+  { value: 'ageCheck', required: true },
   {
     value: 'marketing',
     required: false,
@@ -65,6 +66,7 @@ export const RegisterFormContextProvider = ({
       confirmPassword: '',
       role: inviteToken ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
       name: '',
+      phoneNumber: '',
     },
   });
 
@@ -81,9 +83,11 @@ export const RegisterFormContextProvider = ({
       {
         email: form.getValues('email'),
         password: form.getValues('password'),
-        acceptRequiredTerm: isAllRequiredTermsChecked,
-        acceptOptionalTerm:
-          termsCheckboxGroup.checkedItems.includes('marketing'),
+        phoneNumber: data.phoneNumber.replace(/-/g, ''),
+        agreeServiceTerms: termsCheckboxGroup.checkedItems.includes('terms'),
+        agreePrivacyTerms: termsCheckboxGroup.checkedItems.includes('privacy'),
+        agreeAgeCheck: termsCheckboxGroup.checkedItems.includes('ageCheck'),
+        agreeMarketing: termsCheckboxGroup.checkedItems.includes('marketing'),
         name: data.name,
         role: data.role,
       },
