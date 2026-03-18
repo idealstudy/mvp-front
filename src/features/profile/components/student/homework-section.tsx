@@ -5,6 +5,7 @@ import {
 import ExpandableListSection from '@/features/profile/components/expandable-list-section';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE } from '@/shared/constants';
+import { cn, formatMMDDWeekday } from '@/shared/lib';
 
 interface HomeworkSectionProps {
   data: FrontendStudentHomeworkList | undefined;
@@ -17,6 +18,15 @@ interface HomeworkSectionProps {
   isExpanded: boolean;
   setIsExpanded: (value: boolean) => void;
 }
+
+const HOMEWORK_STATUS_LABEL: Record<
+  'NOT_SUBMIT' | 'SUBMIT' | 'LATE_SUBMIT',
+  string
+> = {
+  NOT_SUBMIT: '미제출',
+  SUBMIT: '제출 완료',
+  LATE_SUBMIT: '지각 제출',
+};
 
 const HOMEWORK_SORT_OPTIONS: Array<{
   label: string;
@@ -67,11 +77,27 @@ export default function HomeworkSection({
           key={item.id}
           id={item.id}
           title={item.title}
-          subtitle={`제출일: ${item.submittedAt ?? '-'} | 마감일 ${item.deadline}`}
+          subtitle={
+            (item.submittedAt
+              ? `제출일: ${formatMMDDWeekday(item.submittedAt)} | `
+              : '') + `마감일: ${formatMMDDWeekday(item.deadline)}`
+          }
           href={PRIVATE.HOMEWORK.DETAIL(item.studyRoomId, item.id)}
           tag={
             <span className="bg-gray-2 font-caption-normal text-gray-8 mb-1 rounded-sm px-1 py-0.5">
               {item.studyRoomName}
+            </span>
+          }
+          rightTitle={
+            <span
+              className={cn(
+                'font-label-normal px-3 py-1.5 whitespace-nowrap',
+                item.status === 'NOT_SUBMIT'
+                  ? 'bg-gray-1'
+                  : 'bg-orange-1 text-key-color-primary'
+              )}
+            >
+              {HOMEWORK_STATUS_LABEL[item.status]}
             </span>
           }
         />

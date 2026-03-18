@@ -7,7 +7,7 @@ import ExpandableListSection from '@/features/profile/components/expandable-list
 import { Checkbox } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
+import { cn, formatMMDDWeekday } from '@/shared/lib';
 
 interface QnaSectionProps {
   data: FrontendStudentQnaList | undefined;
@@ -89,7 +89,7 @@ export default function QnaSection({
             key={item.id}
             id={item.id}
             title={item.title}
-            subtitle={item.regDate}
+            subtitle={`작성일: ${formatMMDDWeekday(item.regDate)}`}
             href={PRIVATE.QUESTIONS.DETAIL(item.studyRoomId, item.id)}
             tag={
               <span
@@ -104,7 +104,7 @@ export default function QnaSection({
             rightTitle={
               <span
                 className={cn(
-                  'font-label-normal px-3 py-1.5',
+                  'font-label-normal px-3 py-1.5 whitespace-nowrap',
                   item.status === 'PENDING'
                     ? 'bg-gray-1'
                     : 'bg-orange-1 text-key-color-primary'

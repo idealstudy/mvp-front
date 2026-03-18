@@ -1,6 +1,7 @@
 'use client';
 
 import { Pagination, SearchInput, Select } from '@/shared/components/ui';
+import { cn } from '@/shared/lib';
 
 interface SortOption {
   label: string;
@@ -37,7 +38,12 @@ export default function ExpandableListSection({
   return (
     <>
       {isExpanded && (
-        <div className="mb-2 flex items-center justify-between">
+        <div
+          className={cn(
+            'mb-2 flex flex-col gap-2',
+            'tablet:flex-row tablet:items-center tablet:justify-between'
+          )}
+        >
           <Select
             value={sortKey}
             onValueChange={onSortChange}
@@ -62,6 +68,7 @@ export default function ExpandableListSection({
             defaultValue={keyword}
             placeholder="검색어를 입력하세요"
             onSearch={onSearch}
+            className={cn('w-full', 'tablet:w-auto')}
           />
         </div>
       )}
