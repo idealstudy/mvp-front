@@ -1,23 +1,24 @@
-import { ReactNode } from 'react';
-
-import { redirect } from 'next/navigation';
+import { ReactNode, Suspense } from 'react';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
 import { SessionGuard } from '@/providers';
 import { fetchMemberRole } from '@/shared/lib/server';
 
+import { RoleRedirect } from './components/role-redirect';
+
 export default async function DashboardLayout({
   children,
-  searchParams,
 }: Readonly<{
   children: ReactNode;
-  searchParams?: Promise<{ token?: string }>;
 }>) {
   const session = await fetchMemberRole();
-  const { token } = (await searchParams) ?? {};
 
   if (session.status === 'authenticated' && session.role === 'ROLE_MEMBER')
-    redirect(token ? `/select-role?token=${token}` : '/select-role');
+    return (
+      <Suspense>
+        <RoleRedirect />
+      </Suspense>
+    );
 
   return (
     <SessionGuard>
