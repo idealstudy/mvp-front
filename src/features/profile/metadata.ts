@@ -16,7 +16,6 @@ export function generateTeacherProfileMetadata(
   return {
     title,
     description,
-    metadataBase: new URL(SITE_CONFIG.url),
     alternates: { canonical: url },
     openGraph: {
       locale: 'ko_KR',

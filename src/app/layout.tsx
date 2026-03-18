@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 
+import { SITE_CONFIG } from '@/config/site';
 import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_CONFIG.url),
   title: 'THE EDU',
   description:
     'THE EDU는 과외와 일정 관리를 하나의 플랫폼에서 제공합니다. 실시간 피드백, 스케줄 조정 기능을 경험해보세요.',

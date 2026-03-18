@@ -6,7 +6,6 @@ export const homeMetadata: Metadata = {
   title: `${SITE_CONFIG.name} | ${SITE_CONFIG.description}`,
   description:
     '수업 기록, 학생 숙제와 질문 관리가 하나로 연결되는 경험. 스터디룸, 과제 관리, 실시간 피드백까지 디에듀에서 시작하세요.',
-  metadataBase: new URL(SITE_CONFIG.url),
   keywords: [
     '과외 관리',
     '학생 관리',
