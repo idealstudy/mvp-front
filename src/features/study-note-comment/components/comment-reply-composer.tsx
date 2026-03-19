@@ -20,20 +20,19 @@ export const CommentReplyComposer = ({
   onChange,
   onCancel,
 }: CommentReplyComposerProps) => {
-  const isPendingName = '답장';
   return (
     <CommentComposer
       value={value}
       onChange={onChange}
       teachingNoteId={teachingNoteId}
       parentCommentId={parentCommentId}
+      submitLabel="답글"
       onCancel={onCancel}
       onSubmitted={() => {
         onChange(parseEditorContent(''));
         onCancel();
       }}
       showReplyArrow
-      isPendingName={isPendingName}
     />
   );
 };

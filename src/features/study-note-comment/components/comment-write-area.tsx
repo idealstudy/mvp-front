@@ -13,17 +13,17 @@ interface WriteAreaProps {
 
 export const CommentWriteArea = ({ teachingNoteId }: WriteAreaProps) => {
   const textEditor = useTextEditor();
-  const isPendingName = '댓글';
+
   return (
     <CommentComposer
       value={textEditor.value}
       onChange={textEditor.onChange}
       teachingNoteId={teachingNoteId}
       parentCommentId={null}
+      submitLabel="댓글"
       onSubmitted={() => {
         textEditor.onChange(initialTextEditorValue);
       }}
-      isPendingName={isPendingName}
     />
   );
 };

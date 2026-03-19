@@ -25,6 +25,7 @@ interface CommentAnswerCardContentProps {
   profileImageSrc: string;
   content: string;
   isEditing: boolean;
+  isDeleted?: boolean;
   editContent: JSONContent | null | undefined;
   teachingNoteId: number;
   commentId: number;
@@ -40,6 +41,7 @@ export const CommentAnswerCardContent = ({
   profileImageSrc,
   content,
   isEditing,
+  isDeleted = false,
   editContent,
   teachingNoteId,
   commentId,
@@ -144,7 +146,15 @@ export const CommentAnswerCardContent = ({
   return (
     <>
       <div className="mt-3">
-        <p className="font-body2-normal text-gray-12 leading-6">{content}</p>
+        <p
+          className={
+            isDeleted
+              ? 'text-gray-5 font-body2-normal'
+              : 'font-body2-normal text-gray-12 leading-6'
+          }
+        >
+          {isDeleted ? '삭제된 댓글입니다.' : content}
+        </p>
       </div>
 
       <div className="mt-2 flex items-center justify-end gap-2">

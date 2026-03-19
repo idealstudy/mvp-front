@@ -1,1 +1,5 @@
-// export { domain } from './comment.domain';
+export {
+  domain,
+  getCommentProfileImageSrc,
+  getCommentRoleLabel,
+} from './comment.domain';

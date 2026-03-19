@@ -12,6 +12,7 @@ import {
 import { CommentDropdown } from './comment-section-dropdown';
 
 interface CommentAnswerCardHeaderProps {
+  isOwner: boolean;
   authorName: string;
   roleLabel?: string;
   profileImageSrc: string;
@@ -20,6 +21,7 @@ interface CommentAnswerCardHeaderProps {
   isEmojiPickerOpen: boolean;
   selectedReaction: string | null;
   isEditing: boolean;
+  isDeleted?: boolean;
   onEmojiPickerOpenChange: (open: boolean) => void;
   onEmojiSelect: (emoji: string) => void;
   onReactionClick: (emoji: string) => void;
@@ -30,6 +32,7 @@ interface CommentAnswerCardHeaderProps {
 
 // 프로필, 이름, 역할 (카드의 상위 섹션들)
 export const CommentAnswerCardHeader = ({
+  isOwner,
   authorName,
   roleLabel,
   profileImageSrc,
@@ -38,6 +41,7 @@ export const CommentAnswerCardHeader = ({
   isEmojiPickerOpen,
   selectedReaction,
   isEditing,
+  isDeleted,
   onEmojiPickerOpenChange,
   onEmojiSelect,
   onReactionClick,
@@ -67,7 +71,7 @@ export const CommentAnswerCardHeader = ({
           ) : null}
         </div>
       </div>
-      {!isEditing && (
+      {!isEditing && !isDeleted && (
         <div className="flex items-center gap-1.5">
           {showReaction
             ? Object.entries(selectedEmojis).map(([emoji, count]) => (
@@ -114,6 +118,7 @@ export const CommentAnswerCardHeader = ({
           </Popover>
 
           <CommentDropdown
+            isOwner={isOwner}
             onEdit={onEdit}
             onReply={onReply}
             setIsDialogOpen={setIsDialogOpen}

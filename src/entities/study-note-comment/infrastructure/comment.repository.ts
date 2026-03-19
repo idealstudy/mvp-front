@@ -2,23 +2,25 @@ import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { CommonResponse } from '@/types';
 
+import { domain } from '../core';
 import {
   CommentCreateRequestDTO,
+  CommentList,
   CommentListDTO,
+  CommentReadList,
   CommentReadListDTO,
   CommentUpdateRequestDTO,
 } from '../types';
-import { dto } from './comment.dto';
 
 /* ─────────────────────────────────────────────────────
  * [Read] 댓글/대댓글 목록 조회
  * ──────────────────────────────────────────────────── */
-const getCommentList = async (teachingNoteId: number) => {
+const getCommentList = async (teachingNoteId: number): Promise<CommentList> => {
   const response = await api.private.get<CommonResponse<CommentListDTO>>(
     `/common/teaching-notes/${teachingNoteId}/comments`
   );
 
-  return unwrapEnvelope(response, dto.list);
+  return unwrapEnvelope(response, domain.list);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -27,12 +29,12 @@ const getCommentList = async (teachingNoteId: number) => {
 const getReadCommentList = async (
   teachingNoteId: number,
   commentId: number
-) => {
+): Promise<CommentReadList> => {
   const response = await api.private.get<CommonResponse<CommentReadListDTO>>(
     `/common/teaching-notes/${teachingNoteId}/comments/${commentId}/readers`
   );
 
-  return unwrapEnvelope(response, dto.readList);
+  return unwrapEnvelope(response, domain.readList);
 };
 
 /* ─────────────────────────────────────────────────────

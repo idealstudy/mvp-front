@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { ConfirmDialog, type DialogAction } from '@/shared/components/dialog';
 import { parseEditorContent } from '@/shared/components/editor';
+import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 
 import { useDeleteComment } from '../hooks/use-comment';
@@ -14,10 +15,12 @@ import { CommentAnswerCardHeader } from './comment-answer-card-header';
 import { CommentReplyComposer } from './comment-reply-composer';
 
 interface CommentAnswerCardProps {
+  authorId: number;
   authorName: string;
   roleLabel?: string;
   content: string;
   profileImageSrc: string;
+  isStudent?: boolean;
   showReplyArrow?: boolean;
   showReaction?: boolean;
   className?: string;
@@ -25,13 +28,16 @@ interface CommentAnswerCardProps {
   commentId: number;
   expiredAt: string;
   readCount: number;
+  isDeleted?: boolean;
 }
 
 export const CommentCard = ({
+  authorId,
   authorName,
   roleLabel,
   content,
   profileImageSrc,
+  isStudent = false,
   showReplyArrow = false,
   showReaction = true,
   className,
@@ -39,6 +45,7 @@ export const CommentCard = ({
   commentId,
   expiredAt,
   readCount,
+  isDeleted,
 }: CommentAnswerCardProps) => {
   const [selectedEmojis, setSelectedEmojis] = useState<Record<string, number>>(
     {}
@@ -53,6 +60,8 @@ export const CommentCard = ({
   const [replyContent, setReplyContent] = useState<JSONContent>(() =>
     parseEditorContent('')
   );
+  const { member } = useMemberStore();
+  const isOwner = authorId === member?.id;
 
   const { mutate, isPending } = useDeleteComment();
 
@@ -117,14 +126,16 @@ export const CommentCard = ({
 
   const card = (
     <div
-      className={`border-gray-3 min-h-[154px] w-full rounded-sm border p-6 ${roleLabel === '학생' ? 'bg-gray-1' : 'bg-white'} ${className ?? ''}`}
+      className={`border-gray-3 min-h-[154px] w-full rounded-sm border p-6 ${isStudent ? 'bg-gray-1' : 'bg-white'} ${className ?? ''}`}
     >
       {!isEditing && (
         <CommentAnswerCardHeader
+          isOwner={isOwner}
           authorName={authorName}
           roleLabel={roleLabel}
           profileImageSrc={profileImageSrc}
           showReaction={showReaction}
+          isDeleted={isDeleted}
           selectedEmojis={selectedEmojis}
           isEmojiPickerOpen={isEmojiPickerOpen}
           selectedReaction={selectedReaction}
@@ -137,7 +148,6 @@ export const CommentCard = ({
           setIsDialogOpen={setIsDialogOpen}
         />
       )}
-
       <CommentAnswerCardContent
         authorName={authorName}
         roleLabel={roleLabel}
@@ -149,6 +159,7 @@ export const CommentCard = ({
         commentId={commentId}
         expiredAt={expiredAt}
         readCount={readCount}
+        isDeleted={isDeleted}
         onEditContentChange={setEditContent}
         onCancel={handleCancel}
       />

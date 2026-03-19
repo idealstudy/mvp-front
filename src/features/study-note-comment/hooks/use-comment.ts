@@ -1,11 +1,10 @@
-import {
+import type {
   CommentCreateRequestDTO,
-  CommentListDTO,
-  CommentReadListDTO,
+  CommentList,
+  CommentReadList,
   CommentUpdateRequestDTO,
-  commentKeys,
-  repository,
 } from '@/entities/study-note-comment';
+import { commentKeys, repository } from '@/entities/study-note-comment';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const ONE_MINUTE = 60 * 1000;
@@ -13,7 +12,7 @@ const ONE_MINUTE = 60 * 1000;
 // 스터디 노트 답글 info
 
 export const useCommentList = (teachingNoteId: number) =>
-  useQuery<CommentListDTO>({
+  useQuery<CommentList>({
     queryKey: commentKeys.list(teachingNoteId),
     queryFn: () => repository.comment.getCommentList(teachingNoteId),
     enabled: Number.isInteger(teachingNoteId) && teachingNoteId > 0,
@@ -27,7 +26,7 @@ export const useReadCommentList = (
   commentId: number,
   enabled = true
 ) =>
-  useQuery<CommentReadListDTO>({
+  useQuery<CommentReadList>({
     queryKey: commentKeys.readList(teachingNoteId, commentId),
     queryFn: () =>
       repository.comment.getReadCommentList(teachingNoteId, commentId),

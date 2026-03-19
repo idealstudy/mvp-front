@@ -1,13 +1,13 @@
 'use client';
 
-import {
-  CommentChildItemDTO,
-  CommentItemDTO,
+import type {
+  CommentChildItem as CommentChildItemModel,
+  CommentItem as CommentItemModel,
 } from '@/entities/study-note-comment';
 
 import { CommentCard } from './comment-card';
 
-type CommentCardItem = CommentItemDTO | CommentChildItemDTO;
+type CommentCardItem = CommentItemModel | CommentChildItemModel;
 
 interface CommentItemProps {
   teachingNoteId: number;
@@ -20,23 +20,20 @@ export const CommentItem = ({
   comment,
   showReplyArrow = false,
 }: CommentItemProps) => {
-  const isStudent = comment.authorInfo.role === 'ROLE_STUDENT';
-  const roleLabel = isStudent ? '학생' : '선생님';
-  const profileImageSrc = isStudent
-    ? '/character/img_profile_student01.png'
-    : '/character/img_profile_teacher01.png';
-
   return (
     <CommentCard
+      authorId={comment.authorInfo.id}
       authorName={comment.authorInfo.name}
-      roleLabel={roleLabel}
+      roleLabel={comment.authorInfo.roleLabel}
       content={comment.resolvedContent.content}
       expiredAt={comment.resolvedContent.expiresAt}
       readCount={comment.readCount}
+      isStudent={comment.authorInfo.isStudent}
       showReplyArrow={showReplyArrow}
-      profileImageSrc={profileImageSrc}
+      profileImageSrc={comment.authorInfo.profileImageSrc}
       teachingNoteId={teachingNoteId}
       commentId={comment.id}
+      isDeleted={comment.isDeleted}
     />
   );
 };

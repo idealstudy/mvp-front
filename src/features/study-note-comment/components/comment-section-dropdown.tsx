@@ -5,10 +5,12 @@ import Image from 'next/image';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
 export const CommentDropdown = ({
+  isOwner,
   onReply,
   onEdit,
   setIsDialogOpen,
 }: {
+  isOwner: boolean;
   onReply?: () => void;
   onEdit?: () => void;
   setIsDialogOpen: (a: boolean) => void;
@@ -32,19 +34,23 @@ export const CommentDropdown = ({
           >
             답장 남기기
           </DropdownMenu.Item>
-          <DropdownMenu.Item
-            onSelect={onEdit}
-            className="justify-center"
-          >
-            수정하기
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            variant="danger"
-            onSelect={() => setIsDialogOpen(true)}
-            className="justify-center"
-          >
-            삭제하기
-          </DropdownMenu.Item>
+          {isOwner && (
+            <>
+              <DropdownMenu.Item
+                onSelect={onEdit}
+                className="justify-center"
+              >
+                수정하기
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                variant="danger"
+                onSelect={() => setIsDialogOpen(true)}
+                className="justify-center"
+              >
+                삭제하기
+              </DropdownMenu.Item>
+            </>
+          )}
         </DropdownMenu.Content>
       </DropdownMenu>
     </>

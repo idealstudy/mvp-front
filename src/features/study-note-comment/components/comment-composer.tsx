@@ -3,6 +3,10 @@
 import Image from 'next/image';
 
 import {
+  getCommentProfileImageSrc,
+  getCommentRoleLabel,
+} from '@/entities/study-note-comment';
+import {
   TextEditor,
   hasMeaningfulEditorContent,
   prepareContentForSave,
@@ -22,7 +26,7 @@ interface CommentComposerProps {
   onSubmitted: () => void;
   onCancel?: () => void;
   showReplyArrow?: boolean;
-  isPendingName: string;
+  submitLabel: string;
 }
 
 export const CommentComposer = ({
@@ -33,19 +37,16 @@ export const CommentComposer = ({
   onSubmitted,
   onCancel,
   showReplyArrow = false,
-  isPendingName,
+  submitLabel,
 }: CommentComposerProps) => {
   const { role } = useRole();
   const { member } = useMemberStore();
   const { mutate, isPending } = useCreateComment();
 
   const isSubmitDisabled = !hasMeaningfulEditorContent(value) || isPending;
-  const isStudent = role === 'ROLE_STUDENT';
-  const profileImageSrc = isStudent
-    ? '/character/img_profile_student01.png'
-    : '/character/img_profile_teacher01.png';
-  const roleLabel = isStudent ? '학생' : '선생님';
-  const authorName = roleLabel === '학생' ? member?.name : '선생님';
+  const profileImageSrc = getCommentProfileImageSrc(role);
+  const roleLabel = getCommentRoleLabel(role);
+  const authorName = member?.name ?? roleLabel;
 
   const onSubmit = () => {
     const { contentString, mediaIds } = prepareContentForSave(value);
@@ -64,7 +65,6 @@ export const CommentComposer = ({
           onSubmitted();
         },
       }
-      // TODO: 에러처리
     );
   };
 
@@ -83,12 +83,12 @@ export const CommentComposer = ({
           </div>
           <div className="flex items-center gap-1">
             <p className="font-body2-normal text-gray-12">{authorName}</p>
-            {roleLabel === '학생' && (
+            {roleLabel === '학생' ? (
               <>
                 <p className="text-gray-7">·</p>
                 <p className="font-body2-normal text-gray-7">{roleLabel}</p>
               </>
-            )}
+            ) : null}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -106,7 +106,7 @@ export const CommentComposer = ({
             disabled={isSubmitDisabled}
             onClick={onSubmit}
           >
-            {isPending ? '등록 중...' : `${isPendingName} 남기기`}
+            {isPending ? '등록 중...' : `${submitLabel} 남기기`}
           </Button>
         </div>
       </div>
@@ -115,7 +115,7 @@ export const CommentComposer = ({
         <TextEditor
           value={value}
           onChange={onChange}
-          placeholder={`${isPendingName}을 입력해 주세요.`}
+          placeholder={`${submitLabel} 내용을 입력해 주세요.`}
           targetType="TEACHING_NOTE"
           minHeight="120px"
           maxHeight="240px"
