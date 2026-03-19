@@ -106,7 +106,7 @@ export const WriteFormArea = ({ studyRoomId, homeworkId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="제출할 과제를 작성해 주세요..."
-                      targetType="HOMEWORK"
+                      targetType="HOMEWORK_SUBMISSION"
                     />
                   );
                 }}

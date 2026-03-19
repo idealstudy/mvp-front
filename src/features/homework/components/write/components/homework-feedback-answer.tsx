@@ -203,7 +203,7 @@ export const FeedbackAnswer = ({
               value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
-              targetType="HOMEWORK"
+              targetType="HOMEWORK_FEEDBACK"
             />
             <div className="space-y-2">
               <div className="flex justify-end gap-2">

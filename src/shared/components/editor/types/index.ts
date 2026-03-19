@@ -103,7 +103,11 @@ export type MediaTargetType =
   | 'QNA'
   | 'HOMEWORK'
   | 'HOMEWORK_SUBMISSION'
-  | 'HOMEWORK_FEEDBACK';
+  | 'HOMEWORK_FEEDBACK'
+  | 'REVIEW'
+  | 'TEACHER_DESCRIPTION'
+  | 'STUDY_ROOM_CARACTERISTIC'
+  | 'COLUMN_ARTICLE';
 
 /** Presign 요청용 미디어 에셋 */
 export type PresignMediaAsset = {

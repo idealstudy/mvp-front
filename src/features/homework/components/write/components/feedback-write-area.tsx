@@ -127,7 +127,7 @@ export const FeedbackWriteArea = ({
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="피드백을 작성해 주세요..."
-                      targetType="HOMEWORK"
+                      targetType="HOMEWORK_FEEDBACK"
                     />
                   );
                 }}
