@@ -9,7 +9,7 @@ import {
 /**
  * [GET] 선생님 마이페이지 전체 수업노트 조회
  */
-export const useInfiniteTeacherTeachingNotes = (
+export const useTeacherTeachingNotes = (
   params: Omit<NoteListQuery, 'page'>,
   options?: { enabled?: boolean }
 ) =>

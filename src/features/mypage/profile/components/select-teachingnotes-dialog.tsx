@@ -7,8 +7,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import {
-  useInfiniteTeacherTeachingNotes,
   useTeacherRepresentativeTeachingNotes,
+  useTeacherTeachingNotes,
   useUpdateTeacherNoteRepresentative,
 } from '@/features/mypage/profile/hooks/teacher/use-teaching-notes';
 import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
@@ -27,7 +27,7 @@ export default function SelectTeachingnotesDialog() {
   const isRepresentative = representativeNotes?.[0]?.representative ?? false;
 
   const { data, fetchNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteTeacherTeachingNotes({
+    useTeacherTeachingNotes({
       size: 20,
       sortKey: 'TAUGHT_AT_ASC',
     });
