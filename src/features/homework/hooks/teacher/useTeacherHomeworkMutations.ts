@@ -1,13 +1,7 @@
+import { TeacherHomeworkQueryKey, repository } from '@/entities/homework';
+import type { TeacherHomeworkRequest } from '@/entities/homework/types';
 import { teacherKeys } from '@/entities/teacher';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-import {
-  postTeacherHomeworkCreate,
-  removeTeacherHomework,
-  updateTeacherHomework,
-} from '../../api/teacher/homework.teacher.api';
-import { TeacherHomeworkRequest } from '../../model/homework.types';
-import { TeacherHomeworkQueryKey } from '../../service/query-keys';
 
 // 선생님이 과제 생성
 export const useTeacherCreateHomework = () => {
@@ -20,7 +14,7 @@ export const useTeacherCreateHomework = () => {
     }: {
       studyRoomId: number;
       body: TeacherHomeworkRequest;
-    }) => postTeacherHomeworkCreate(studyRoomId, body),
+    }) => repository.teacher.create(studyRoomId, body),
 
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -34,7 +28,7 @@ export const useTeacherCreateHomework = () => {
 };
 
 // 선생님이 과제 삭제
-export const useTeacherRemoveHomework = () => {
+export const useTeacherDeleteHomework = () => {
   return useMutation({
     mutationFn: ({
       studyRoomId,
@@ -42,7 +36,7 @@ export const useTeacherRemoveHomework = () => {
     }: {
       studyRoomId: number;
       homeworkId: number;
-    }) => removeTeacherHomework(studyRoomId, homeworkId),
+    }) => repository.teacher.delete(studyRoomId, homeworkId),
   });
 };
 
@@ -59,7 +53,7 @@ export const useTeacherUpdateHomework = () => {
       studyRoomId: number;
       homeworkId: number;
       body: TeacherHomeworkRequest;
-    }) => updateTeacherHomework(studyRoomId, homeworkId, body),
+    }) => repository.teacher.update(studyRoomId, homeworkId, body),
 
     onSuccess: async (_data, variables) => {
       await Promise.all([

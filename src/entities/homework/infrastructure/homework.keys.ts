@@ -1,4 +1,4 @@
-import { HomeworkPageable } from '../model/homework.types';
+import type { HomeworkPageable } from '../types';
 
 // 선생님
 export const TeacherHomeworkQueryKey = {

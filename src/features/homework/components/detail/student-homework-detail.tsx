@@ -1,14 +1,14 @@
 'use client';
 
+import {
+  MyHomeworkStudent,
+  OtherHomeworkStudent,
+} from '@/entities/homework/types';
 import { useStudentHomeworkDetail } from '@/features/homework/hooks/student/useStudentHomeworkQuries';
 import { ColumnLayout } from '@/layout/column-layout';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
 
-import {
-  MyHomeworkStudent,
-  OtherHomeworkStudent,
-} from '../../model/homeworkDetail.types';
 import { FeedbackAnswer } from '../write/components/homework-feedback-answer';
 import { WriteFormArea } from '../write/components/homework-write-form-area';
 import { StudentHomeworkFormProvider } from '../write/components/student-form-provider';

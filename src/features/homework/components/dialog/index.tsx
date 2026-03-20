@@ -11,8 +11,8 @@ import { useRole } from '@/shared/hooks/use-role';
 import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 
 import { useRemoveStudentHomework } from '../../hooks/student/useStudentHomeworkMutations';
-import { useRemoveTeacherHomeworkFeedback } from '../../hooks/teacher/useTeacherHomeworkFeedbackMutations';
-import { useTeacherRemoveHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
+import { useDeleteTeacherHomeworkFeedback } from '../../hooks/teacher/useTeacherHomeworkFeedbackMutations';
+import { useTeacherDeleteHomework } from '../../hooks/teacher/useTeacherHomeworkMutations';
 
 export const HomeworkDialog = ({
   state,
@@ -37,8 +37,8 @@ export const HomeworkDialog = ({
   const { role } = useRole();
   const isTeacher = role === 'ROLE_TEACHER';
 
-  const { mutate: removeTeacherHomework } = useTeacherRemoveHomework();
-  const { mutate: removeFeedback } = useRemoveTeacherHomeworkFeedback();
+  const { mutate: removeTeacherHomework } = useTeacherDeleteHomework();
+  const { mutate: removeFeedback } = useDeleteTeacherHomeworkFeedback();
   const { mutate: removeStudentHomework } = useRemoveStudentHomework();
 
   // 선생님 homework 삭제

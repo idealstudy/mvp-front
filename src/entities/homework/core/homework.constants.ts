@@ -1,4 +1,8 @@
-import { HomeworkSubmitStatus } from './homework.types';
+import { z } from 'zod';
+
+import { dto } from '../infrastructure/homework.dto';
+
+type HomeworkSubmitStatus = z.infer<typeof dto.enums.submitStatus>;
 
 export const HOMEWORK_SUBMIT_STATUS_LABEL: Record<
   HomeworkSubmitStatus,

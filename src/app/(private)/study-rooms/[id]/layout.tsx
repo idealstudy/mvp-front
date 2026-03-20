@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
-import { HomeworkTabShell } from '@/features/homework/components/homework-tab-shell';
 import { StudyNoteTab } from '@/features/study-notes/components/study-note-tab';
 import { StudyNoteTabShell } from '@/features/study-notes/components/study-note-tab-shell';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
@@ -25,22 +24,18 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
 
   const [selectedGroupId, setSelectedGroupId] = useState<number | 'all'>('all');
 
-  // URL에서 segment 추출: /study-rooms/1/qna/4 -> '4'
   const pathSegments = path.split('/').filter(Boolean);
   const segment = pathSegments[pathSegments.length - 1];
   const secondLastSegment = pathSegments[pathSegments.length - 2];
+  const isHomeworkRoute = pathSegments.includes('homework');
 
-  // note인지 homework 인지
-  const isNoteOrHw = segment === 'note' || segment === 'homework';
+  const isNote = segment === 'note';
 
-  // 편집/작성 페이지인지 확인 (note/[noteId]/edit 또는 note/new)
   const isEditOrWritePage =
     segment === 'edit' ||
     segment === 'new' ||
     (secondLastSegment === 'note' && segment === 'new');
 
-  // 상세 페이지인지 확인 (note/[noteId] 또는 qna/[contextId] 또는 homework/[homeworkId])
-  // 편집/작성 페이지는 제외
   const isDetailPage =
     !isEditOrWritePage &&
     ((pathSegments.length > 3 && secondLastSegment === 'qna') ||
@@ -56,12 +51,16 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
     }
   }, [role, segment, isLoading, router, studyRoomId]);
 
-  // 편집/작성 페이지는 layout을 적용하지 않고 children을 그대로 반환
+  // write/edit routes bypass this layout
   if (isEditOrWritePage) {
     return <>{children}</>;
   }
 
-  // 상세 페이지는 sidebar 없이 전체 레이아웃 사용
+  // homework routes are handled by /homework/layout.tsx
+  if (isHomeworkRoute) {
+    return <>{children}</>;
+  }
+
   if (isDetailPage) {
     return (
       <ColumnLayout className="desktop:p-6 items-start gap-6">
@@ -96,15 +95,10 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
                 path={segment!}
                 studyRoomId={studyRoomId}
               />
-              <HomeworkTabShell
-                mode={role}
-                path={segment!}
-                studyRoomId={studyRoomId}
-              />
-              {!isNoteOrHw && children}
+              {!isNote && children}
             </div>
           </div>
-          {isNoteOrHw && children}
+          {isNote && children}
         </ColumnLayout.Right>
       </ColumnLayout>
     </StudyNoteGroupContext.Provider>

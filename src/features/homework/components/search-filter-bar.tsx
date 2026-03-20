@@ -4,10 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import {
-  HomeworkLimit,
-  HomeworkSortKey,
-} from '@/features/homework/model/homework.types';
+import { HomeworkLimit, HomeworkSortKey } from '@/entities/homework/types';
 import { Select } from '@/features/study-rooms/components/common/select';
 import { Input } from '@/shared/components/ui/input';
 

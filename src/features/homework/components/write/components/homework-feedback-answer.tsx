@@ -5,15 +5,15 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 
 import {
-  useRemoveTeacherHomeworkFeedback,
+  useDeleteTeacherHomeworkFeedback,
   useUpdateTeacherHomeworkFeedback,
 } from '@/features/homework/hooks/teacher/useTeacherHomeworkFeedbackMutations';
-import { parseEditorContent } from '@/features/homework/lib/parse-editor-content';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import {
   TextEditor,
   TextViewer,
   mergeResolvedContentWithMediaIds,
+  parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
@@ -60,7 +60,7 @@ export const FeedbackAnswer = ({
 
   const { mutate: updateMessage, isPending: isUpdating } =
     useUpdateTeacherHomeworkFeedback();
-  const { isPending: isDeleting } = useRemoveTeacherHomeworkFeedback();
+  const { isPending: isDeleting } = useDeleteTeacherHomeworkFeedback();
 
   // JSONContent 파싱
   const parsedDisplayContent = useMemo(

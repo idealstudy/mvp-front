@@ -56,7 +56,7 @@ export const createTeacherStudyRoomHooks = (
         void qc.invalidateQueries({
           queryKey: teacherKeys.dashboard.studyRoomList(),
         });
-        
+
         // 마이페이지 캐시 무효화
         void qc.invalidateQueries({ queryKey: teacherKeys.all });
       },

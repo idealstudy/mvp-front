@@ -3,10 +3,10 @@ import { useReducer } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import type { Homework } from '@/entities/homework/types';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 
-import { Homework } from '../model/homework.types';
 import { HomeworkDialog } from './dialog';
 
 export const HomeworkDropdown = ({

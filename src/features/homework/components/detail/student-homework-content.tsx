@@ -1,7 +1,5 @@
-import { TextViewer } from '@/shared/components/editor';
+import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { getRelativeTimeString } from '@/shared/lib';
-
-import { parseEditorContent } from '../../lib/parse-editor-content';
 
 type StudentAssignmentContentProps = {
   content: string;

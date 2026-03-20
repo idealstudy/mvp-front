@@ -3,11 +3,14 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { HOMEWORK_SUBMIT_STATUS_LABEL } from '@/entities/homework/core';
+import type { HomeworkSubmitStatus } from '@/entities/homework/types';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import {
   TextEditor,
   TextViewer,
   mergeResolvedContentWithMediaIds,
+  parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
@@ -20,9 +23,6 @@ import {
   useRemoveStudentHomework,
   useUpdateStudentHomework,
 } from '../../hooks/student/useStudentHomeworkMutations';
-import { parseEditorContent } from '../../lib/parse-editor-content';
-import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../../model/constants';
-import { HomeworkSubmitStatus } from '../../model/homework.types';
 import { HomeworkDialog } from '../dialog';
 
 type Props = {

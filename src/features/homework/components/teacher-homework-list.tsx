@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 
+import type {
+  HomeworkPageable,
+  TeacherHomeworkItem,
+} from '@/entities/homework/types';
 import { MiniSpinner } from '@/shared/components/loading';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
 
-import { HomeworkPageable, TeacherHomeworkItem } from '../model/homework.types';
 import { HomeworkDropdown } from './dropdown';
 
 export const TeacherHomeworkList = ({

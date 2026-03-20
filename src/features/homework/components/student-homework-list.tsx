@@ -1,11 +1,10 @@
 'use client';
 
+import { HOMEWORK_SUBMIT_STATUS_LABEL } from '@/entities/homework/core';
+import type { StudentHomeworkItem } from '@/entities/homework/types';
 import { MiniSpinner } from '@/shared/components/loading';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { formatYYYYMMDD, getRelativeTimeString } from '@/shared/lib/utils';
-
-import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../model/constants';
-import { StudentHomeworkItem } from '../model/homework.types';
 
 export const StudentHomeworkList = ({
   data,

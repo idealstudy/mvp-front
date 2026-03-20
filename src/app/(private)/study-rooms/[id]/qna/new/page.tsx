@@ -10,12 +10,12 @@ export default async function QnAWritePage({ params }: Props) {
   const resolvedParams = await params;
 
   return (
-    <main>
+    <div className="flex w-full flex-col">
       <BackLink />
 
-      <ColumnLayout>
+      <ColumnLayout className="desktop:p-6 items-start gap-6">
         <QnAWriteDetail studyRoomId={Number(resolvedParams.id)} />
       </ColumnLayout>
-    </main>
+    </div>
   );
 }
