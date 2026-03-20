@@ -6,6 +6,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout';
+import {
+  CheckRead,
+  ReadPeopleList,
+  useReadPeoplePopover,
+} from '@/shared/components/check-read';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
@@ -30,15 +35,46 @@ export const HomeworkDetailLeft = ({
 }: Props) => {
   const router = useRouter();
   const { role } = useRole();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const teacherQuery = useGetTeacherHomeworkDetail(studyRoomId, homeworkId);
   const studentQuery = useStudentHomeworkDetail(studyRoomId, homeworkId);
 
   const data = role === 'ROLE_TEACHER' ? teacherQuery.data : studentQuery.data;
-
   const isPending =
     role === 'ROLE_TEACHER' ? teacherQuery.isPending : studentQuery.isPending;
+  const isError =
+    role === 'ROLE_TEACHER' ? teacherQuery.isError : studentQuery.isError;
+
+  const { isOpen, side, triggerRef, popupRef, open, close } =
+    useReadPeoplePopover();
+
+  // 읽은 사람 조회
+  const readPeopleItems =
+    role === 'ROLE_TEACHER'
+      ? teacherQuery.data?.homeworkStudents
+          .filter((student) => student.readAt != null)
+          .map((student) => ({
+            id: student.studentId,
+            name: student.studentName,
+            readAt: student.readAt,
+          }))
+      : studentQuery.data?.otherHomeworkStudents
+          .filter((student) => student.readAt != null)
+          .map((student, index) => ({
+            id: index,
+            name: student.studentName,
+            readAt: student.readAt,
+          }));
+
+  const readCount =
+    role === 'ROLE_TEACHER'
+      ? (teacherQuery.data?.homeworkStudents.filter(
+          (student) => student.readAt != null
+        ).length ?? 0)
+      : (studentQuery.data?.otherHomeworkStudents.filter(
+          (student) => student.readAt != null
+        ).length ?? 0);
 
   // 마감기한 계산
   const deadLineTime = (time?: string) => {
@@ -71,12 +107,12 @@ export const HomeworkDetailLeft = ({
   };
 
   const handleEdit = () => {
-    setIsOpen(false);
+    setIsMenuOpen(false);
     router.push(`/study-rooms/${studyRoomId}/homework/${homeworkId}/edit`);
   };
 
   const handleDelete = () => {
-    setIsOpen(false);
+    setIsMenuOpen(false);
     dispatch({
       type: 'OPEN',
       scope: 'homework',
@@ -117,8 +153,8 @@ export const HomeworkDetailLeft = ({
             </span>
             {role === 'ROLE_TEACHER' && (
               <DropdownMenu
-                open={isOpen}
-                onOpenChange={setIsOpen}
+                open={isMenuOpen}
+                onOpenChange={setIsMenuOpen}
               >
                 <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-gray-100">
                   <Image
@@ -154,7 +190,43 @@ export const HomeworkDetailLeft = ({
             </span>
           </div>
           <h3 className="font-headline1-heading">{data?.homework.title}</h3>
-          ㅁㄴㅇㅁㄴ
+
+          {/* 본 인원 수 체크 */}
+          {readCount > 0 && (
+            <div
+              ref={triggerRef}
+              onMouseEnter={open}
+              onMouseLeave={close}
+              className="relative"
+            >
+              <div className="flex items-center justify-end gap-1 text-center">
+                <Image
+                  src="/studynotes/eye.png"
+                  alt="eye"
+                  width={24}
+                  height={24}
+                />
+                <p className="font-label-normal text-gray-7">
+                  {readCount}명이 봤어요
+                </p>
+                {isOpen ? (
+                  <CheckRead
+                    side={side}
+                    popupRef={popupRef}
+                    open={open}
+                    close={close}
+                  >
+                    <ReadPeopleList
+                      displayReadCount={readCount}
+                      data={readPeopleItems}
+                      isLoading={isPending}
+                      isError={isError}
+                    />
+                  </CheckRead>
+                ) : null}
+              </div>
+            </div>
+          )}
           <hr className="text-gray-scale-gray-10" />
           <div className="font-label-normal flex cursor-default flex-col gap-2">
             <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
