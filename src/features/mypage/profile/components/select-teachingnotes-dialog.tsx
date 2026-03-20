@@ -99,6 +99,39 @@ export default function SelectTeachingnotesDialog() {
     [fetchNextPage]
   );
 
+  // 수업노트 목록 렌더링 (로딩 / 빈 상태 / 목록)
+  let noteList;
+  if (isLoading) {
+    noteList = (
+      <p className="text-text-sub2 my-4 text-center">불러오는 중...</p>
+    );
+  } else if (allNotes.length === 0) {
+    noteList = (
+      <p className="text-text-sub2 my-4 text-center">수업노트가 없습니다.</p>
+    );
+  } else {
+    noteList = (
+      <div className="space-y-3 overflow-y-auto px-3 py-4">
+        {allNotes.map((note) => (
+          <TeachingnotesItem
+            variant="selectable"
+            key={note.id}
+            teachingnote={note}
+            checked={note.representative}
+            onClick={() => toggleNote(note.id, note.representative)}
+            isLoading={loadingNoteId === note.id}
+          />
+        ))}
+
+        <div ref={sentinelRef} />
+
+        {isFetchingNextPage && (
+          <p className="text-text-sub2 text-center text-sm">불러오는 중...</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
       <button
@@ -178,36 +211,7 @@ export default function SelectTeachingnotesDialog() {
               )}
 
               {/* 하단: 나머지 수업노트 */}
-              {isLoading ? (
-                <p className="text-text-sub2 my-4 text-center">
-                  불러오는 중...
-                </p>
-              ) : allNotes.length === 0 ? (
-                <p className="text-text-sub2 my-4 text-center">
-                  수업노트가 없습니다.
-                </p>
-              ) : (
-                <div className="space-y-3 overflow-y-auto px-3 py-4">
-                  {allNotes.map((note) => (
-                    <TeachingnotesItem
-                      variant="selectable"
-                      key={note.id}
-                      teachingnote={note}
-                      checked={note.representative}
-                      onClick={() => toggleNote(note.id, note.representative)}
-                      isLoading={loadingNoteId === note.id}
-                    />
-                  ))}
-
-                  <div ref={sentinelRef} />
-
-                  {isFetchingNextPage && (
-                    <p className="text-text-sub2 text-center text-sm">
-                      불러오는 중...
-                    </p>
-                  )}
-                </div>
-              )}
+              {noteList}
             </div>
           </Dialog.Body>
         </Dialog.Content>
