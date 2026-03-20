@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from 'react';
 
 import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
