@@ -121,6 +121,7 @@ const StudentHomeworkListItemSchema = HomeworkListItemBaseSchema.extend({
 const MyHomeworkStudentSchema = z.object({
   id: z.number().int(),
   studentName: z.string(),
+  readAt: z.string().nullable(),
   status: HomeworkSubmitStatusSchema,
   submission: OptionalHomeworkSubmissionSchema,
   feedback: OptionalHomeworkFeedbackSchema,

@@ -59,22 +59,31 @@ export const HomeworkDetailLeft = ({
             name: student.studentName,
             readAt: student.readAt,
           }))
-      : studentQuery.data?.otherHomeworkStudents
-          .filter((student) => student.readAt != null)
-          .map((student, index) => ({
-            id: index,
-            name: student.studentName,
-            readAt: student.readAt,
-          }));
+      : [
+          ...(studentQuery.data?.myHomeworkStudent.readAt
+            ? [
+                {
+                  id: studentQuery.data.myHomeworkStudent.id,
+                  name: studentQuery.data.myHomeworkStudent.studentName,
+                  readAt: studentQuery.data.myHomeworkStudent.readAt,
+                },
+              ]
+            : []),
+          ...(studentQuery.data?.otherHomeworkStudents
+            .filter((student) => student.readAt != null)
+            .map((student, index) => ({
+              id: index,
+              name: student.studentName,
+              readAt: student.readAt,
+            })) ?? []),
+        ];
 
   const readCount =
     role === 'ROLE_TEACHER'
       ? (teacherQuery.data?.homeworkStudents.filter(
           (student) => student.readAt != null
         ).length ?? 0)
-      : (studentQuery.data?.otherHomeworkStudents.filter(
-          (student) => student.readAt != null
-        ).length ?? 0);
+      : (readPeopleItems?.length ?? 0);
 
   // 마감기한 계산
   const deadLineTime = (time?: string) => {
