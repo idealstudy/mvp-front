@@ -1,9 +1,4 @@
-import {
-  postTeacherHomeworkFeedback,
-  removeTeacherHomeworkFeedback,
-  updateTeacherHomeworkFeedback,
-} from '@/features/homework/api/teacher/homeworkFeedback.teacher.api';
-import { TeacherHomeworkQueryKey } from '@/features/homework/service/query-keys';
+import { TeacherHomeworkQueryKey, repository } from '@/entities/homework';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type TeacherHomeworkFeedbackPayload = {
@@ -24,7 +19,7 @@ export const usePostTeacherHomeworkFeedback = () => {
       homeworkStudentId,
       content,
     }: TeacherHomeworkFeedbackPayload) =>
-      postTeacherHomeworkFeedback(studyRoomId, homeworkStudentId, {
+      repository.teacher.feedback.create(studyRoomId, homeworkStudentId, {
         content: content!,
       }),
 
@@ -49,7 +44,7 @@ export const useUpdateTeacherHomeworkFeedback = () => {
       homeworkStudentId,
       content,
     }: TeacherHomeworkFeedbackPayload) =>
-      updateTeacherHomeworkFeedback(studyRoomId, homeworkStudentId, {
+      repository.teacher.feedback.update(studyRoomId, homeworkStudentId, {
         content: content!,
       }),
     onSuccess: (_data, variables) => {
@@ -64,7 +59,7 @@ export const useUpdateTeacherHomeworkFeedback = () => {
 };
 
 // 선생님이 피드백 삭제
-export const useRemoveTeacherHomeworkFeedback = () => {
+export const useDeleteTeacherHomeworkFeedback = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -72,7 +67,7 @@ export const useRemoveTeacherHomeworkFeedback = () => {
       studyRoomId,
       homeworkStudentId,
     }: TeacherHomeworkFeedbackPayload) =>
-      removeTeacherHomeworkFeedback(studyRoomId, homeworkStudentId),
+      repository.teacher.feedback.delete(studyRoomId, homeworkStudentId),
 
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

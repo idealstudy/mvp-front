@@ -10,16 +10,16 @@ import {
   useSearchParams,
 } from 'next/navigation';
 
+import {
+  HomeworkLimit,
+  HomeworkPageable,
+  HomeworkSortKey,
+} from '@/entities/homework/types';
 import { HomeworkSearchFilterBar } from '@/features/homework/components/search-filter-bar';
 import { StudentHomeworkList } from '@/features/homework/components/student-homework-list';
 import { TeacherHomeworkList } from '@/features/homework/components/teacher-homework-list';
 import { useGetStudentHomeworkList } from '@/features/homework/hooks/student/useStudentHomeworkQuries';
 import { useGetTeacherHomeworkList } from '@/features/homework/hooks/teacher/useTeacherHomeworkQuries';
-import {
-  HomeworkLimit,
-  HomeworkPageable,
-  HomeworkSortKey,
-} from '@/features/homework/model/homework.types';
 import { StudyNoteGroupContext } from '@/features/study-notes/contexts/study-note-group.context';
 import { StudyRoomDetailLayout } from '@/features/study-rooms/components/common/layout';
 import { useRole } from '@/shared/hooks/use-role';

@@ -1,11 +1,6 @@
+import { TeacherHomeworkQueryKey, repository } from '@/entities/homework';
+import type { HomeworkPageable } from '@/entities/homework/types';
 import { useQuery } from '@tanstack/react-query';
-
-import {
-  getTeacherHomeworkDetail,
-  getTeacherHomeworkList,
-} from '../../api/teacher/homework.teacher.api';
-import { HomeworkPageable } from '../../model/homework.types';
-import { TeacherHomeworkQueryKey } from '../../service/query-keys';
 
 // 과제 리스트를 불러옴
 export const useGetTeacherHomeworkList = (
@@ -14,7 +9,7 @@ export const useGetTeacherHomeworkList = (
 ) => {
   return useQuery({
     queryKey: TeacherHomeworkQueryKey.list(studyRoomId, query),
-    queryFn: () => getTeacherHomeworkList(studyRoomId, query),
+    queryFn: () => repository.teacher.getList(studyRoomId, query),
     enabled: !!studyRoomId,
   });
 };
@@ -26,7 +21,7 @@ export const useGetTeacherHomeworkDetail = (
 ) => {
   return useQuery({
     queryKey: TeacherHomeworkQueryKey.detail(studyRoomId, homeworkId),
-    queryFn: () => getTeacherHomeworkDetail(studyRoomId, homeworkId),
+    queryFn: () => repository.teacher.getDetail(studyRoomId, homeworkId),
     enabled: !!studyRoomId && !!homeworkId,
     staleTime: 0,
   });

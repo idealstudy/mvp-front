@@ -5,9 +5,9 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
 
+import type { TeacherHomeworkRequest } from '@/entities/homework/types';
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
 import { useTeacherCreateHomework } from '@/features/homework/hooks/teacher/useTeacherHomeworkMutations';
-import { TeacherHomeworkRequest } from '@/features/homework/model/homework.types';
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';

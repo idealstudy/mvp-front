@@ -12,7 +12,7 @@ export default async function QuestionDetailPage({ params }: Props) {
   const contextId = Number(resolvedParams.contextId);
 
   return (
-    <div className="w-full flex-col">
+    <div className="flex w-full flex-col">
       <BackLink />
 
       <ColumnLayout className="desktop:p-6 items-start gap-6">

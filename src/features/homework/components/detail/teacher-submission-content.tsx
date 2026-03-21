@@ -2,13 +2,12 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { TextViewer } from '@/shared/components/editor';
+import { HOMEWORK_SUBMIT_STATUS_LABEL } from '@/entities/homework/core';
+import type { HomeworkSubmitStatus } from '@/entities/homework/types';
+import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 
-import { parseEditorContent } from '../../lib/parse-editor-content';
-import { HOMEWORK_SUBMIT_STATUS_LABEL } from '../../model/constants';
-import { HomeworkSubmitStatus } from '../../model/homework.types';
 import { FeedbackFormProvider } from '../write/components/feedback-form-provider';
 
 type Props = {

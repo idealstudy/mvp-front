@@ -1,11 +1,5 @@
+import { StudentHomeworkQueryKey, repository } from '@/entities/homework';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-import {
-  postStudentHomework,
-  removeStudentHomework,
-  updateStudentHomework,
-} from '../../api/student/homework.student.api';
-import { StudentHomeworkQueryKey } from '../../service/query-keys';
 
 type PostStudentHomeworkPayload = {
   studyRoomId: number;
@@ -19,7 +13,7 @@ export const usePostStudentHomework = () => {
 
   return useMutation({
     mutationFn: (payload: PostStudentHomeworkPayload) =>
-      postStudentHomework(payload.studyRoomId, payload.homeworkId, {
+      repository.student.submit(payload.studyRoomId, payload.homeworkId, {
         content: payload.content,
       }),
 
@@ -47,7 +41,7 @@ export const useRemoveStudentHomework = () => {
 
   return useMutation({
     mutationFn: ({ studyRoomId, homeworkStudentId }: StudentHomeworkPayload) =>
-      removeStudentHomework(studyRoomId, homeworkStudentId),
+      repository.student.deleteSubmission(studyRoomId, homeworkStudentId),
 
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -70,7 +64,9 @@ export const useUpdateStudentHomework = () => {
       homeworkStudentId,
       content,
     }: StudentHomeworkPayload) =>
-      updateStudentHomework(studyRoomId, homeworkStudentId, { content }),
+      repository.student.updateSubmission(studyRoomId, homeworkStudentId, {
+        content,
+      }),
 
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

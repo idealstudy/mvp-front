@@ -19,7 +19,9 @@ export const StudyRoomDetailLayout = ({
         {filter}
         {children}
       </div>
-      <Pagination {...page} />
+      <div className="flex justify-center">
+        <Pagination {...page} />
+      </div>
     </div>
   );
 };
