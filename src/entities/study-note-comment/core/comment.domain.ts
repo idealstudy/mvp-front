@@ -52,14 +52,16 @@ export const getCommentRoleLabel = (role?: Role): string => {
 };
 
 export const getCommentProfileImageSrc = (role?: Role): string => {
-  return role ? ROLE_META[role].profileImageSrc : '';
+  return role
+    ? ROLE_META[role].profileImageSrc
+    : '/character/img_profile_teacher01.png';
 };
 
 const toCommentAuthorInfo = (authorInfo: z.infer<typeof dto.authorInfo>) => ({
   ...authorInfo,
   roleLabel: getCommentRoleLabel(authorInfo.role),
   profileImageSrc: ROLE_META[authorInfo.role].profileImageSrc,
-  isStudent: authorInfo.role === 'ROLE_STUDENT',
+  isStudent: ROLE_META[authorInfo.role].isStudent,
 });
 
 const toCommentChildItem = (comment: z.infer<typeof dto.childItem>) => ({
@@ -79,7 +81,7 @@ const toCommentReadItem = (reader: z.infer<typeof dto.readItem>) => ({
   ...reader,
   roleLabel: getCommentRoleLabel(reader.role),
   profileImageSrc: ROLE_META[reader.role].profileImageSrc,
-  isStudent: reader.role === 'ROLE_STUDENT',
+  isStudent: ROLE_META[reader.role].isStudent,
 });
 
 /* ─────────────────────────────────────────────────────
