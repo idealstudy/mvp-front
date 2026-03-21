@@ -49,6 +49,8 @@ const QUESTIONS = {
  * ────────────────────────────────────────────────────*/
 const NOTE = {
   CREATE: (studyRoomId: number) => `/study-rooms/${studyRoomId}/note/new`,
+  EDIT: (studyRoomId: number, noteId: number) =>
+    `/study-rooms/${studyRoomId}/note/${noteId}/edit`,
   DETAIL: (studyRoomId: number, noteId: number) =>
     `/study-rooms/${studyRoomId}/note/${noteId}`,
   LIST: (id: number) => `/study-rooms/${id}/note`,
