@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 
+// import { SmilePlus } from 'lucide-react';
+
 // import { EmojiPicker } from '@/shared/components/emoji-picker';
 // import {
 //   Popover,
@@ -17,6 +19,7 @@ interface CommentAnswerCardHeaderProps {
   roleLabel?: string;
   profileImageSrc: string;
   showReaction: boolean;
+  canReply?: boolean;
   selectedEmojis: Record<string, number>;
   isEmojiPickerOpen: boolean;
   selectedReaction: string | null;
@@ -37,6 +40,7 @@ export const CommentAnswerCardHeader = ({
   roleLabel,
   profileImageSrc,
   showReaction,
+  canReply = true,
   selectedEmojis,
   // isEmojiPickerOpen,
   // selectedReaction,
@@ -103,6 +107,7 @@ export const CommentAnswerCardHeader = ({
                   height={24}
                   width={24}
                 />
+                <SmilePlus size={24} />
               </button>
             </PopoverTrigger>
             <PopoverContent
@@ -117,9 +122,9 @@ export const CommentAnswerCardHeader = ({
               />
             </PopoverContent>
           </Popover> */}
-
           <CommentDropdown
             isOwner={isOwner}
+            canReply={canReply}
             onEdit={onEdit}
             onReply={onReply}
             setIsDialogOpen={setIsDialogOpen}

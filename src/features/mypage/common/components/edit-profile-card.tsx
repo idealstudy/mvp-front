@@ -19,6 +19,7 @@ import {
   Input,
   RequiredMark,
   Select,
+  Textarea,
 } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -175,9 +176,10 @@ export default function EditProfileCard({
           <Form.Label>간단 소개</Form.Label>
 
           <Form.Control>
-            <Input
+            <Textarea
               {...register('simpleIntroduction')}
-              placeholder="간단 소개를 입력해 주세요."
+              placeholder="간단한 소개와 연락처를 남겨보세요!"
+              className="resize-none"
             />
           </Form.Control>
           {errors.simpleIntroduction?.message && (

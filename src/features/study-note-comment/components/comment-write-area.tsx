@@ -8,16 +8,21 @@ import {
 import { CommentComposer } from './comment-composer';
 
 interface WriteAreaProps {
+  studyRoomId: number;
   teachingNoteId: number;
 }
 
-export const CommentWriteArea = ({ teachingNoteId }: WriteAreaProps) => {
+export const CommentWriteArea = ({
+  studyRoomId,
+  teachingNoteId,
+}: WriteAreaProps) => {
   const textEditor = useTextEditor();
 
   return (
     <CommentComposer
       value={textEditor.value}
       onChange={textEditor.onChange}
+      studyRoomId={studyRoomId}
       teachingNoteId={teachingNoteId}
       parentCommentId={null}
       submitLabel="댓글"

@@ -104,7 +104,6 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
                 render={({ field }) => {
                   return (
                     <TextEditor
-                      targetType="QNA"
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={

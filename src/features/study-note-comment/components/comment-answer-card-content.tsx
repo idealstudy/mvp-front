@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/check-read';
 import {
   TextEditor,
+  TextViewer,
   hasMeaningfulEditorContent,
   parseEditorContent,
   prepareContentForSave,
@@ -109,12 +110,12 @@ export const CommentAnswerCardContent = ({
             </div>
             <div className="flex items-center gap-1">
               <p className="font-body2-normal text-gray-12">{authorName}</p>
-              {roleLabel === '학생' ? (
+              {roleLabel === '학생' && (
                 <>
                   <p className="text-gray-7">·</p>
                   <p className="font-body2-normal text-gray-7">{roleLabel}</p>
                 </>
-              ) : null}
+              )}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -150,15 +151,14 @@ export const CommentAnswerCardContent = ({
   return (
     <>
       <div className="mt-3">
-        <p
-          className={
-            isDeleted
-              ? 'text-gray-5 font-body2-normal'
-              : 'font-body2-normal text-gray-12 leading-6'
-          }
-        >
-          {isDeleted ? '삭제된 댓글입니다.' : content}
-        </p>
+        {isDeleted ? (
+          <p className="text-gray-5 font-body2-normal">삭제된 댓글입니다.</p>
+        ) : (
+          <TextViewer
+            value={parseEditorContent(content)}
+            className="font-body2-normal text-gray-12 leading-6"
+          />
+        )}
       </div>
 
       <div className="mt-2 flex items-center justify-end gap-2">
@@ -175,7 +175,7 @@ export const CommentAnswerCardContent = ({
             <div className="bg-gray-2 font-label-normal text-gray-9 rounded-sm px-1 py-1.5">
               읽음 {`${displayReadCount}`}
             </div>
-            {isOpen ? (
+            {isOpen && (
               <CheckRead
                 side={side}
                 popupRef={popupRef}
@@ -189,7 +189,7 @@ export const CommentAnswerCardContent = ({
                   isError={isCommentError}
                 />
               </CheckRead>
-            ) : null}
+            )}
           </div>
         )}
       </div>

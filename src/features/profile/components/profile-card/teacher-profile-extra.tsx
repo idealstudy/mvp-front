@@ -81,7 +81,7 @@ export default function TeacherProfileExtra({
 
       <div>
         <h4 className="font-body1-heading mb-2">간단 소개</h4>
-        <p className="break-words">{description}</p>
+        <p className="break-words whitespace-pre-wrap">{description}</p>
       </div>
 
       {/* 공유하기 다이얼로그 */}

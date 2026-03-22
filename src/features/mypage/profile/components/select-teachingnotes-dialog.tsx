@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { toast } from 'react-toastify';
 
 import Image from 'next/image';
@@ -18,7 +18,6 @@ import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
 export default function SelectTeachingnotesDialog() {
   const router = useRouter();
-
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
   // 대표 수업노트
@@ -27,14 +26,13 @@ export default function SelectTeachingnotesDialog() {
   // 이를 구분하기 위한 변수 (isRepresentative)
   const isRepresentative = representativeNotes?.[0]?.representative ?? false;
 
-  // TODO 페이지네이션 또는 무한 스크롤 추가 (현재 고정)
-  const { data: allNotesData } = useTeacherTeachingNotes({
-    page: 0,
-    size: 30,
-    sortKey: 'TAUGHT_AT_ASC',
-  });
+  const { data, fetchNextPage, isFetchingNextPage, isLoading } =
+    useTeacherTeachingNotes({
+      size: 20,
+      sortKey: 'TAUGHT_AT_ASC',
+    });
 
-  const allNotes = allNotesData?.content;
+  const allNotes = data?.pages.flatMap((page) => page.content) ?? [];
 
   const {
     mutate: updateRepresentative,
@@ -85,6 +83,54 @@ export default function SelectTeachingnotesDialog() {
       }
     );
   };
+
+  // 무한 스크롤
+  const sentinelRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchNextPage();
+        }
+      });
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [fetchNextPage]
+  );
+
+  // 수업노트 목록 렌더링 (로딩 / 빈 상태 / 목록)
+  let noteList;
+  if (isLoading) {
+    noteList = (
+      <p className="text-text-sub2 my-4 text-center">불러오는 중...</p>
+    );
+  } else if (allNotes.length === 0) {
+    noteList = (
+      <p className="text-text-sub2 my-4 text-center">수업노트가 없습니다.</p>
+    );
+  } else {
+    noteList = (
+      <div className="space-y-3 overflow-y-auto px-3 py-4">
+        {allNotes.map((note) => (
+          <TeachingnotesItem
+            variant="selectable"
+            key={note.id}
+            teachingnote={note}
+            checked={note.representative}
+            onClick={() => toggleNote(note.id, note.representative)}
+            isLoading={loadingNoteId === note.id}
+          />
+        ))}
+
+        <div ref={sentinelRef} />
+
+        {isFetchingNextPage && (
+          <p className="text-text-sub2 text-center text-sm">불러오는 중...</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -165,26 +211,7 @@ export default function SelectTeachingnotesDialog() {
               )}
 
               {/* 하단: 나머지 수업노트 */}
-              {allNotes && (
-                <div className="space-y-3 overflow-y-auto px-3 py-4">
-                  {allNotes.map((note) => (
-                    <TeachingnotesItem
-                      variant="selectable"
-                      key={note.id}
-                      teachingnote={note}
-                      checked={note.representative}
-                      onClick={() => toggleNote(note.id, note.representative)}
-                      isLoading={loadingNoteId === note.id}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {allNotes && allNotes.length === 0 && (
-                <p className="text-text-sub2 my-4 text-center">
-                  수업노트가 없습니다.
-                </p>
-              )}
+              {noteList}
             </div>
           </Dialog.Body>
         </Dialog.Content>

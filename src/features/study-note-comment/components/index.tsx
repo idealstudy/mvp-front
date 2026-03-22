@@ -7,8 +7,17 @@ import { useCommentList } from '../hooks/use-comment';
 import { CommentItem } from './comment-item';
 import { CommentWriteArea } from './comment-write-area';
 
-export const StudyNoteDetailCommentSection = ({ id }: { id: string }) => {
-  const teachingNoteId = Number(id);
+interface StudyNoteDetailCommentSectionProps {
+  studyRoomId: string;
+  studyNoteId: string;
+}
+
+export const StudyNoteDetailCommentSection = ({
+  studyRoomId,
+  studyNoteId,
+}: StudyNoteDetailCommentSectionProps) => {
+  const teachingNoteId = Number(studyNoteId);
+  const parsedStudyRoomId = Number(studyRoomId);
   const { data, isPending, isError } = useCommentList(teachingNoteId);
 
   if (isPending) return <NoteBottomSkeleton />;
@@ -27,10 +36,10 @@ export const StudyNoteDetailCommentSection = ({ id }: { id: string }) => {
     );
   }
 
-  // 댓글 + 대댓글 길이
   const totalCommentCount =
-    data?.reduce((count, comment) => count + 1 + comment.children.length, 0) ??
+    data.reduce((count, comment) => count + 1 + comment.children.length, 0) ??
     0;
+
   return (
     <ColumnLayout.Bottom className="space-y-4">
       <section>
@@ -42,20 +51,25 @@ export const StudyNoteDetailCommentSection = ({ id }: { id: string }) => {
         </div>
       </section>
 
-      <CommentWriteArea teachingNoteId={teachingNoteId} />
+      <CommentWriteArea
+        studyRoomId={parsedStudyRoomId}
+        teachingNoteId={teachingNoteId}
+      />
 
-      {data?.map((comment) => (
+      {data.map((comment) => (
         <div
           key={comment.id}
           className="space-y-4"
         >
           <CommentItem
+            studyRoomId={parsedStudyRoomId}
             teachingNoteId={teachingNoteId}
             comment={comment}
           />
           {comment.children.map((child) => (
             <CommentItem
               key={child.id}
+              studyRoomId={parsedStudyRoomId}
               teachingNoteId={teachingNoteId}
               comment={child}
               showReplyArrow

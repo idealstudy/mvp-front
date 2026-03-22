@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {
   getCommentProfileImageSrc,
@@ -12,7 +13,12 @@ import {
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks';
+import {
+  classifyStudyNoteCommentError,
+  handleApiError,
+} from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 
@@ -20,6 +26,7 @@ import { useCreateComment } from '../hooks/use-comment';
 
 interface CommentComposerProps {
   value: JSONContent;
+  studyRoomId: number;
   teachingNoteId: number;
   parentCommentId: number | null;
   onChange: (value: JSONContent) => void;
@@ -31,6 +38,7 @@ interface CommentComposerProps {
 
 export const CommentComposer = ({
   value,
+  studyRoomId,
   teachingNoteId,
   parentCommentId,
   onChange,
@@ -42,6 +50,7 @@ export const CommentComposer = ({
   const { role } = useRole();
   const { member } = useMemberStore();
   const { mutate, isPending } = useCreateComment();
+  const router = useRouter();
 
   const isSubmitDisabled = !hasMeaningfulEditorContent(value) || isPending;
   const profileImageSrc = getCommentProfileImageSrc(role);
@@ -64,6 +73,21 @@ export const CommentComposer = ({
         onSuccess: () => {
           onSubmitted();
         },
+        onError: (error) => {
+          handleApiError(error, classifyStudyNoteCommentError, {
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(PRIVATE.NOTE.LIST(studyRoomId));
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
+        },
       }
     );
   };
@@ -83,7 +107,7 @@ export const CommentComposer = ({
           </div>
           <div className="flex items-center gap-1">
             <p className="font-body2-normal text-gray-12">{authorName}</p>
-            {roleLabel === '학생' ? (
+            {roleLabel ? (
               <>
                 <p className="text-gray-7">·</p>
                 <p className="font-body2-normal text-gray-7">{roleLabel}</p>

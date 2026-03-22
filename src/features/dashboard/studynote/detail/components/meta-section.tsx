@@ -171,7 +171,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
               <p className="font-label-normal text-gray-7">
                 {readCount}명이 봤어요
               </p>
-              {isOpen ? (
+              {isOpen && (
                 <CheckRead
                   side={side}
                   popupRef={popupRef}
@@ -185,7 +185,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
                     isError={isError}
                   />
                 </CheckRead>
-              ) : null}
+              )}
             </div>
           </div>
         )}

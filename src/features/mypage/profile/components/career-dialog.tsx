@@ -46,6 +46,8 @@ export default function CareerDialog({
   const updateTeacherCareerMutation = useUpdateTeacherCareer();
   const postTeacherCareerMutation = usePostTeacherCareer();
 
+  const todayISO = new Date().toISOString().split('T')[0];
+
   const {
     register,
     handleSubmit,
@@ -58,8 +60,8 @@ export default function CareerDialog({
     resolver: zodResolver(CareerFormSchema),
     defaultValues: {
       name: career?.name || '',
-      startDate: career?.startDate || '',
-      endDate: career?.endDate || '',
+      startDate: career?.startDate || todayISO,
+      endDate: career?.endDate || todayISO,
       description: career?.description || '',
       isCurrent: career?.current || false,
     },

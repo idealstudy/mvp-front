@@ -7,6 +7,7 @@ import { CommentComposer } from './comment-composer';
 
 interface CommentReplyComposerProps {
   value: JSONContent;
+  studyRoomId: number;
   teachingNoteId: number;
   parentCommentId: number;
   onChange: (value: JSONContent) => void;
@@ -15,6 +16,7 @@ interface CommentReplyComposerProps {
 
 export const CommentReplyComposer = ({
   value,
+  studyRoomId,
   teachingNoteId,
   parentCommentId,
   onChange,
@@ -24,6 +26,7 @@ export const CommentReplyComposer = ({
     <CommentComposer
       value={value}
       onChange={onChange}
+      studyRoomId={studyRoomId}
       teachingNoteId={teachingNoteId}
       parentCommentId={parentCommentId}
       submitLabel="답글"

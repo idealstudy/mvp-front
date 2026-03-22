@@ -101,7 +101,6 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
               control={control}
               render={({ field }) => (
                 <TextEditor
-                  targetType="STUDY_ROOM_CARACTERISTIC"
                   value={field.value ?? parseEditorContent('')}
                   onChange={field.onChange}
                   placeholder={`이미지나 링크를 활용해 학습 방식, 분위기, 성과를 함께 보여주면 더 효과적이에요!\n (예: 커리큘럼 이미지, 실제 후기, 성적 향상 사례 링크 등)`}

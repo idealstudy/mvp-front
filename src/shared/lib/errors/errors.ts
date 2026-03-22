@@ -89,5 +89,17 @@ export function classifyPreviewError(code?: string): ApiErrorType {
   }
 }
 
-// TODO: 추후 추가예정
-// export function classifyStudyNoteCommentError(code?: string): ApiErrorType{}
+export function classifyStudyNoteCommentError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    case 'TEACHING_NOTE_NOT_EXIST':
+    case 'TEACHING_NOTE_COMMENT_NOT_EXIST':
+    case 'TEACHING_NOTE_COMMENT_ALREADY_DELETED':
+      return 'CONTEXT';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

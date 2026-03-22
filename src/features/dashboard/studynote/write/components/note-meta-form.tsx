@@ -116,7 +116,6 @@ export const NoteMetaFields = () => {
             render={({ field }) => {
               return (
                 <TextEditor
-                  targetType="TEACHING_NOTE"
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="수업 내용을 입력해주세요..."

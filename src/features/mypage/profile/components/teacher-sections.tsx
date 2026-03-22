@@ -105,7 +105,9 @@ export default function TeacherSections() {
           <DescriptionSection description={description} />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
-            등록된 선생님 특징이 없습니다.
+            아직 작성된 특징이 없어요.
+            <br />
+            소개와 연락처를 작성하면 학생들이 더 쉽게 상담을 요청할 수 있어요.
           </p>
         )}
       </SectionContainer>

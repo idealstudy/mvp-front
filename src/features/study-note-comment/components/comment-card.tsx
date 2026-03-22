@@ -3,9 +3,15 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { ConfirmDialog, type DialogAction } from '@/shared/components/dialog';
 import { parseEditorContent } from '@/shared/components/editor';
+import { PRIVATE } from '@/shared/constants/route';
+import {
+  classifyStudyNoteCommentError,
+  handleApiError,
+} from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 
@@ -25,6 +31,7 @@ interface CommentAnswerCardProps {
   showReplyArrow?: boolean;
   showReaction?: boolean;
   className?: string;
+  studyRoomId: number;
   teachingNoteId: number;
   commentId: number;
   readCount: number;
@@ -42,6 +49,7 @@ export const CommentCard = ({
   showReplyArrow = false,
   showReaction = true,
   className,
+  studyRoomId,
   teachingNoteId,
   commentId,
   readCount,
@@ -61,6 +69,7 @@ export const CommentCard = ({
     parseEditorContent('')
   );
   const { member } = useMemberStore();
+  const router = useRouter();
   const isOwner = authorId === member?.id;
 
   const { mutate, isPending } = useDeleteComment();
@@ -106,8 +115,22 @@ export const CommentCard = ({
         onSuccess: () => {
           setIsDialogOpen(false);
         },
+        onError: (error) => {
+          handleApiError(error, classifyStudyNoteCommentError, {
+            onAuth: () => {
+              setTimeout(() => {
+                router.replace('/login');
+              }, 1500);
+            },
+            onContext: () => {
+              setTimeout(() => {
+                router.replace(PRIVATE.NOTE.LIST(studyRoomId));
+              }, 1500);
+            },
+            onUnknown: () => {},
+          });
+        },
       }
-      // TODO: 에러처리
     );
   };
 
@@ -135,6 +158,7 @@ export const CommentCard = ({
           roleLabel={roleLabel}
           profileImageSrc={profileImageSrc}
           showReaction={showReaction}
+          canReply={!showReplyArrow}
           isDeleted={isDeleted}
           selectedEmojis={selectedEmojis}
           isEmojiPickerOpen={isEmojiPickerOpen}
@@ -189,6 +213,7 @@ export const CommentCard = ({
       {isReplying ? (
         <CommentReplyComposer
           value={replyContent}
+          studyRoomId={studyRoomId}
           teachingNoteId={teachingNoteId}
           parentCommentId={commentId}
           onChange={setReplyContent}
