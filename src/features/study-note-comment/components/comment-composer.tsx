@@ -23,6 +23,7 @@ import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 
 import { useCreateComment } from '../hooks/use-comment';
+import { CommentCardHeader } from './comment-card-header';
 
 interface CommentComposerProps {
   value: JSONContent;
@@ -93,28 +94,13 @@ export const CommentComposer = ({
   };
 
   const composer = (
-    <div className="border-gray-3 w-full rounded-sm border bg-white p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2.5">
-          <div className="border-gray-12 h-9 w-9 shrink-0 overflow-hidden rounded-full border">
-            <Image
-              src={profileImageSrc}
-              alt="프로필 이미지"
-              width={36}
-              height={36}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div className="flex items-center gap-1">
-            <p className="font-body2-normal text-gray-12">{authorName}</p>
-            {roleLabel ? (
-              <>
-                <p className="text-gray-7">·</p>
-                <p className="font-body2-normal text-gray-7">{roleLabel}</p>
-              </>
-            ) : null}
-          </div>
-        </div>
+    <div className="border-gray-3 min-h-[154px] w-full rounded-sm border bg-white p-6">
+      <div className="flex justify-between gap-4">
+        <CommentCardHeader
+          profileImageSrc={profileImageSrc}
+          roleLabel={roleLabel}
+          authorName={authorName}
+        />
         <div className="flex shrink-0 items-center gap-2">
           {onCancel ? (
             <Button

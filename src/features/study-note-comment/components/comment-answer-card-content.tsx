@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import Image from 'next/image';
 
 import {
@@ -24,7 +26,8 @@ interface CommentAnswerCardContentProps {
   authorName: string;
   roleLabel?: string;
   profileImageSrc: string;
-  content: string;
+  resolvedContent: string;
+  initialEditContent: JSONContent;
   modDate?: string | null;
   isEditing: boolean;
   isDeleted?: boolean;
@@ -40,7 +43,8 @@ export const CommentAnswerCardContent = ({
   authorName,
   roleLabel,
   profileImageSrc,
-  content,
+  resolvedContent,
+  initialEditContent,
   modDate,
   isEditing,
   isDeleted = false,
@@ -51,8 +55,11 @@ export const CommentAnswerCardContent = ({
   onEditContentChange,
   onCancel,
 }: CommentAnswerCardContentProps) => {
-  const initialEditContent = parseEditorContent(content);
   const currentEditContent = editContent ?? initialEditContent;
+  const parsedResolvedContent = useMemo(
+    () => parseEditorContent(resolvedContent),
+    [resolvedContent]
+  );
 
   const { isOpen, side, triggerRef, popupRef, open, close } =
     useReadPeoplePopover();
@@ -96,7 +103,7 @@ export const CommentAnswerCardContent = ({
 
   if (isEditing) {
     return (
-      <div className="space-y-3">
+      <div className="min-h-[154px] space-y-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="border-gray-12 h-9 w-9 shrink-0 overflow-hidden rounded-full border">
@@ -155,7 +162,7 @@ export const CommentAnswerCardContent = ({
           <p className="text-gray-5 font-body2-normal">삭제된 댓글입니다.</p>
         ) : (
           <TextViewer
-            value={parseEditorContent(content)}
+            value={parsedResolvedContent}
             className="font-body2-normal text-gray-12 leading-6"
           />
         )}

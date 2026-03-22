@@ -30,14 +30,8 @@ export const StudyNoteDetailCommentSection = ({
     );
   }
 
-  if (!data) {
-    return (
-      <p className="flex flex-col items-center">아직 등록된 댓글이 없어요.</p>
-    );
-  }
-
   const totalCommentCount =
-    data.reduce((count, comment) => count + 1 + comment.children.length, 0) ??
+    data?.reduce((count, comment) => count + 1 + comment.children.length, 0) ??
     0;
 
   return (
@@ -56,27 +50,31 @@ export const StudyNoteDetailCommentSection = ({
         teachingNoteId={teachingNoteId}
       />
 
-      {data.map((comment) => (
-        <div
-          key={comment.id}
-          className="space-y-4"
-        >
-          <CommentItem
-            studyRoomId={parsedStudyRoomId}
-            teachingNoteId={teachingNoteId}
-            comment={comment}
-          />
-          {comment.children.map((child) => (
+      {!data || data.length === 0 ? (
+        <p className="flex flex-col items-center">아직 등록된 댓글이 없어요.</p>
+      ) : (
+        data.map((comment) => (
+          <div
+            key={comment.id}
+            className="space-y-4"
+          >
             <CommentItem
-              key={child.id}
               studyRoomId={parsedStudyRoomId}
               teachingNoteId={teachingNoteId}
-              comment={child}
-              showReplyArrow
+              comment={comment}
             />
-          ))}
-        </div>
-      ))}
+            {comment.children.map((child) => (
+              <CommentItem
+                key={child.id}
+                studyRoomId={parsedStudyRoomId}
+                teachingNoteId={teachingNoteId}
+                comment={child}
+                showReplyArrow
+              />
+            ))}
+          </div>
+        ))
+      )}
     </ColumnLayout.Bottom>
   );
 };

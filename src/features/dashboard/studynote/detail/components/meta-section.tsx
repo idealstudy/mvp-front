@@ -2,7 +2,6 @@
 
 import { useReducer, useState } from 'react';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
@@ -10,16 +9,13 @@ import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/s
 import { useRemoveStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
-  CheckRead,
-  ReadPeopleList,
-  useReadPeoplePopover,
-} from '@/shared/components/check-read';
-import {
   StudyroomConfirmDialog,
   dialogReducer,
   initialDialogState,
 } from '@/shared/components/dialog';
+import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks';
+import { Check, Eye, LockKeyhole, UserRound, X } from 'lucide-react';
 
 import { NoteMainSkeleton, NoteSideSkeleton } from './note-skeleton';
 
@@ -34,22 +30,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
 
   const { data, isPending, isError } = useStudyNoteDetailQuery(Number(id));
 
-  // 읽은 사람 조회
-  const readPeopleItems = data?.studentInfos
-    .filter((student) => student.readAt != null)
-    .map((student) => ({
-      id: student.studentId,
-      name: student.studentName,
-      readAt: student.readAt,
-    }));
-
-  const readCount =
-    data?.studentInfos.filter((student) => student.readAt != null).length ?? 0;
-
   const { mutate: removeNoteMutate } = useRemoveStudyNote();
-
-  const { isOpen, side, triggerRef, popupRef, open, close } =
-    useReadPeoplePopover();
 
   if (isPending)
     return (
@@ -77,10 +58,12 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
   }
   const visibilityText =
     data.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
+  const hasStudents = data.studentInfos.length > 0;
 
   const handleEdit = () => {
     // 편집 페이지로 이동
-    router.push(`/study-rooms/${data.studyRoomId}/note/${id}/edit`);
+    router.push(PRIVATE.NOTE.EDIT(data.studyRoomId, Number(id)));
+    // router.push(`/study-rooms/${data.studyRoomId}/note/${id}/edit`);
   };
 
   const handleDelete = () => {
@@ -153,54 +136,13 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
         </div>
         <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
 
-        {/* 본 인원 수 체크 */}
-        {readCount > 0 && (
-          <div
-            ref={triggerRef}
-            onMouseEnter={open}
-            onMouseLeave={close}
-            className="relative"
-          >
-            <div className="flex items-center justify-end gap-1 text-center">
-              <Image
-                src="/studynotes/eye.png"
-                alt="eye"
-                width={24}
-                height={24}
-              />
-              <p className="font-label-normal text-gray-7">
-                {readCount}명이 봤어요
-              </p>
-              {isOpen && (
-                <CheckRead
-                  side={side}
-                  popupRef={popupRef}
-                  open={open}
-                  close={close}
-                >
-                  <ReadPeopleList
-                    displayReadCount={readCount}
-                    data={readPeopleItems}
-                    isLoading={isPending}
-                    isError={isError}
-                  />
-                </CheckRead>
-              )}
-            </div>
-          </div>
-        )}
-
         <hr className="border-line-line1 border" />
+
+        {/* 공개범위 */}
         <div className="space-y-4">
-          {/* 공개범위 */}
           <div className="space-y-2">
             <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
-              <Image
-                src="/studynotes/lock.svg"
-                alt="lock"
-                width={14}
-                height={14}
-              />
+              <LockKeyhole size={14} />
               <span>공개범위</span>
             </div>
             <div className="text-text-main font-body2-normal">
@@ -209,25 +151,43 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
           </div>
 
           {/* 수업대상 */}
-          {data.studentInfos.length > 0 && (
+          {hasStudents && (
             <div className="space-y-2">
-              <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
-                <Image
-                  src="/studynotes/person.svg"
-                  alt="person"
-                  width={14}
-                  height={14}
-                />
-                <span>수업대상</span>
+              <div className="flex items-center justify-between gap-4">
+                <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
+                  <UserRound size={14} />
+                  <span>수업대상</span>
+                </div>
+                <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
+                  <Eye size={14} />
+                  <span>읽음</span>
+                </div>
               </div>
-              <div className="text-text-main font-body2-normal space-y-1">
-                {data.studentInfos.map((student, index) => (
-                  <span key={student.studentId}>
-                    {student.studentName}
-                    {index < data.studentInfos.length - 1 && ' '}
-                  </span>
+              <ul className="text-text-main font-body2-normal m-0 list-none space-y-1 p-0">
+                {data.studentInfos.map((student) => (
+                  <li
+                    key={student.studentId}
+                    className="flex justify-between"
+                  >
+                    <span className="justify-self-center text-center">
+                      {student.studentName}
+                    </span>
+                    {student.readAt ? (
+                      <Check
+                        className="justify-self-center"
+                        color="#34C759"
+                        size={14}
+                      />
+                    ) : (
+                      <X
+                        className="justify-self-center"
+                        color="#c73342"
+                        size={14}
+                      />
+                    )}
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
         </div>

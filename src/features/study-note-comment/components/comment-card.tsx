@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ConfirmDialog, type DialogAction } from '@/shared/components/dialog';
-import { parseEditorContent } from '@/shared/components/editor';
+import {
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
+} from '@/shared/components/editor';
 import { PRIVATE } from '@/shared/constants/route';
 import {
   classifyStudyNoteCommentError,
@@ -23,8 +26,9 @@ import { CommentReplyComposer } from './comment-reply-composer';
 interface CommentAnswerCardProps {
   authorId: number;
   authorName: string;
-  roleLabel?: string;
-  content: string;
+  roleLabel: string;
+  sourceContent: string;
+  resolvedContent: string;
   modDate?: string | null;
   profileImageSrc: string;
   isStudent?: boolean;
@@ -42,7 +46,8 @@ export const CommentCard = ({
   authorId,
   authorName,
   roleLabel,
-  content,
+  sourceContent,
+  resolvedContent,
   modDate,
   profileImageSrc,
   isStudent = false,
@@ -64,7 +69,14 @@ export const CommentCard = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState<JSONContent | null>();
   const [isReplying, setIsReplying] = useState(false);
-  const initialEditContent = parseEditorContent(content);
+  const initialEditContent = useMemo(
+    () =>
+      mergeResolvedContentWithMediaIds(
+        parseEditorContent(sourceContent),
+        parseEditorContent(resolvedContent)
+      ),
+    [sourceContent, resolvedContent]
+  );
   const [replyContent, setReplyContent] = useState<JSONContent>(() =>
     parseEditorContent('')
   );
@@ -176,7 +188,8 @@ export const CommentCard = ({
         authorName={authorName}
         roleLabel={roleLabel}
         profileImageSrc={profileImageSrc}
-        content={content}
+        resolvedContent={resolvedContent}
+        initialEditContent={initialEditContent}
         modDate={modDate}
         isEditing={isEditing}
         editContent={editContent}

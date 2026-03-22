@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-
+import { CommentCardHeader } from './comment-card-header';
 // import { SmilePlus } from 'lucide-react';
 
 // import { EmojiPicker } from '@/shared/components/emoji-picker';
@@ -16,7 +15,7 @@ import { CommentDropdown } from './comment-section-dropdown';
 interface CommentAnswerCardHeaderProps {
   isOwner: boolean;
   authorName: string;
-  roleLabel?: string;
+  roleLabel: string;
   profileImageSrc: string;
   showReaction: boolean;
   canReply?: boolean;
@@ -39,56 +38,40 @@ export const CommentAnswerCardHeader = ({
   authorName,
   roleLabel,
   profileImageSrc,
-  showReaction,
+  // showReaction,
   canReply = true,
-  selectedEmojis,
+  // selectedEmojis,
   // isEmojiPickerOpen,
   // selectedReaction,
   isEditing,
   isDeleted,
   // onEmojiPickerOpenChange,
   // onEmojiSelect,
-  onReactionClick,
+  // onReactionClick,
   onEdit,
   onReply,
   setIsDialogOpen,
 }: CommentAnswerCardHeaderProps) => {
   return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex items-center gap-2.5">
-        <div className="border-gray-12 h-9 w-9 shrink-0 overflow-hidden rounded-full border">
-          <Image
-            src={profileImageSrc}
-            alt="프로필 이미지"
-            width={36}
-            height={36}
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <p className="font-body2-normal text-gray-12">{authorName}</p>
-          {roleLabel === '학생' ? (
-            <>
-              <p className="text-gray-7">·</p>
-              <p className="font-body2-normal text-gray-7">{roleLabel}</p>
-            </>
-          ) : null}
-        </div>
-      </div>
+    <div className="flex justify-between gap-4">
+      <CommentCardHeader
+        profileImageSrc={profileImageSrc}
+        roleLabel={roleLabel}
+        authorName={authorName}
+      />
       {!isEditing && !isDeleted && (
         <div className="flex items-center gap-1.5">
-          {showReaction
-            ? Object.entries(selectedEmojis).map(([emoji, count]) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  className="border-gray-5 text-gray-12 font-label-normal inline-flex h-7.5 min-w-12.5 items-center justify-center rounded-xl border bg-white px-2 py-1.5 text-center leading-none"
-                  onClick={() => onReactionClick(emoji)}
-                >
-                  {`${emoji} ${count}`}
-                </button>
-              ))
-            : null}
+          {/* {showReaction &&
+            Object.entries(selectedEmojis).map(([emoji, count]) => (
+              <button
+                key={emoji}
+                type="button"
+                className="border-gray-5 text-gray-12 font-label-normal inline-flex h-7.5 min-w-12.5 items-center justify-center rounded-xl border bg-white px-2 py-1.5 text-center leading-none"
+                onClick={() => onReactionClick(emoji)}
+              >
+                {`${emoji} ${count}`}
+              </button>
+            ))} */}
 
           {/*TODO: 이모티콘(반응 남기기 잠시 보류) */}
           {/* <Popover
