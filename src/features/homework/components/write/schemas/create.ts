@@ -1,24 +1,9 @@
+import {
+  extractTextFromTiptapJSON,
+  hasNonTextContent,
+} from '@/features/homework/hooks/use-homework-form-control';
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
-
-const extractTextFromTiptapJSON = (doc: JSONContent): string => {
-  if (!doc || !doc.content) return '';
-
-  let text = '';
-
-  const traverse = (nodes: JSONContent[]) => {
-    nodes.forEach((node) => {
-      if (node.type === 'text' && node.text) {
-        text += node.text;
-      } else if (node.content) {
-        traverse(node.content);
-      }
-    });
-  };
-
-  traverse(doc.content);
-  return text;
-};
 
 export const HomeworkFeedbackFormSchema = z.object({
   studyRoomId: z.number({ required_error: '스터디룸을 선택해 주세요!' }),
@@ -36,11 +21,12 @@ export const HomeworkFeedbackFormSchema = z.object({
 
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;
+    const hasAttachment = hasNonTextContent(val);
 
-    if (length < 10) {
+    if (length < 1 && !hasAttachment) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: '내용은 최소 10자 이상이어야 합니다.',
+        message: '내용 또는 첨부 파일을 입력해 주세요.',
       });
     }
 
@@ -66,14 +52,14 @@ export const StudentHomeworkFormSchema = z.object({
 
     const plainText = extractTextFromTiptapJSON(val);
     const length = plainText.trim().length;
+    const hasAttachment = hasNonTextContent(val);
 
-    if (length < 10) {
+    if (length < 1 && !hasAttachment) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: '내용은 최소 10자 이상이어야 합니다.',
+        message: '내용 또는 첨부 파일을 입력해 주세요.',
       });
     }
-
     if (length > 3000) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

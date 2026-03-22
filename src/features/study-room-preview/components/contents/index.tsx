@@ -221,7 +221,7 @@ export const StudyroomPreviewContents = ({
           </button>
         )}
         <header className="flex flex-col gap-1">
-          <p className="font-body1-heading tablet:font-headline1-heading desktop:font-title-heading text-text-main">
+          <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
             스터디룸 소개
           </p>
           <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">

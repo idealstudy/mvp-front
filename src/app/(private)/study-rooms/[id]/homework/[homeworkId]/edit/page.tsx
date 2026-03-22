@@ -1,4 +1,3 @@
-import BackLink from '@/features/dashboard/studynote/components/back-link';
 import SelectArea from '@/features/dashboard/studynote/write/components/select-area';
 import HomeworkEditForm from '@/features/homework/components/write/components/homework-edit-form';
 import { HomeworkFormProvider } from '@/features/homework/components/write/components/homework-form-provider';
@@ -16,8 +15,6 @@ export default async function HomeworkEditPage({ params }: Props) {
 
   return (
     <>
-      <BackLink />
-
       <HomeworkFormProvider
         studyRoomId={studyRoomId}
         homeworkId={homeworkId}
