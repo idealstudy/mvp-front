@@ -34,9 +34,9 @@ export const ListItem = ({
       <div className="flex flex-row items-center gap-3">
         {icon}
         {warn && (
-          <span className="inline-flex items-center rounded-full bg-red-50 px-1.5 py-0.5 text-[11px] font-semibold text-red-500 ring-1 ring-red-100">
+          <div className="flex min-w-16 items-center justify-center rounded-full bg-red-50 px-1.5 py-0.5 text-center text-[11px] font-semibold text-red-500 ring-1 ring-red-100">
             {warn}
-          </span>
+          </div>
         )}
         <div className="flex flex-col items-start justify-between">
           <div className="flex flex-row items-center gap-2">

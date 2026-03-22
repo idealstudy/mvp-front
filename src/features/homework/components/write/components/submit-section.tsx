@@ -22,7 +22,7 @@ const SubmitSection = ({
     !isValid || isPending || isSubmitting || (isEditMode && !isDirty);
 
   return (
-    <div className="flex justify-end">
+    <div className="flex flex-col items-end gap-2">
       <Button
         type="submit"
         disabled={isButtonDisabled}
@@ -30,6 +30,13 @@ const SubmitSection = ({
       >
         {isPending ? '저장 중...' : isEditMode ? '수정하기' : '저장하기'}
       </Button>
+
+      {isEditMode && !isDirty && (
+        <p className="text-text-sub2">변경사항이 없습니다.</p>
+      )}
+      {!isEditMode && isButtonDisabled && (
+        <p className="text-text-sub2">필수 값들을 채워주세요.</p>
+      )}
     </div>
   );
 };
