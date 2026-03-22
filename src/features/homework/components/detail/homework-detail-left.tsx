@@ -6,15 +6,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout';
-import {
-  CheckRead,
-  ReadPeopleList,
-  useReadPeoplePopover,
-} from '@/shared/components/check-read';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { DropdownMenu } from '@/shared/components/ui';
 import { useRole } from '@/shared/hooks';
 import { cn } from '@/shared/lib';
+import { Check, Eye, Link, UserRound, X } from 'lucide-react';
 
 import { useStudentHomeworkDetail } from '../../hooks/student/useStudentHomeworkQuries';
 import { useGetTeacherHomeworkDetail } from '../../hooks/teacher/useTeacherHomeworkQuries';
@@ -39,51 +35,37 @@ export const HomeworkDetailLeft = ({
 
   const teacherQuery = useGetTeacherHomeworkDetail(studyRoomId, homeworkId);
   const studentQuery = useStudentHomeworkDetail(studyRoomId, homeworkId);
+  const isTeacher = role === 'ROLE_TEACHER';
 
-  const data = role === 'ROLE_TEACHER' ? teacherQuery.data : studentQuery.data;
-  const isPending =
-    role === 'ROLE_TEACHER' ? teacherQuery.isPending : studentQuery.isPending;
-  const isError =
-    role === 'ROLE_TEACHER' ? teacherQuery.isError : studentQuery.isError;
+  const teacherData = teacherQuery.data;
+  const studentData = studentQuery.data;
+  const data = isTeacher ? teacherData : studentData;
+  const homework = data?.homework;
+  const isPending = isTeacher ? teacherQuery.isPending : studentQuery.isPending;
+  const isError = isTeacher ? teacherQuery.isError : studentQuery.isError;
 
-  const { isOpen, side, triggerRef, popupRef, open, close } =
-    useReadPeoplePopover();
-
-  // 읽은 사람 조회
-  const readPeopleItems =
-    role === 'ROLE_TEACHER'
-      ? teacherQuery.data?.homeworkStudents
-          .filter((student) => student.readAt != null)
-          .map((student) => ({
-            id: student.studentId,
+  const teachingNotes = homework?.teachingNoteInfoList ?? [];
+  const homeworkStudents = teacherData?.homeworkStudents ?? [];
+  const assignmentTargets = isTeacher
+    ? homeworkStudents.map((student) => ({
+        id: student.studentId,
+        name: student.studentName,
+        readAt: student.readAt,
+      }))
+    : studentData
+      ? [
+          {
+            id: studentData.myHomeworkStudent.id,
+            name: studentData.myHomeworkStudent.studentName,
+            readAt: studentData.myHomeworkStudent.readAt,
+          },
+          ...studentData.otherHomeworkStudents.map((student, index) => ({
+            id: index,
             name: student.studentName,
             readAt: student.readAt,
-          }))
-      : [
-          ...(studentQuery.data?.myHomeworkStudent.readAt
-            ? [
-                {
-                  id: studentQuery.data.myHomeworkStudent.id,
-                  name: studentQuery.data.myHomeworkStudent.studentName,
-                  readAt: studentQuery.data.myHomeworkStudent.readAt,
-                },
-              ]
-            : []),
-          ...(studentQuery.data?.otherHomeworkStudents
-            .filter((student) => student.readAt != null)
-            .map((student, index) => ({
-              id: index,
-              name: student.studentName,
-              readAt: student.readAt,
-            })) ?? []),
-        ];
-
-  const readCount =
-    role === 'ROLE_TEACHER'
-      ? (teacherQuery.data?.homeworkStudents.filter(
-          (student) => student.readAt != null
-        ).length ?? 0)
-      : (readPeopleItems?.length ?? 0);
+          })),
+        ]
+      : [];
 
   // 마감기한 계산
   const deadLineTime = (time?: string) => {
@@ -106,11 +88,10 @@ export const HomeworkDetailLeft = ({
 
   // 진행중 or 마감
   const isDone = () => {
-    if (!data?.homework.deadline) return false;
+    if (!homework?.deadline) return false;
 
     const today = new Date();
-
-    const deadlineDate = new Date(data.homework.deadline);
+    const deadlineDate = new Date(homework.deadline);
 
     return today >= deadlineDate;
   };
@@ -137,6 +118,7 @@ export const HomeworkDetailLeft = ({
   };
 
   if (isPending) return <div>로딩중...</div>;
+  if (isError || !homework) return <div>데이터를 불러오지 못했습니다.</div>;
 
   return (
     <>
@@ -160,7 +142,7 @@ export const HomeworkDetailLeft = ({
             >
               {isDone() ? '마감' : '진행중'}
             </span>
-            {role === 'ROLE_TEACHER' && (
+            {isTeacher && (
               <DropdownMenu
                 open={isMenuOpen}
                 onOpenChange={setIsMenuOpen}
@@ -195,64 +177,24 @@ export const HomeworkDetailLeft = ({
           <div>
             마감 기한 :{' '}
             <span className="text-gray-scale-gray-70vhh">
-              {deadLineTime(data?.homework.deadline ?? '없음')}
+              {deadLineTime(homework.deadline)}
             </span>
           </div>
-          <h3 className="font-headline1-heading">{data?.homework.title}</h3>
+          <h3 className="font-headline1-heading">{homework.title}</h3>
 
-          {/* 본 인원 수 체크 */}
-          {readCount > 0 && (
-            <div
-              ref={triggerRef}
-              onMouseEnter={open}
-              onMouseLeave={close}
-              className="relative"
-            >
-              <div className="flex items-center justify-end gap-1 text-center">
-                <Image
-                  src="/studynotes/eye.png"
-                  alt="eye"
-                  width={24}
-                  height={24}
-                />
-                <p className="font-label-normal text-gray-7">
-                  {readCount}명이 봤어요
-                </p>
-                {isOpen ? (
-                  <CheckRead
-                    side={side}
-                    popupRef={popupRef}
-                    open={open}
-                    close={close}
-                  >
-                    <ReadPeopleList
-                      displayReadCount={readCount}
-                      data={readPeopleItems}
-                      isLoading={isPending}
-                      isError={isError}
-                    />
-                  </CheckRead>
-                ) : null}
-              </div>
-            </div>
-          )}
           <hr className="text-gray-scale-gray-10" />
+
+          {/* 연결 수업노트 */}
           <div className="font-label-normal flex cursor-default flex-col gap-2">
             <div className="bg-gray-scale-gray-1 text-gray-scale-gray-70 flex w-fit items-center gap-1 rounded-sm px-2 py-1">
-              <Image
-                src="/homework/link.svg"
-                width={14}
-                height={14}
-                alt="study-notes"
-                className="h-[14px] w-[14px]"
-              />
+              <Link size={14} />
               <span>연결 수업노트</span>
             </div>
             <div>
-              {data?.homework.teachingNoteInfoList.length === 0 ? (
+              {teachingNotes.length === 0 ? (
                 <div>없음</div>
               ) : (
-                data?.homework.teachingNoteInfoList.map((note) => (
+                teachingNotes.map((note) => (
                   <div key={note.id}>
                     <a
                       href={`/study-rooms/${studyRoomId}/note/${note.id}`}
@@ -264,6 +206,51 @@ export const HomeworkDetailLeft = ({
                     </a>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+
+          {/* 과제 인원 및 제출여부 */}
+          <div className="font-label-normal flex cursor-default flex-col gap-2">
+            <div className="flex items-center justify-between gap-4">
+              <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
+                <UserRound size={14} />
+                <span>과제대상</span>
+              </div>
+              <div className="bg-background-gray text-text-sub2 font-label-normal flex w-fit items-center gap-2 rounded-lg px-3 py-2">
+                <Eye size={14} />
+                <span>읽음</span>
+              </div>
+            </div>
+            <div>
+              {assignmentTargets.length === 0 ? (
+                <div>없음</div>
+              ) : (
+                <ul className="text-text-main font-body2-normal m-0 list-none space-y-1 p-0">
+                  {assignmentTargets.map((student) => (
+                    <li
+                      key={student.id}
+                      className="flex justify-between"
+                    >
+                      <span className="justify-self-center text-center">
+                        {student.name}
+                      </span>
+                      {student.readAt ? (
+                        <Check
+                          className="justify-self-center"
+                          color="#34C759"
+                          size={14}
+                        />
+                      ) : (
+                        <X
+                          className="justify-self-center"
+                          color="#c73342"
+                          size={14}
+                        />
+                      )}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>
