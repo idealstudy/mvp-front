@@ -21,7 +21,7 @@ export const StudyroomClassLinksInputDialog = ({
   defaultName,
   defaultUrl,
 }: StudyRoomClassLinksInputDialogProps) => {
-  const type = defaultName && defaultUrl ? 'add' : 'edit';
+  const type = defaultName && defaultUrl ? 'edit' : 'add';
   const [linkName, setLinkName] = useState(defaultName ?? '');
   const [linkUrl, setLinkUrl] = useState(defaultUrl ?? '');
 

@@ -141,11 +141,11 @@ export const StudyRoomClassLinks = ({
       )}
 
       {classLinks.length > 0 && (
-        <ul className="flex flex-col rounded-md bg-[#E9F5FF] px-6 py-4.5">
+        <ul className="flex flex-col gap-3 rounded-md bg-[#E9F5FF] px-6 py-4.5">
           {classLinks.map((link) => (
             <li
               key={link.id}
-              className="flex items-center justify-between py-2"
+              className="flex items-center justify-between"
             >
               <div className="flex min-w-0 flex-1 items-center gap-1">
                 <LinkIcon
