@@ -7,8 +7,8 @@ export const CreateStudyRoomSchema = z.object({
   description: z.string().min(1, '스터디룸 간단 소개를 입력해주세요.').max(200),
   characteristic: z
     .custom<JSONContent>((val) => typeof val === 'object' && val !== null)
-    .refine((val) => toPlainText(val).length <= 200, {
-      message: '스터디룸 특징은 200자 이하로 입력해주세요.',
+    .refine((val) => toPlainText(val).length <= 3000, {
+      message: '스터디룸 특징은 3000자 이하로 입력해주세요.',
     }),
   visibility: z.enum(['PUBLIC', 'PRIVATE'], {
     required_error: '공개 범위를 선택해주세요.',
