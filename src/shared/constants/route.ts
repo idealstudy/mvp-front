@@ -79,7 +79,9 @@ const PROFILE = {
 const COMMUNITY = {
   COLUMN: {
     LIST: '/community/column',
-    DETAIL: (postId: number) => `/community/${postId}`,
+    DETAIL: (id: number) => `/community/column/${id}`,
+    CREATE: '/community/column/new',
+    EDIT: (id: number) => `/community/column/${id}/edit`,
   },
 } as const;
 

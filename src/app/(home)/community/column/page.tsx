@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 
 import { SITE_CONFIG } from '@/config/site';
 import ColumnList from '@/features/community/column/components/column-list';
+import CommunityShell from '@/features/community/components/community-shell';
 
 export const metadata: Metadata = {
   title: `${SITE_CONFIG.name} | 칼럼`,
@@ -26,5 +27,9 @@ export const metadata: Metadata = {
 };
 
 export default function ColumnPage() {
-  return <ColumnList />;
+  return (
+    <CommunityShell>
+      <ColumnList />
+    </CommunityShell>
+  );
 }
