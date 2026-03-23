@@ -116,12 +116,12 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
                   : undefined}
               </Form.ErrorMessage>
               <p className="text-gray-scale-gray-60 mt-2 text-sm">
-                {characteristicLength}/200
+                {characteristicLength}/3000
               </p>
             </div>
           ) : (
             <p className="text-gray-scale-gray-60 mt-2 text-right text-sm">
-              {characteristicLength}/200
+              {characteristicLength}/3000
             </p>
           )}
         </div>
