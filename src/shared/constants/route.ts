@@ -76,10 +76,15 @@ const PROFILE = {
 /* ─────────────────────────────────────────────────────
  * COMMUNITY
  * ────────────────────────────────────────────────────*/
-const COMMUNITY = {
+const PUBLIC_COMMUNITY = {
   COLUMN: {
     LIST: '/community/column',
     DETAIL: (id: number) => `/community/column/${id}`,
+  },
+} as const;
+
+const PRIVATE_COMMUNITY = {
+  COLUMN: {
     CREATE: '/community/column/new',
     EDIT: (id: number) => `/community/column/${id}/edit`,
   },
@@ -91,7 +96,7 @@ const COMMUNITY = {
 export const PUBLIC = {
   CORE,
   PROFILE,
-  COMMUNITY,
+  COMMUNITY: PUBLIC_COMMUNITY,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -103,4 +108,5 @@ export const PRIVATE = {
   NOTE,
   HOMEWORK,
   QUESTIONS,
+  COMMUNITY: PRIVATE_COMMUNITY,
 } as const;

@@ -48,7 +48,11 @@ export default function ColumnWriteArea() {
     formState: { errors, isDirty, isValid },
   } = useForm<ColumnForm>({
     resolver: zodResolver(ColumnFormSchema),
-    defaultValues: { title: '', content: {}, tags: [] },
+    defaultValues: {
+      title: '',
+      content: { type: 'doc', content: [] },
+      tags: [],
+    },
     mode: 'onChange',
   });
 

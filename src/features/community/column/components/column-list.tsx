@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 
+import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ColumnSortOption } from '@/entities/column';
@@ -9,6 +10,9 @@ import ColumnCard from '@/features/community/column/components/column-card';
 import { ColumnListSkeleton } from '@/features/community/column/components/column-card-skeleton';
 import { useColumnList } from '@/features/community/column/hooks/use-column-list';
 import { Pagination } from '@/shared/components/ui';
+import { PRIVATE } from '@/shared/constants';
+import { useMemberStore } from '@/store';
+import { PenBox } from 'lucide-react';
 
 const parseSort = (value?: string): ColumnSortOption => {
   if (value === 'POPULAR') return value;
@@ -26,6 +30,9 @@ export default function ColumnList() {
   const searchParams = useSearchParams();
   const sort = parseSort(searchParams.get('sort') ?? undefined);
   const currentPage = parsePage(searchParams.get('page') ?? undefined);
+
+  const role = useMemberStore((state) => state.member?.role);
+  const canWrite = role === 'ROLE_TEACHER' || role === 'ROLE_ADMIN';
 
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -59,6 +66,21 @@ export default function ColumnList() {
         totalPages={data?.totalPages ?? 1}
         onPageChange={handlePageChange}
       />
+
+      {canWrite && (
+        <Link
+          href={PRIVATE.COMMUNITY.COLUMN.CREATE}
+          className="bg-orange-7 group fixed right-8 bottom-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full transition-all duration-300 hover:w-32 hover:gap-2"
+        >
+          <PenBox
+            size={24}
+            className="shrink-0 text-white"
+          />
+          <span className="font-body1-heading max-w-0 overflow-hidden whitespace-nowrap text-white transition-all duration-300 group-hover:max-w-15">
+            작성하기
+          </span>
+        </Link>
+      )}
     </>
   );
 }
