@@ -18,6 +18,7 @@ export type ColumnListItem = z.infer<typeof dto.listItem>;
 export type ColumnPage = z.infer<typeof dto.page>;
 export type MyColumnListItem = z.infer<typeof dto.myListItem>;
 export type MyColumnPage = z.infer<typeof dto.myPage>;
+export type ColumnDetail = z.infer<typeof dto.detail>;
 
 /* ─────────────────────────────────────────────────────
  * Payload

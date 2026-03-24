@@ -21,6 +21,14 @@ const getList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 칼럼 상세 조회 (공개)
+ * ────────────────────────────────────────────────────*/
+const getDetail = async (id: number) => {
+  const response = await api.public.get(`/public/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
  * [CREATE] 칼럼 생성 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
 const create = async (
@@ -54,6 +62,7 @@ const getMyList = async (params: {
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getList,
+  getDetail,
   create,
   getMyList,
 };

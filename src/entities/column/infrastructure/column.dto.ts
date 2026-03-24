@@ -22,7 +22,25 @@ const ColumnPageDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * 선생님 마이페이지 - 내 칼럼 목록
+ * 칼럼 상세 조회 DTO (공개, APPROVED만)
+ * ────────────────────────────────────────────────────*/
+const ColumnDetailDtoSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  authorNickname: z.string(),
+  tags: z.array(z.string()),
+  thumbnailUrl: z.string().nullable(),
+  resolvedContent: z.object({
+    content: z.string(),
+    expiresAt: z.string(),
+  }),
+  viewCount: z.number(),
+  regDate: z.string(),
+  modDate: z.string(),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 마이페이지 칼럼 목록 조회 DTO (선생님)
  * ────────────────────────────────────────────────────*/
 const MyColumnListItemDtoSchema = z.object({
   id: z.number(),
@@ -61,6 +79,7 @@ const CreateColumnArticlePayloadSchema = z.object({
 export const dto = {
   listItem: ColumnListItemDtoSchema,
   page: ColumnPageDtoSchema,
+  detail: ColumnDetailDtoSchema,
   myListItem: MyColumnListItemDtoSchema,
   myPage: MyColumnPageDtoSchema,
 };
