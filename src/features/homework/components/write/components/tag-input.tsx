@@ -60,13 +60,12 @@ export default function TagInput({
         <PopoverTrigger asChild>
           <div
             className={cn(
-              'border-gray-scale-gray-50 text-gray-scale-gray-40 flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-sm border px-6 py-[15px]',
-              'rounded-[4px] border outline-none',
-              open ? 'border-line-line3' : '',
-              error ? 'border-system-warning' : '',
-              disabled
-                ? 'border-light-gray-30 bg-gray-scale-gray-5 text-gray-scale-gray-50'
-                : ''
+              'flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-[4px] border px-6 py-[15px] text-sm',
+              'border-gray-scale-gray-50',
+              open && 'border-line-line3',
+              error && 'border-system-warning',
+              disabled &&
+                'bg-gray-scale-gray-5 text-gray-scale-gray-50 cursor-not-allowed'
             )}
             onClick={() => {
               if (disabled) return;
@@ -74,7 +73,7 @@ export default function TagInput({
             }}
           >
             {selected.length <= 0 ? (
-              `${placeholder}`
+              <span className="text-gray-5"> {placeholder}</span>
             ) : (
               <>
                 {/* 선택된 학생 태그들 */}

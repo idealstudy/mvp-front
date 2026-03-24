@@ -49,7 +49,8 @@ export const HomeworkFormSchema = z.object({
   deadline: deadlineSchema,
   studentIds: z
     .array(z.custom<CourseTargetStudentInfo>())
-    .min(1, '제출 대상을 최소 1명 이상 선택해 주세요.'),
+    .nullable()
+    .optional(),
   reminderOffsets: z
     .array(z.enum(['HOUR_1', 'HOUR_3', 'DAY_1']))
     .nullable()

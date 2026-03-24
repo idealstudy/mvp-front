@@ -110,10 +110,7 @@ export const HomeworkMetaFields = () => {
 
       {/* 제출 대상 */}
       <Form.Item error={!!errors.studentIds}>
-        <Form.Label>
-          제출 대상
-          <RequiredMark />
-        </Form.Label>
+        <Form.Label>제출 대상</Form.Label>
 
         <Form.Control>
           <Controller
@@ -123,7 +120,7 @@ export const HomeworkMetaFields = () => {
               return (
                 <TagInput
                   students={members || []}
-                  selected={field.value}
+                  selected={field.value || []}
                   onChange={field.onChange}
                   error={!!errors.studentIds}
                   placeholder="이 과제를 제출할 학생을 선택해주세요."
