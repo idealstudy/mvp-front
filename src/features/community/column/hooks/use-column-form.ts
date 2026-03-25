@@ -32,6 +32,9 @@ export const useCreateColumn = () => {
   });
 };
 
+/**
+ * [PUT] 칼럼 수정
+ */
 export const useUpdateColumn = (id: number) => {
   const role = useMemberStore((state) => state.member?.role);
   const queryClient = useQueryClient();
@@ -47,6 +50,23 @@ export const useUpdateColumn = (id: number) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
       router.replace(PUBLIC.COMMUNITY.COLUMN.DETAIL(id));
+    },
+  });
+};
+
+/**
+ * [DELETE] 칼럼 삭제
+ * TODO 관리자 삭제 추가
+ */
+export const useDeleteColumn = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (id: number) => repository.deleteColumn(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: columnKeys.all });
+      router.replace(PUBLIC.COMMUNITY.COLUMN.LIST);
     },
   });
 };

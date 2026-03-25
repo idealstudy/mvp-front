@@ -45,6 +45,14 @@ const createColumn = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [DELETE] 칼럼 삭제 (선생님)
+ * TODO 관리자 반영
+ * ────────────────────────────────────────────────────*/
+const deleteColumn = async (id: number) => {
+  await api.private.delete(`/teacher/column-articles/${id}`);
+};
+
+/* ─────────────────────────────────────────────────────
  * [UPDATE] 칼럼 수정 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
 const updateColumn = async (
@@ -82,5 +90,6 @@ export const repository = {
   getColumnDetail,
   createColumn,
   updateColumn,
+  deleteColumn,
   getMyColumnList,
 };

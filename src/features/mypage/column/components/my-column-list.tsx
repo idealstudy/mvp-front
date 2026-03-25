@@ -4,20 +4,16 @@ import { useTransition } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import MyColumnItem from '@/features/mypage/column/components/my-column-item';
 import { useMyColumns } from '@/features/mypage/column/hooks/use-my-columns';
 import SectionContainer from '@/features/profile/components/section-container';
 import { Pagination } from '@/shared/components/ui';
-import { ListItem } from '@/shared/components/ui/list-item';
-import { PUBLIC } from '@/shared/constants';
-import { cn, getRelativeTimeString } from '@/shared/lib';
 
 const parsePage = (value?: string) => {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 1) return 1;
   return parsed;
 };
-
-const COLUMN_STATUS_LABEL = { PENDING_APPROVAL: '승인 대기', APPROVED: '승인' };
 
 export default function MyColumnList() {
   const pathname = usePathname();
@@ -49,29 +45,9 @@ export default function MyColumnList() {
       {data && data.content.length > 0 ? (
         <>
           {data.content.map((column) => (
-            <ListItem
+            <MyColumnItem
               key={column.id}
-              id={column.id}
-              title={column.title}
-              href={
-                // TODO: 승인 대기 중인 칼럼 상세 조회 API 연결 후 별도 처리 필요
-                column.status === 'PENDING_APPROVAL'
-                  ? '#'
-                  : PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)
-              }
-              subtitle={`조회수 ${column.viewCount} | 작성일 ${getRelativeTimeString(column.regDate)}`}
-              rightTitle={
-                <span
-                  className={cn(
-                    'font-label-normal px-3 py-1.5 whitespace-nowrap',
-                    column.status === 'PENDING_APPROVAL'
-                      ? 'bg-gray-1'
-                      : 'bg-orange-1 text-key-color-primary'
-                  )}
-                >
-                  {COLUMN_STATUS_LABEL[column.status]}
-                </span>
-              }
+              column={column}
             />
           ))}
           <Pagination
