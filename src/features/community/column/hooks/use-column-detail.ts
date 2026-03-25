@@ -8,7 +8,7 @@ export const useColumnDetail = (
 ) =>
   useQuery({
     queryKey: columnKeys.detail(id),
-    queryFn: () => repository.getDetail(id),
+    queryFn: () => repository.getColumnDetail(id),
     initialData,
     initialDataUpdatedAt: Date.now(),
     staleTime: 5 * 60 * 1000,

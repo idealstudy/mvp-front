@@ -12,6 +12,6 @@ export const useColumnList = (params: {
 }) =>
   useQuery({
     queryKey: columnKeys.list({ ...params, size: PAGE_SIZE }),
-    queryFn: () => repository.getList({ ...params, size: PAGE_SIZE }),
+    queryFn: () => repository.getColumnList({ ...params, size: PAGE_SIZE }),
     staleTime: 5 * 60 * 1000,
   });

@@ -12,7 +12,7 @@ import { dto, payload } from './column.dto';
 /* ─────────────────────────────────────────────────────
  * [Read] 칼럼 목록 조회 (공개, APPROVED만)
  * ────────────────────────────────────────────────────*/
-const getList = async (params: {
+const getColumnList = async (params: {
   page: number;
   size: number;
   sort: ColumnSortOption;
@@ -24,7 +24,7 @@ const getList = async (params: {
 /* ─────────────────────────────────────────────────────
  * [READ] 칼럼 상세 조회 (공개)
  * ────────────────────────────────────────────────────*/
-const getDetail = async (id: number) => {
+const getColumnDetail = async (id: number) => {
   const response = await api.public.get(`/public/column-articles/${id}`);
   return unwrapEnvelope(response, dto.detail);
 };
@@ -32,7 +32,7 @@ const getDetail = async (id: number) => {
 /* ─────────────────────────────────────────────────────
  * [CREATE] 칼럼 생성 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const create = async (
+const createColumn = async (
   params: CreateColumnArticlePayload,
   role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
 ) => {
@@ -47,7 +47,7 @@ const create = async (
 /* ─────────────────────────────────────────────────────
  * [UPDATE] 칼럼 수정 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const update = async (
+const updateColumn = async (
   id: number,
   params: UpdateColumnArticlePayload,
   role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
@@ -63,7 +63,7 @@ const update = async (
 /* ─────────────────────────────────────────────────────
  * [READ] 선생님 마이페이지 - 내 칼럼 목록 조회
  * ────────────────────────────────────────────────────*/
-const getMyList = async (params: {
+const getMyColumnList = async (params: {
   page: number;
   size: number;
   status?: ColumnStatus;
@@ -78,9 +78,9 @@ const getMyList = async (params: {
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
-  getList,
-  getDetail,
-  create,
-  update,
-  getMyList,
+  getColumnList,
+  getColumnDetail,
+  createColumn,
+  updateColumn,
+  getMyColumnList,
 };

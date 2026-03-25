@@ -23,7 +23,7 @@ export const useCreateColumn = () => {
       if (role !== 'ROLE_TEACHER' && role !== 'ROLE_ADMIN') {
         throw new Error('권한이 없습니다.');
       }
-      return repository.create(params, role);
+      return repository.createColumn(params, role);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
@@ -42,7 +42,7 @@ export const useUpdateColumn = (id: number) => {
       if (role !== 'ROLE_TEACHER' && role !== 'ROLE_ADMIN') {
         throw new Error('권한이 없습니다.');
       }
-      return repository.update(id, params, role);
+      return repository.updateColumn(id, params, role);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });

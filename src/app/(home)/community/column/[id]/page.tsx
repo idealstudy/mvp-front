@@ -12,7 +12,7 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const getDetail = cache((id: number) => repository.getDetail(id));
+const getDetail = cache((id: number) => repository.getColumnDetail(id));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
