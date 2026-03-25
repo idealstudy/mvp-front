@@ -1,4 +1,5 @@
 import { ShowErrorToast, getApiError } from '@/shared/lib';
+import * as Sentry from '@sentry/nextjs';
 
 import { ApiErrorType } from './errors';
 
@@ -26,6 +27,7 @@ export const handleApiError = (
 
   // 1. API 에러 형식이 아닐 때
   if (!apiError) {
+    Sentry.captureException(error);
     ShowErrorToast(
       'UNKNOWN',
       '네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.'
@@ -57,6 +59,7 @@ export const handleApiError = (
       break;
 
     default:
+      Sentry.captureException(error);
       actions.onUnknown?.(apiError.message);
       break;
   }
