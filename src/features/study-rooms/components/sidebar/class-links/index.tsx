@@ -38,13 +38,17 @@ export const StudyRoomClassLinks = ({
   const editMutation = useEditClassLink(studyRoomId);
   const deleteMutation = useDeleteClassLink(studyRoomId);
 
+  const handleCloseDialog = () => {
+    setSelectedLink(null);
+    dispatch({ type: 'CLOSE' });
+  };
+
   const handleCreate = (name: string, url: string) => {
     createMutation.mutate(
       { name, url },
       {
         onSuccess: () => {
-          setSelectedLink(null);
-          dispatch({ type: 'CLOSE' });
+          handleCloseDialog();
           showBottomToast('수업 링크가 추가됐어요.');
         },
       }
@@ -57,8 +61,7 @@ export const StudyRoomClassLinks = ({
       { linkId: selectedLink.id, body: { name, url } },
       {
         onSuccess: () => {
-          setSelectedLink(null);
-          dispatch({ type: 'CLOSE' });
+          handleCloseDialog();
           showBottomToast('수업 링크가 수정됐어요.');
         },
       }
@@ -69,8 +72,7 @@ export const StudyRoomClassLinks = ({
     if (!selectedLink) return;
     deleteMutation.mutate(selectedLink.id, {
       onSuccess: () => {
-        setSelectedLink(null);
-        dispatch({ type: 'CLOSE' });
+        handleCloseDialog();
         showBottomToast('수업 링크가 삭제됐어요.');
       },
     });
@@ -85,10 +87,7 @@ export const StudyRoomClassLinks = ({
             isOpen={true}
             defaultName={selectedLink?.name}
             defaultUrl={selectedLink?.url}
-            onClose={() => {
-              setSelectedLink(null);
-              dispatch({ type: 'CLOSE' });
-            }}
+            onClose={handleCloseDialog}
             onConfirm={selectedLink ? handleEdit : handleCreate}
           />
         )}
@@ -107,10 +106,7 @@ export const StudyRoomClassLinks = ({
         dialog.scope === 'studyroom' && (
           <StudyroomClassLinksDeleteDialog
             isOpen={true}
-            onClose={() => {
-              setSelectedLink(null);
-              dispatch({ type: 'CLOSE' });
-            }}
+            onClose={handleCloseDialog}
             onConfirm={handleDelete}
           />
         )}
