@@ -86,6 +86,7 @@ export default function LoginForm() {
           <Form.Control>
             <Input
               type="email"
+              data-testid="login-email-input"
               {...register('email')}
             />
           </Form.Control>
@@ -97,6 +98,7 @@ export default function LoginForm() {
           <Form.Control>
             <Input
               type="password"
+              data-testid="login-password-input"
               {...register('password')}
             />
           </Form.Control>
@@ -107,6 +109,7 @@ export default function LoginForm() {
           type="submit"
           disabled={isLoading || isInValid}
           className="w-full"
+          data-testid="login-submit-button"
         >
           {isLoading ? '로그인 중...' : '계속'}
         </Button>
