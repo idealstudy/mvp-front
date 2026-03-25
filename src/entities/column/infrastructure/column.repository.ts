@@ -69,7 +69,7 @@ const updateColumn = async (
 };
 
 /* ─────────────────────────────────────────────────────
- * [READ] 선생님 마이페이지 - 내 칼럼 목록 조회
+ * [READ] 마이페이지 - 내 칼럼 목록 조회 (선생님)
  * ────────────────────────────────────────────────────*/
 const getMyColumnList = async (params: {
   page: number;
@@ -83,6 +83,25 @@ const getMyColumnList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 관리자페이지 - 칼럼 목록 조회 (관리자, 상태별)
+ * ────────────────────────────────────────────────────*/
+const getAdminColumnList = async (params: {
+  page: number;
+  size: number;
+  status?: ColumnStatus;
+}) => {
+  const response = await api.private.get('/admin/column-articles', { params });
+  return unwrapEnvelope(response, dto.adminPage);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [PATCH] 관리자페이지 - 칼럼 승인 (관리자)
+ * ────────────────────────────────────────────────────*/
+const approveColumn = async (id: number) => {
+  await api.private.patch(`/admin/column-articles/${id}/approve`);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -92,4 +111,6 @@ export const repository = {
   updateColumn,
   deleteColumn,
   getMyColumnList,
+  getAdminColumnList,
+  approveColumn,
 };

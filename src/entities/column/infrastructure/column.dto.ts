@@ -62,6 +62,29 @@ const MyColumnPageDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 관리자 칼럼 목록 조회 DTO (관리자)
+ * ────────────────────────────────────────────────────*/
+const AdminColumnListItemDtoSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  authorNickname: z.string(),
+  tags: z.array(z.string()),
+  status: z.enum(['PENDING_APPROVAL', 'APPROVED']),
+  thumbnailUrl: z.string().nullable(),
+  viewCount: z.number(),
+  regDate: z.string(),
+  modDate: z.string(),
+});
+
+const AdminColumnPageDtoSchema = z.object({
+  pageNumber: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+  content: z.array(AdminColumnListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 칼럼 생성 Payload (선생님/관리자, PENDING_APPROVAL 상태로 저장)
  * POST
  * ────────────────────────────────────────────────────*/
@@ -93,6 +116,8 @@ export const dto = {
   detail: ColumnDetailDtoSchema,
   myListItem: MyColumnListItemDtoSchema,
   myPage: MyColumnPageDtoSchema,
+  adminListItem: AdminColumnListItemDtoSchema,
+  adminPage: AdminColumnPageDtoSchema,
 };
 
 export const payload = {

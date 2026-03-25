@@ -1,6 +1,9 @@
 import { ColumnDetail, columnKeys, repository } from '@/entities/column';
 import { useQuery } from '@tanstack/react-query';
 
+/**
+ * [GET] 칼럼 상세 조회
+ */
 export const useColumnDetail = (
   id: number,
   initialData?: ColumnDetail,
