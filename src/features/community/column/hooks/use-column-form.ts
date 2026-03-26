@@ -25,9 +25,9 @@ export const useCreateColumn = () => {
       }
       return repository.createColumn(params, role);
     },
-    onSuccess: () => {
+    onSuccess: (id) => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
-      router.replace(PUBLIC.COMMUNITY.COLUMN.LIST);
+      router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
     },
   });
 };
@@ -49,7 +49,7 @@ export const useUpdateColumn = (id: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
-      router.replace(PUBLIC.COMMUNITY.COLUMN.DETAIL(id));
+      router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
     },
   });
 };
@@ -60,13 +60,11 @@ export const useUpdateColumn = (id: number) => {
  */
 export const useDeleteColumn = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: (id: number) => repository.deleteColumn(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
-      router.replace(PUBLIC.COMMUNITY.COLUMN.LIST);
     },
   });
 };

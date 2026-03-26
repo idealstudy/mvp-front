@@ -27,12 +27,13 @@ const ColumnPageDtoSchema = z.object({
 const ColumnDetailDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
-  authorNickname: z.string(),
+  // TODO 백엔드에 확인
+  authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
   resolvedContent: z.object({
     content: z.string(),
-    expiresAt: z.string(),
+    expiresAt: z.string().nullable(),
   }),
   viewCount: z.number(),
   regDate: z.string(),

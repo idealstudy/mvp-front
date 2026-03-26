@@ -10,12 +10,20 @@ import BackLink from '@/features/dashboard/studynote/components/back-link';
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ preview?: string }>;
 };
 
 const getDetail = cache((id: number) => repository.getColumnDetail(id));
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: Props): Promise<Metadata> {
   const { id } = await params;
+  const { preview } = await searchParams;
+
+  if (preview === 'true') return { title: SITE_CONFIG.name };
+
   try {
     const data = await getDetail(Number(id));
     return {
@@ -31,14 +39,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ColumnDetailPage({ params }: Props) {
+export default async function ColumnDetailPage({
+  params,
+  searchParams,
+}: Props) {
   const { id } = await params;
+  // preview: 승인 대기 상태인 글 상세 보기 (본인만 조회 가능)
+  const { preview } = await searchParams;
   const columnId = Number(id);
+  const isPrivate = preview === 'true';
 
   if (isNaN(columnId)) notFound();
 
   try {
-    const data = await getDetail(columnId);
+    const data = isPrivate ? undefined : await getDetail(columnId);
 
     return (
       <div className="mx-auto max-w-[1440px] pt-8 pb-20 lg:px-20">
@@ -47,6 +61,7 @@ export default async function ColumnDetailPage({ params }: Props) {
           <ColumnDetailView
             id={columnId}
             initialData={data}
+            isPrivate={isPrivate}
           />
         </div>
       </div>

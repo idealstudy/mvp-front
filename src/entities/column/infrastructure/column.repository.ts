@@ -6,6 +6,7 @@ import {
 } from '@/entities/column/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
+import { z } from 'zod';
 
 import { dto, payload } from './column.dto';
 
@@ -41,7 +42,8 @@ const createColumn = async (
     role === 'ROLE_ADMIN'
       ? '/admin/column-articles'
       : '/teacher/column-articles';
-  await api.private.post(path, validated);
+  const response = await api.private.post(path, validated);
+  return unwrapEnvelope(response, z.number());
 };
 
 /* ─────────────────────────────────────────────────────
@@ -83,6 +85,14 @@ const getMyColumnList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 칼럼 상세 조회 (선생님, PENDING 포함)
+ * ────────────────────────────────────────────────────*/
+const getMyColumnDetail = async (id: number) => {
+  const response = await api.private.get(`/teacher/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
  * [READ] 관리자페이지 - 칼럼 목록 조회 (관리자, 상태별)
  * ────────────────────────────────────────────────────*/
 const getAdminColumnList = async (params: {
@@ -111,6 +121,7 @@ export const repository = {
   updateColumn,
   deleteColumn,
   getMyColumnList,
+  getMyColumnDetail,
   getAdminColumnList,
   approveColumn,
 };

@@ -52,6 +52,17 @@ export default function ColumnList() {
 
   return (
     <>
+      {canWrite && (
+        <div className="mb-6 flex justify-end">
+          <Link
+            href={`${PRIVATE.MYPAGE}?tab=columns`}
+            className="text-key-color-primary hover:underline"
+          >
+            내 칼럼 관리
+          </Link>
+        </div>
+      )}
+
       <div className="tablet:grid-cols-2 grid gap-6">
         {data?.content.map((column) => (
           <ColumnCard

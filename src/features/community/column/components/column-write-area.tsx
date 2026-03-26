@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useColumnDetail } from '@/features/community/column/hooks/use-column-detail';
+import { useMyColumnDetail } from '@/features/community/column/hooks/use-column-detail';
 import {
   useCreateColumn,
   useUpdateColumn,
@@ -41,6 +41,18 @@ const getFirstImageMediaId = (node: JSONContent): string | undefined => {
   return undefined;
 };
 
+// 이미지 업로드 중일 때, 저장 버튼 비활성화
+const hasUploadingNode = (node: JSONContent): boolean => {
+  if (node.attrs?.isUploading === true) return true;
+  return (node.content ?? []).some(hasUploadingNode);
+};
+
+// 이미지(썸네일) 존재 여부 확인
+const hasImageNode = (node: JSONContent): boolean => {
+  if (node.type === 'image') return true;
+  return (node.content ?? []).some(hasImageNode);
+};
+
 export default function ColumnWriteArea({
   id,
   isEditMode = false,
@@ -51,9 +63,8 @@ export default function ColumnWriteArea({
   const [showImageDialog, setShowImageDialog] = useState(false);
 
   // 수정 모드일 경우, 기존 내용 불러오기
-  const { data: existingData, isLoading: isDetailLoading } = useColumnDetail(
+  const { data: existingData, isLoading: isDetailLoading } = useMyColumnDetail(
     id ?? 0,
-    undefined,
     { enabled: isEditMode && !!id }
   );
 
@@ -104,6 +115,7 @@ export default function ColumnWriteArea({
       setValue('tags', [...tags, trimmed], {
         shouldValidate: true,
         shouldTouch: true,
+        shouldDirty: true,
       });
     }
     setTagInput('');
@@ -119,13 +131,16 @@ export default function ColumnWriteArea({
     }
   };
 
+  const content = watch('content');
+  const isUploading = useMemo(() => hasUploadingNode(content), [content]);
+
   // 작성 완료 클릭 시 제출
   const onSubmit = (data: ColumnForm) => {
     // 썸네일 MediaId 추출
     const thumbnailMediaId = getFirstImageMediaId(data.content);
 
     // 썸네일용 사진이 없을 경우, 알림
-    if (!thumbnailMediaId) {
+    if (!thumbnailMediaId && !hasImageNode(data.content)) {
       setShowImageDialog(true);
       return;
     }
@@ -205,7 +220,7 @@ export default function ColumnWriteArea({
                     setValue(
                       'tags',
                       tags.filter((t) => t !== tag),
-                      { shouldValidate: true }
+                      { shouldValidate: true, shouldDirty: true }
                     )
                   }
                 >
@@ -268,7 +283,7 @@ export default function ColumnWriteArea({
         {/* 제출 버튼 */}
         <Button
           type="submit"
-          disabled={mutation.isPending || !isDirty || !isValid}
+          disabled={mutation.isPending || !isDirty || !isValid || isUploading}
           className="w-full"
         >
           {mutation.isPending && '저장 중'}

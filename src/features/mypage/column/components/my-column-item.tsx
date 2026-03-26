@@ -20,9 +20,8 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
       id={column.id}
       title={column.title}
       href={
-        // TODO: 승인 대기 중인 칼럼 상세 조회 API 연결 후 별도 처리 필요
         column.status === 'PENDING_APPROVAL'
-          ? '#'
+          ? `${PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)}?preview=true`
           : PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)
       }
       subtitle={`조회수 ${column.viewCount} | 작성일 ${getRelativeTimeString(column.regDate)}`}

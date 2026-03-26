@@ -74,6 +74,11 @@ const PROFILE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * MYPAGE
+ * ────────────────────────────────────────────────────*/
+const MYPAGE = '/mypage';
+
+/* ─────────────────────────────────────────────────────
  * COMMUNITY
  * ────────────────────────────────────────────────────*/
 const PUBLIC_COMMUNITY = {
@@ -109,4 +114,5 @@ export const PRIVATE = {
   HOMEWORK,
   QUESTIONS,
   COMMUNITY: PRIVATE_COMMUNITY,
+  MYPAGE,
 } as const;
