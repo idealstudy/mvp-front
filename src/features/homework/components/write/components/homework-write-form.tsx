@@ -75,8 +75,8 @@ function transformHomeworkFormToServerFormat(
     title: formData.title,
     content: contentString,
     deadline: normalizeDeadline(formData.deadline),
-    studentIds: formData.studentIds?.map((s) => s.id),
-    reminderOffsets: formData.reminderOffsets ?? undefined,
+    studentIds: formData.studentIds?.map((s) => s.id) ?? [],
+    reminderOffsets: formData.reminderOffsets ?? [],
     teachingNoteIds: formData.teachingNoteIds ?? [],
     mediaIds,
   };

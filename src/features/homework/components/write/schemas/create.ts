@@ -1,7 +1,5 @@
-import {
-  extractTextFromTiptapJSON,
-  hasNonTextContent,
-} from '@/features/homework/hooks/use-homework-form-control';
+import { extractTextFromTiptapJSON } from '@/features/homework/hooks/use-homework-form-control';
+import { hasNonTextContent } from '@/shared/lib';
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
