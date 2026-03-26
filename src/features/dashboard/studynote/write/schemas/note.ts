@@ -1,3 +1,4 @@
+import { hasNonTextContent } from '@/shared/lib';
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
@@ -37,11 +38,12 @@ const extractTextFromTiptapJSON = (doc: JSONContent): string => {
 export const contentSchema = z.custom<JSONContent>().superRefine((val, ctx) => {
   const plainText = extractTextFromTiptapJSON(val);
   const length = plainText.trim().length;
+  const hasAttachment = hasNonTextContent(val);
 
-  if (length < 10) {
+  if (length < 1 && !hasAttachment) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: '내용은 최소 10자 이상이어야 합니다.',
+      message: '내용 또는 첨부 파일을 입력해 주세요.',
     });
   }
 
