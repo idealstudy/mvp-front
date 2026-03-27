@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 
 import { DashboardContainer } from '@/features/dashboard/components/dashboard-container';
-import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
+
+// import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
 
 const SITE_NAME = '디에듀';
 const SITE_URL = 'https://d-edu.site/';
@@ -43,7 +44,7 @@ export default function HomePage() {
   return (
     <>
       <DashboardContainer />
-      <EmptyConnectionDialog />
+      {/* <EmptyConnectionDialog /> */}
     </>
   );
 }
