@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+
 import Image from 'next/image';
 
+import { ConsultationDialogs } from '@/features/member/components/consultation-dialog';
 import MembersDropdown from '@/features/member/components/members-dropdown';
 import { StudyNoteMember } from '@/features/study-notes/model';
 import { EditIcon } from '@/shared/components/icons';
@@ -30,6 +35,9 @@ export const MemberListItem = ({
     !isTeacher && !isCurrentUser ? maskEmail(member.email) : member.email;
 
   const isParent = member.role === 'ROLE_PARENT';
+  const [dialogView, setDialogView] = useState<'none' | 'list' | 'form'>(
+    'none'
+  );
 
   return (
     <li
@@ -89,6 +97,7 @@ export const MemberListItem = ({
           <button
             type="button"
             className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
+            onClick={() => setDialogView('list')}
           >
             기록
           </button>
@@ -98,6 +107,7 @@ export const MemberListItem = ({
             <button
               type="button"
               className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
+              onClick={() => setDialogView('form')}
             >
               <EditIcon size={24} />
             </button>
@@ -109,6 +119,16 @@ export const MemberListItem = ({
           </div>
         )}
       </div>
+
+      {(dialogView === 'list' || dialogView === 'form') && (
+        <ConsultationDialogs
+          key={dialogView}
+          studentName={member.name}
+          initialView={dialogView}
+          isOpen
+          onClose={() => setDialogView('none')}
+        />
+      )}
     </li>
   );
 };
