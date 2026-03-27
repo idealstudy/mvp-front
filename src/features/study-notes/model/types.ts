@@ -70,8 +70,11 @@ export interface StudyNoteMember {
   id: string;
   name: string;
   email: string;
+  role: 'ROLE_STUDENT' | 'ROLE_PARENT';
+  dday: number;
   guardianCount?: number;
-  joinedText: string;
+  joinText: string;
+  outText: string | null;
   avatarSrc?: string;
   isTerminated: boolean;
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { useCoreCurrentMemberActions } from '@/entities/member/hooks/use-member-query';
 import { MemberListItem } from '@/features/member/components/member-list-item';
 import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
 import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
@@ -20,6 +21,9 @@ export default function MembersPanel({ studyRoomId }: Props) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<StudyNoteSortKey>('LATEST_EDITED');
   const [limit, setLimit] = useState<StudyNoteLimit>(20);
+
+  const { data: currentMember } = useCoreCurrentMemberActions();
+  const isTeacher = currentMember?.role === 'ROLE_TEACHER';
 
   const { data, isPending } = useGetTeacherNoteMembers({
     studyRoomId,
@@ -65,6 +69,8 @@ export default function MembersPanel({ studyRoomId }: Props) {
               key={member.id}
               member={member}
               studyRoomId={studyRoomId}
+              isTeacher={isTeacher}
+              currentUserEmail={currentMember?.email}
             />
           ))
         )}

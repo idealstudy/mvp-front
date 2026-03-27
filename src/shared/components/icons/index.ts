@@ -13,3 +13,4 @@ export { ArrowDownIcon } from './arrow-down-icon';
 export { ArrowRightIcon } from './arrow-right-icon';
 export { FindingIcon } from './finding-icon';
 export { ExclamationIcon } from './exclamation-icon';
+export { EditIcon } from './edit-icon';
