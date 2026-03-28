@@ -1,15 +1,14 @@
 import { useReducer } from 'react';
 
-import Image from 'next/image';
-
 import { Role } from '@/entities/member';
 import { getStudyNoteGroupInfiniteOption } from '@/features/study-rooms';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
+import { PlusIcon } from '@/shared/components/icons';
 import { useInfiniteScroll } from '@/shared/hooks/use-infinite-scroll';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { StudyroomGroupDialogs } from './dialogs';
-import { GroupListItem } from './llist-item';
+import { GroupListItem } from './list-item';
 
 export const STUDYROOM_SIDEBAR_GROUPS_PAGEABLE = {
   page: 0,
@@ -100,12 +99,7 @@ export const StudyroomGroups = ({
               className="hover:bg-gray-scale-gray-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px]"
               onClick={handleCreateGroupClick}
             >
-              <Image
-                src="/studyroom/ic-plus.svg"
-                alt="plus"
-                width={16}
-                height={16}
-              />
+              <PlusIcon />
             </div>
           )}
         </div>

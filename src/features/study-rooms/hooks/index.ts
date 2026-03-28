@@ -31,3 +31,10 @@ export const {
   useTerminateMember,
   useResumeMember,
 } = teacherHooks;
+
+export {
+  useClassLinkListQuery,
+  useCreateClassLink,
+  useEditClassLink,
+  useDeleteClassLink,
+} from '@/features/study-rooms/hooks/use-class-link-query';
