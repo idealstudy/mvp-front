@@ -6,7 +6,7 @@ import { z } from 'zod';
 const ColumnListItemDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
-  authorNickname: z.string(),
+  authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
   viewCount: z.number(),
@@ -68,7 +68,7 @@ const MyColumnPageDtoSchema = z.object({
 const AdminColumnListItemDtoSchema = z.object({
   id: z.number(),
   title: z.string(),
-  authorNickname: z.string(),
+  authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   status: z.enum(['PENDING_APPROVAL', 'APPROVED']),
   thumbnailUrl: z.string().nullable(),

@@ -96,6 +96,16 @@ const PRIVATE_COMMUNITY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * ADMIN
+ * ────────────────────────────────────────────────────*/
+const ADMIN = {
+  COLUMN: {
+    LIST: '/admin/columns',
+    DETAIL: (id: number) => `/admin/columns/${id}`,
+  },
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * Export - PUBLIC
  * ────────────────────────────────────────────────────*/
 export const PUBLIC = {
@@ -115,4 +125,5 @@ export const PRIVATE = {
   QUESTIONS,
   COMMUNITY: PRIVATE_COMMUNITY,
   MYPAGE,
+  ADMIN,
 } as const;

@@ -27,7 +27,11 @@ export const useCreateColumn = () => {
     },
     onSuccess: (id) => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
-      router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
+      if (role === 'ROLE_ADMIN') {
+        router.replace(PUBLIC.COMMUNITY.COLUMN.DETAIL(id));
+      } else {
+        router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
+      }
     },
   });
 };
@@ -49,7 +53,11 @@ export const useUpdateColumn = (id: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: columnKeys.all });
-      router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
+      if (role === 'ROLE_ADMIN') {
+        router.replace(PUBLIC.COMMUNITY.COLUMN.DETAIL(id));
+      } else {
+        router.replace(`${PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}?preview=true`);
+      }
     },
   });
 };

@@ -13,7 +13,6 @@ export const useColumnDetail = (
     queryKey: columnKeys.detail(id),
     queryFn: () => repository.getColumnDetail(id),
     initialData,
-    initialDataUpdatedAt: Date.now(),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: options?.enabled ?? true,

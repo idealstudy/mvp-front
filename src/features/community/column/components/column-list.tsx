@@ -52,7 +52,7 @@ export default function ColumnList() {
 
   return (
     <>
-      {canWrite && (
+      {role === 'ROLE_TEACHER' && (
         <div className="mb-6 flex justify-end">
           <Link
             href={`${PRIVATE.MYPAGE}?tab=columns`}

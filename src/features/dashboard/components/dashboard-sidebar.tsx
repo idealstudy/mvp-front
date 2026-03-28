@@ -6,27 +6,33 @@ import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
 } from '@/features/study-rooms';
-import { FindingIcon, HomeIcon, PlusIcon } from '@/shared/components/icons';
+import {
+  FindingIcon,
+  HomeIcon,
+  ListIcon,
+  PlusIcon,
+} from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
+import { ShieldUserIcon } from 'lucide-react';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
   // const { data, isLoading, isError } = useDashboardQuery();
 
+  const { role } = useRole();
+
   /* ─────────────────────────────────────────────────────
    * 역할에 따라 다른 쿼리 사용
    * ────────────────────────────────────────────────────*/
   const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
-    enabled: true,
+    enabled: role === 'ROLE_TEACHER',
   });
 
   const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
-    enabled: true,
+    enabled: role === 'ROLE_STUDENT',
   });
-
-  const { role } = useRole();
 
   // 역할에 따라 적절한 리스트 선택
   const studyRoomList =
@@ -74,6 +80,32 @@ export const DashboardSidebar = () => {
           ))}
         </Sidebar.List>
       </Sidebar.ScrollArea>
+
+      {role === 'ROLE_ADMIN' && (
+        <>
+          <Sidebar.Header>
+            <div className="flex items-center gap-2">
+              <ShieldUserIcon />
+              <Sidebar.HeaderText>관리자</Sidebar.HeaderText>
+            </div>
+          </Sidebar.Header>
+
+          <Sidebar.List>
+            <li>
+              <Sidebar.Item
+                href={PRIVATE.ADMIN.COLUMN.LIST}
+                matchPath="/admin/columns"
+                className="h-12 items-center justify-start gap-[2px]"
+              >
+                <ListIcon />
+                <Sidebar.Text className="font-body2-normal">
+                  칼럼 관리
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </li>
+          </Sidebar.List>
+        </>
+      )}
 
       <Sidebar.Item
         href={PUBLIC.CORE.LIST.TEACHERS}
