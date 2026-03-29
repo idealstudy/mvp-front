@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   useConsultationDetail,
@@ -17,104 +17,15 @@ import {
 import { TextEditorValue } from '@/shared/components/editor/types';
 import { showBottomToast } from '@/shared/components/ui';
 import { Button } from '@/shared/components/ui/button';
-import { Dialog } from '@/shared/components/ui/dialog';
-import { cn, formatDateDot, toPlainText } from '@/shared/lib';
-import { ChevronLeft, Info, X } from 'lucide-react';
+import { formatDateDot, toPlainText } from '@/shared/lib';
+import { ChevronLeft } from 'lucide-react';
 
 import { DeleteConfirm } from './delete-confirm';
 import { ConsultationDetailContent } from './detail';
 import { ConsultationFormContent } from './form';
+import { ConsultationDialogLayout } from './layout';
 import { ConsultationListContent } from './list';
-
-// ─────────────────────────────────────────────────────
-// Layout (공통 다이얼로그 프레임)
-// ─────────────────────────────────────────────────────
-
-type LayoutProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  title: ReactNode;
-  navigation?: ReactNode;
-  children: ReactNode;
-  footer?: ReactNode;
-};
-
-export const ConsultationDialogLayout = ({
-  isOpen,
-  onClose,
-  title,
-  navigation,
-  children,
-  footer,
-}: LayoutProps) => {
-  return (
-    <Dialog isOpen={isOpen}>
-      <Dialog.Content className="tablet:h-[80vh] tablet:max-w-[600px] desktop:h-[602px] desktop:w-[720px] desktop:max-w-[720px] h-[85vh] max-w-[calc(100%-2rem)] gap-0 overflow-y-hidden p-6">
-        <Dialog.Header className="mb-5">
-          <div className="flex items-center justify-between gap-3">
-            <Dialog.Title className="min-w-0 flex-1">{title}</Dialog.Title>
-            <Dialog.Close asChild>
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-7 hover:text-gray-12 shrink-0"
-                aria-label="닫기"
-              >
-                <X size={20} />
-              </button>
-            </Dialog.Close>
-          </div>
-          <Dialog.Description className="font-label-normal text-gray-7 flex items-center gap-1">
-            <Info size={14} />
-            작성된 내용은 학생과 보호자에게도 공유돼요.
-          </Dialog.Description>
-        </Dialog.Header>
-
-        {navigation && <div className="mb-5">{navigation}</div>}
-
-        <Dialog.Body className="min-h-0">{children}</Dialog.Body>
-
-        {footer && (
-          <Dialog.Footer className="mt-6 justify-end">{footer}</Dialog.Footer>
-        )}
-      </Dialog.Content>
-    </Dialog>
-  );
-};
-
-// ─────────────────────────────────────────────────────
-// Tab Nav
-// ─────────────────────────────────────────────────────
-
-type TabNavProps = {
-  activeTab: 'write' | 'list';
-  onTabChange: (tab: 'write' | 'list') => void;
-};
-
-export const ConsultationTabNav = ({ activeTab, onTabChange }: TabNavProps) => {
-  return (
-    <div className="flex gap-2">
-      {(['write', 'list'] as const).map((tab) => {
-        const isActive = activeTab === tab;
-        return (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => onTabChange(tab)}
-            className={cn(
-              'font-body2-normal rounded-full border px-5 py-2 transition-colors',
-              isActive
-                ? 'border-key-color-primary text-key-color-primary'
-                : 'border-gray-4 text-gray-7 hover:border-gray-6'
-            )}
-          >
-            {tab === 'write' ? '기록 일지 작성' : '기록 일지 기록'}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
+import { ConsultationTabNav } from './tab-nav';
 
 // ─────────────────────────────────────────────────────
 // Controller
