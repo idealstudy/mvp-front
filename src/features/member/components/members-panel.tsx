@@ -5,7 +5,10 @@ import { useState } from 'react';
 import { useCoreCurrentMemberActions } from '@/entities/member/hooks/use-member-query';
 import { MemberListItem } from '@/features/member/components/member-list-item';
 import { StudyNoteSearchFilterBar } from '@/features/study-notes/components/search-filter-bar';
-import { useGetTeacherNoteMembers } from '@/features/study-notes/hooks';
+import {
+  useGetStudentNoteMembers,
+  useGetTeacherNoteMembers,
+} from '@/features/study-notes/hooks';
 import { useMemberFilter } from '@/features/study-notes/hooks/use-member-filter';
 import { StudyNoteLimit, StudyNoteSortKey } from '@/features/study-notes/model';
 import { transformMembersData } from '@/features/study-notes/model/transform';
@@ -25,11 +28,24 @@ export default function MembersPanel({ studyRoomId }: Props) {
   const { data: currentMember } = useCoreCurrentMemberActions();
   const isTeacher = currentMember?.role === 'ROLE_TEACHER';
 
-  const { data, isPending } = useGetTeacherNoteMembers({
-    studyRoomId,
-    page: currentPage,
-    size: limit,
-  });
+  const { data: teacherData, isPending: teacherIsPending } =
+    useGetTeacherNoteMembers({
+      studyRoomId,
+      page: currentPage,
+      size: limit,
+      enabled: isTeacher,
+    });
+
+  const { data: studentData, isPending: studentIsPending } =
+    useGetStudentNoteMembers({
+      studyRoomId,
+      page: currentPage,
+      size: limit,
+      enabled: !isTeacher,
+    });
+
+  const data = isTeacher ? teacherData : studentData;
+  const isPending = isTeacher ? teacherIsPending : studentIsPending;
 
   const members = transformMembersData(data?.data);
   const filteredMembers = useMemberFilter(members, search, sort);

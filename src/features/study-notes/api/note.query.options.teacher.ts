@@ -21,6 +21,7 @@ export const createTeacherNoteQueryOptions = (
     studyRoomId: number;
     page?: number;
     size?: number;
+    enabled?: boolean;
   }) => {
     const page = args.page ?? 0;
     const size = args.size ?? 20;
@@ -29,6 +30,7 @@ export const createTeacherNoteQueryOptions = (
       queryFn: () =>
         api.getMembers({ studyRoomId: args.studyRoomId, page, size }),
       ...opt,
+      enabled: args.enabled ?? true,
     });
   };
 
