@@ -7,3 +7,4 @@ export * from './utils';
 export * from './toast';
 export * from './get-api-error';
 export * from './to-plain-text';
+export * from './has-non-text-content';

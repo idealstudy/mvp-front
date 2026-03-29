@@ -66,7 +66,7 @@ export default function TagInputNote({
             }}
           >
             {selectedIds.length === 0 ? (
-              <span className="text-gray-scale-gray-40">{placeholder}</span>
+              <span className="text-gray-5">{placeholder}</span>
             ) : (
               selectedIds.map((id) => {
                 const note = studyNotes.find((n) => n.id === id);

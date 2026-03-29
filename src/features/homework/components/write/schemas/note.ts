@@ -1,8 +1,6 @@
 import { CourseTargetStudentInfo } from '@/features/dashboard/studynote/write/type';
-import {
-  extractTextFromTiptapJSON,
-  hasNonTextContent,
-} from '@/features/homework/hooks/use-homework-form-control';
+import { extractTextFromTiptapJSON } from '@/features/homework/hooks/use-homework-form-control';
+import { hasNonTextContent } from '@/shared/lib';
 import { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
@@ -49,7 +47,8 @@ export const HomeworkFormSchema = z.object({
   deadline: deadlineSchema,
   studentIds: z
     .array(z.custom<CourseTargetStudentInfo>())
-    .min(1, '제출 대상을 최소 1명 이상 선택해 주세요.'),
+    .nullable()
+    .optional(),
   reminderOffsets: z
     .array(z.enum(['HOUR_1', 'HOUR_3', 'DAY_1']))
     .nullable()
