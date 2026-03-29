@@ -36,12 +36,24 @@ export const StudyNoteQueryKey = {
     ] as const,
   detail: (teachingNoteId: number) =>
     [...StudyNoteQueryKey.all, 'detail', teachingNoteId] as const,
-  members: (studyRoomId: number, page = 0, size = 20) =>
-    [...StudyNoteQueryKey.all, 'members', studyRoomId, page, size] as const,
+  members: (
+    role: 'teacher' | 'student',
+    studyRoomId: number,
+    page = 0,
+    size = 20
+  ) =>
+    [
+      ...StudyNoteQueryKey.all,
+      'members',
+      role,
+      studyRoomId,
+      page,
+      size,
+    ] as const,
   listPrefix: (studyRoomId: number) =>
     [...StudyNoteQueryKey.all, 'list', studyRoomId] as const,
   byGroupPrefix: (studyRoomId: number, groupId: number) =>
     [...StudyNoteQueryKey.all, 'byGroup', studyRoomId, groupId] as const,
-  membersPrefix: (studyRoomId: number) =>
-    [...StudyNoteQueryKey.all, 'members', studyRoomId] as const,
+  membersPrefix: (role: 'teacher' | 'student', studyRoomId: number) =>
+    [...StudyNoteQueryKey.all, 'members', role, studyRoomId] as const,
 } as const;

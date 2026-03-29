@@ -41,7 +41,7 @@ export const useCreateConsultation = (
         queryKey: consultationKeys.list(studyRoomId, studentId),
       });
       queryClient.invalidateQueries({
-        queryKey: StudyNoteQueryKey.membersPrefix(studyRoomId),
+        queryKey: StudyNoteQueryKey.membersPrefix('teacher', studyRoomId),
       });
     },
   });
@@ -90,7 +90,7 @@ export const useDeleteConsultation = (
         queryKey: consultationKeys.detail(studyRoomId, studentId, sheetId),
       });
       queryClient.invalidateQueries({
-        queryKey: StudyNoteQueryKey.membersPrefix(studyRoomId),
+        queryKey: StudyNoteQueryKey.membersPrefix('teacher', studyRoomId),
       });
     },
   });
