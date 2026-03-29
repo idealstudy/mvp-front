@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+import { withSentryConfig } from '@sentry/nextjs';
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['app.dev.the-edu.site', '*.dev.the-edu.site'],
   turbopack: {
@@ -19,4 +21,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  telemetry: false,
+  widenClientFileUpload: true,
+});
