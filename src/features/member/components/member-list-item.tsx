@@ -93,23 +93,22 @@ export const MemberListItem = ({
         </div>
       </div>
 
-      {/* Right: 기록 button + edit icon + dropdown */}
-      <div className="flex shrink-0 items-center gap-2">
-        {(isTeacher || isCurrentUser) && consultationCount > 0 && (
-          <button
-            type="button"
-            className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
-            onClick={() => setDialogView('list')}
-          >
-            기록 {consultationCount}
-          </button>
-        )}
-        {isTeacher && (
+      {/* Right: 기록 badge + 기록 button + dropdown */}
+      {(isTeacher || isCurrentUser) && (
+        <div className="flex shrink-0 items-center gap-2">
+          {consultationCount > 0 && (
+            <div
+              className="border-gray-5 font-label-normal hover:bg-gray-1 inline-flex items-center rounded-full border px-[11px] py-[3px]"
+              onClick={() => setDialogView('list')}
+            >
+              기록 {consultationCount}
+            </div>
+          )}
           <div className="flex gap-1">
             <button
               type="button"
               className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
-              onClick={() => setDialogView('form')}
+              onClick={() => setDialogView('list')}
             >
               <EditIcon size={24} />
             </button>
@@ -119,8 +118,8 @@ export const MemberListItem = ({
               isTerminated={member.isTerminated}
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {(dialogView === 'list' || dialogView === 'form') && (
         <ConsultationDialogs
