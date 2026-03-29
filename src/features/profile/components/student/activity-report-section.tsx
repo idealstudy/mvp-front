@@ -43,7 +43,9 @@ export default function ActivityReportSection({
             <span className="font-title-heading">{report.value}</span>
             <span className="font-body2-heading">{report.unit}</span>
           </div>
-          <p className="font-body2-normal">{report.label}</p>
+          <p className="font-label-normal tablet:font-body2-normal">
+            {report.label}
+          </p>
         </div>
       ))}
     </div>

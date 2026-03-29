@@ -68,7 +68,7 @@ export default function ExpandableListSection({
             defaultValue={keyword}
             placeholder="검색어를 입력하세요"
             onSearch={onSearch}
-            className={cn('w-full', 'tablet:w-auto')}
+            className="max-tablet:w-full"
           />
         </div>
       )}
