@@ -100,6 +100,15 @@ export default function AdminColumnTable() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <Button
+                          variant="outlined"
+                          size="xsmall"
+                          asChild
+                        >
+                          <Link href={PRIVATE.COMMUNITY.COLUMN.EDIT(column.id)}>
+                            수정
+                          </Link>
+                        </Button>
+                        <Button
                           variant="secondary"
                           size="xsmall"
                           onClick={() => setDeleteTargetId(column.id)}
