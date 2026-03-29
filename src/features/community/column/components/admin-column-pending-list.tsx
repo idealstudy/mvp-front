@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
+import { columnKeys } from '@/entities/column';
 import DeleteColumnDialog from '@/features/community/column/components/delete-column-dialog';
 import {
   useAdminPendingColumnList,
@@ -12,10 +13,14 @@ import {
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
 import { Button, Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function AdminColumnPendingList() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data } = useAdminPendingColumnList({ page: page - 1 });
   const approveColumnMutation = useApproveColumn();
@@ -29,6 +34,20 @@ export default function AdminColumnPendingList() {
       setPage((prev) => prev - 1);
     }
   }, [data, page]);
+
+  // 승인
+  const handleApprove = (id: number) => {
+    approveColumnMutation.mutate(id, {
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          onContext: () => {
+            // COLUMN_ARTICLE_ALREADY_APPROVED, COLUMN_ARTICLE_NOT_EXIST
+            queryClient.invalidateQueries({ queryKey: columnKeys.all });
+          },
+        });
+      },
+    });
+  };
 
   if (!data || data.totalElements === 0) return null;
 
@@ -73,7 +92,7 @@ export default function AdminColumnPendingList() {
                 </Button>
                 <Button
                   size="xsmall"
-                  onClick={() => approveColumnMutation.mutate(column.id)}
+                  onClick={() => handleApprove(column.id)}
                 >
                   승인
                 </Button>
@@ -104,6 +123,15 @@ export default function AdminColumnPendingList() {
             deleteColumnMutation.mutate(deleteTargetId, {
               onSuccess: () => {
                 setDeleteTargetId(null);
+              },
+              onError: (error) => {
+                handleApiError(error, classifyColumnError, {
+                  // COLUMN_ARTICLE_NOT_EXIST
+                  onContext: () => {
+                    setDeleteTargetId(null);
+                    queryClient.invalidateQueries({ queryKey: columnKeys.all });
+                  },
+                });
               },
             });
         }}

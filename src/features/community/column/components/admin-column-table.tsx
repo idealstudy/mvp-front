@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 
-import { ColumnStatus } from '@/entities/column';
+import { ColumnStatus, columnKeys } from '@/entities/column';
 import DeleteColumnDialog from '@/features/community/column/components/delete-column-dialog';
 import { useAdminApprovedColumnList } from '@/features/community/column/hooks/use-admin-column';
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
 import { MiniSpinner } from '@/shared/components/loading';
 import { Button, Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { useQueryClient } from '@tanstack/react-query';
 
 // TODO 현재는 게시 상태만 적용됨. 추후 반려/대기 상태 추가 예정
 const STATUS_LABEL: Record<ColumnStatus, { label: string; className: string }> =
@@ -28,6 +30,8 @@ const STATUS_LABEL: Record<ColumnStatus, { label: string; className: string }> =
 export default function AdminColumnTable() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useAdminApprovedColumnList({ page: page - 1 });
   const deleteColumnMutation = useDeleteColumn();
@@ -127,6 +131,15 @@ export default function AdminColumnTable() {
             deleteColumnMutation.mutate(deleteTargetId, {
               onSuccess: () => {
                 setDeleteTargetId(null);
+              },
+              onError: (error) => {
+                handleApiError(error, classifyColumnError, {
+                  // COLUMN_ARTICLE_NOT_EXIST
+                  onContext: () => {
+                    setDeleteTargetId(null);
+                    queryClient.invalidateQueries({ queryKey: columnKeys.all });
+                  },
+                });
               },
             });
         }}

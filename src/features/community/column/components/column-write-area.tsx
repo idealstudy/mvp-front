@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
+import { useAdminColumnDetail } from '@/features/community/column/hooks/use-admin-column';
 import { useMyColumnDetail } from '@/features/community/column/hooks/use-column-detail';
 import {
   useCreateColumn,
@@ -25,7 +28,10 @@ import {
   Input,
   RequiredMark,
 } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants';
 import { cn, extractText } from '@/shared/lib';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { JSONContent } from '@tiptap/core';
 import { X } from 'lucide-react';
@@ -61,12 +67,23 @@ export default function ColumnWriteArea({
   isEditMode?: boolean;
 }) {
   const [showImageDialog, setShowImageDialog] = useState(false);
+  const router = useRouter();
+
+  const role = useMemberStore((state) => state.member?.role);
+  const isAdmin = role === 'ROLE_ADMIN';
 
   // 수정 모드일 경우, 기존 내용 불러오기
-  const { data: existingData, isLoading: isDetailLoading } = useMyColumnDetail(
+  const { data: teacherData, isLoading: teacherLoading } = useMyColumnDetail(
     id ?? 0,
-    { enabled: isEditMode && !!id }
+    { enabled: isEditMode && !!id && !isAdmin }
   );
+  const { data: adminData, isLoading: adminLoading } = useAdminColumnDetail(
+    id ?? 0,
+    { enabled: isEditMode && !!id && isAdmin }
+  );
+
+  const existingData = isAdmin ? adminData : teacherData;
+  const isDetailLoading = isAdmin ? adminLoading : teacherLoading;
 
   const createColumnMutation = useCreateColumn();
   const updateColumnMutation = useUpdateColumn(id ?? 0);
@@ -155,8 +172,23 @@ export default function ColumnWriteArea({
       mediaIds,
     };
 
-    // TODO 에러처리
-    mutation.mutate(payload);
+    mutation.mutate(payload, {
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          // COLUMN_ARTICLE_NOT_EXIST, COLUMN_ARTICLE_NOT_OWNED
+          onContext: () => {
+            setTimeout(
+              () => router.replace(PUBLIC.COMMUNITY.COLUMN.LIST),
+              1500
+            );
+          },
+          // MEMBER_NOT_EXIST
+          onAuth: () => {
+            setTimeout(() => router.replace('/login'), 1500);
+          },
+        });
+      },
+    });
   };
 
   if (isEditMode && isDetailLoading) return <MiniSpinner />;

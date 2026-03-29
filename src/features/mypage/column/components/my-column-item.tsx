@@ -3,17 +3,34 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { MyColumnListItem } from '@/entities/column';
+import { MyColumnListItem, columnKeys } from '@/entities/column';
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
 import { DropdownMenu } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { useQueryClient } from '@tanstack/react-query';
 
 const COLUMN_STATUS_LABEL = { PENDING_APPROVAL: '승인 대기', APPROVED: '승인' };
 
 export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
   const deleteMutation = useDeleteColumn();
+  const queryClient = useQueryClient();
+
+  // 삭제
+  const handleDelete = () => {
+    deleteMutation.mutate(column.id, {
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          onContext: () => {
+            // COLUMN_ARTICLE_NOT_OWNED, COLUMN_ARTICLE_NOT_EXIST
+            queryClient.invalidateQueries({ queryKey: columnKeys.all });
+          },
+        });
+      },
+    });
+  };
 
   return (
     <ListItem
@@ -61,7 +78,7 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
             <DropdownMenu.Item
               variant="danger"
               className="justify-center"
-              onClick={() => deleteMutation.mutate(column.id)}
+              onClick={handleDelete}
               disabled={deleteMutation.isPending}
             >
               삭제하기

@@ -14,6 +14,7 @@ import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
 import { getRelativeTimeString } from '@/shared/lib';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
 
 export default function AdminColumnDetailView({
   id,
@@ -27,6 +28,21 @@ export default function AdminColumnDetailView({
   const { data, isLoading, isError } = useAdminColumnDetail(id);
   const approveColumnMutation = useApproveColumn();
   const deleteColumnMutation = useDeleteColumn();
+
+  // 승인
+  const handleApprove = () => {
+    approveColumnMutation.mutate(id, {
+      onSuccess: () => router.push(PRIVATE.ADMIN.COLUMN.LIST),
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          // COLUMN_ARTICLE_ALREADY_APPROVED, COLUMN_ARTICLE_NOT_EXIST
+          onContext: () => {
+            setTimeout(() => router.push(PRIVATE.ADMIN.COLUMN.LIST), 1500);
+          },
+        });
+      },
+    });
+  };
 
   if (isLoading) return <div>로딩 중...</div>;
   if (isError || !data) return <div>데이터를 불러올 수 없습니다.</div>;
@@ -47,11 +63,7 @@ export default function AdminColumnDetailView({
             {isPending && (
               <Button
                 size="xsmall"
-                onClick={() =>
-                  approveColumnMutation.mutate(id, {
-                    onSuccess: () => router.push(PRIVATE.ADMIN.COLUMN.LIST),
-                  })
-                }
+                onClick={handleApprove}
               >
                 승인
               </Button>
@@ -91,6 +103,18 @@ export default function AdminColumnDetailView({
             onSuccess: () => {
               setIsDeleteOpen(false);
               router.push(PRIVATE.ADMIN.COLUMN.LIST);
+            },
+            onError: (error) => {
+              handleApiError(error, classifyColumnError, {
+                // COLUMN_ARTICLE_NOT_EXIST
+                onContext: () => {
+                  setIsDeleteOpen(false);
+                  setTimeout(
+                    () => router.push(PRIVATE.ADMIN.COLUMN.LIST),
+                    1500
+                  );
+                },
+              });
             },
           })
         }
