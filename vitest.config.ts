@@ -8,6 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/tests/setup.ts',
     globals: true,
+    exclude: ['**/node_modules/**', 'e2e/**'],
   },
   define: {
     'process.env.NEXT_PUBLIC_BASE_URL': JSON.stringify(
