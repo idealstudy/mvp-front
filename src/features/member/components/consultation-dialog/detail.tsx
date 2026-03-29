@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 
-import { TextEditor, TextViewer } from '@/shared/components/editor';
+import {
+  TextEditor,
+  TextViewer,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { TextEditorValue } from '@/shared/components/editor/types';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
@@ -17,7 +21,7 @@ type Props = {
   onBack: () => void;
   date: string;
   initialContent: TextEditorValue;
-  onSave: (content: TextEditorValue) => void;
+  onSave: (contentString: string, mediaIds: string[]) => void;
   onDelete: () => void;
 };
 
@@ -36,7 +40,8 @@ export const ConsultationDetail = ({
   const [content, setContent] = useState<TextEditorValue>(initialContent);
 
   const handleSave = () => {
-    onSave(content);
+    const { contentString, mediaIds } = prepareContentForSave(content);
+    onSave(contentString, mediaIds);
   };
 
   const handleCancel = () => {

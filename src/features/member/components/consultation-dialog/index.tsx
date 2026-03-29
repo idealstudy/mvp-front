@@ -10,7 +10,6 @@ import {
   useUpdateConsultation,
 } from '@/features/member/hooks/use-consultation';
 import { parseEditorContent } from '@/shared/components/editor';
-import { TextEditorValue } from '@/shared/components/editor/types';
 import { showBottomToast } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { cn, formatDateDot, toPlainText } from '@/shared/lib';
@@ -176,17 +175,17 @@ export const ConsultationDialogs = ({
   const handleTabChange = (tab: 'write' | 'list') =>
     setView(tab === 'write' ? 'form' : 'list');
 
-  const handleSave = (content: TextEditorValue) => {
+  const handleSave = (contentString: string, mediaIds: string[]) => {
     createMutation.mutate(
-      { content: JSON.stringify(content) },
+      { content: contentString, mediaIds },
       { onSuccess: () => setView('list') }
     );
   };
 
-  const handleUpdate = (content: TextEditorValue) => {
+  const handleUpdate = (contentString: string, mediaIds: string[]) => {
     if (!selectedId) return;
     updateMutation.mutate(
-      { sheetId: selectedId, content: JSON.stringify(content) },
+      { sheetId: selectedId, content: contentString, mediaIds },
       { onSuccess: () => setView('list') }
     );
   };

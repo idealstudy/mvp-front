@@ -24,7 +24,7 @@ const ConsultationListResponseSchema = z.object({
 
 const ConsultationPayloadSchema = z.object({
   content: z.string(),
-  mediaIds: z.array(z.number()).optional(),
+  mediaIds: z.array(z.string()).optional(),
 });
 
 export type ConsultationItem = z.infer<typeof ConsultationDtoSchema>;

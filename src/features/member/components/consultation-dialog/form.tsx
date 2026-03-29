@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 
-import { TextEditor, initialTextEditorValue } from '@/shared/components/editor';
+import {
+  TextEditor,
+  initialTextEditorValue,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { TextEditorValue } from '@/shared/components/editor/types';
 import { Button } from '@/shared/components/ui/button';
 
@@ -15,7 +19,7 @@ type Props = {
   isTeacher: boolean;
   onClose: () => void;
   onTabChange: (tab: 'write' | 'list') => void;
-  onSave: (content: TextEditorValue) => void;
+  onSave: (contentString: string, mediaIds: string[]) => void;
 };
 
 export const ConsultationForm = ({
@@ -31,7 +35,8 @@ export const ConsultationForm = ({
   );
 
   const handleSave = () => {
-    onSave(content);
+    const { contentString, mediaIds } = prepareContentForSave(content);
+    onSave(contentString, mediaIds);
     setContent(initialTextEditorValue);
   };
 

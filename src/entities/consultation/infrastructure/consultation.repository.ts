@@ -33,7 +33,7 @@ export const repository = {
     studentId: number,
     body: {
       content: string;
-      mediaIds?: number[];
+      mediaIds?: string[];
     }
   ) => {
     await api.private.post(
@@ -46,7 +46,7 @@ export const repository = {
     studyRoomId: number,
     studentId: number,
     sheetId: number,
-    body: { content: string; mediaIds?: number[] }
+    body: { content: string; mediaIds?: string[] }
   ) => {
     await api.private.put(
       `teacher/study-rooms/${studyRoomId}/consultation-sheets/${studentId}/${sheetId}`,

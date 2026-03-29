@@ -34,7 +34,7 @@ export const useCreateConsultation = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: { content: string; mediaIds?: number[] }) =>
+    mutationFn: (body: { content: string; mediaIds?: string[] }) =>
       repository.create(studyRoomId, studentId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -60,7 +60,7 @@ export const useUpdateConsultation = (
     }: {
       sheetId: number;
       content: string;
-      mediaIds?: number[];
+      mediaIds?: string[];
     }) =>
       repository.update(studyRoomId, studentId, sheetId, { content, mediaIds }),
     onSuccess: (_data, { sheetId }) => {
