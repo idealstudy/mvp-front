@@ -284,6 +284,9 @@ const TeacherReviewListQuerySchema = z.object({
   type: z.enum(['STUDYROOM_REVIEW', 'HANDWRITTEN_LETTER']),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 선생님 수업 노트 조회 Query
+ * ────────────────────────────────────────────────────*/
 const TeacherNoteListSchema = z.object({
   page: z.number(),
   size: z.number(),

@@ -23,10 +23,16 @@ export type DashboardHomeworkSortKey =
 /* ─────────────────────────────────────────────────────
  * DTO
  * ────────────────────────────────────────────────────*/
-export type TeacherdescriptionDTO = z.infer<typeof dto.teacherDescription>;
+export type TeacherDescriptionDTO = z.infer<typeof dto.teacherDescription>;
 export type TeacherReportDTO = z.infer<typeof dto.teacherReport>;
 export type TeacherNoteListDTO = z.infer<typeof dto.teacherNoteList>;
 export type TeacherStudyRoomListDTO = z.infer<typeof dto.teacherStudyRoomList>;
+export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
+export type TeacherRepresentativeNoteListDTO = z.infer<
+  typeof dto.teacherRepresentativeNoteList
+>;
+export type TeacherReviewListDTO = z.infer<typeof dto.teacherReviewList>;
+export type TeacherCareerListDTO = z.infer<typeof dto.teacherCareerList>;
 
 export type TeacherNoteListItemDTO = TeacherNoteListDTO['content'][number];
 export type TeacherStudyRoomListItemDTO = TeacherStudyRoomListDTO[number];
@@ -57,13 +63,6 @@ export type TeacherDashboardMemberListItemDTO =
   TeacherDashboardMemberListDTO['content'][number];
 export type TeacherDashboardHomeworkListItemDTO =
   TeacherDashboardHomeworkListDTO['content'][number];
-
-export type TeacherBasicInfoDTO = z.infer<typeof dto.basicInfo>;
-export type TeacherRepresentativeNoteListDTO = z.infer<
-  typeof dto.teacherRepresentativeNoteList
->;
-export type TeacherReviewListDTO = z.infer<typeof dto.teacherReviewList>;
-export type TeacherCareerListDTO = z.infer<typeof dto.teacherCareerList>;
 
 /* ─────────────────────────────────────────────────────
  * Domain

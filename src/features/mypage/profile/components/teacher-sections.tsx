@@ -6,7 +6,7 @@ import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-rep
 import AddCareerDialog from '@/features/mypage/profile/components/add-career-dialog';
 import { CareerDropdown } from '@/features/mypage/profile/components/career-dropdown';
 import EditHighlightDialog from '@/features/mypage/profile/components/edit-description-dialog';
-import SelectTeachingnotesDialog from '@/features/mypage/profile/components/select-teachingnotes-dialog';
+import SelectTeachingNoteDialog from '@/features/mypage/profile/components/select-teachingnote-dialog';
 import { useTeacherCareers } from '@/features/mypage/profile/hooks/teacher/use-careers';
 import { useTeacherDescription } from '@/features/mypage/profile/hooks/teacher/use-description';
 import { useTeacherReviews } from '@/features/mypage/profile/hooks/teacher/use-reviews';
@@ -18,7 +18,7 @@ import CareerSection from '@/features/profile/components/teacher/career-section'
 import DescriptionSection from '@/features/profile/components/teacher/description-section';
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
-import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
+import TeachingNoteSection from '@/features/profile/components/teacher/teaching-note-section';
 import {
   hasMeaningfulEditorContent,
   parseEditorContent,
@@ -159,13 +159,13 @@ export default function TeacherSections() {
       <SectionContainer
         title="대표 수업노트"
         isOwner
-        action={<SelectTeachingnotesDialog />}
+        action={<SelectTeachingNoteDialog />}
         isLoading={isTeachingnotesLoading}
         isError={isTeachingnotesError}
         onRetry={refetchTeachingnotes}
       >
         {/* 대표 수업노트가 없는 경우, 최신 수업노트 5개를 보여주므로 길이를 확인하지 않음 */}
-        {teachingnotes && <StudynotesSection teachingnotes={teachingnotes} />}
+        {teachingnotes && <TeachingNoteSection teachingnotes={teachingnotes} />}
       </SectionContainer>
 
       <SectionContainer

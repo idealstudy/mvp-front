@@ -53,7 +53,7 @@ export const useStudentDashboardReportQuery = (options?: {
   enabled?: boolean;
 }) => {
   return useQuery({
-    queryKey: studentKeys.report(),
+    queryKey: studentKeys.dashboard.report(),
     queryFn: () => studentRepository.dashboard.getReport(),
     ...settings,
     enabled: options?.enabled ?? true,

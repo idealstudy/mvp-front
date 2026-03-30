@@ -6,7 +6,7 @@ import CareerSection from '@/features/profile/components/teacher/career-section'
 import DescriptionSection from '@/features/profile/components/teacher/description-section';
 import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
-import StudynotesSection from '@/features/profile/components/teacher/teachingnotes-section';
+import TeachingNoteSection from '@/features/profile/components/teacher/teaching-note-section';
 import { useProfileCareers } from '@/features/profile/hooks/use-profile-careers';
 import { useProfileDescription } from '@/features/profile/hooks/use-profile-description';
 import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
@@ -138,7 +138,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
         onRetry={refetchTeachingnotes}
       >
         {teachingnotes && teachingnotes.length ? (
-          <StudynotesSection teachingnotes={teachingnotes} />
+          <TeachingNoteSection teachingnotes={teachingnotes} />
         ) : (
           <p className="text-text-sub2 my-4 text-center">
             대표 수업노트가 없습니다.
