@@ -1,7 +1,13 @@
 'use client';
 
-// TODO : 상태관리 zustand로
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useParams,
@@ -30,11 +36,12 @@ export default function HomeworkPage() {
   const searchParams = useSearchParams();
   const ctx = useContext(StudyNoteGroupContext);
   const selectedGroupId = ctx?.selectedGroupId ?? 'all';
+  const prevSelectedGroupId = useRef<number | 'all'>(selectedGroupId);
 
   const currentPage = useMemo(() => {
     const raw = searchParams.get('page');
-    const n = raw == null ? 0 : Number(raw);
-    return Number.isFinite(n) && n >= 0 ? n : 0;
+    const n = raw == null ? 1 : Number(raw);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
   }, [searchParams]);
 
   const [search, setSearch] = useState('');
@@ -46,11 +53,12 @@ export default function HomeworkPage() {
   const studyRoomId = Number(id);
 
   const pageable: HomeworkPageable = {
-    page: currentPage,
+    page: currentPage - 1,
     size: limit,
     sortKey: sort,
     keyword: search || undefined,
   };
+
   const teacherListQuery = useGetTeacherHomeworkList(studyRoomId, pageable);
   const studentListQuery = useGetStudentHomeworkList(studyRoomId, pageable);
 
@@ -58,7 +66,7 @@ export default function HomeworkPage() {
     role === 'ROLE_TEACHER' ? teacherListQuery : studentListQuery;
   const isPending = activeQuery.isPending;
 
-  const Homeworks =
+  const homeworks =
     role === 'ROLE_TEACHER' ? teacherListQuery.data : studentListQuery.data;
 
   const setPage = useCallback(
@@ -73,31 +81,42 @@ export default function HomeworkPage() {
     [pathname, searchParams, router]
   );
 
+  const replacePage = useCallback(
+    (page: number) => {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set('page', String(page));
+      router.replace(`${pathname}?${next.toString()}`);
+    },
+    [pathname, searchParams, router]
+  );
+
   const handlePageChange = (page: number) => setPage(page);
 
   const handleSearch = (value: string) => {
     setSearch(value);
-    setPage(0, { replace: true }); // 히스토리 누적 방지
+    setPage(1, { replace: true });
   };
 
   const handleSortChange = (value: HomeworkSortKey) => {
     setSort(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
   const handleLimitChange = (value: HomeworkLimit) => {
     setLimit(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
-  // Todo: 재설계 예정 -> 그룹 변경 시 page=0 (URL만 수정)
   useEffect(() => {
-    setPage(0, { replace: true });
-  }, [selectedGroupId, setPage]);
+    if (prevSelectedGroupId.current !== selectedGroupId) {
+      prevSelectedGroupId.current = selectedGroupId;
+      replacePage(1);
+    }
+  }, [selectedGroupId, replacePage]);
 
   const page = {
     page: currentPage,
-    totalPages: Homeworks?.totalPages ?? 1,
+    totalPages: homeworks?.totalPages ?? 1,
     onPageChange: handlePageChange,
   };
 

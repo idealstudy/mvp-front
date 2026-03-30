@@ -21,10 +21,10 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<QnAFilter>('DEFAULT');
   const [sort, setSort] = useState<SortKey>('LATEST');
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const pageable: Pageable = {
-    page: currentPage,
+    page: currentPage - 1,
     size: 20,
     sort: [],
   };
@@ -60,7 +60,7 @@ const QuestionListWrapper = ({ studyRoomId, hasBorder }: Props) => {
   };
 
   useEffect(() => {
-    setCurrentPage(0);
+    setCurrentPage(1);
   }, [search, sort, filter]);
 
   return (

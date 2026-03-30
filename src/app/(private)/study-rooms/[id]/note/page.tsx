@@ -1,7 +1,13 @@
 'use client';
 
-// 상태관리 zustand로
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   useParams,
@@ -34,11 +40,12 @@ export default function StudyNotePage() {
   const searchParams = useSearchParams();
   const ctx = useContext(StudyNoteGroupContext);
   const selectedGroupId = ctx?.selectedGroupId ?? 'all';
+  const prevSelectedGroupId = useRef<number | 'all'>(selectedGroupId);
 
   const currentPage = useMemo(() => {
     const raw = searchParams.get('page');
-    const n = raw == null ? 0 : Number(raw);
-    return Number.isFinite(n) && n >= 0 ? n : 0;
+    const n = raw == null ? 1 : Number(raw);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
   }, [searchParams]);
 
   const [search, setSearch] = useState('');
@@ -50,17 +57,14 @@ export default function StudyNotePage() {
   const studyRoomId = Number(id);
 
   const pageable: StudyNoteGroupPageable = {
-    page: currentPage,
+    page: currentPage - 1,
     size: limit,
     sortKey: sort,
   };
 
   const isGroupSelected = selectedGroupId !== 'all';
+  const teachingNoteGroupId = isGroupSelected ? Number(selectedGroupId) : 0;
 
-  // ------------------------------------------------------------------
-  // 일반 목록 조회
-  // TODO: 추후 엔티티분리후 커스텀훅으로 분리
-  // ------------------------------------------------------------------
   const teacherListQuery = useGetTeacherNotesList({
     studyRoomId,
     pageable,
@@ -74,12 +78,6 @@ export default function StudyNotePage() {
     keyword: search,
     enabled: !isGroupSelected && role === 'ROLE_STUDENT',
   });
-
-  // ------------------------------------------------------------------
-  // 그룹별 목록 조회
-  // TODO: 추후 엔티티분리
-  // ------------------------------------------------------------------
-  const teachingNoteGroupId = isGroupSelected ? Number(selectedGroupId) : 0;
 
   const teacherByGroupQuery = useGetTeacherNotesByGroup({
     studyRoomId,
@@ -97,7 +95,6 @@ export default function StudyNotePage() {
     enabled: isGroupSelected && role === 'ROLE_STUDENT',
   });
 
-  // 현재 선택된 query 결정
   const currentQuery =
     selectedGroupId === 'all'
       ? role === 'ROLE_TEACHER'
@@ -119,27 +116,38 @@ export default function StudyNotePage() {
     [pathname, searchParams, router]
   );
 
+  const replacePage = useCallback(
+    (page: number) => {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set('page', String(page));
+      router.replace(`${pathname}?${next.toString()}`);
+    },
+    [pathname, searchParams, router]
+  );
+
   const handlePageChange = (page: number) => setPage(page);
 
   const handleSearch = (value: string) => {
     setSearch(value);
-    setPage(0, { replace: true }); // 히스토리 누적 방지
+    setPage(1, { replace: true });
   };
 
   const handleSortChange = (value: StudyNoteSortKey) => {
     setSort(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
   const handleLimitChange = (value: StudyNoteLimit) => {
     setLimit(value);
-    setPage(0, { replace: true });
+    setPage(1, { replace: true });
   };
 
-  // Todo: 재설계 예정 -> 그룹 변경 시 page=0 (URL만 수정)
   useEffect(() => {
-    setPage(0, { replace: true });
-  }, [selectedGroupId, setPage]);
+    if (prevSelectedGroupId.current !== selectedGroupId) {
+      prevSelectedGroupId.current = selectedGroupId;
+      replacePage(1);
+    }
+  }, [selectedGroupId, replacePage]);
 
   const page = {
     page: currentPage,

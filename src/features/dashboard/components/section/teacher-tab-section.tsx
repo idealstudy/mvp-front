@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   useTeacherDashboardHomeworkListQuery,
@@ -123,9 +123,15 @@ const TeacherHomeworkTabContent = ({
 }: {
   studyRoomId?: number;
 }) => {
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [studyRoomId]);
+
   const { data, isPending } = useTeacherDashboardHomeworkListQuery({
     studyRoomId,
-    page: 0,
+    page: page - 1,
     size: 4,
     sortKey: 'DEADLINE_IMMINENT',
   });
@@ -146,9 +152,9 @@ const TeacherHomeworkTabContent = ({
   return (
     <HomeworkSectionContent
       homeworks={data?.content ?? []}
-      page={0}
+      page={page}
       totalPages={data?.totalPages ?? 0}
-      onPageChange={() => {}}
+      onPageChange={setPage}
       emptyMessage="등록된 과제가 없어요."
     />
   );
