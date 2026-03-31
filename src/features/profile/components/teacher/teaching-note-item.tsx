@@ -18,17 +18,17 @@ type SelectableVariant = {
   isLoading?: boolean;
 };
 
-type TeachingnotesItemProps = {
+type TeachingNoteItemProps = {
   teachingnote: FrontendTeacherNoteListItem;
 } & (LinkVariant | SelectableVariant);
 
-export default function TeachingnotesItem({
+export default function TeachingNoteItem({
   teachingnote,
   variant,
   onClick,
   checked,
   isLoading,
-}: TeachingnotesItemProps) {
+}: TeachingNoteItemProps) {
   if (variant === 'link')
     return (
       <ListItem

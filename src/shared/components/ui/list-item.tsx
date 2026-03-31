@@ -21,7 +21,7 @@ export const ListItem = ({
   id: number;
   href: string;
   tag?: React.ReactNode;
-  rightTitle?: string;
+  rightTitle?: React.ReactNode;
   dropdown?: React.ReactNode;
   rightSubTitle?: string;
 }) => {

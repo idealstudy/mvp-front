@@ -1,45 +1,43 @@
-# E2E Testing (Playwright)
+# e2e.md — E2E Testing (Playwright)
+
+---
 
 ## Setup
 
-- Base URL: `http://localhost:3000`
-- Browsers: chromium, webkit
-- Test directory: `e2e/`
+- Test runner: `npx playwright test`
 - Config file: `playwright.config.ts`
+- Test directory: `e2e/`
 
-## CI
+---
 
-```yaml
-- name: Install dependencies
-  run: npm ci
-- name: Install Playwright Browsers
-  run: npx playwright install --with-deps
-- name: Run Playwright tests
-  run: npx playwright test
+## Directory Structure
+
 ```
+e2e/
+  fixtures/            — shared login logic and reusable setup
+  helpers/             — utility functions
+  {feature}.spec.ts    — test files
+```
+
+---
 
 ## Environment Variables
 
-Test accounts are dev environment shared accounts. Managed in `.env.local`. Never hardcode credentials.
+Test accounts are managed in `.env.local`.
+Do NOT hardcode credentials anywhere in test files.
 
-- `E2E_TEACHER_EMAIL` / `E2E_TEACHER_PASSWORD`
-- `E2E_STUDENT_EMAIL` / `E2E_STUDENT_PASSWORD`
+- Teacher account: `E2E_TEACHER_EMAIL` / `E2E_TEACHER_PASSWORD`
+- Student account: `E2E_STUDENT_EMAIL` / `E2E_STUDENT_PASSWORD`
 
-## Authentication
-
-Each test handles login independently. No session reuse between tests.
-
-## Debugging
-
-On failure, trace is collected automatically (`trace: 'on-first-retry'`). Check `playwright-report/` for the trace viewer.
+---
 
 ## Rules
 
 ### File and Test Structure
 
-- File name: `{feature}.spec.ts` (e.g. `login.spec.ts`)
-- Group related tests with `describe`, individual scenarios with `test`
-- Add a comment at the top of each test indicating the role being used
+Rule 1. Name test files as `{feature}.spec.ts` (e.g. `login.spec.ts`).
+Rule 2. Group related tests with `describe`. Use `test` for individual scenarios.
+Rule 3. Add a comment at the top of each test indicating the role being used.
 
 ```ts
 // teacher account
@@ -50,59 +48,71 @@ describe('login', () => {
 });
 ```
 
+---
+
 ### Selectors
 
-Use `data-testid` attributes first. Avoid text or CSS selectors — they break easily when UI changes.
+Rule 4. Always use `data-testid` attributes as the primary selector.
+Do NOT use text or CSS selectors — they break when UI changes.
 
 Naming convention: `{feature}-{element}`
 
 ```ts
-// do-not
+// DO NOT
 page.locator('.login-btn');
 page.getByText('로그인');
 
-// do
+// DO
 page.getByTestId('login-submit-button');
 ```
 
 Examples: `login-email-input`, `login-password-input`, `login-submit-button`, `course-card`
 
-**When writing a test that uses `data-testid`, add the corresponding attribute to the source component as well.** Do not write tests that reference `data-testid` values that don't exist in the codebase.
+Rule 5. When writing a test that references a `data-testid`, add the corresponding attribute to the source component as well.
+Do NOT reference `data-testid` values that don't exist in the codebase.
+
+---
 
 ### Waiting
 
-Do not use `waitForTimeout`. Use condition-based waiting only.
+Rule 6. Do NOT use `waitForTimeout`. Use condition-based waiting only.
 
 ```ts
-// do-not
+// DO NOT
 await page.waitForTimeout(2000);
 
-// do
+// DO
 await page.waitForURL('/dashboard');
 await expect(locator).toBeVisible();
 ```
 
-### Independence
+---
 
-Each test must be independently executable. No dependencies between tests.
+### Data and Independence
+
+Rule 7. Each test must be independently executable.
+Tests must have no dependencies on other tests.
+
+Rule 8. Do NOT test Kakao social login.
+E2E tests cover email/password login only.
+
+---
 
 ### Navigation
 
-Use relative paths based on `baseURL`.
+Rule 9. Use relative paths based on `baseURL`. Do NOT use absolute URLs.
 
 ```ts
-// do-not
-await page.goto('https://example.com/login');
+// DO NOT
+await page.goto('https://ddeudu.com/login');
 
-// do
+// DO
 await page.goto('/login');
 ```
 
-### Scope
-
-Kakao social login is excluded from E2E testing. Test only email/password login.
+---
 
 ## Key Flows
 
-- login (teacher, student)
-- (to be added)
+- `login.spec.ts` — teacher account login, student account login
+- (more to be added)

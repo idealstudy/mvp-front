@@ -11,12 +11,12 @@ import {
   useTeacherTeachingNotes,
   useUpdateTeacherNoteRepresentative,
 } from '@/features/mypage/profile/hooks/teacher/use-teaching-notes';
-import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
+import TeachingNoteItem from '@/features/profile/components/teacher/teaching-note-item';
 import { dialogReducer, initialDialogState } from '@/shared/components/dialog';
 import { Accordion, Dialog } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 
-export default function SelectTeachingnotesDialog() {
+export default function SelectTeachingNoteDialog() {
   const router = useRouter();
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
 
@@ -113,7 +113,7 @@ export default function SelectTeachingnotesDialog() {
     noteList = (
       <div className="space-y-3 overflow-y-auto px-3 py-4">
         {allNotes.map((note) => (
-          <TeachingnotesItem
+          <TeachingNoteItem
             variant="selectable"
             key={note.id}
             teachingnote={note}
@@ -187,7 +187,7 @@ export default function SelectTeachingnotesDialog() {
                       <Accordion.Content>
                         <div className="text-text-main space-y-3 overflow-y-auto">
                           {representativeNotes.map((note) => (
-                            <TeachingnotesItem
+                            <TeachingNoteItem
                               variant="selectable"
                               key={note.id}
                               teachingnote={note}
