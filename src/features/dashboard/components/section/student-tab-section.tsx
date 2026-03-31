@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   useStudentDashboardHomeworkListQuery,
@@ -64,6 +64,10 @@ const StudentHomeworkTabContent = ({
   studyRoomId?: number;
 }) => {
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [studyRoomId]);
 
   const { data, isPending } = useStudentDashboardHomeworkListQuery({
     studyRoomId,

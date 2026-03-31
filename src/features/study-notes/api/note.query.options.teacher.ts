@@ -21,14 +21,21 @@ export const createTeacherNoteQueryOptions = (
     studyRoomId: number;
     page?: number;
     size?: number;
+    enabled?: boolean;
   }) => {
     const page = args.page ?? 0;
     const size = args.size ?? 20;
     return queryOptions({
-      queryKey: StudyNoteQueryKey.members(args.studyRoomId, page, size),
+      queryKey: StudyNoteQueryKey.members(
+        'teacher',
+        args.studyRoomId,
+        page,
+        size
+      ),
       queryFn: () =>
         api.getMembers({ studyRoomId: args.studyRoomId, page, size }),
       ...opt,
+      enabled: args.enabled ?? true,
     });
   };
 

@@ -47,6 +47,8 @@ export interface MemberInfo {
   email: string;
   joinDate: string;
   outDate: string | null;
+  consultationCount?: number;
+  state?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'TERMINATED';
 }
 
 export interface StudyMember {
@@ -70,9 +72,13 @@ export interface StudyNoteMember {
   id: string;
   name: string;
   email: string;
+  role: 'ROLE_STUDENT' | 'ROLE_PARENT';
+  dday: number;
   guardianCount?: number;
-  joinedText: string;
+  joinText: string;
+  outText: string | null;
   avatarSrc?: string;
+  consultationCount: number;
   isTerminated: boolean;
 }
 

@@ -13,7 +13,7 @@ type Props = {
 
 const TABS_CONFIG = [
   { value: 'note', label: '수업노트', href: 'note', role: 'all' },
-  { value: 'member', label: '학생', href: 'member', role: 'ROLE_TEACHER' },
+  { value: 'member', label: '멤버', href: 'member', role: 'all' },
   { value: 'qna', label: '질문', href: 'qna', role: 'all' },
   { value: 'homework', label: '과제', href: 'homework', role: 'all' },
 ];
@@ -25,7 +25,11 @@ export const StudyNoteTab = ({ studyRoomId, mode, path }: Props) => {
   return (
     <ul className="flex gap-2">
       {TABS_CONFIG.map((tab) => {
-        if (tab.role === 'ROLE_TEACHER' && mode !== 'ROLE_TEACHER') {
+        if (
+          tab.role === 'ROLE_TEACHER' &&
+          mode !== 'ROLE_TEACHER' &&
+          mode !== 'ROLE_STUDENT'
+        ) {
           return null;
         }
 

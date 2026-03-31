@@ -19,7 +19,8 @@ export type DialogKind =
   | 'create'
   | 'invite'
   | 'select-representative'
-  | 'edit-career';
+  | 'edit-career'
+  | 'alert';
 
 export type DialogState =
   | { status: 'idle' }

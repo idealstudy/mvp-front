@@ -18,3 +18,4 @@ export { RequiredMark } from './required-mark';
 export { ScrollToTopButton } from './scroll-to-top-button';
 export { Textarea } from './textarea';
 export { Toggle } from './toggle';
+export { showBottomToast } from './bottom-toast';

@@ -46,9 +46,6 @@ const StudyNoteLayout = ({ children }: LayoutProps) => {
   // Todo: 추후 미들웨어에서 처리하도록 변경
   useEffect(() => {
     if (isLoading) return;
-    if (segment === 'member' && role !== 'ROLE_TEACHER') {
-      router.replace(`/`);
-    }
   }, [role, segment, isLoading, router, studyRoomId]);
 
   // write/edit routes bypass this layout

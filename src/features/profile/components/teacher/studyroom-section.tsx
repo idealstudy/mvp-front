@@ -15,7 +15,7 @@ export default function StudyroomSection({
       {studyrooms.map((studyroom) => (
         <Link
           href={`/study-room-preview/${studyroom.id}/${teacherId}`}
-          className="hover:bg-gray-scale-gray-1 flex items-center gap-3 p-2 hover:rounded-xl"
+          className="hover:bg-gray-1 flex items-center gap-3 p-2 hover:rounded-xl"
           key={studyroom.id}
         >
           <Image

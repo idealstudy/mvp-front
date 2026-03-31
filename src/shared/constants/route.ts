@@ -18,7 +18,7 @@ const CORE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
- * PUBLIC
+ * DASHBOARD
  * ────────────────────────────────────────────────────*/
 const DASHBOARD = {
   INDEX: '/dashboard',
@@ -74,11 +74,44 @@ const PROFILE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * MYPAGE
+ * ────────────────────────────────────────────────────*/
+const MYPAGE = '/mypage';
+
+/* ─────────────────────────────────────────────────────
+ * COMMUNITY
+ * ────────────────────────────────────────────────────*/
+const PUBLIC_COMMUNITY = {
+  COLUMN: {
+    LIST: '/community/column',
+    DETAIL: (id: number) => `/community/column/${id}`,
+  },
+} as const;
+
+const PRIVATE_COMMUNITY = {
+  COLUMN: {
+    CREATE: '/community/column/new',
+    EDIT: (id: number) => `/community/column/${id}/edit`,
+  },
+} as const;
+
+/* ─────────────────────────────────────────────────────
+ * ADMIN
+ * ────────────────────────────────────────────────────*/
+const ADMIN = {
+  COLUMN: {
+    LIST: '/admin/column',
+    DETAIL: (id: number) => `/admin/column/${id}`,
+  },
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * Export - PUBLIC
  * ────────────────────────────────────────────────────*/
 export const PUBLIC = {
   CORE,
   PROFILE,
+  COMMUNITY: PUBLIC_COMMUNITY,
 } as const;
 
 /* ─────────────────────────────────────────────────────
@@ -90,4 +123,7 @@ export const PRIVATE = {
   NOTE,
   HOMEWORK,
   QUESTIONS,
+  COMMUNITY: PRIVATE_COMMUNITY,
+  MYPAGE,
+  ADMIN,
 } as const;

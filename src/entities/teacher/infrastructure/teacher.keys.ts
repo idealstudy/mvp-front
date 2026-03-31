@@ -10,6 +10,12 @@ export const teacherKeys = {
   representativeNoteList: () =>
     [...teacherKeys.all, 'noteList', 'representative'] as const,
   studyRoomList: () => [...teacherKeys.all, 'studyRoomList'] as const,
+  basicInfo: () => [...teacherKeys.all, 'basicInfo'] as const,
+  review: (params: ReviewListQuery) =>
+    [...teacherKeys.all, 'review', params] as const,
+  careers: () => [...teacherKeys.all, 'careers'] as const,
+
+  // 대시보드
   dashboard: {
     all: () => [...teacherKeys.all, 'dashboard'] as const,
     report: () => [...teacherKeys.dashboard.all(), 'report'] as const,
@@ -23,10 +29,6 @@ export const teacherKeys = {
     homeworkList: (studyRoomId?: number) =>
       [...teacherKeys.dashboard.all(), 'homeworkList', studyRoomId] as const,
   },
-  basicInfo: () => [...teacherKeys.all, 'basicInfo'] as const,
-  review: (params: ReviewListQuery) =>
-    [...teacherKeys.all, 'review', params] as const,
-  careers: () => [...teacherKeys.all, 'careers'] as const,
 
   // 공개 프로필
   profile: {

@@ -1,7 +1,12 @@
 'use client';
 
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, cssTransition } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const FadeTransition = cssTransition({
+  enter: 'toast-fade-enter',
+  exit: 'toast-fade-exit',
+});
 
 export const ToastProvider = () => {
   return (
@@ -13,10 +18,14 @@ export const ToastProvider = () => {
       <ToastContainer
         containerId="bottom-center"
         position="bottom-center"
+        autoClose={3000}
+        transition={FadeTransition}
         style={
           {
-            bottom: '3.125rem',
-            '--toastify-toast-width': 'auto',
+            bottom: '2.5rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'max-content',
           } as React.CSSProperties
         }
       />

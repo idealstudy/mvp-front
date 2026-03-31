@@ -103,3 +103,21 @@ export function classifyStudyNoteCommentError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// column 관련 에러
+export function classifyColumnError(code?: string): ApiErrorType {
+  switch (code) {
+    // CONTEXT (리소스 소멸 / 페이지 무효)
+    case 'COLUMN_ARTICLE_NOT_EXIST':
+    case 'COLUMN_ARTICLE_ALREADY_APPROVED':
+    case 'COLUMN_ARTICLE_NOT_OWNED':
+      return 'CONTEXT';
+
+    // AUTH (권한 문제)
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}

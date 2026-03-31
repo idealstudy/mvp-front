@@ -17,6 +17,7 @@ export const {
   useGetStudentNotesList,
   useGetStudentNotesByGroup,
   useGetStudentNoteDetail,
+  useGetStudentNoteMembers,
 } = studentHooks;
 
 export const {

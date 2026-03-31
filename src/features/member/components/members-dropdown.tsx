@@ -41,8 +41,8 @@ export default function MembersDropdown({
         <DropdownMenu.Trigger>
           <Image
             src="/studynotes/gray-kebab.svg"
-            width={28}
-            height={28}
+            width={24}
+            height={24}
             alt="더보기"
             className="h-7 w-7 cursor-pointer"
           />

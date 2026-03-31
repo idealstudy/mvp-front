@@ -141,7 +141,9 @@ export const createTeacherNoteMutationOptions = (
   const refetchMembers = () => ({
     // 멤버 변경 작업이 따로 있다면 여기에 추가
     onSuccess: (_: unknown, vars: { studyRoomId: number }) => ({
-      invalidate: [{ key: StudyNoteQueryKey.membersPrefix(vars.studyRoomId) }],
+      invalidate: [
+        { key: StudyNoteQueryKey.membersPrefix('teacher', vars.studyRoomId) },
+      ],
     }),
   });
 

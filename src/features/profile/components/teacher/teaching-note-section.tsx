@@ -1,7 +1,7 @@
 import { FrontendTeacherRepresentativeNoteList } from '@/entities/teacher';
-import TeachingnotesItem from '@/features/profile/components/teacher/teachingnotes-item';
+import TeachingNoteItem from '@/features/profile/components/teacher/teaching-note-item';
 
-export default function StudynotesSection({
+export default function TeachingNoteSection({
   teachingnotes,
 }: {
   teachingnotes: FrontendTeacherRepresentativeNoteList;
@@ -9,7 +9,7 @@ export default function StudynotesSection({
   return (
     <>
       {teachingnotes.map((teachingnote) => (
-        <TeachingnotesItem
+        <TeachingNoteItem
           key={teachingnote.id}
           variant="link"
           teachingnote={teachingnote}

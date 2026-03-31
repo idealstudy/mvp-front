@@ -22,6 +22,15 @@ export const createStudentStudyNoteHooks = (
   useGetStudentNoteDetail: (teachingNoteId: number) => {
     return useQuery(studentQo.detail(teachingNoteId));
   },
+
+  useGetStudentNoteMembers: (args: {
+    studyRoomId: number;
+    page?: number;
+    size?: number;
+    enabled?: boolean;
+  }) => {
+    return useQuery(studentQo.members(args));
+  },
 });
 
 export const createTeacherStudyNoteHooks = (
@@ -47,6 +56,7 @@ export const createTeacherStudyNoteHooks = (
     studyRoomId: number;
     page?: number;
     size?: number;
+    enabled?: boolean;
   }) => {
     return useQuery(teacherQo.members(args));
   },
