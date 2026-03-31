@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { ConsultationDetail } from '@/entities/consultation';
 import { useTeacherProfile } from '@/features/consultation/hooks/use-teacher-profile';
+import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui';
 
 export default function ConsultationAnswerView({
@@ -21,6 +22,10 @@ export default function ConsultationAnswerView({
   );
 
   if (!consultation.answer) return null;
+
+  const content = parseEditorContent(
+    consultation.answer.resolvedContent.content
+  );
 
   return (
     <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
@@ -64,9 +69,7 @@ export default function ConsultationAnswerView({
         </div>
 
         {/* 답변 내용 */}
-        <p className="font-body2-normal whitespace-pre-wrap">
-          {consultation.answer.content}
-        </p>
+        <TextViewer value={content} />
 
         {/* 작성일 */}
         <span className="font-caption-normal text-text-sub2 self-end">

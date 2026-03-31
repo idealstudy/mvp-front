@@ -1,16 +1,6 @@
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * 문의 답변 DTO
- * ────────────────────────────────────────────────────*/
-const ConsultationAnswerDtoSchema = z.object({
-  id: z.number(),
-  content: z.string(),
-  regDate: z.string(),
-  modDate: z.string(),
-});
-
-/* ─────────────────────────────────────────────────────
  * 문의 상세 DTO
  * ────────────────────────────────────────────────────*/
 const ConsultationDetailDtoSchema = z.object({
@@ -22,10 +12,25 @@ const ConsultationDetailDtoSchema = z.object({
   studyRoomName: z.string().nullish(),
   title: z.string(),
   content: z.string(),
+  resolvedContent: z.object({
+    content: z.string(),
+    expiresAt: z.string().nullable(),
+  }),
   status: z.enum(['PENDING', 'ANSWERED']),
   regDate: z.string(),
   modDate: z.string(),
-  answer: ConsultationAnswerDtoSchema.optional(),
+  answer: z
+    .object({
+      id: z.number(),
+      content: z.string(),
+      resolvedContent: z.object({
+        content: z.string(),
+        expiresAt: z.string().nullable(),
+      }),
+      regDate: z.string(),
+      modDate: z.string(),
+    })
+    .optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -37,6 +42,7 @@ const CreateConsultationPayloadSchema = z.object({
   studyRoomId: z.number().optional(),
   title: z.string(),
   content: z.string(),
+  mediaIds: z.array(z.string()).optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -45,6 +51,7 @@ const CreateConsultationPayloadSchema = z.object({
  * ────────────────────────────────────────────────────*/
 const ConsultationAnswerPayloadSchema = z.object({
   content: z.string(),
+  mediaIds: z.array(z.string()).optional(),
 });
 
 /* ─────────────────────────────────────────────────────

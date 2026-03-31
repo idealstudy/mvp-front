@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import { ConsultationDetail } from '@/entities/consultation';
 import { useCreateConsultationAnswer } from '@/features/consultation/hooks/use-answer-form';
@@ -9,7 +9,13 @@ import {
   ConsultationAnswerForm,
   ConsultationAnswerFormSchema,
 } from '@/features/consultation/schema/schema';
-import { Button, Form, Textarea } from '@/shared/components/ui';
+import {
+  TextEditor,
+  initialTextEditorValue,
+  prepareContentForSave,
+} from '@/shared/components/editor';
+import { Button, Form } from '@/shared/components/ui';
+import { cn, extractText } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ConsultationAnswerWrite({
@@ -22,19 +28,20 @@ export default function ConsultationAnswerWrite({
   );
 
   const {
-    register,
     handleSubmit,
-    formState: { isValid },
+    control,
+    formState: { errors, isDirty, isValid },
   } = useForm<ConsultationAnswerForm>({
     resolver: zodResolver(ConsultationAnswerFormSchema),
-    defaultValues: { content: '' },
+    defaultValues: { content: initialTextEditorValue },
     mode: 'onChange',
   });
 
   const { mutate, isPending } = useCreateConsultationAnswer(consultation.id);
 
   const onSubmit = (data: ConsultationAnswerForm) => {
-    mutate(data.content);
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+    mutate({ content: contentString, mediaIds });
   };
 
   return (
@@ -53,15 +60,40 @@ export default function ConsultationAnswerWrite({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
         >
-          <Textarea
-            {...register('content')}
-            placeholder="답변을 입력해주세요."
-            className="h-40 resize-none"
-            disabled={isPending}
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => {
+              const text = extractText(JSON.stringify(field.value));
+              const length = text.length;
+              return (
+                <>
+                  <TextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="답변을 입력해주세요."
+                    minHeight="400px"
+                  />
+                  <div className="flex items-center justify-between">
+                    <p className="text-system-warning text-sm">
+                      {typeof errors.content?.message === 'string' &&
+                        errors.content.message}
+                    </p>
+                    <span
+                      className={cn(
+                        length > 3000 ? 'text-system-warning' : 'text-gray-5'
+                      )}
+                    >
+                      {length} / 3000
+                    </span>
+                  </div>
+                </>
+              );
+            }}
           />
           <Button
             type="submit"
-            disabled={isPending || !isValid}
+            disabled={isPending || !isDirty || !isValid}
             className="w-full"
           >
             {isPending ? '저장 중' : '답변 등록'}

@@ -18,3 +18,6 @@ export type ConsultationDetail = z.infer<typeof dto.detail>;
  * Payload
  * ────────────────────────────────────────────────────*/
 export type CreateConsultationPayload = z.infer<typeof payload.create>;
+export type CreateConsultationAnswerPayload = z.infer<
+  typeof payload.createAnswer
+>;

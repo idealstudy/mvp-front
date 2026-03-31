@@ -18,6 +18,7 @@ import {
 } from '@/features/community/column/schema/schema';
 import {
   TextEditor,
+  initialTextEditorValue,
   parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
@@ -108,7 +109,7 @@ export default function ColumnWriteArea({
     resolver: zodResolver(ColumnFormSchema),
     defaultValues: {
       title: '',
-      content: { type: 'doc', content: [] },
+      content: initialTextEditorValue,
       tags: [],
     },
     mode: 'onChange',

@@ -1,4 +1,7 @@
-import { CreateConsultationPayload } from '@/entities/consultation/types';
+import {
+  CreateConsultationAnswerPayload,
+  CreateConsultationPayload,
+} from '@/entities/consultation/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 
@@ -24,8 +27,11 @@ const getConsultation = async (id: number) => {
 /* ─────────────────────────────────────────────────────
  * [CREATE] 문의 답변 작성 (선생님)
  * ────────────────────────────────────────────────────*/
-const createConsultationAnswer = async (id: number, content: string) => {
-  const validated = payload.createAnswer.parse({ content });
+const createConsultationAnswer = async (
+  id: number,
+  params: CreateConsultationAnswerPayload
+) => {
+  const validated = payload.createAnswer.parse(params);
   const response = await api.private.post(
     `/teacher/inquiries/${id}/answer`,
     validated

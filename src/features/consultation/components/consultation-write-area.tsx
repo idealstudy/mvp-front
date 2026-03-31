@@ -11,13 +11,18 @@ import {
   ConsultationFormSchema,
 } from '@/features/consultation/schema/schema';
 import {
+  TextEditor,
+  initialTextEditorValue,
+  prepareContentForSave,
+} from '@/shared/components/editor';
+import {
   Button,
   Form,
   Input,
   RequiredMark,
   Select,
-  Textarea,
 } from '@/shared/components/ui';
+import { cn, extractText } from '@/shared/lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ConsultationWriteArea({
@@ -40,7 +45,6 @@ export default function ConsultationWriteArea({
 
   // 스터디룸 목록
   const { data: studyRooms } = useTeacherStudyRooms(teacherId);
-
   // 선생님 정보
   const { data: teacherProfile } = useTeacherProfile(teacherId);
 
@@ -55,17 +59,20 @@ export default function ConsultationWriteArea({
       teacherId,
       studyRoomId,
       title: '',
-      content: '',
+      content: initialTextEditorValue,
     },
     mode: 'onChange',
   });
 
   const onSubmit = (data: ConsultationForm) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     mutation.mutate({
       targetTeacherId: data.teacherId,
       studyRoomId: data.studyRoomId,
       title: data.title,
-      content: data.content,
+      content: contentString,
+      mediaIds,
     });
   };
 
@@ -155,16 +162,38 @@ export default function ConsultationWriteArea({
             문의 내용 <RequiredMark />
           </Form.Label>
           <Form.Control>
-            <Textarea
-              {...register('content')}
-              placeholder="문의 내용을 입력해주세요."
-              disabled={mutation.isPending}
-              className="h-40 resize-none"
+            <Controller
+              name="content"
+              control={control}
+              render={({ field }) => {
+                const text = extractText(JSON.stringify(field.value));
+                const length = text.length;
+                return (
+                  <>
+                    <TextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="문의 내용을 입력해주세요."
+                      minHeight="400px"
+                    />
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-system-warning text-sm">
+                        {typeof errors.content?.message === 'string' &&
+                          errors.content.message}
+                      </p>
+                      <span
+                        className={cn(
+                          length > 3000 ? 'text-system-warning' : 'text-gray-5'
+                        )}
+                      >
+                        {length} / 3000
+                      </span>
+                    </div>
+                  </>
+                );
+              }}
             />
           </Form.Control>
-          <Form.ErrorMessage className="text-sm">
-            {errors.content?.message}
-          </Form.ErrorMessage>
         </Form.Item>
 
         {/* 제출 버튼 */}
