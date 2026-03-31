@@ -74,7 +74,7 @@ export const ConsultationDialogs = ({
   const [originalDetailContent, setOriginalDetailContent] =
     useState<TextEditorValue>(initialTextEditorValue);
 
-  const { data: pageData } = useConsultationList(
+  const { data: pageData, isLoading: isListLoading } = useConsultationList(
     studyRoomId,
     numericStudentId,
     page,
@@ -280,16 +280,16 @@ export const ConsultationDialogs = ({
 
     const detailFooter = isTeacher ? (
       isEditing ? (
-        <div className="flex w-full items-center justify-between">
+        <div className="ml-auto flex items-center gap-6">
           {isDetailUnchanged && (
-            <span className="font-body2-normal text-gray-7">
-              변경 사항이 없습니다
+            <span className="font-label-normal text-gray-7">
+              변경 사항이 없습니다.
             </span>
           )}
           <Button
             variant="primary"
             size="small"
-            className="font-body2-heading ml-auto px-12"
+            className="font-body2-heading px-12"
             onClick={handleDetailSave}
             disabled={isDetailUnchanged}
           >
@@ -363,6 +363,7 @@ export const ConsultationDialogs = ({
       <ConsultationListContent
         items={accItems}
         hasMore={hasMore}
+        isLoading={isListLoading}
         onLoadMore={() => setPage((p) => p + 1)}
         onSelectItem={(id) => {
           setSelectedId(Number(id));
