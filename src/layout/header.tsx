@@ -122,16 +122,10 @@ export const Header = () => {
           </Link>
           <Link
             href="/list/teachers?sort=LATEST&subject=ALL"
-            className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 text-sm font-medium text-white transition-colors"
+            className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 border-r border-white pr-2 text-sm font-medium text-white transition-colors"
           >
             디에듀 101 목록
           </Link>
-          <span
-            aria-hidden
-            className="max-desktop:hidden text-white"
-          >
-            |
-          </span>
           <Link
             href={PUBLIC.COMMUNITY.COLUMN.LIST}
             className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
@@ -212,10 +206,18 @@ export const Header = () => {
 
                   {/* 강사 프로필 링크 */}
                   <PopoverLink
-                    href="/teachers"
+                    href={PUBLIC.CORE.LIST.TEACHERS}
                     onClick={() => setIsOpen(false)}
                   >
                     <span>강사 프로필</span>
+                  </PopoverLink>
+
+                  {/* 게시판 */}
+                  <PopoverLink
+                    href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>게시판</span>
                   </PopoverLink>
 
                   {/* 스터디룸 섹션 */}
