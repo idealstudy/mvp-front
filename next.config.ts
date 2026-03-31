@@ -4,6 +4,14 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['app.dev.the-edu.site', '*.dev.the-edu.site'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'theedu.s3.ap-northeast-2.amazonaws.com',
+      },
+    ],
+  },
   turbopack: {
     rules: {
       '*.svg': {

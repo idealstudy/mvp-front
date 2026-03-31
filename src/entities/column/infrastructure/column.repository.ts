@@ -1,129 +1,142 @@
-/* ─────────────────────────────────────────────────────
- * CORE ROUTES
- * ────────────────────────────────────────────────────*/
-const CORE = {
-  INDEX: '/',
-  LOGIN: '/login',
-  SIGNUP: '/register',
-  LIST: {
-    TEACHERS: '/list/teachers',
-    STUDY_ROOMS: '/list/study-rooms',
-  },
-  BIZ: '#',
-  INVITE: {
-    ERROR: (reason: string) => `/invite/error?reason=${reason}`,
-    SUCCESS: (studyRoomId: number) =>
-      `/invite/success?studyRoomId=${studyRoomId}`,
-  },
-} as const;
+import {
+  ColumnSortOption,
+  ColumnStatus,
+  CreateColumnArticlePayload,
+  UpdateColumnArticlePayload,
+} from '@/entities/column/types';
+import { api } from '@/shared/api';
+import { unwrapEnvelope } from '@/shared/lib/api-utils';
+import { z } from 'zod';
+
+import { dto, payload } from './column.dto';
 
 /* ─────────────────────────────────────────────────────
- * DASHBOARD
+ * [Read] 칼럼 목록 조회 (공개, APPROVED만)
  * ────────────────────────────────────────────────────*/
-const DASHBOARD = {
-  INDEX: '/dashboard',
-  INQUIRY: '/dashboard/inquiry',
-  SETTINGS: '/dashboard/settings',
-} as const;
+const getColumnList = async (params: {
+  page: number;
+  size: number;
+  sort: ColumnSortOption;
+}) => {
+  const response = await api.public.get('/public/column-articles', { params });
+  return unwrapEnvelope(response, dto.page);
+};
 
 /* ─────────────────────────────────────────────────────
- * STUDY ROOM
+ * [READ] 칼럼 상세 조회 (공개)
  * ────────────────────────────────────────────────────*/
-const ROOM = {
-  DETAIL: (id: number) => `/study-rooms/${id}/note`,
-  CREATE: '/study-rooms/new',
-} as const;
+const getColumnDetail = async (id: number) => {
+  const response = await api.public.get(`/public/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
 
 /* ─────────────────────────────────────────────────────
- * QUESTIONS
+ * [CREATE] 칼럼 생성 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const QUESTIONS = {
-  DETAIL: (studyroomId: number, contextId: number) =>
-    `/study-rooms/${studyroomId}/qna/${contextId}`,
-  CREATE: (studyroomId: number) => `/study-rooms/${studyroomId}/qna/new`,
-  LIST: (studyroomId: number) => `/study-rooms/${studyroomId}/qna`,
-} as const;
+const createColumn = async (
+  params: CreateColumnArticlePayload,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const validated = payload.create.parse(params);
+  const path =
+    role === 'ROLE_ADMIN'
+      ? '/admin/column-articles'
+      : '/teacher/column-articles';
+  const response = await api.private.post(path, validated);
+  return unwrapEnvelope(response, z.number());
+};
 
 /* ─────────────────────────────────────────────────────
- * STUDY NOTE
+ * [DELETE] 칼럼 삭제 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const NOTE = {
-  CREATE: (studyRoomId: number) => `/study-rooms/${studyRoomId}/note/new`,
-  EDIT: (studyRoomId: number, noteId: number) =>
-    `/study-rooms/${studyRoomId}/note/${noteId}/edit`,
-  DETAIL: (studyRoomId: number, noteId: number) =>
-    `/study-rooms/${studyRoomId}/note/${noteId}`,
-  LIST: (id: number) => `/study-rooms/${id}/note`,
-} as const;
+const deleteColumn = async (
+  id: number,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const path =
+    role === 'ROLE_ADMIN'
+      ? `/admin/column-articles/${id}`
+      : `/teacher/column-articles/${id}`;
+  await api.private.delete(path);
+};
 
 /* ─────────────────────────────────────────────────────
- * HOMEWORK
+ * [UPDATE] 칼럼 수정 (선생님 / 관리자)
  * ────────────────────────────────────────────────────*/
-const HOMEWORK = {
-  CREATE: (studyRoomId: number) => `/study-rooms/${studyRoomId}/homework/new`,
-  DETAIL: (studyRoomId: number, homeworkId: number) =>
-    `/study-rooms/${studyRoomId}/homework/${homeworkId}`,
-  LIST: (id: number) => `/study-rooms/${id}/homework`,
-} as const;
+const updateColumn = async (
+  id: number,
+  params: UpdateColumnArticlePayload,
+  role: 'ROLE_TEACHER' | 'ROLE_ADMIN'
+) => {
+  const validated = payload.update.parse(params);
+  const path =
+    role === 'ROLE_ADMIN'
+      ? `/admin/column-articles/${id}`
+      : `/teacher/column-articles/${id}`;
+  await api.private.put(path, validated);
+};
 
 /* ─────────────────────────────────────────────────────
- * PROFILE
+ * [READ] 마이페이지 - 내 칼럼 목록 조회 (선생님)
  * ────────────────────────────────────────────────────*/
-const PROFILE = {
-  DETAIL: (userId: number) => `/profile/${userId}`,
-} as const;
+const getMyColumnList = async (params: {
+  page: number;
+  size: number;
+  status?: ColumnStatus;
+}) => {
+  const response = await api.private.get('/teacher/me/column-articles', {
+    params,
+  });
+  return unwrapEnvelope(response, dto.myPage);
+};
 
 /* ─────────────────────────────────────────────────────
- * MYPAGE
+ * [READ] 칼럼 상세 조회 (선생님, PENDING 포함)
  * ────────────────────────────────────────────────────*/
-const MYPAGE = '/mypage';
+const getMyColumnDetail = async (id: number) => {
+  const response = await api.private.get(`/teacher/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
 
 /* ─────────────────────────────────────────────────────
- * COMMUNITY
+ * [READ] 관리자페이지 - 칼럼 목록 조회 (관리자, 상태별)
  * ────────────────────────────────────────────────────*/
-const PUBLIC_COMMUNITY = {
-  COLUMN: {
-    LIST: '/community/column',
-    DETAIL: (id: number) => `/community/column/${id}`,
-  },
-} as const;
-
-const PRIVATE_COMMUNITY = {
-  COLUMN: {
-    CREATE: '/community/column/new',
-    EDIT: (id: number) => `/community/column/${id}/edit`,
-  },
-} as const;
+const getAdminColumnList = async (params: {
+  page: number;
+  size: number;
+  status?: ColumnStatus;
+}) => {
+  const response = await api.private.get('/admin/column-articles', { params });
+  return unwrapEnvelope(response, dto.adminPage);
+};
 
 /* ─────────────────────────────────────────────────────
- * ADMIN
+ * [READ] 관리자페이지 - 칼럼 상세 조회 (관리자, 전체 상태 조회 가능)
  * ────────────────────────────────────────────────────*/
-const ADMIN = {
-  COLUMN: {
-    LIST: '/admin/column',
-    DETAIL: (id: number) => `/admin/column/${id}`,
-  },
-} as const;
+const getAdminColumnDetail = async (id: number) => {
+  const response = await api.private.get(`/admin/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
 
 /* ─────────────────────────────────────────────────────
- * Export - PUBLIC
+ * [PATCH] 관리자페이지 - 칼럼 승인 (관리자)
  * ────────────────────────────────────────────────────*/
-export const PUBLIC = {
-  CORE,
-  PROFILE,
-  COMMUNITY: PUBLIC_COMMUNITY,
-} as const;
+const approveColumn = async (id: number) => {
+  await api.private.patch(`/admin/column-articles/${id}/approve`);
+};
 
 /* ─────────────────────────────────────────────────────
- * Export - PRIVATE
+ * 내보내기
  * ────────────────────────────────────────────────────*/
-export const PRIVATE = {
-  DASHBOARD,
-  ROOM,
-  NOTE,
-  HOMEWORK,
-  QUESTIONS,
-  COMMUNITY: PRIVATE_COMMUNITY,
-  MYPAGE,
-  ADMIN,
-} as const;
+export const repository = {
+  getColumnList,
+  getColumnDetail,
+  createColumn,
+  updateColumn,
+  deleteColumn,
+  getMyColumnList,
+  getMyColumnDetail,
+  getAdminColumnList,
+  getAdminColumnDetail,
+  approveColumn,
+};
