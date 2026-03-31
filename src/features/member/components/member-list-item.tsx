@@ -100,7 +100,7 @@ export const MemberListItem = ({
       {(isTeacher || isCurrentUser) && (
         <div className="tablet:gap-2 tablet:self-auto flex shrink-0 items-center gap-1.5 self-end">
           {consultationCount > 0 && (
-            <div className="border-gray-5 font-caption-normal hover:bg-gray-1 tablet:font-label-normal tablet:px-[11px] tablet:py-[3px] inline-flex items-center rounded-full border px-2.5 py-0.5">
+            <div className="border-gray-5 font-caption-normal tablet:font-label-normal tablet:px-[11px] tablet:py-[3px] inline-flex items-center rounded-full border px-2.5 py-0.5">
               기록 {consultationCount}
             </div>
           )}
