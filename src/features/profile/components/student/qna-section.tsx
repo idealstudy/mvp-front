@@ -4,7 +4,7 @@ import {
   ProfileQnaListStatus,
 } from '@/entities/student';
 import ExpandableListSection from '@/features/profile/components/expandable-list-section';
-import { Checkbox } from '@/shared/components/ui';
+import { Checkbox, StatusBadge } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE } from '@/shared/constants';
 import { cn, formatMMDDWeekday } from '@/shared/lib';
@@ -110,16 +110,10 @@ export default function QnaSection({
               </span>
             }
             rightTitle={
-              <span
-                className={cn(
-                  'font-label-normal px-3 py-1.5 whitespace-nowrap',
-                  item.status === 'PENDING'
-                    ? 'bg-gray-1'
-                    : 'bg-orange-1 text-key-color-primary'
-                )}
-              >
-                {QNA_STATUS_LABEL[item.status]}
-              </span>
+              <StatusBadge
+                label={QNA_STATUS_LABEL[item.status]}
+                variant={item.status === 'PENDING' ? 'default' : 'active'}
+              />
             }
           />
         ))

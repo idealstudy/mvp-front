@@ -40,10 +40,19 @@ const createConsultationAnswer = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [READ] 마이페이지 내가 작성한 문의 목록 조회
+ * ────────────────────────────────────────────────────*/
+const getMyConsultations = async (params: { page: number; size: number }) => {
+  const response = await api.private.get('/common/inquiries', { params });
+  return unwrapEnvelope(response, dto.list);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   createConsultation,
   getConsultation,
   createConsultationAnswer,
+  getMyConsultations,
 };

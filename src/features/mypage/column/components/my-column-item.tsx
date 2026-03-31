@@ -8,10 +8,10 @@ import Link from 'next/link';
 import { MyColumnListItem, columnKeys } from '@/entities/column';
 import DeleteColumnDialog from '@/features/community/column/components/delete-column-dialog';
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
-import { DropdownMenu } from '@/shared/components/ui';
+import { DropdownMenu, StatusBadge } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
-import { cn, getRelativeTimeString } from '@/shared/lib';
+import { getRelativeTimeString } from '@/shared/lib';
 import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -51,16 +51,12 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
         }
         subtitle={`조회수 ${column.viewCount} | 작성일 ${getRelativeTimeString(column.regDate)}`}
         rightTitle={
-          <span
-            className={cn(
-              'font-label-normal px-3 py-1.5 whitespace-nowrap',
-              column.status === 'PENDING_APPROVAL'
-                ? 'bg-gray-1'
-                : 'bg-orange-1 text-key-color-primary'
-            )}
-          >
-            {COLUMN_STATUS_LABEL[column.status]}
-          </span>
+          <StatusBadge
+            label={COLUMN_STATUS_LABEL[column.status]}
+            variant={
+              column.status === 'PENDING_APPROVAL' ? 'default' : 'active'
+            }
+          />
         }
         dropdown={
           <DropdownMenu>

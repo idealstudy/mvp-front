@@ -96,6 +96,17 @@ const PRIVATE_COMMUNITY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * CONSULTATION
+ * ────────────────────────────────────────────────────*/
+const CONSULTATION = {
+  DETAIL: (id: number) => `/consultation/${id}`,
+  CREATE: (teacherId: number, studyRoomId?: number) =>
+    `/consultation/new?teacherId=${teacherId}${
+      studyRoomId ? `&studyRoomId=${studyRoomId}` : ''
+    }`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
@@ -112,6 +123,7 @@ export const PUBLIC = {
   CORE,
   PROFILE,
   COMMUNITY: PUBLIC_COMMUNITY,
+  CONSULTATION,
 } as const;
 
 /* ─────────────────────────────────────────────────────

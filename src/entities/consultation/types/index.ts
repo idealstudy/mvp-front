@@ -13,6 +13,8 @@ export type ConsultationStatus = 'PENDING' | 'ANSWERED';
  * Frontend Type
  * ────────────────────────────────────────────────────*/
 export type ConsultationDetail = z.infer<typeof dto.detail>;
+export type ConsultationListItem = z.infer<typeof dto.listItem>;
+export type ConsultationList = z.infer<typeof dto.list>;
 
 /* ─────────────────────────────────────────────────────
  * Payload

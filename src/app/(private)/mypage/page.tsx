@@ -1,4 +1,5 @@
 import MyColumnList from '@/features/mypage/column/components/my-column-list';
+import MyConsultationList from '@/features/mypage/consultation/components/my-consultation-list';
 import ProfileMain from '@/features/mypage/profile/components/profile-main';
 
 export default async function MypagePage({
@@ -10,5 +11,7 @@ export default async function MypagePage({
 
   if (tab === 'columns') return <MyColumnList />;
   if (tab === 'profile') return <ProfileMain />;
-  return <ProfileMain />; // default (tab 없을 때)
+  if (tab === 'consultations') return <MyConsultationList />;
+
+  return null;
 }

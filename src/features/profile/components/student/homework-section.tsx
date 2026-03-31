@@ -3,9 +3,10 @@ import {
   ProfileHomeworkListSortKey,
 } from '@/entities/student';
 import ExpandableListSection from '@/features/profile/components/expandable-list-section';
+import { StatusBadge } from '@/shared/components/ui';
 import { ListItem } from '@/shared/components/ui/list-item';
 import { PRIVATE } from '@/shared/constants';
-import { cn, formatMMDDWeekday } from '@/shared/lib';
+import { formatMMDDWeekday } from '@/shared/lib';
 
 interface HomeworkSectionProps {
   data: FrontendStudentHomeworkList | undefined;
@@ -26,6 +27,15 @@ const HOMEWORK_STATUS_LABEL: Record<
   NOT_SUBMIT: '미제출',
   SUBMIT: '제출 완료',
   LATE_SUBMIT: '지연 제출',
+};
+
+const HOMEWORK_STATUS_VARIANT: Record<
+  'NOT_SUBMIT' | 'SUBMIT' | 'LATE_SUBMIT',
+  'default' | 'active' | 'warning'
+> = {
+  NOT_SUBMIT: 'default',
+  SUBMIT: 'active',
+  LATE_SUBMIT: 'warning',
 };
 
 const HOMEWORK_SORT_OPTIONS: Array<{
@@ -98,16 +108,10 @@ export default function HomeworkSection({
               </span>
             }
             rightTitle={
-              <span
-                className={cn(
-                  'font-label-normal px-3 py-1.5 whitespace-nowrap',
-                  item.status === 'NOT_SUBMIT'
-                    ? 'bg-gray-1'
-                    : 'bg-orange-1 text-key-color-primary'
-                )}
-              >
-                {HOMEWORK_STATUS_LABEL[item.status]}
-              </span>
+              <StatusBadge
+                label={HOMEWORK_STATUS_LABEL[item.status]}
+                variant={HOMEWORK_STATUS_VARIANT[item.status]}
+              />
             }
           />
         ))

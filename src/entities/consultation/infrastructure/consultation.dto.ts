@@ -34,6 +34,25 @@ const ConsultationDetailDtoSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 마이페이지 작성한 문의 목록 DTO
+ * ────────────────────────────────────────────────────*/
+const ConsultationListItemDtoSchema = z.object({
+  id: z.number(),
+  targetTeacherId: z.number(),
+  studyRoomId: z.number().nullish(),
+  studyRoomName: z.string().nullish(),
+  title: z.string(),
+  status: z.enum(['PENDING', 'ANSWERED']),
+  regDate: z.string(),
+});
+
+const ConsultationListDtoSchema = z.object({
+  totalPages: z.number(),
+  totalElements: z.number(),
+  content: z.array(ConsultationListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
  * 문의 등록 Payload
  * POST
  * ────────────────────────────────────────────────────*/
@@ -59,6 +78,8 @@ const ConsultationAnswerPayloadSchema = z.object({
  * ────────────────────────────────────────────────────*/
 export const dto = {
   detail: ConsultationDetailDtoSchema,
+  listItem: ConsultationListItemDtoSchema,
+  list: ConsultationListDtoSchema,
 };
 
 export const payload = {

@@ -2,14 +2,12 @@
 
 import { useTransition } from 'react';
 
-import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import MyColumnItem from '@/features/mypage/column/components/my-column-item';
-import { useMyColumns } from '@/features/mypage/column/hooks/use-my-columns';
+import { useMyConsultations } from '@/features/consultation/hooks/use-my-consultations';
+import MyConsultationItem from '@/features/mypage/consultation/components/my-consultation-item';
 import SectionContainer from '@/features/profile/components/section-container';
 import { Pagination } from '@/shared/components/ui';
-import { PRIVATE, PUBLIC } from '@/shared/constants';
 
 const parsePage = (value?: string) => {
   const parsed = Number(value);
@@ -17,7 +15,7 @@ const parsePage = (value?: string) => {
   return parsed;
 };
 
-export default function MyColumnList() {
+export default function MyConsultationList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -25,9 +23,9 @@ export default function MyColumnList() {
 
   const currentPage = parsePage(searchParams.get('page') ?? undefined);
 
-  const { data, isLoading, isError, refetch } = useMyColumns({
-    page: currentPage - 1,
-  });
+  const { data, isLoading, isError, refetch } = useMyConsultations(
+    currentPage - 1
+  );
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -39,37 +37,21 @@ export default function MyColumnList() {
 
   return (
     <SectionContainer
-      title="내 칼럼 목록"
+      title="내 문의 목록"
       isLoading={isLoading}
       isError={isError}
       onRetry={refetch}
       isOwner
-      action={
-        <div className="flex items-center gap-2">
-          <Link
-            href={PUBLIC.COMMUNITY.COLUMN.LIST}
-            className="font-label-normal border-gray-7 border-r pr-2 hover:underline"
-          >
-            칼럼 게시판
-          </Link>
-
-          <Link
-            href={PRIVATE.COMMUNITY.COLUMN.CREATE}
-            className="font-label-normal text-key-color-primary hover:underline"
-          >
-            새 칼럼 작성
-          </Link>
-        </div>
-      }
     >
       {data && data.content.length > 0 ? (
         <>
-          {data.content.map((column) => (
-            <MyColumnItem
-              key={column.id}
-              column={column}
+          {data.content.map((item) => (
+            <MyConsultationItem
+              key={item.id}
+              item={item}
             />
           ))}
+
           <Pagination
             className="mt-6 justify-center"
             page={currentPage}
@@ -79,7 +61,7 @@ export default function MyColumnList() {
         </>
       ) : (
         <p className="text-gray-5 py-10 text-center text-sm">
-          작성한 칼럼이 없습니다.
+          작성한 문의가 없습니다.
         </p>
       )}
     </SectionContainer>

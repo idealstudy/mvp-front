@@ -5,8 +5,8 @@ import {
   FrontendStudentStudyRoomList,
   FrontendStudentStudyRoomListItem,
 } from '@/entities/student';
+import { StatusBadge } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
-import { cn } from '@/shared/lib';
 
 interface StudyroomSectionProps {
   data: FrontendStudentStudyRoomList;
@@ -44,16 +44,10 @@ export default function StudyroomSection({ data }: StudyroomSectionProps) {
             </p>
           </div>
           {STATE_LABEL[item.state] ? (
-            <span
-              className={cn(
-                'font-label-normal px-3 py-1.5 whitespace-nowrap',
-                item.state === 'TERMINATED'
-                  ? 'bg-gray-1'
-                  : 'bg-orange-1 text-key-color-primary'
-              )}
-            >
-              {STATE_LABEL[item.state]}
-            </span>
+            <StatusBadge
+              label={STATE_LABEL[item.state]!}
+              variant={item.state === 'TERMINATED' ? 'default' : 'active'}
+            />
           ) : undefined}
         </Link>
       ))}
