@@ -45,6 +45,25 @@ export default function AdminColumnTable() {
     }
   }, [data, page]);
 
+  // 삭제
+  const handleDeleteConfirm = () => {
+    if (deleteTargetId)
+      deleteColumnMutation.mutate(deleteTargetId, {
+        onSuccess: () => {
+          setDeleteTargetId(null);
+        },
+        onError: (error) => {
+          handleApiError(error, classifyColumnError, {
+            // COLUMN_ARTICLE_NOT_EXIST
+            onContext: () => {
+              setDeleteTargetId(null);
+              queryClient.invalidateQueries({ queryKey: columnKeys.all });
+            },
+          });
+        },
+      });
+  };
+
   if (isLoading) return <MiniSpinner />;
 
   return (
@@ -135,23 +154,7 @@ export default function AdminColumnTable() {
       <DeleteColumnDialog
         isOpen={deleteTargetId !== null}
         onClose={() => setDeleteTargetId(null)}
-        onConfirm={() => {
-          if (deleteTargetId)
-            deleteColumnMutation.mutate(deleteTargetId, {
-              onSuccess: () => {
-                setDeleteTargetId(null);
-              },
-              onError: (error) => {
-                handleApiError(error, classifyColumnError, {
-                  // COLUMN_ARTICLE_NOT_EXIST
-                  onContext: () => {
-                    setDeleteTargetId(null);
-                    queryClient.invalidateQueries({ queryKey: columnKeys.all });
-                  },
-                });
-              },
-            });
-        }}
+        onConfirm={handleDeleteConfirm}
       />
     </>
   );

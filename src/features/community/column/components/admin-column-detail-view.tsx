@@ -29,6 +29,25 @@ export default function AdminColumnDetailView({
   const approveColumnMutation = useApproveColumn();
   const deleteColumnMutation = useDeleteColumn();
 
+  // 삭제
+  const handleDeleteConfirm = () => {
+    deleteColumnMutation.mutate(id, {
+      onSuccess: () => {
+        setIsDeleteOpen(false);
+        router.push(PRIVATE.ADMIN.COLUMN.LIST);
+      },
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          // COLUMN_ARTICLE_NOT_EXIST
+          onContext: () => {
+            setIsDeleteOpen(false);
+            setTimeout(() => router.push(PRIVATE.ADMIN.COLUMN.LIST), 1500);
+          },
+        });
+      },
+    });
+  };
+
   // 승인
   const handleApprove = () => {
     approveColumnMutation.mutate(id, {
@@ -98,26 +117,7 @@ export default function AdminColumnDetailView({
       <DeleteColumnDialog
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
-        onConfirm={() =>
-          deleteColumnMutation.mutate(id, {
-            onSuccess: () => {
-              setIsDeleteOpen(false);
-              router.push(PRIVATE.ADMIN.COLUMN.LIST);
-            },
-            onError: (error) => {
-              handleApiError(error, classifyColumnError, {
-                // COLUMN_ARTICLE_NOT_EXIST
-                onContext: () => {
-                  setIsDeleteOpen(false);
-                  setTimeout(
-                    () => router.push(PRIVATE.ADMIN.COLUMN.LIST),
-                    1500
-                  );
-                },
-              });
-            },
-          })
-        }
+        onConfirm={handleDeleteConfirm}
       />
     </>
   );
