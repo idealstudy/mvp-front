@@ -46,7 +46,7 @@ export default function StudyroomSection({ data }: StudyroomSectionProps) {
           {STATE_LABEL[item.state] ? (
             <StatusBadge
               label={STATE_LABEL[item.state]!}
-              variant={item.state === 'TERMINATED' ? 'default' : 'active'}
+              variant={item.state === 'TERMINATED' ? 'default' : 'primary'}
             />
           ) : undefined}
         </Link>

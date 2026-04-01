@@ -63,9 +63,15 @@ const PreviewSideDomainSchema = dto.side.transform((value) => ({
   ...value,
 }));
 
+const PreviewConsultationItemDomainSchema = dto.consultationItem;
+
+const PreviewConsultationListDomainSchema = dto.consultationList;
+
 export const domain = {
   core: PreviewCoreDomainSchema,
   main: PreviewMainDomainSchema,
   sideItem: PreviewSideItemDomainSchema,
   side: PreviewSideDomainSchema,
+  consultationItem: PreviewConsultationItemDomainSchema,
+  consultationList: PreviewConsultationListDomainSchema,
 };

@@ -54,7 +54,7 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
           <StatusBadge
             label={COLUMN_STATUS_LABEL[column.status]}
             variant={
-              column.status === 'PENDING_APPROVAL' ? 'default' : 'active'
+              column.status === 'PENDING_APPROVAL' ? 'default' : 'primary'
             }
           />
         }

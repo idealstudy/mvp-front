@@ -31,10 +31,10 @@ const HOMEWORK_STATUS_LABEL: Record<
 
 const HOMEWORK_STATUS_VARIANT: Record<
   'NOT_SUBMIT' | 'SUBMIT' | 'LATE_SUBMIT',
-  'default' | 'active' | 'warning'
+  'default' | 'primary' | 'warning'
 > = {
   NOT_SUBMIT: 'default',
-  SUBMIT: 'active',
+  SUBMIT: 'primary',
   LATE_SUBMIT: 'warning',
 };
 

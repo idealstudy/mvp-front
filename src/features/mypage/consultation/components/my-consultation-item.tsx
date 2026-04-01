@@ -27,7 +27,7 @@ export default function MyConsultationItem({
       rightTitle={
         <StatusBadge
           label={STATUS_LABEL[item.status]}
-          variant={item.status === 'PENDING' ? 'default' : 'active'}
+          variant={item.status === 'PENDING' ? 'default' : 'primary'}
         />
       }
     />

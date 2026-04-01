@@ -7,6 +7,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 
 const FIVE_MINUTE = 1000 * 60 * 5;
+const PAGE_SIZE = 20;
 
 // 스터디룸 프리뷰 side info
 export const usePreviewSideInfo = (
@@ -32,4 +33,19 @@ export const usePreviewMainInfo = (studyRoomId: number) =>
     queryFn: () => repository.preview.getPreviewMain(studyRoomId),
     staleTime: FIVE_MINUTE,
     refetchOnMount: 'always',
+  });
+
+// 문의 내역
+export const usePreviewConsultations = (studyRoomId: number, page: number) =>
+  useQuery({
+    queryKey: previewKeys.consultationList(studyRoomId, {
+      page,
+      size: PAGE_SIZE,
+    }),
+    queryFn: () =>
+      repository.preview.getPreviewConsultations(studyRoomId, {
+        page,
+        size: PAGE_SIZE,
+      }),
+    staleTime: FIVE_MINUTE,
   });

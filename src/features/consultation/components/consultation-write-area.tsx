@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useCreateConsultation } from '@/features/consultation/hooks/use-consultation-form';
@@ -34,7 +34,9 @@ export default function ConsultationWriteArea({
   studyRoomId?: number;
   isEditMode?: boolean;
 }) {
-  const [roomSelectValue, setRoomSelectValue] = useState('');
+  const [roomSelectValue, setRoomSelectValue] = useState(
+    studyRoomId ? String(studyRoomId) : ''
+  );
 
   const createConsultationMutation = useCreateConsultation();
 
@@ -52,6 +54,7 @@ export default function ConsultationWriteArea({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isDirty, isValid },
   } = useForm<ConsultationForm>({
     resolver: zodResolver(ConsultationFormSchema),
@@ -63,6 +66,17 @@ export default function ConsultationWriteArea({
     },
     mode: 'onChange',
   });
+
+  // 저장된 제목 가져오기 (sessionStorage)
+  useEffect(() => {
+    const saved = sessionStorage.getItem('consultation-draft-title') ?? '';
+    if (saved) setValue('title', saved);
+    sessionStorage.removeItem('consultation-draft-title');
+  }, [setValue]);
+
+  useEffect(() => {
+    sessionStorage.removeItem('consultation-draft-title');
+  }, []);
 
   const onSubmit = (data: ConsultationForm) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);

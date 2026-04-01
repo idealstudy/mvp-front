@@ -112,7 +112,7 @@ export default function QnaSection({
             rightTitle={
               <StatusBadge
                 label={QNA_STATUS_LABEL[item.status]}
-                variant={item.status === 'PENDING' ? 'default' : 'active'}
+                variant={item.status === 'PENDING' ? 'default' : 'primary'}
               />
             }
           />

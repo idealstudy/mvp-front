@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
+import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 import { usePreviewSideInfo } from '../../hooks/use-preview';
@@ -39,7 +40,7 @@ export const StudyroomPreviewSidebar = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const onInquiryClick = () => {
-    alert('준비중 입니다.');
+    router.push(PUBLIC.CONSULTATION.CREATE(teacherId, studyRoomId));
   };
 
   const moveToStudyRoom = () => {
@@ -113,7 +114,7 @@ export const StudyroomPreviewSidebar = ({
       />
       <SidebarButton
         onClick={handleBtnClick}
-        btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 문의하기`}
+        btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
         disabled={loading}
       />
       {data.otherStudyRooms.length ? (
