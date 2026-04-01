@@ -1,12 +1,31 @@
 'use client';
 
+import { useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+
 import ConsultationAnswerArea from '@/features/consultation/components/consultation-answer-area';
 import { useConsultation } from '@/features/consultation/hooks/use-consultation';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
+import { PUBLIC } from '@/shared/constants';
+import { classifyConsultationError, handleApiError } from '@/shared/lib/errors';
 
 export default function ConsultationDetailArea({ id }: { id: number }) {
-  const { data: consultation, isLoading, isError } = useConsultation(id);
+  const router = useRouter();
+  const { data: consultation, isLoading, isError, error } = useConsultation(id);
+
+  useEffect(() => {
+    if (!isError) return;
+    handleApiError(error, classifyConsultationError, {
+      // INQUIRY_ACCESS_FORBIDDEN, INQUIRY_NOT_FOUND
+      onContext: () => {
+        setTimeout(() => {
+          router.replace(PUBLIC.CORE.LIST.STUDY_ROOMS);
+        }, 1500);
+      },
+    });
+  }, [isError, error, router]);
 
   if (isLoading)
     return (

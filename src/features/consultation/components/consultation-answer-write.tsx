@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from 'react-hook-form';
 
-import { ConsultationDetail } from '@/entities/consultation';
+import { ConsultationDetail, consultationKeys } from '@/entities/consultation';
 import {
   useCreateConsultationAnswer,
   useUpdateConsultationAnswer,
@@ -20,7 +20,9 @@ import {
 } from '@/shared/components/editor';
 import { Button, Form } from '@/shared/components/ui';
 import { cn, extractText } from '@/shared/lib';
+import { classifyConsultationError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ConsultationAnswerWrite({
   consultation,
@@ -31,6 +33,8 @@ export default function ConsultationAnswerWrite({
   isEditMode?: boolean;
   onCancel?: () => void;
 }) {
+  const queryClient = useQueryClient();
+
   const { data: teacherProfile } = useTeacherProfile(
     consultation.targetTeacherId
   );
@@ -64,7 +68,20 @@ export default function ConsultationAnswerWrite({
 
   const onSubmit = (data: ConsultationAnswerForm) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);
-    mutation.mutate({ content: contentString, mediaIds });
+    mutation.mutate(
+      { content: contentString, mediaIds },
+      {
+        onError: (error) => {
+          handleApiError(error, classifyConsultationError, {
+            // INQUIRY_ANSWER_ALREADY_EXISTS, INQUIRY_NOT_FOUND, INQUIRY_ANSWER_NOT_FOUND, INQUIRY_ANSWER_FORBIDDEN
+            onContext: () =>
+              queryClient.invalidateQueries({
+                queryKey: consultationKeys.detail(consultation.id),
+              }),
+          });
+        },
+      }
+    );
   };
 
   return (

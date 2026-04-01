@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useRouter } from 'next/navigation';
+
 import { useCreateConsultation } from '@/features/consultation/hooks/use-consultation-form';
 import { useTeacherProfile } from '@/features/consultation/hooks/use-teacher-profile';
 import { useTeacherStudyRooms } from '@/features/consultation/hooks/use-teacher-study-rooms';
@@ -23,6 +25,7 @@ import {
   Select,
 } from '@/shared/components/ui';
 import { cn, extractText } from '@/shared/lib';
+import { classifyConsultationError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function ConsultationWriteArea({
@@ -34,6 +37,8 @@ export default function ConsultationWriteArea({
   studyRoomId?: number;
   isEditMode?: boolean;
 }) {
+  const router = useRouter();
+
   const [roomSelectValue, setRoomSelectValue] = useState(
     studyRoomId ? String(studyRoomId) : ''
   );
@@ -81,13 +86,27 @@ export default function ConsultationWriteArea({
   const onSubmit = (data: ConsultationForm) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);
 
-    mutation.mutate({
-      targetTeacherId: data.teacherId,
-      studyRoomId: data.studyRoomId,
-      title: data.title,
-      content: contentString,
-      mediaIds,
-    });
+    mutation.mutate(
+      {
+        targetTeacherId: data.teacherId,
+        studyRoomId: data.studyRoomId,
+        title: data.title,
+        content: contentString,
+        mediaIds,
+      },
+      {
+        onError: (error) => {
+          handleApiError(error, classifyConsultationError, {
+            // INQUIRY_NOT_FOUND, STUDY_ROOM_NOT_EXIST
+            onContext: () => {
+              setTimeout(() => {
+                router.back();
+              }, 1500);
+            },
+          });
+        },
+      }
+    );
   };
 
   return (

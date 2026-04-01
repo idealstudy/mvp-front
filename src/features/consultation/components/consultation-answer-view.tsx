@@ -4,12 +4,14 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
-import { ConsultationDetail } from '@/entities/consultation';
+import { ConsultationDetail, consultationKeys } from '@/entities/consultation';
 import { useDeleteConsultationAnswer } from '@/features/consultation/hooks/use-answer-form';
 import { useTeacherProfile } from '@/features/consultation/hooks/use-teacher-profile';
 import { ConfirmDialog } from '@/shared/components/dialog';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui';
+import { classifyConsultationError, handleApiError } from '@/shared/lib/errors';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ConsultationAnswerView({
   consultation,
@@ -22,6 +24,8 @@ export default function ConsultationAnswerView({
 }) {
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data: teacherProfile } = useTeacherProfile(
     consultation.targetTeacherId
@@ -41,6 +45,17 @@ export default function ConsultationAnswerView({
   const handleDeleteAnswer = () => {
     deleteConsultationAnswerMutation.mutate(undefined, {
       onSuccess: () => setIsDeleteDialogOpen(false),
+      onError: (error) => {
+        handleApiError(error, classifyConsultationError, {
+          // INQUIRY_NOT_FOUND, INQUIRY_ANSWER_NOT_FOUND, INQUIRY_ANSWER_FORBIDDEN
+          onContext: () => {
+            setIsDeleteDialogOpen(false);
+            queryClient.invalidateQueries({
+              queryKey: consultationKeys.detail(consultation.id),
+            });
+          },
+        });
+      },
     });
   };
 
