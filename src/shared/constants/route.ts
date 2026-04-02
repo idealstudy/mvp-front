@@ -32,6 +32,7 @@ const DASHBOARD = {
 const ROOM = {
   DETAIL: (id: number) => `/study-rooms/${id}/note`,
   CREATE: '/study-rooms/new',
+  EDIT: (id: number) => `/study-rooms/${id}/edit`,
 } as const;
 
 /* ─────────────────────────────────────────────────────

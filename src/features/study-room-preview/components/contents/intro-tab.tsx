@@ -11,6 +11,7 @@ import {
   parseEditorContent,
 } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
+import { PRIVATE } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { trackDedu101StudyroomInfoView } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
@@ -50,7 +51,7 @@ export const StudyroomPreviewIntroTab = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const moveToStudyRoomEditPage = () => {
-    router.push(`/study-rooms/${studyRoomId}/edit`);
+    router.push(PRIVATE.ROOM.EDIT(studyRoomId));
   };
 
   const characteristicContent =

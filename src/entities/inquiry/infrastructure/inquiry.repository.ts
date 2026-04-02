@@ -1,4 +1,8 @@
-import { InquiryAnswerPayload, InquiryPayload } from '@/entities/inquiry/types';
+import {
+  InquiryAnswerPayload,
+  InquiryPayload,
+  InquiryStatus,
+} from '@/entities/inquiry/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
 
@@ -72,7 +76,7 @@ const getMyInquiries = async (params: { page: number; size: number }) => {
 const getReceivedInquiries = async (params: {
   page: number;
   size: number;
-  status?: 'PENDING' | 'ANSWERED';
+  status?: InquiryStatus;
 }) => {
   const response = await api.private.get('/teacher/inquiries', { params });
   return unwrapEnvelope(response, dto.list);

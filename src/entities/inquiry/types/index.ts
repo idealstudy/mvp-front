@@ -1,10 +1,14 @@
-import { dto, payload } from '@/entities/inquiry/infrastructure/inquiry.dto';
+import {
+  InquiryStatusSchema,
+  dto,
+  payload,
+} from '@/entities/inquiry/infrastructure/inquiry.dto';
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
  * Status Type
  * ────────────────────────────────────────────────────*/
-export type InquiryStatus = 'PENDING' | 'ANSWERED';
+export type InquiryStatus = z.infer<typeof InquiryStatusSchema>;
 
 /* ─────────────────────────────────────────────────────
  * Frontend Type

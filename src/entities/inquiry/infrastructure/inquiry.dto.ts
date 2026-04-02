@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
+ * Status Schema
+ * ────────────────────────────────────────────────────*/
+export const InquiryStatusSchema = z.enum(['PENDING', 'ANSWERED']);
+
+/* ─────────────────────────────────────────────────────
  * 문의 상세 DTO
  * ────────────────────────────────────────────────────*/
 const InquiryDetailDtoSchema = z.object({
@@ -16,7 +21,7 @@ const InquiryDetailDtoSchema = z.object({
     content: z.string(),
     expiresAt: z.string().nullable(),
   }),
-  status: z.enum(['PENDING', 'ANSWERED']),
+  status: InquiryStatusSchema,
   regDate: z.string(),
   modDate: z.string(),
   answer: z
@@ -42,7 +47,7 @@ const InquiryListItemDtoSchema = z.object({
   studyRoomId: z.number().nullish(),
   studyRoomName: z.string().nullish(),
   title: z.string(),
-  status: z.enum(['PENDING', 'ANSWERED']),
+  status: InquiryStatusSchema,
   regDate: z.string(),
 });
 
