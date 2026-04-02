@@ -6,6 +6,9 @@ const NotificationCategorySchema = z.enum([
   'TEACHING_NOTE',
   'STUDY_ROOM',
   'QNA',
+  'NOTICE',
+  'COLUMN_ARTICLE',
+  'INQUIRY',
 ]);
 
 /**
@@ -13,15 +16,21 @@ const NotificationCategorySchema = z.enum([
  * - QNA: qnaId, studyRoomId
  * - STUDY_ROOM: studyRoomId
  * - TEACHING_NOTE: teachingNoteId
+ * - HOMEWORK: homeworkId
+ * - COLUMN_ARTICLE: articleId, title
+ * - INQUIRY: inquiryId, title
  * TODO
  * - SYSTEM: noticeId (예정)
- * - HOMEWORK: homeworkId (예정)
  */
 const TargetMetadataSchema = z.object({
   qnaId: z.string().optional(),
   studyRoomId: z.string().optional(),
   teachingNoteId: z.string().optional(),
   homeworkId: z.string().optional(),
+  noticeId: z.string().optional(),
+  articleId: z.string().optional(),
+  inquiryId: z.string().optional(),
+  title: z.string().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

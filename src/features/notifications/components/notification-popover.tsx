@@ -107,7 +107,7 @@ export function NotificationPopover() {
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="mr-4 max-w-80 overflow-hidden p-0">
+        <PopoverContent className="tablet:max-w-100 mr-4 max-w-80 overflow-hidden p-0">
           <header className="flex items-center justify-between border-b px-6 py-4">
             <h2 className="text-lg font-semibold">알림</h2>
             <PopoverClose asChild>
@@ -148,7 +148,7 @@ export function NotificationPopover() {
                       {item.categoryKorean}
                     </p>
                     <p
-                      className={`mt-1 truncate text-sm leading-relaxed hover:underline ${item.isRead ? 'font-body2-normal text-text-sub2' : 'font-body2-heading'}`}
+                      className={`mt-1 line-clamp-2 text-sm leading-relaxed hover:underline ${item.isRead ? 'font-body2-normal text-text-sub2' : 'font-body2-heading'}`}
                     >
                       {item.message}
                     </p>

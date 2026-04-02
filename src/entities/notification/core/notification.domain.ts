@@ -12,6 +12,9 @@ const CATEGORY_TO_KOREAN: Record<string, string> = {
   TEACHING_NOTE: '수업노트',
   STUDY_ROOM: '스터디룸 초대',
   QNA: '질문',
+  NOTICE: '공지',
+  COLUMN_ARTICLE: '칼럼',
+  INQUIRY: '문의',
 };
 
 const getCategoryKorean = (category: string): string =>
@@ -28,6 +31,9 @@ const getTargetUrl = (
     teachingNoteId?: string;
     noticeId?: string;
     homeworkId?: string;
+    articleId?: string;
+    inquiryId?: string;
+    title?: string;
   } | null
 ): string | null => {
   if (!metadata) return null;
@@ -41,6 +47,11 @@ const getTargetUrl = (
       return `/study-rooms/${metadata.studyRoomId}/qna/${metadata.qnaId}`;
     case 'HOMEWORK':
       return `/study-rooms/${metadata.studyRoomId}/homework/${metadata.homeworkId}`;
+    case 'COLUMN_ARTICLE':
+      return `/community/column/${metadata.articleId}`;
+    case 'INQUIRY':
+      return `/inquiry/${metadata.inquiryId}`;
+    case 'NOTICE':
     case 'SYSTEM':
     default:
       return null;
