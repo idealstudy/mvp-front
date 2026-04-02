@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { useMemberStore } from '@/store';
 
 interface TeacherProfileExtraProps {
   teacherNoteCount: number;
@@ -26,6 +27,7 @@ export default function TeacherProfileExtra({
   const router = useRouter();
 
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const role = useMemberStore((state) => state.member?.role);
 
   const handleShareProfile = () => {
     navigator.clipboard.writeText(
@@ -82,13 +84,15 @@ export default function TeacherProfileExtra({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Button
-          onClick={() => {
-            router.push(PUBLIC.INQUIRY.CREATE(teacherId));
-          }}
-        >
-          수업 상담하기
-        </Button>
+        {role !== 'ROLE_TEACHER' && (
+          <Button
+            onClick={() => {
+              router.push(PUBLIC.INQUIRY.CREATE(teacherId));
+            }}
+          >
+            수업 상담하기
+          </Button>
+        )}
         <Button
           onClick={handleShareProfile}
           variant="secondary"

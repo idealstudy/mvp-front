@@ -123,11 +123,13 @@ export const StudyroomPreviewSidebar = ({
         numberOfStudents={data.numberOfStudents}
         numberOfQuestion={data.numberOfQuestions}
       />
-      <SidebarButton
-        onClick={handleBtnClick}
-        btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
-        disabled={loading}
-      />
+      {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
+        <SidebarButton
+          onClick={handleBtnClick}
+          btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
+          disabled={loading}
+        />
+      )}
       <Button
         onClick={moveToProfile}
         variant="secondary"

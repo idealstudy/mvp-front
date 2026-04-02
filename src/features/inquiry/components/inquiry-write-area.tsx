@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { useRouter } from 'next/navigation';
 
@@ -77,6 +78,13 @@ export default function InquiryWriteArea({
     },
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    if (member?.role === 'ROLE_TEACHER') {
+      toast('선생님은 수업 문의를 남길 수 없습니다.');
+      setTimeout(() => router.replace('/dashboard'), 1500);
+    }
+  }, [member, router]);
 
   // 저장된 제목과 본문 내용 가져오기 (sessionStorage)
   useEffect(() => {
