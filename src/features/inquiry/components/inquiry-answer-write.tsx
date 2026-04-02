@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { InquiryDetail, inquiryKeys } from '@/entities/inquiry';
@@ -23,6 +24,13 @@ import { cn, extractText } from '@/shared/lib';
 import { classifyInquiryError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { JSONContent } from '@tiptap/react';
+
+// 이미지 업로드 중 버튼 비활성화
+const hasUploadingNode = (node: JSONContent): boolean => {
+  if (node.attrs?.isUploading === true) return true;
+  return (node.content ?? []).some(hasUploadingNode);
+};
 
 export default function InquiryAnswerWrite({
   inquiry,
@@ -55,12 +63,17 @@ export default function InquiryAnswerWrite({
   const {
     handleSubmit,
     control,
+    watch,
     formState: { errors, isDirty, isValid },
   } = useForm<InquiryAnswerForm>({
     resolver: zodResolver(InquiryAnswerFormSchema),
     defaultValues: { content: initialContent },
     mode: 'onChange',
   });
+
+  // 이미지 업로드 중 버튼 비활성화
+  const content = watch('content');
+  const isUploading = useMemo(() => hasUploadingNode(content), [content]);
 
   const onSubmit = (data: InquiryAnswerForm) => {
     const { contentString, mediaIds } = prepareContentForSave(data.content);
@@ -141,7 +154,9 @@ export default function InquiryAnswerWrite({
             )}
             <Button
               type="submit"
-              disabled={mutation.isPending || !isDirty || !isValid}
+              disabled={
+                mutation.isPending || !isDirty || !isValid || isUploading
+              }
               size="small"
             >
               {mutation.isPending && '저장 중'}

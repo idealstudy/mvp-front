@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -31,6 +31,13 @@ import { cn, extractText } from '@/shared/lib';
 import { classifyInquiryError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { JSONContent } from '@tiptap/react';
+
+// 이미지 업로드 중 버튼 비활성화
+const hasUploadingNode = (node: JSONContent): boolean => {
+  if (node.attrs?.isUploading === true) return true;
+  return (node.content ?? []).some(hasUploadingNode);
+};
 
 export default function InquiryWriteArea({
   teacherId,
@@ -67,6 +74,7 @@ export default function InquiryWriteArea({
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors, isDirty, isValid },
   } = useForm<InquiryForm>({
     resolver: zodResolver(InquiryFormSchema),
@@ -79,9 +87,15 @@ export default function InquiryWriteArea({
     mode: 'onChange',
   });
 
+  // 이미지 업로드 중 버튼 비활성화
+  const content = watch('content');
+  const isUploading = useMemo(() => hasUploadingNode(content), [content]);
+
   useEffect(() => {
     if (member?.role === 'ROLE_TEACHER') {
-      toast('선생님은 수업 문의를 남길 수 없습니다.');
+      toast.error('선생님은 수업 문의를 남길 수 없습니다.', {
+        toastId: 'teacher-inquiry-blocked',
+      });
       setTimeout(() => router.replace('/dashboard'), 1500);
     }
   }, [member, router]);
@@ -273,7 +287,7 @@ export default function InquiryWriteArea({
           {/* 제출 버튼 */}
           <Button
             type="submit"
-            disabled={mutation.isPending || !isDirty || !isValid}
+            disabled={mutation.isPending || !isDirty || !isValid || isUploading}
             className="self-end"
           >
             {mutation.isPending ? '저장 중' : '문의 남기기'}
