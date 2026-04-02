@@ -32,7 +32,6 @@ export const TextEditor = ({
   minHeight = '200px',
   maxHeight = '600px',
   readOnly = false,
-  targetType = 'TEACHING_NOTE',
   onImageUpload: customImageUpload,
   onFileUpload: customFileUpload,
   onError,
@@ -52,7 +51,6 @@ export const TextEditor = ({
     handleFileUpload,
     handleFileBatchUpload,
   } = useEditorUploads({
-    targetType,
     onImageUpload: customImageUpload,
     onFileUpload: customFileUpload,
     onError,

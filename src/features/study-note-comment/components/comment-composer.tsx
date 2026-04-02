@@ -126,7 +126,6 @@ export const CommentComposer = ({
           value={value}
           onChange={onChange}
           placeholder={`${submitLabel} 내용을 입력해 주세요.`}
-          targetType="TEACHING_NOTE"
           minHeight="120px"
           maxHeight="240px"
         />

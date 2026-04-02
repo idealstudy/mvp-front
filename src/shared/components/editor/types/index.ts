@@ -44,8 +44,6 @@ export type NotionEditorProps = TextEditorProps & {
   maxHeight?: string;
   /** 읽기 전용 */
   readOnly?: boolean;
-  /** 미디어 업로드 타겟 타입 */
-  targetType?: MediaTargetType;
   /** 커스텀 이미지 업로드 핸들러 (제공하지 않으면 기본 API 사용) */
   onImageUpload?: (file: File) => Promise<string>;
   /** 커스텀 파일 업로드 핸들러 */
@@ -97,14 +95,6 @@ export type UseAutoSaveReturn = {
 // Upload Types
 // ============================================================================
 
-/** 미디어 타겟 타입 */
-export type MediaTargetType =
-  | 'TEACHING_NOTE'
-  | 'QNA'
-  | 'HOMEWORK'
-  | 'HOMEWORK_SUBMISSION'
-  | 'HOMEWORK_FEEDBACK';
-
 /** Presign 요청용 미디어 에셋 */
 export type PresignMediaAsset = {
   fileName: string;
@@ -114,7 +104,6 @@ export type PresignMediaAsset = {
 
 /** Presign 요청 Body */
 export type PresignBatchRequest = {
-  targetType: MediaTargetType;
   mediaAssetList: PresignMediaAsset[];
 };
 
@@ -145,14 +134,12 @@ export type MediaUploadResult = {
 
 /** useImageUpload 훅 옵션 */
 export type UseImageUploadOptions = {
-  targetType?: MediaTargetType;
   onSuccess?: (result: MediaUploadResult) => void;
   onError?: (error: Error) => void;
 };
 
 /** useFileUpload 훅 옵션 */
 export type UseFileUploadOptions = {
-  targetType?: MediaTargetType;
   onSuccess?: (result: MediaUploadResult) => void;
   onError?: (error: Error) => void;
 };

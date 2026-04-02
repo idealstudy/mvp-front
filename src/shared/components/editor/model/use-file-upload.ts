@@ -2,7 +2,6 @@ import { api } from '@/shared/api';
 import { useMutation } from '@tanstack/react-query';
 
 import {
-  MediaTargetType,
   MediaUploadResult,
   PresignBatchResponse,
   UseFileUploadOptions,
@@ -10,22 +9,18 @@ import {
 
 type UploadFileParams = {
   file: File;
-  targetType: MediaTargetType;
 };
 
 type UploadFileBatchParams = {
   files: File[];
-  targetType: MediaTargetType;
 };
 
 const uploadFileApi = async ({
   file,
-  targetType,
 }: UploadFileParams): Promise<MediaUploadResult> => {
   const presignData = await api.private.post<PresignBatchResponse>(
     '/common/media/presign-batch',
     {
-      targetType,
       mediaAssetList: [
         {
           fileName: file.name,
@@ -63,7 +58,6 @@ const uploadFileApi = async ({
 // 배치 업로드 API
 const uploadFileBatchApi = async ({
   files,
-  targetType,
 }: UploadFileBatchParams): Promise<MediaUploadResult[]> => {
   if (files.length === 0) {
     return [];
@@ -73,7 +67,6 @@ const uploadFileBatchApi = async ({
   const presignData = await api.private.post<PresignBatchResponse>(
     '/common/media/presign-batch',
     {
-      targetType,
       mediaAssetList: files.map((file) => ({
         fileName: file.name,
         contentType: file.type,
@@ -113,10 +106,8 @@ const uploadFileBatchApi = async ({
 };
 
 export const useFileUpload = (options?: UseFileUploadOptions) => {
-  const targetType = options?.targetType ?? 'TEACHING_NOTE';
-
   const mutation = useMutation({
-    mutationFn: (file: File) => uploadFileApi({ file, targetType }),
+    mutationFn: (file: File) => uploadFileApi({ file }),
     onSuccess: (result) => {
       options?.onSuccess?.(result);
     },
@@ -126,7 +117,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
   });
 
   const batchMutation = useMutation({
-    mutationFn: (files: File[]) => uploadFileBatchApi({ files, targetType }),
+    mutationFn: (files: File[]) => uploadFileBatchApi({ files }),
   });
 
   return {

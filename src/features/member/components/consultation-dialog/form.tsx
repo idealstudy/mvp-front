@@ -19,7 +19,6 @@ export const ConsultationFormContent = ({ content, onChange }: Props) => {
           value={content}
           onChange={onChange}
           placeholder="학생의 특징이나 특이사항을 입력해주세요"
-          targetType="TEACHING_NOTE"
           minHeight="220px"
           maxHeight="220px"
         />

@@ -147,7 +147,6 @@ export const CommentAnswerCardContent = ({
           value={editContent ?? initialEditContent}
           onChange={onEditContentChange}
           placeholder="내용을 수정해주세요.."
-          targetType="TEACHING_NOTE"
           minHeight="120px"
           maxHeight="240px"
         />

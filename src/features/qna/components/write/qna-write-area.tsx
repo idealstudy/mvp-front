@@ -210,7 +210,6 @@ const WriteArea = ({ studyRoomId }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="질문 내용을 입력해주세요..."
-                      targetType="QNA"
                     />
                   );
                 }}

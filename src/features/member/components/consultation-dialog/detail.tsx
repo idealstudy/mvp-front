@@ -20,7 +20,6 @@ export const ConsultationDetailContent = ({
         <TextEditor
           value={content}
           onChange={onChange}
-          targetType="TEACHING_NOTE"
           minHeight="320px"
           maxHeight="320px"
         />

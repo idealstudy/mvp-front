@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { UPLOAD_ERROR_MESSAGES } from '@/shared/components/editor/constants';
 import { useFileUpload } from '@/shared/components/editor/model/use-file-upload';
 import { useImageUpload } from '@/shared/components/editor/model/use-image-upload';
-import { MediaTargetType } from '@/shared/components/editor/types';
 import {
   getUploadErrorMessage,
   validateAttachmentFile,
@@ -12,7 +11,6 @@ import {
 import { Editor } from '@tiptap/react';
 
 export type UseEditorUploadsOptions = {
-  targetType?: MediaTargetType;
   onImageUpload?: (file: File) => Promise<string>;
   onFileUpload?: (
     file: File
@@ -34,7 +32,6 @@ export type UseEditorUploadsReturn = {
 };
 
 export const useEditorUploads = ({
-  targetType,
   onImageUpload: customImageUpload,
   onFileUpload: customFileUpload,
   onError,
@@ -43,7 +40,6 @@ export const useEditorUploads = ({
     uploadAsync: uploadImageAsync,
     uploadBatchAsync: uploadImageBatchAsync,
   } = useImageUpload({
-    targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
     },
@@ -53,7 +49,6 @@ export const useEditorUploads = ({
     uploadAsync: uploadFileAsync,
     uploadBatchAsync: uploadFileBatchAsync,
   } = useFileUpload({
-    targetType,
     onError: (error) => {
       onError?.(error.message || UPLOAD_ERROR_MESSAGES.UPLOAD_FAILED);
     },

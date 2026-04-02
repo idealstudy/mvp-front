@@ -204,7 +204,6 @@ export const StudentSubmissionContent = ({
               value={editContent || parsedEditorContent}
               onChange={(value) => setEditContent(value)}
               placeholder="내용을 수정하세요..."
-              targetType="HOMEWORK"
             />
             <div className="flex justify-end gap-2">
               <Button
