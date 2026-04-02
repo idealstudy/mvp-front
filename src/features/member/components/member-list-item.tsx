@@ -64,7 +64,7 @@ export const MemberListItem = ({
               {member.name}
             </p>
             <span className="font-body2-normal text-gray-7">
-              · {isParent ? '학부모' : '학생'}
+              · {isParent ? '보호자' : '학생'}
             </span>
           </div>
 
@@ -97,14 +97,14 @@ export const MemberListItem = ({
       </div>
 
       {/* Right: 기록 badge + 기록 button + dropdown */}
-      {(isTeacher || isCurrentUser) && (
-        <div className="tablet:gap-2 tablet:self-auto flex shrink-0 items-center gap-1.5 self-end">
-          {consultationCount > 0 && (
-            <div className="border-gray-5 font-caption-normal hover:bg-gray-1 tablet:font-label-normal tablet:px-[11px] tablet:py-[3px] inline-flex items-center rounded-full border px-2.5 py-0.5">
-              기록 {consultationCount}
-            </div>
-          )}
-          <div className="tablet:gap-1 flex gap-0.5">
+      <div className="tablet:gap-2 tablet:self-auto flex shrink-0 items-center gap-1.5 self-end">
+        {(isTeacher || isCurrentUser) && consultationCount > 0 && (
+          <div className="border-gray-5 font-caption-normal tablet:font-label-normal tablet:px-[11px] tablet:py-[3px] inline-flex items-center rounded-full border px-2.5 py-0.5">
+            기록 {consultationCount}
+          </div>
+        )}
+        <div className="tablet:gap-1 flex gap-0.5">
+          {(isTeacher || isCurrentUser) && !isParent && (
             <button
               type="button"
               className="text-gray-5 hover:bg-gray-1 flex items-center justify-center rounded-md"
@@ -119,14 +119,16 @@ export const MemberListItem = ({
                 className="tablet:block hidden"
               />
             </button>
+          )}
+          {isTeacher && (
             <MembersDropdown
               studyRoomId={studyRoomId}
               memberId={member.id}
               isTerminated={member.isTerminated}
             />
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {(dialogView === 'list' || dialogView === 'form') && (
         <ConsultationDialogs

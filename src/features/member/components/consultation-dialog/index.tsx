@@ -71,8 +71,10 @@ export const ConsultationDialogs = ({
   const [detailContent, setDetailContent] = useState<TextEditorValue>(
     initialTextEditorValue
   );
+  const [originalDetailContent, setOriginalDetailContent] =
+    useState<TextEditorValue>(initialTextEditorValue);
 
-  const { data: pageData } = useConsultationList(
+  const { data: pageData, isLoading: isListLoading } = useConsultationList(
     studyRoomId,
     numericStudentId,
     page,
@@ -194,6 +196,7 @@ export const ConsultationDialogs = ({
               size="small"
               className="font-body2-heading px-12"
               onClick={handleFormSave}
+              disabled={toPlainText(formContent).trim() === ''}
             >
               저장
             </Button>
@@ -272,16 +275,27 @@ export const ConsultationDialogs = ({
       );
     }
 
+    const isDetailUnchanged =
+      JSON.stringify(detailContent) === JSON.stringify(originalDetailContent);
+
     const detailFooter = isTeacher ? (
       isEditing ? (
-        <Button
-          variant="primary"
-          size="small"
-          className="font-body2-heading px-12"
-          onClick={handleDetailSave}
-        >
-          수정 완료
-        </Button>
+        <div className="ml-auto flex items-center gap-6">
+          {isDetailUnchanged && (
+            <span className="font-label-normal text-gray-7">
+              변경 사항이 없습니다.
+            </span>
+          )}
+          <Button
+            variant="primary"
+            size="small"
+            className="font-body2-heading px-12"
+            onClick={handleDetailSave}
+            disabled={isDetailUnchanged}
+          >
+            수정 완료
+          </Button>
+        </div>
       ) : (
         <>
           <Button
@@ -296,7 +310,10 @@ export const ConsultationDialogs = ({
             variant="primary"
             size="small"
             className="font-body2-heading px-12"
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              setOriginalDetailContent(detailContent);
+              setIsEditing(true);
+            }}
           >
             수정
           </Button>
@@ -346,6 +363,7 @@ export const ConsultationDialogs = ({
       <ConsultationListContent
         items={accItems}
         hasMore={hasMore}
+        isLoading={isListLoading}
         onLoadMore={() => setPage((p) => p + 1)}
         onSelectItem={(id) => {
           setSelectedId(Number(id));
