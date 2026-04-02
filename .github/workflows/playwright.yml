@@ -25,6 +25,7 @@ jobs:
           E2E_TEACHER_PASSWORD: ${{ secrets.E2E_TEACHER_PASSWORD }}
           E2E_STUDENT_EMAIL: ${{ secrets.E2E_STUDENT_EMAIL }}
           E2E_STUDENT_PASSWORD: ${{ secrets.E2E_STUDENT_PASSWORD }}
+          E2E_TEST_STUDY_ROOM_ID: ${{ secrets.E2E_TEST_STUDY_ROOM_ID }}
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
