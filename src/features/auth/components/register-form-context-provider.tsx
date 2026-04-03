@@ -55,6 +55,7 @@ export const RegisterFormContextProvider = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
+  const from = searchParams.get('from');
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(RegisterForm),
@@ -95,13 +96,13 @@ export const RegisterFormContextProvider = ({
         onSuccess: () => {
           // 회원가입 성공 이벤트
           trackAuthSignupSuccess(data.role ?? null, 'email');
-          if (inviteToken) {
-            router.replace(
-              `${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`
-            );
-          } else {
-            router.replace(PUBLIC.CORE.LOGIN);
-          }
+          const params = new URLSearchParams();
+          if (inviteToken) params.set('token', inviteToken);
+          if (from) params.set('from', from);
+          const query = params.toString();
+          router.replace(
+            query ? `${PUBLIC.CORE.LOGIN}?${query}` : PUBLIC.CORE.LOGIN
+          );
         },
         onError: () => {
           trackAuthSignupFail('email');

@@ -29,6 +29,7 @@ const LoginFormtwStyles = {
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
+  const from = searchParams.get('from');
 
   const {
     register,
@@ -65,6 +66,14 @@ export default function LoginForm() {
 
   const isLoading = isLoggingIn || isSubmitting;
   const isInValid = Object.keys(errors).length > 0;
+
+  const getSignupHref = () => {
+    const params = new URLSearchParams();
+    if (inviteToken) params.set('token', inviteToken);
+    if (from) params.set('from', from);
+    const query = params.toString();
+    return query ? `${PUBLIC.CORE.SIGNUP}?${query}` : PUBLIC.CORE.SIGNUP;
+  };
 
   return (
     <>
@@ -118,11 +127,7 @@ export default function LoginForm() {
         <div className="flex justify-center gap-2">
           <span>아직 회원이 아니신가요?</span>
           <Link
-            href={
-              inviteToken
-                ? `${PUBLIC.CORE.SIGNUP}?token=${encodeURIComponent(inviteToken)}`
-                : PUBLIC.CORE.SIGNUP
-            }
+            href={getSignupHref()}
             className={LoginFormtwStyles.link}
           >
             회원가입
