@@ -99,7 +99,7 @@ const QuestionAnswer = ({
 
   const handleSave = () => {
     if (!editContent) return;
-    const { contentString } = prepareContentForSave(editContent);
+    const { contentString, mediaIds } = prepareContentForSave(editContent);
 
     updateMessage(
       {
@@ -107,6 +107,7 @@ const QuestionAnswer = ({
         contextId,
         messageId: id,
         content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {

@@ -2,7 +2,7 @@ import { Role } from '@/entities/member';
 import { Pageable } from '@/types/http';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { QnADetailResponse, QnAStatus, QnAVisibility } from '../types';
+import { QnAStatus, QnAVisibility } from '../types';
 import {
   deleteQnA,
   deleteStudentQnAMessage,
@@ -91,6 +91,7 @@ export const useWriteQnAMessageMutation = (role: Role | undefined) => {
       studyRoomId: number;
       contextId: number;
       content: string;
+      mediaIds?: string[];
     }) => {
       if (role === 'ROLE_TEACHER') return writeTeacherQnAMessage(args);
       if (role === 'ROLE_STUDENT') return writeStudentQnAMessage(args);
@@ -121,6 +122,7 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
       contextId: number;
       messageId: number;
       content: string;
+      mediaIds?: string[];
     }) => {
       if (role === 'ROLE_TEACHER')
         return updateTeacherQnAMessage({
@@ -128,6 +130,7 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
           contextId: args.contextId,
           messageId: args.messageId,
           content: args.content,
+          mediaIds: args.mediaIds,
         });
       if (role === 'ROLE_STUDENT')
         return updateStudentQnAMessage({
@@ -135,12 +138,13 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
           contextId: args.contextId,
           messageId: args.messageId,
           content: args.content,
+          mediaIds: args.mediaIds,
         });
       throw new Error('role not ready');
     },
     onSuccess: (_, variables) => {
-      queryClient.setQueryData<QnADetailResponse>(
-        [
+      queryClient.invalidateQueries({
+        queryKey: [
           'qnaDetail',
           role,
           {
@@ -148,19 +152,8 @@ export const useUpdateQnAMessageMutation = (role: Role | undefined) => {
             contextId: variables.contextId,
           },
         ],
-        (old) => {
-          if (!old) return old;
-
-          return {
-            ...old,
-            messages: old.messages.map((m) =>
-              m.id === variables.messageId
-                ? { ...m, content: variables.content }
-                : m
-            ),
-          };
-        }
-      );
+        refetchType: 'active',
+      });
     },
   });
 };
