@@ -5,7 +5,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextEditor } from '@/shared/components/editor';
+import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
@@ -40,6 +40,8 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
   const isButtonDisabled = !isValid || isPending || isSubmitting;
 
   const onSubmit = (data: { content: JSONContent }) => {
+    const { contentString, mediaIds } = prepareContentForSave(data.content);
+
     // 답글 작성 클릭 이벤트
     trackReplyCreateClick(
       {
@@ -54,7 +56,8 @@ const WriteArea = ({ studyRoomId, contextId }: Props) => {
       {
         studyRoomId,
         contextId,
-        content: JSON.stringify(data.content),
+        content: contentString,
+        mediaIds,
       },
       {
         onSuccess: () => {

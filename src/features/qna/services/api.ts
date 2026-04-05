@@ -33,10 +33,14 @@ export const writeStudentQnAMessage = async (args: {
   studyRoomId: number;
   contextId: number;
   content: string;
+  mediaIds?: string[];
 }) => {
   await api.private.post(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages`,
-    { content: args.content }
+    {
+      content: args.content,
+      mediaIds: args.mediaIds ?? [],
+    }
   );
 };
 
@@ -45,11 +49,13 @@ export const writeTeacherQnAMessage = async (args: {
   studyRoomId: number;
   contextId: number;
   content: string;
+  mediaIds?: string[];
 }) => {
   await api.private.post(
     `/teacher/study-rooms/${args.studyRoomId}/qna/${args.contextId}/answers`,
     {
       content: args.content,
+      mediaIds: args.mediaIds ?? [],
     }
   );
 };
@@ -130,10 +136,14 @@ export const updateStudentQnAMessage = async (args: {
   contextId: number;
   messageId: number;
   content: string;
+  mediaIds?: string[];
 }) => {
   await api.private.patch(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
-    { content: args.content }
+    {
+      content: args.content,
+      mediaIds: args.mediaIds ?? [],
+    }
   );
 };
 
@@ -156,10 +166,14 @@ export const updateTeacherQnAMessage = async (args: {
   contextId: number;
   messageId: number;
   content: string;
+  mediaIds?: string[];
 }) => {
   await api.private.patch(
     `/study-rooms/${args.studyRoomId}/qna/${args.contextId}/messages/${args.messageId}`,
-    { content: args.content }
+    {
+      content: args.content,
+      mediaIds: args.mediaIds ?? [],
+    }
   );
 };
 
