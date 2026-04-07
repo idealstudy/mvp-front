@@ -151,7 +151,7 @@ export default function StudyRoomFlow({
       schoolInfo: {
         schoolLevel: data.schoolInfo
           .schoolLevel as StudyRoomFormValues['schoolInfo']['schoolLevel'],
-        grade: data.schoolInfo.grade,
+        grade: data.schoolInfo.grade ?? undefined,
       },
     });
   }, [mode, data, methods]);
@@ -360,6 +360,7 @@ export default function StudyRoomFlow({
             cancelText="취소"
             onConfirm={onConfirmClick}
             pending={isMutating}
+            confirmButtonTestId="study-room-edit-confirm-button"
           />
         )}
       {mode === 'edit' &&
