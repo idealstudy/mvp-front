@@ -27,12 +27,16 @@ export default function SocialLoginButton() {
   return (
     <div className="my-4 block items-center">
       {error === 'kakao_failed' && (
-        <div className="text-system-warning mb-4">
+        <div
+          data-testid="login-kakao-error-message"
+          className="text-system-warning mb-4"
+        >
           카카오 로그인에 실패했습니다. 다시 시도해주세요.
         </div>
       )}
 
       <a
+        data-testid="login-kakao-button"
         href={kakaoAuthUrl}
         onClick={trackAuthKakaoLoginClick}
         aria-label="카카오로 로그인"

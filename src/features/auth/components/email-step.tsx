@@ -69,16 +69,18 @@ export const EmailStep = ({ onNext }: EmailStepProps) => {
         <Form.Control>
           <Input
             placeholder="이메일을 입력해주세요."
+            data-testid="signup-email-input"
             {...form.register('email')}
           />
         </Form.Control>
-        <Form.ErrorMessage>
+        <Form.ErrorMessage data-testid="signup-email-error-message">
           {form.formState.errors.email?.message}
         </Form.ErrorMessage>
       </Form.Item>
       <Button
         size="large"
         onClick={onNextButtonClick}
+        data-testid="signup-email-next-button"
       >
         계속
       </Button>

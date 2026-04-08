@@ -112,7 +112,11 @@ export default function LoginForm() {
               {...register('password')}
             />
           </Form.Control>
-          <Form.ErrorMessage>{errors.password?.message}</Form.ErrorMessage>
+          <Form.ErrorMessage>
+            <span data-testid="login-password-error-message">
+              {errors.password?.message}
+            </span>
+          </Form.ErrorMessage>
         </Form.Item>
 
         <Button

@@ -128,6 +128,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
               className="rounded-r-none border-r-0"
               defaultValue={form.getValues('email')}
               readOnly
+              data-testid="signup-credential-email-input"
             />
           </Form.Control>
           <Button
@@ -135,6 +136,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
             className="h-[56px] rounded-l-none"
             disabled={!canResend}
             onClick={onSendButtonClick}
+            data-testid="signup-send-verification-button"
           >
             {resendCountdown !== null
               ? `${resendCountdown}초 후 재전송`
@@ -151,6 +153,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
               maxLength={VERIFICATION_CODE_LENGTH}
               className="rounded-r-none border-r-0"
               placeholder="이메일로 전송된 숫자 코드 여섯자리"
+              data-testid="signup-verification-code-input"
               {...form.register('verificationCode')}
             />
           </Form.Control>
@@ -162,11 +165,12 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
               emailCodeVerified ||
               verificationCodeInputValue.length !== VERIFICATION_CODE_LENGTH
             }
+            data-testid="signup-verify-code-button"
           >
             확인
           </Button>
         </div>
-        <Form.ErrorMessage>
+        <Form.ErrorMessage data-testid="signup-verification-code-error-message">
           {form.formState.errors.verificationCode?.message}
         </Form.ErrorMessage>
       </Form.Item>
@@ -176,6 +180,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           <Input
             type="password"
             placeholder="8자 이상의 영문 대·소문자 및 숫자, 특수문자"
+            data-testid="signup-password-input"
             {...form.register('password')}
           />
         </Form.Control>
@@ -189,6 +194,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           <Input
             type="password"
             placeholder="8자 이상의 영문 대·소문자 및 숫자, 특수문자"
+            data-testid="signup-confirm-password-input"
             {...form.register('confirmPassword')}
           />
         </Form.Control>
@@ -201,12 +207,16 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
           <Checkbox
             checked={termsCheckboxGroup.isAllChecked}
             onCheckedChange={termsCheckboxGroup.toggleAll}
+            data-testid="signup-terms-all-checkbox"
           />
           전체 약관 동의
         </Checkbox.Label>
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('terms')} />
+            <Checkbox
+              {...termsCheckboxGroup.getCheckboxProps('terms')}
+              data-testid="signup-terms-required-terms-checkbox"
+            />
             디에듀 이용약관 동의 [필수]
           </Checkbox.Label>
           <Link
@@ -219,7 +229,10 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         </div>
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('privacy')} />
+            <Checkbox
+              {...termsCheckboxGroup.getCheckboxProps('privacy')}
+              data-testid="signup-terms-required-privacy-checkbox"
+            />
             개인정보 수집 및 이용방침 동의 [필수]
           </Checkbox.Label>
           <Link
@@ -232,8 +245,11 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         </div>
         <div className="flex items-center">
           <Checkbox.Label className="flex-1">
-            <Checkbox {...termsCheckboxGroup.getCheckboxProps('ageCheck')} />만
-            14세 이상입니다 [필수]
+            <Checkbox
+              {...termsCheckboxGroup.getCheckboxProps('ageCheck')}
+              data-testid="signup-terms-required-age-checkbox"
+            />
+            만 14세 이상입니다 [필수]
           </Checkbox.Label>
           <Link
             href={link.ageCheck}
@@ -261,6 +277,7 @@ export const CredentialStep = ({ onNext }: CredentialStepProps) => {
         size="large"
         onClick={onNextButtonClick}
         disabled={!canMoveToNext}
+        data-testid="signup-credential-next-button"
       >
         계속
       </Button>

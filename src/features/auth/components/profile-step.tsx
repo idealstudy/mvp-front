@@ -83,6 +83,7 @@ export const ProfileStep = () => {
         <Form.Control>
           <Input
             placeholder="수업에 사용할 실명"
+            data-testid="signup-name-input"
             {...form.register('name')}
           />
         </Form.Control>
@@ -100,6 +101,7 @@ export const ProfileStep = () => {
               <Input
                 className="rounded-r-none border-r-0"
                 placeholder="010-0000-0000"
+                data-testid="signup-phone-number-input"
                 value={field.value}
                 onChange={(e) => {
                   field.onChange(formatPhoneNumber(e.target.value));
@@ -114,6 +116,7 @@ export const ProfileStep = () => {
             className="h-[56px] rounded-l-none"
             type="button"
             onClick={onCheckPhoneNumberButtonClick}
+            data-testid="signup-check-phone-duplicate-button"
             disabled={
               isPhoneNumberChecked ||
               !isPhoneNumberValid ||
@@ -132,6 +135,7 @@ export const ProfileStep = () => {
         type="submit"
         disabled={!isPhoneNumberChecked}
         onClick={trackAuthSignupClick}
+        data-testid="signup-submit-button"
       >
         가입 완료
       </Button>
