@@ -12,6 +12,9 @@ type Props = {
   className?: string;
   isMore?: boolean;
   isMoreHref?: string;
+  isAll?: boolean;
+  headerAction?: React.ReactNode;
+  count?: number;
   onMoreClick?: () => void;
 };
 
@@ -22,6 +25,9 @@ const DashboardSection = ({
   className,
   isMore = false,
   isMoreHref = '',
+  isAll = false,
+  headerAction,
+  count,
   onMoreClick,
 }: Props) => {
   return (
@@ -35,7 +41,12 @@ const DashboardSection = ({
               'font-body1-heading tablet:font-headline1-heading text-gray-12'
             )}
           >
-            {title}
+            <div className="flex items-center gap-2">
+              {headerAction} {title}
+              <span className="font-headline1-normal text-orange-7">
+                {count}
+              </span>
+            </div>
           </h1>
           {description && (
             <p
@@ -53,7 +64,9 @@ const DashboardSection = ({
             className="text-gray-8 flex gap-1"
             onClick={onMoreClick}
           >
-            <span className="font-body2-heading">더보기</span>
+            <span className="font-body2-heading">
+              {isAll ? '전체 보기' : '더보기'}
+            </span>
             <ChevronRight className="h-5 w-5" />
           </Link>
         )}

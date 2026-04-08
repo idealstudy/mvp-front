@@ -9,11 +9,40 @@ import {
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
 
-import { HeaderReport } from './report';
+import { HeaderReport, type HeaderStat } from './report';
 
 const DashboardHeader = () => {
   const member = useMemberStore((s) => s.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
+
+  let nameSuffix = '님';
+
+  switch (member?.role) {
+    case 'ROLE_TEACHER':
+      nameSuffix = '선생님';
+      break;
+    case 'ROLE_PARENT':
+      nameSuffix = '학부모님';
+      break;
+    default:
+      nameSuffix = '님';
+  }
+
+  let greetingMessage = '';
+
+  switch (member?.role) {
+    case 'ROLE_TEACHER':
+      greetingMessage = '오늘은 어떤 수업을 진행하세요?';
+      break;
+    case 'ROLE_PARENT':
+      greetingMessage = '학습 여정을 함께 확인해보세요';
+      break;
+    case 'ROLE_STUDENT':
+      greetingMessage = '학습기록이 차곡차곡 쌓이고 있어요';
+      break;
+    default:
+      greetingMessage = '안녕하세요? 디에듀 입니다.';
+  }
 
   const { data: teacherReport, isPending: teacherIsPending } =
     useTeacherDashboardReportQuery({
@@ -23,10 +52,11 @@ const DashboardHeader = () => {
     useStudentDashboardReportQuery({
       enabled: member?.role === 'ROLE_STUDENT',
     });
+  // TODO: 부모님 대시보드 api 추가 예정
 
   const isPending = isTeacher ? teacherIsPending : studentIsPending;
 
-  const teacherStats = [
+  const teacherStats: HeaderStat[] = [
     {
       value: teacherReport?.studyRoomCount ?? 0,
       unit: '개',
@@ -41,7 +71,7 @@ const DashboardHeader = () => {
     { value: teacherReport?.qnaCount ?? 0, unit: '개', label: '질문' },
   ];
 
-  const studentStats = [
+  const studentStats: HeaderStat[] = [
     {
       value: studentReport?.studyRoomCount ?? 0,
       unit: '개',
@@ -65,7 +95,28 @@ const DashboardHeader = () => {
     },
   ];
 
-  const stats = member?.role === 'ROLE_TEACHER' ? teacherStats : studentStats;
+  const parentStats: HeaderStat[] = [
+    { value: 10, unit: '개', label: '학습 소식' },
+    { value: 1, unit: '건', label: '답변 대기' },
+    { value: 2, unit: '건', label: '답변 완료' },
+    { value: 2, unit: '명', label: '매칭된 학생' },
+  ];
+
+  let stats: HeaderStat[] = [];
+
+  switch (member?.role) {
+    case 'ROLE_TEACHER':
+      stats = teacherStats;
+      break;
+    case 'ROLE_STUDENT':
+      stats = studentStats;
+      break;
+    case 'ROLE_PARENT':
+      stats = parentStats;
+      break;
+    default:
+      stats = [];
+  }
 
   return (
     <div
@@ -88,17 +139,15 @@ const DashboardHeader = () => {
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className="font-bold">{member?.name}</span>{' '}
-            {isTeacher ? '선생님' : '님'},
+            <span className="font-bold">{member?.name}</span> {nameSuffix},
             <br />
-            {isTeacher
-              ? '오늘은 어떤 수업을 진행하세요?'
-              : '학습기록이 차곡차곡 쌓이고 있어요'}
+            {greetingMessage}
           </p>
           <HeaderReport
             className="tablet:flex hidden"
             stats={stats}
-            isPending={isPending}
+            // TODO: api 연결 후 주석 풀기
+            // isPending={isPending}
           />
         </div>
 

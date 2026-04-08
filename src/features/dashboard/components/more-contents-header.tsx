@@ -3,7 +3,27 @@ import Link from 'next/link';
 import { cn } from '@/shared/lib';
 import { ChevronLeft } from 'lucide-react';
 
-export const QnAHeader = ({ isTeacher }: { isTeacher: boolean }) => {
+interface MoreContentsHeaderPorps {
+  isTeacher?: boolean;
+  kind?: string;
+}
+
+export const MoreContentsHeader = ({
+  isTeacher,
+  kind,
+}: MoreContentsHeaderPorps) => {
+  let headerTitle = '';
+  switch (kind) {
+    case 'QNA':
+      headerTitle = isTeacher
+        ? '답변이 필요한 질문만 확인해보세요'
+        : '답변 받은 질문만 확인해보세요';
+    case 'STUDY_NEWS':
+      headerTitle = '내 아이의 학습 소식';
+    case 'STUDY_CONSULATION':
+      headerTitle = '내 아이의 학습 일지';
+  }
+
   return (
     <div
       className={cn(
@@ -27,9 +47,7 @@ export const QnAHeader = ({ isTeacher }: { isTeacher: boolean }) => {
       </div>
       <div className="tablet:pt-19 tablet:pb-9 tablet:h-[155px] flex h-20 w-full pt-8 pb-4">
         <h1 className="font-headline2-heading tablet:font-title-heading text-gray-12 text-left">
-          {isTeacher
-            ? '답변이 필요한 질문만 확인해보세요'
-            : '답변 받은 질문만 확인해보세요'}
+          {headerTitle}
         </h1>
       </div>
     </div>

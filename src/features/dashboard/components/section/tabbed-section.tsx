@@ -26,12 +26,14 @@ export type StudyRoom = { id: number; name: string };
 type DropdownProps = {
   studyRooms: StudyRoom[];
   selectedId: number | null;
+  student?: boolean;
   onSelect: (id: number | null) => void;
 };
 
 export const StudyRoomDropdown = ({
   studyRooms,
   selectedId,
+  student,
   onSelect,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,22 +83,24 @@ export const StudyRoomDropdown = ({
             'flex flex-col py-1'
           )}
         >
-          <li>
-            <button
-              type="button"
-              onClick={() => {
-                onSelect(null);
-                setIsOpen(false);
-              }}
-              className={cn(
-                'font-body1-normal text-gray-12 w-full px-5 py-3 text-left',
-                'hover:bg-gray-2 transition-colors',
-                selectedId === null && 'font-body1-heading text-orange-7'
-              )}
-            >
-              전체 스터디룸
-            </button>
-          </li>
+          {!student && (
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelect(null);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  'font-body1-normal text-gray-12 w-full px-5 py-3 text-left',
+                  'hover:bg-gray-2 transition-colors',
+                  selectedId === null && 'font-body1-heading text-orange-7'
+                )}
+              >
+                전체 스터디룸
+              </button>
+            </li>
+          )}
           {studyRooms.map((room) => (
             <li key={room.id}>
               <button

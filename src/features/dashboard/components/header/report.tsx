@@ -2,12 +2,14 @@
 
 import { cn } from '@/shared/lib';
 
+export interface HeaderStat {
+  value: number;
+  unit: string;
+  label: string;
+}
+
 interface HeaderReportProps {
-  stats: {
-    value: number;
-    unit: string;
-    label: string;
-  }[];
+  stats: HeaderStat[];
   isPending?: boolean;
   className?: string;
 }
