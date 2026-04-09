@@ -118,10 +118,9 @@ const ParentDashboardInquiryListItemDtoSchema = z.object({
   regDate: z.string(),
 });
 
-const ParentDashboardInquiryListDtoSchema =
-  ParentDashboardListBaseDtoSchema.extend({
-    content: z.array(ParentDashboardInquiryListItemDtoSchema),
-  });
+const ParentDashboardInquiryListDtoSchema = z.object({
+  content: z.array(ParentDashboardInquiryListItemDtoSchema),
+});
 
 /* ─────────────────────────────────────────────────────
  * 내보내기
