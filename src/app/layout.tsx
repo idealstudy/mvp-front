@@ -6,6 +6,7 @@ import { SITE_CONFIG } from '@/config/site';
 import { Header } from '@/layout/header';
 import { GlobalProvider } from '@/providers';
 import '@/shared/components/editor/styles/text-editor.css';
+import { ServiceWorkerRegister } from '@/shared/components/pwa/service-worker-register';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -16,9 +17,11 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     other: {
-      'naver-site-verification': process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
+      'naver-site-verification':
+        process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
     },
   },
+  manifest: '/manifest.webmanifest',
 };
 
 export default function RootLayout({
@@ -78,6 +81,7 @@ export default function RootLayout({
           </noscript>
         )}
         <GlobalProvider>
+          <ServiceWorkerRegister />
           <Header />
           <div className="mt-header-height flex flex-col">{children}</div>
         </GlobalProvider>
