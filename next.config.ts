@@ -25,4 +25,8 @@ export default withSentryConfig(nextConfig, {
   silent: true,
   telemetry: false,
   widenClientFileUpload: true,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  org: 'dedu',
+  project: 'dedu',
+  sentryUrl: 'https://app.glitchtip.com',
 });
