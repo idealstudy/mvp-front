@@ -10,11 +10,13 @@ export const mockTeachers: PublicTeacherProfile[] = [
     name: '이현우',
     nickname: '현우쌤',
     bio: '서울대학교 국어국문학과 졸업. 10년 이상 수능 국어 전문 강사로 활동하며, 수많은 학생들을 명문대에 합격시켰습니다.',
-    specialties: ['수능 국어', '고등학교', '문학'],
+    specialties: ['수능 국어', '고등학교', '문학', '문학2'],
     experience: '10년',
     rating: 4.9,
     reviewCount: 342,
     studyRoomCount: 5,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7일 전
     isNewTeacher: true,
   },
@@ -28,6 +30,8 @@ export const mockTeachers: PublicTeacherProfile[] = [
     rating: 4.8,
     reviewCount: 256,
     studyRoomCount: 3,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14일 전
     isNewTeacher: true,
   },
@@ -41,6 +45,8 @@ export const mockTeachers: PublicTeacherProfile[] = [
     rating: 5.0,
     reviewCount: 189,
     studyRoomCount: 4,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21일 전
     isNewTeacher: true,
   },
@@ -54,6 +60,8 @@ export const mockTeachers: PublicTeacherProfile[] = [
     rating: 4.9,
     reviewCount: 425,
     studyRoomCount: 6,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3일 전
     isNewTeacher: true,
   },
@@ -67,6 +75,8 @@ export const mockTeachers: PublicTeacherProfile[] = [
     rating: 4.7,
     reviewCount: 198,
     studyRoomCount: 3,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10일 전
     isNewTeacher: true,
   },
@@ -80,6 +90,8 @@ export const mockTeachers: PublicTeacherProfile[] = [
     rating: 4.8,
     reviewCount: 312,
     studyRoomCount: 4,
+    studentCount: 12,
+    teachingNoteCount: 34,
     joinedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5일 전
     isNewTeacher: true,
   },

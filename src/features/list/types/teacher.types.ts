@@ -10,6 +10,8 @@ export interface PublicTeacherProfile {
   rating?: number;
   reviewCount?: number;
   studyRoomCount: number;
+  studentCount?: number;
+  teachingNoteCount?: number;
   joinedAt: string;
   isNewTeacher?: boolean; // 신규 가입 여부 (예: 30일 이내)
   //   regDate: string; // 가입일
