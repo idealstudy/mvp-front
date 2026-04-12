@@ -38,11 +38,20 @@ const logout = async (): Promise<void> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [DELETE] 회원 탈퇴
+ * 소프트 딜리트
+ * ────────────────────────────────────────────────────*/
+const withdraw = async (): Promise<void> => {
+  await api.private.delete('/members');
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   member: {
     getMember: getCurrentMember,
     logout: logout,
+    withdraw,
   },
 };
