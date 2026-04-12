@@ -18,6 +18,8 @@ export const HomeworkTabShell = ({ mode, path, studyRoomId }: Props) => {
           buttonText="과제 만들기"
           storageKey="study-homework-title"
           targetPath="homework/new"
+          inputTestId="homework-create-title-input"
+          buttonTestId="homework-create-button"
         />
       )}
       {path === 'homework' && mode === 'ROLE_STUDENT' && (

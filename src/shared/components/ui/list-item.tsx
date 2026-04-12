@@ -55,7 +55,12 @@ export const ListItem = ({
       </div>
       <div className="flex flex-col items-end">
         <div className="flex flex-row items-center gap-1">
-          <p className="text-gray-scale-gray-70">{rightTitle}</p>
+          <p
+            data-testid="student-check-submit"
+            className="text-gray-scale-gray-70"
+          >
+            {rightTitle}
+          </p>
           <div
             className="flex shrink-0 flex-row items-center"
             onClick={(e) => e.preventDefault()}

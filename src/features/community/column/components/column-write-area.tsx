@@ -19,6 +19,7 @@ import {
 import {
   TextEditor,
   initialTextEditorValue,
+  mergeResolvedContentWithMediaIds,
   parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
@@ -53,12 +54,6 @@ const getFirstImageMediaId = (node: JSONContent): string | undefined => {
 const hasUploadingNode = (node: JSONContent): boolean => {
   if (node.attrs?.isUploading === true) return true;
   return (node.content ?? []).some(hasUploadingNode);
-};
-
-// 이미지(썸네일) 존재 여부 확인
-const hasImageNode = (node: JSONContent): boolean => {
-  if (node.type === 'image') return true;
-  return (node.content ?? []).some(hasImageNode);
 };
 
 export default function ColumnWriteArea({
@@ -120,7 +115,10 @@ export default function ColumnWriteArea({
     if (existingData && isEditMode) {
       reset({
         title: existingData.title,
-        content: parseEditorContent(existingData.resolvedContent.content),
+        content: mergeResolvedContentWithMediaIds(
+          parseEditorContent(existingData.content),
+          parseEditorContent(existingData.resolvedContent.content)
+        ),
         tags: existingData.tags,
       });
     }
@@ -172,7 +170,7 @@ export default function ColumnWriteArea({
     const thumbnailMediaId = getFirstImageMediaId(data.content);
 
     // 썸네일용 사진이 없을 경우, 알림
-    if (!thumbnailMediaId && !hasImageNode(data.content)) {
+    if (!thumbnailMediaId) {
       setShowImageDialog(true);
       return;
     }
