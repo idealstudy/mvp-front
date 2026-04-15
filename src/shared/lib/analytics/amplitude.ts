@@ -4,6 +4,7 @@ let initialized = false;
 
 export const initAmplitude = (): void => {
   if (typeof window === 'undefined') return;
+  if (process.env.NODE_ENV !== 'production') return;
   if (initialized) return;
 
   const apiKey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
@@ -12,7 +13,6 @@ export const initAmplitude = (): void => {
   amplitude.init(apiKey, {
     defaultTracking: {
       sessions: true,
-      pageViews: true,
     },
   });
 

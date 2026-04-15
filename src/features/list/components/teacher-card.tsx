@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
-import { trackDedu101TeacherClick } from '@/shared/lib/gtm/trackers';
+import { trackDedu101TeacherClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 import { PublicTeacherProfile } from '../types/teacher.types';

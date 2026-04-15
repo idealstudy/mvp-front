@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { PRIVATE } from '@/shared/constants';
-import { trackDashboardStudyroomClick } from '@/shared/lib/gtm/trackers';
+import { trackDashboardStudyroomClick } from '@/shared/lib/analytics';
 
 import {
   useStudentDashboardStudyRoomListQuery,

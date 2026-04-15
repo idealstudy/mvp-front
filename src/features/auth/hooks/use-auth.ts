@@ -4,7 +4,7 @@ import { getCurrentMemberOptions, repository } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
 import { useSession } from '@/providers';
 import { api } from '@/shared/api';
-import { trackAuthLoginSuccess } from '@/shared/lib/gtm/trackers';
+import { trackAuthLoginSuccess } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 

@@ -15,7 +15,7 @@ import { SortKey } from '@/features/qna/types';
 import { useSession } from '@/providers';
 import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
-import { trackDedu101ListScrollDepth } from '@/shared/lib/gtm/trackers';
+import { trackDedu101ListScrollDepth } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 export default function ListLayoutClient({

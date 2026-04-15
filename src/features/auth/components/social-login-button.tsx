@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { env, serverEnv } from '@/shared/constants/api';
-import { trackAuthKakaoLoginClick } from '@/shared/lib/gtm/trackers';
+import { trackAuthKakaoLoginClick } from '@/shared/lib/analytics';
 
 export default function SocialLoginButton() {
   const searchParams = useSearchParams();

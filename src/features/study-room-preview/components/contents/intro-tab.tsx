@@ -13,7 +13,7 @@ import {
 import { MiniSpinner } from '@/shared/components/loading';
 import { PRIVATE } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
-import { trackDedu101StudyroomInfoView } from '@/shared/lib/gtm/trackers';
+import { trackDedu101StudyroomInfoView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 import { usePreviewMainInfo } from '../../hooks/use-preview';
