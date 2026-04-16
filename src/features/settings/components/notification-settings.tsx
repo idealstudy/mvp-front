@@ -1,16 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-
-import Link from 'next/link';
-
 import { NotificationCategory } from '@/entities/notification';
 import {
   useNotificationSettings,
   useUpdateNotificationSetting,
 } from '@/features/settings/hooks/use-notification';
 import { Toggle } from '@/shared/components/ui/toggle';
-import { link } from '@/shared/constants';
 
 type ServiceSubCategory = Extract<
   NotificationCategory,
@@ -36,7 +31,7 @@ const SERVICE_SUB_ITEMS: Record<
 const SERVICE_SUB_KEYS = Object.keys(SERVICE_SUB_ITEMS) as ServiceSubCategory[];
 
 export default function NotificationSettings() {
-  const [event, setEvent] = useState(true);
+  // const [event, setEvent] = useState(true);
   const { data: notificationSettings } = useNotificationSettings();
   const updateNotificationSettingMutation = useUpdateNotificationSetting();
 
@@ -45,7 +40,7 @@ export default function NotificationSettings() {
   );
 
   const getEnabled = (category: NotificationCategory) =>
-    settingsMap.get(category) ?? true;
+    settingsMap.get(category) ?? false;
 
   const serviceEnabled = getEnabled('ALL');
 
@@ -97,15 +92,15 @@ export default function NotificationSettings() {
         </div>
       </div>
 
+      {/* TODO API 연결 */}
       {/* 이벤트 혜택 알림 */}
-      <div className="border-line-line1 rounded-xl border bg-white p-6">
+      {/* <div className="border-line-line1 rounded-xl border bg-white p-6">
         <div className="mb-2 flex items-center gap-2">
           <Toggle
             checked={event}
             onCheckedChange={setEvent}
           />
           <span className="font-body1-heading">이벤트 혜택 알림</span>
-          {/* TODO API 연결 시 동적 값으로 교체 필요 */}
           <span className="font-caption-normal text-text-sub2">
             수신 동의 일자 : 2026.04.12 14:12
           </span>
@@ -121,7 +116,7 @@ export default function NotificationSettings() {
             혜택 및 이벤트 정보 수신 동의 전문 보기
           </Link>
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
