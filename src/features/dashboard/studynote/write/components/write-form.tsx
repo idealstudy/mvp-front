@@ -7,10 +7,13 @@ import { useRouter } from 'next/navigation';
 
 import { teacherKeys } from '@/entities/teacher';
 import { useUpdateTeacherOnboarding } from '@/features/dashboard/hooks/use-update-onboarding';
+import { StudyNoteWriteQueryKey } from '@/features/dashboard/studynote/write/services/query-options';
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
-import { trackStudynoteCreateSuccess } from '@/shared/lib/gtm/trackers';
+import { getApiError } from '@/shared/lib';
+import { trackStudynoteCreateSuccess } from '@/shared/lib/analytics';
+import { classifyStudyNoteError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -28,7 +31,8 @@ export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
   const queryClient = useQueryClient();
 
   const { mutate } = useWriteStudyNoteMutation();
-  const { handleSubmit } = useFormContext<StudyNoteForm>();
+  const { handleSubmit, setError, resetField } =
+    useFormContext<StudyNoteForm>();
 
   const onSubmit = (data: StudyNoteForm) => {
     const parsingData = transformFormDataToServerFormat(data);
@@ -61,6 +65,34 @@ export const StudyNoteWriteForm = ({ children }: PropsWithChildren) => {
 
         // 마이페이지 캐시 무효화
         queryClient.invalidateQueries({ queryKey: teacherKeys.all });
+      },
+      onError: (error) => {
+        const apiError = getApiError(error);
+
+        handleApiError(error, classifyStudyNoteError, {
+          // DUPLICATED_TEACHING_NOTE_TITLE, TEACHING_NOTE_GROUP_NOT_EXIST
+          onField: (message) => {
+            if (apiError?.code === 'DUPLICATED_TEACHING_NOTE_TITLE') {
+              setError('title', { message });
+            }
+            if (apiError?.code === 'TEACHING_NOTE_GROUP_NOT_EXIST') {
+              queryClient.invalidateQueries({
+                queryKey: StudyNoteWriteQueryKey.studyNoteGroups(
+                  data.studyRoomId
+                ),
+              });
+              resetField('teachingNoteGroupId');
+            }
+          },
+          // STUDY_ROOM_NOT_EXIST
+          onContext: () => {
+            router.replace(PRIVATE.DASHBOARD.INDEX);
+          },
+          // MEMBER_NOT_EXIST
+          onAuth: () => {
+            setTimeout(() => router.replace('/login'), 1500);
+          },
+        });
       },
     });
   };

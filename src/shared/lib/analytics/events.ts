@@ -1,18 +1,12 @@
-/**
- * GA4 이벤트 타입 정의
- *
- * 확장 가능한 구조로 이벤트를 관리합니다.
- * 새로운 이벤트 추가 시 이 파일에 타입을 정의하면 타입 안전성이 보장됩니다.
- */
 import type { Role } from '@/entities/member';
 
-import { getGaUserType } from '../gtm';
+import { getUserType } from './user';
 
 /**
  * 공통 파라미터 타입
  */
 export interface CommonEventParams {
-  user_type: 'teacher' | 'student' | 'guardian' | 'not';
+  user_type: 'teacher' | 'student' | 'guardian' | 'admin' | 'not';
 }
 
 /**
@@ -88,7 +82,7 @@ export interface StudynoteGroupParams extends RoomEventParams {
  */
 export interface StudentInviteParams extends RoomEventParams {
   from_user_id: number;
-  to_user_id: string; // 현재 이메일이나 추후 ID로
+  to_user_id: string;
 }
 
 /**
@@ -200,11 +194,62 @@ export interface Dedu101StudyroomInfoViewParams extends CommonEventParams {
   section: 'intro' | 'curriculum' | 'review' | 'price';
   view_ms: number;
 }
+
 /*
  * 회원가입 단계 진입 이벤트 파라미터
  */
 export interface AuthSignupStepEnterParams extends CommonEventParams {
   step: 'email' | 'credential' | 'profile';
+}
+
+/**
+ * 대시보드 탭 타입
+ */
+export type DashboardTab = 'studynote' | 'member' | 'homework';
+
+/**
+ * 대시보드 탭 클릭 이벤트 파라미터
+ */
+export interface DashboardTabClickParams extends CommonEventParams {
+  tab: DashboardTab;
+}
+
+/**
+ * 대시보드 스터디룸 필터 선택 이벤트 파라미터
+ */
+export interface DashboardStudyroomFilterParams extends CommonEventParams {
+  room_id: number | null;
+}
+
+/**
+ * 대시보드 스터디룸 클릭 이벤트 파라미터
+ */
+export interface DashboardStudyroomClickParams extends CommonEventParams {
+  room_id: number;
+}
+
+/**
+ * 대시보드 수업노트 클릭 이벤트 파라미터
+ */
+export interface DashboardNoteClickParams extends CommonEventParams {
+  room_id: number;
+  note_id: number;
+}
+
+/**
+ * 대시보드 과제 클릭 이벤트 파라미터
+ */
+export interface DashboardHomeworkClickParams extends CommonEventParams {
+  room_id: number;
+  homework_id: number;
+}
+
+/**
+ * 대시보드 QnA 클릭 이벤트 파라미터
+ */
+export interface DashboardQnaClickParams extends CommonEventParams {
+  room_id: number;
+  question_id: number;
 }
 
 /**
@@ -332,56 +377,6 @@ export const GA4_EVENTS = {
 } as const;
 
 /**
- * 대시보드 탭 타입
- */
-export type DashboardTab = 'studynote' | 'member' | 'homework';
-
-/**
- * 대시보드 탭 클릭 이벤트 파라미터
- */
-export interface DashboardTabClickParams extends CommonEventParams {
-  tab: DashboardTab;
-}
-
-/**
- * 대시보드 스터디룸 필터 선택 이벤트 파라미터
- */
-export interface DashboardStudyroomFilterParams extends CommonEventParams {
-  room_id: number | null;
-}
-
-/**
- * 대시보드 스터디룸 클릭 이벤트 파라미터
- */
-export interface DashboardStudyroomClickParams extends CommonEventParams {
-  room_id: number;
-}
-
-/**
- * 대시보드 수업노트 클릭 이벤트 파라미터
- */
-export interface DashboardNoteClickParams extends CommonEventParams {
-  room_id: number;
-  note_id: number;
-}
-
-/**
- * 대시보드 과제 클릭 이벤트 파라미터
- */
-export interface DashboardHomeworkClickParams extends CommonEventParams {
-  room_id: number;
-  homework_id: number;
-}
-
-/**
- * 대시보드 QnA 클릭 이벤트 파라미터
- */
-export interface DashboardQnaClickParams extends CommonEventParams {
-  room_id: number;
-  question_id: number;
-}
-
-/**
  * user_type을 자동으로 추가하는 헬퍼 함수
  */
 export const withUserType = <T extends object>(
@@ -390,6 +385,6 @@ export const withUserType = <T extends object>(
 ): Record<string, unknown> => {
   return {
     ...params,
-    user_type: getGaUserType(role),
+    user_type: getUserType(role),
   };
 };

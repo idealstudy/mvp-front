@@ -13,7 +13,7 @@ import { Dialog } from '@/shared/components/ui/dialog';
 import {
   trackStudentInviteClick,
   trackStudentInviteSuccess,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 export const InvitationDialog = ({

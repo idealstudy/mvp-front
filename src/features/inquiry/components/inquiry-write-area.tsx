@@ -321,7 +321,7 @@ export default function InquiryWriteArea({
         }}
         onCancel={() => setIsLoginModalOpen(false)}
         title="로그인이 필요해요"
-        description="로그인 후 문의를 남길 수 있어요."
+        description="작성 중인 내용은 로그인 후 이어서 작성할 수 있어요."
         confirmText="로그인하기"
         cancelText="취소"
       />

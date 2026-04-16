@@ -74,6 +74,7 @@ export const HomeworkMetaFields = () => {
             type="text"
             placeholder="과제의 제목을 입력해주세요."
             disabled={isPending}
+            data-testid="homework-title-input"
           />
         </Form.Control>
         <Form.ErrorMessage className="text-system-warning text-sm">
@@ -96,6 +97,7 @@ export const HomeworkMetaFields = () => {
                 placeholder="과제와 연관된 수업노트를 연결해주세요."
                 error={!!errors.teachingNoteIds}
                 disabled={isPending}
+                data-testid="homework-teaching-note-tag-input"
               />
             )}
           />
@@ -125,6 +127,7 @@ export const HomeworkMetaFields = () => {
                   error={!!errors.studentIds}
                   placeholder="이 과제를 제출할 학생을 선택해주세요."
                   disabled={isPending}
+                  dataTestId="homework-student-tag-input"
                 />
               );
             }}
@@ -152,6 +155,7 @@ export const HomeworkMetaFields = () => {
               {...register('deadline')}
               type="datetime-local"
               disabled={isPending}
+              data-testid="homework-deadline-input"
             />
           </Form.Control>
           <Form.ErrorMessage>{errors.deadline?.message}</Form.ErrorMessage>
@@ -172,6 +176,7 @@ export const HomeworkMetaFields = () => {
                     value={opt.value}
                     {...register('reminderOffsets')}
                     disabled={isPending}
+                    data-testid={`homework-reminder-${opt.value}-checkbox`}
                   />
                   {opt.label}
                 </label>
@@ -197,6 +202,7 @@ export const HomeworkMetaFields = () => {
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="수업 내용을 입력해주세요..."
+                  data-testid="homework-content-editor"
                 />
               );
             }}

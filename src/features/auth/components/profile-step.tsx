@@ -8,7 +8,7 @@ import { PHONE_REGEX } from '@/features/auth/schemas/register';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { trackAuthSignupClick } from '@/shared/lib/gtm/trackers';
+import { trackAuthSignupClick } from '@/shared/lib/analytics';
 import axios from 'axios';
 
 import { useCheckPhoneNumberDuplicate } from '../services/query';

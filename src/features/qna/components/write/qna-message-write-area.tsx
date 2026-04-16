@@ -9,8 +9,8 @@ import { TextEditor, prepareContentForSave } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { useRole } from '@/shared/hooks/use-role';
+import { trackReplyCreateClick } from '@/shared/lib/analytics';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
-import { trackReplyCreateClick } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { JSONContent } from '@tiptap/react';
 

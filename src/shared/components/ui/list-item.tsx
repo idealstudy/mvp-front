@@ -13,6 +13,8 @@ export const ListItem = ({
   rightTitle,
   dropdown,
   rightSubTitle,
+  dataTestId,
+  titleTestId,
 }: {
   title: React.ReactNode;
   subtitle?: string;
@@ -24,12 +26,15 @@ export const ListItem = ({
   rightTitle?: React.ReactNode;
   dropdown?: React.ReactNode;
   rightSubTitle?: string;
+  dataTestId?: string;
+  titleTestId?: string;
 }) => {
   return (
     <Link
       key={id}
       className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
       href={href}
+      data-testid={dataTestId}
     >
       <div className="flex flex-row items-center gap-3">
         {icon}
@@ -40,7 +45,7 @@ export const ListItem = ({
         )}
         <div className="flex flex-col items-start justify-between">
           <div className="flex flex-row items-center gap-2">
-            <p>{title}</p>
+            <p data-testid={titleTestId}>{title}</p>
             {tag && tag}
           </div>
           <p className="font-caption-normal text-gray-scale-gray-60">
@@ -50,7 +55,12 @@ export const ListItem = ({
       </div>
       <div className="flex flex-col items-end">
         <div className="flex flex-row items-center gap-1">
-          <p className="text-gray-scale-gray-70">{rightTitle}</p>
+          <p
+            data-testid="student-check-submit"
+            className="text-gray-scale-gray-70"
+          >
+            {rightTitle}
+          </p>
           <div
             className="flex shrink-0 flex-row items-center"
             onClick={(e) => e.preventDefault()}

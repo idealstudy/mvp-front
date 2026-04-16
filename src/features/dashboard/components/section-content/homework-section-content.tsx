@@ -7,7 +7,7 @@ import { TeacherDashboardHomeworkListItemDTO } from '@/entities/teacher';
 import { Pagination } from '@/shared/components/ui/pagination';
 import { PRIVATE } from '@/shared/constants/route';
 import { cn } from '@/shared/lib';
-import { trackDashboardHomeworkClick } from '@/shared/lib/gtm/trackers';
+import { trackDashboardHomeworkClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 type DeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';

@@ -58,6 +58,11 @@ export const StudyroomConfirmDialog = ({
             className="w-[120px]"
             size="xsmall"
             variant="secondary"
+            data-testid={
+              type === 'delete'
+                ? 'studyroom-delete-confirm-button'
+                : 'studyroom-delete-success-button'
+            }
             onClick={() => {
               if (type === 'delete') {
                 onDelete?.();

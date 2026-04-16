@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
-import { trackGnbAlarmClick } from '@/shared/lib/gtm/trackers';
+import { trackGnbAlarmClick } from '@/shared/lib/analytics';
 import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 

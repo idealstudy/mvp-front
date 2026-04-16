@@ -57,9 +57,13 @@ const VisibilitySection = () => {
                 <Select.Trigger
                   placeholder="범위를 선택하세요"
                   className="w-1/2"
+                  data-testid="note-visibility-trigger"
                 />
                 <Select.Content>
-                  <Select.Option value={STUDY_NOTE_VISIBILITY.TEACHER_ONLY}>
+                  <Select.Option
+                    value={STUDY_NOTE_VISIBILITY.TEACHER_ONLY}
+                    data-testid="note-visibility-TEACHER_ONLY"
+                  >
                     나만 보기
                   </Select.Option>
                   <Select.Option

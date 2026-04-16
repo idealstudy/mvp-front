@@ -95,6 +95,8 @@ export const StudyNotesList = ({
       }
       href={`/study-rooms/${studyRoomId}/note/${item.id}`}
       id={item.id}
+      dataTestId="note-list-item"
+      titleTestId="note-list-title"
     />
   ));
 };

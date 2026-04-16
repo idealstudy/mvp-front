@@ -3,7 +3,7 @@ import { StudyNoteDetailContentsSection } from '@/features/dashboard/studynote/d
 import { StudyNoteDetailMetaSection } from '@/features/dashboard/studynote/detail/components/meta-section';
 import { StudyNoteDetailCommentSection } from '@/features/study-note-comment/components';
 import { ColumnLayout } from '@/layout/column-layout';
-import { PageViewTracker } from '@/shared/components/gtm';
+import { PageViewTracker } from '@/shared/components/analytics';
 
 type Props = {
   params: Promise<{ id: string; noteId: string }>;

@@ -14,6 +14,8 @@ type Props = {
   buttonText: string;
   storageKey: string;
   targetPath: string;
+  buttonTestId?: string;
+  inputTestId?: string;
 };
 
 export const StudyNoteSearch = ({
@@ -23,6 +25,8 @@ export const StudyNoteSearch = ({
   buttonText,
   storageKey,
   targetPath,
+  buttonTestId,
+  inputTestId,
 }: Props) => {
   const [isLoading, setisLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,11 +59,13 @@ export const StudyNoteSearch = ({
           className="desktop:w-[504px] border-line-line1 h-[56px] px-6 py-[18px]"
           placeholder={placeholder}
           maxLength={30}
+          data-testid={inputTestId}
         />
         <Button
           type="submit"
           className="desktop:w-[162px] h-[56px] rounded-[8px] text-white"
           disabled={isLoading}
+          data-testid={buttonTestId}
         >
           <span className="font-body2-normal font-bold">
             {isLoading ? '페이지 이동중...' : buttonText}
