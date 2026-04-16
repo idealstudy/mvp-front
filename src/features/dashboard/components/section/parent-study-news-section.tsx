@@ -1,151 +1,99 @@
-import { useState } from 'react';
-
+import {
+  ParentDashboardConnectedStudentListDTO,
+  ParentDashboardStudyNewsListDTO,
+} from '@/entities/parent';
 import { Skeleton } from '@/shared/components/loading';
 
-import {
-  ParentStudyNewsItemData,
-  StudyNewsItem,
-} from '../section-content/parent-study-news-item';
+import { StudyNewsItem } from '../section-content/parent-study-news-item';
 import DashboardSection from './single-section';
 import { StudyRoomDropdown } from './tabbed-section';
 
-const mockStudentData = [
-  {
-    studentId: 101,
-    studentName: '김학생',
-    studyRooms: [
-      {
-        studyRoomId: 1001,
-        studyRoomName: '스터디룸',
-      },
-    ],
-  },
-  {
-    studentId: 102,
-    studentName: '이학생',
-    studyRooms: [
-      {
-        studyRoomId: 2001,
-        studyRoomName: '스터디룸',
-      },
-      {
-        studyRoomId: 2002,
-        studyRoomName: '스터디룸2',
-      },
-    ],
-  },
-];
+interface StudyNewsSectionProps {
+  connectedStudentData: ParentDashboardConnectedStudentListDTO;
+  studyNewsData: ParentDashboardStudyNewsListDTO;
+  studyNewsPending: boolean;
+  selectedStudentId: number | null;
+  setSelectedStudentId: (id: number | null) => void;
+}
 
-export const mockStudyNews: ParentStudyNewsItemData[] = [
-  {
-    type: 'TEACHING_NOTE',
-    id: 45,
-    title: '삼각함수 핵심정리',
-    regDate: '2026-04-05T14:00:00',
-    teacherName: '김수학',
-    studyRoomName: '수학 심화반',
-  },
-  {
-    type: 'HOMEWORK',
-    id: 12,
-    title: '미적분 Chapter3 풀어오기',
-    regDate: '2026-04-05T18:30:00',
-    teacherName: '김수학',
-    studyRoomName: '수학 심화반',
-    deadline: '2026-04-10T23:59:59',
-    deadlineLabel: 'UPCOMING',
-    dday: 4,
-  },
-  {
-    type: 'QNA',
-    id: 78,
-    title: '3번 문제 질문이요',
-    regDate: '2026-04-04T09:15:00',
-    teacherName: '김수학',
-    studyRoomName: '수학 심화반',
-    status: 'COMPLETED',
-  },
-  {
-    type: 'HOMEWORK',
-    id: 13,
-    title: '확률과 통계 단원평가 준비하기',
-    regDate: '2026-04-03T13:20:00',
-    teacherName: '김수학',
-    studyRoomName: '수학 심화반',
-    deadline: '2026-04-08T23:59:59',
-    deadlineLabel: 'UPCOMING',
-    dday: 2,
-  },
-  {
-    type: 'QNA',
-    id: 79,
-    title: '로그 계산에서 밑 변환이 헷갈려요',
-    regDate: '2026-04-02T16:45:00',
-    teacherName: '김수학',
-    studyRoomName: '수학 심화반',
-    status: 'COMPLETED',
-  },
-];
-
-export const StudyNewsSection = () => {
-  const isPending = false;
-
-  const studentOptions = mockStudentData.map((student) => ({
-    id: Number(student.studentId),
+export const StudyNewsSection = ({
+  connectedStudentData,
+  studyNewsData,
+  studyNewsPending,
+  selectedStudentId,
+  setSelectedStudentId,
+}: StudyNewsSectionProps) => {
+  const studentOptions = connectedStudentData.map((student) => ({
+    id: student.studentId,
     name: student.studentName,
   }));
 
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
-    studentOptions[0]?.id ?? null
-  );
+  const connectedStudentLength = connectedStudentData.length;
+  const studyNewsContentLength = studyNewsData.totalElements;
+  const limitStudyNews = studyNewsData.content.slice(0, 5);
 
-  const selectedStudent =
-    mockStudentData.find(
-      (student) => student.studentId === selectedStudentId
-    ) ?? mockStudentData[0];
+  const title =
+    connectedStudentLength === 1
+      ? `${connectedStudentData[0]?.studentName} 학생의 학습 소식`
+      : '학생의 학습 소식';
+
+  const headerAction =
+    connectedStudentLength > 1 ? (
+      <StudyRoomDropdown
+        studyRooms={studentOptions}
+        selectedId={selectedStudentId}
+        onSelect={setSelectedStudentId}
+        parent
+      />
+    ) : null;
+
+  let content;
+
+  if (studyNewsPending) {
+    content = (
+      <div className="flex w-full flex-col gap-1">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton.Block
+            key={i}
+            className="h-12"
+          />
+        ))}
+      </div>
+    );
+  } else if (studyNewsContentLength === 0) {
+    content = (
+      <div className="flex h-22 w-full flex-col items-center justify-center gap-3">
+        <p className="font-body2-normal text-gray-8">학습 소식이 없어요.</p>
+      </div>
+    );
+  } else {
+    content = (
+      <div className="flex w-full flex-col">
+        {limitStudyNews.map((data) => (
+          <StudyNewsItem
+            key={`${data.type}-${data.id}`}
+            data={data}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <section>
       <DashboardSection
-        title={
-          mockStudentData.length === 1
-            ? `${selectedStudent?.studentName} 학생의 학습 소식`
-            : `학생의 학습 소식`
+        title={title}
+        isMoreHref={
+          selectedStudentId !== null
+            ? `/dashboard/study-news?studentId=${selectedStudentId}`
+            : '/dashboard/study-news'
         }
-        isMoreHref="/dashboard/study-news"
-        headerAction={
-          mockStudentData.length > 1 ? (
-            <StudyRoomDropdown
-              studyRooms={studentOptions}
-              selectedId={selectedStudentId}
-              onSelect={setSelectedStudentId}
-              student
-            />
-          ) : null
-        }
-        count={mockStudyNews.length}
-        isMore
+        headerAction={headerAction}
+        count={studyNewsContentLength}
+        isMore={studyNewsContentLength === 0 ? false : true}
         isAll
       >
-        {isPending ? (
-          <div className="flex w-full flex-col gap-1">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton.Block
-                key={i}
-                className="h-12"
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex w-full flex-col">
-            {mockStudyNews.map((item) => (
-              <StudyNewsItem
-                key={`${item.type}-${item.id}`}
-                item={item}
-              />
-            ))}
-          </div>
-        )}
+        {content}
       </DashboardSection>
     </section>
   );

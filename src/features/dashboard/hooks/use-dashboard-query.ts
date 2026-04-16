@@ -1,3 +1,4 @@
+import { parentKeys, repository as parentRepository } from '@/entities/parent';
 import {
   studentKeys,
   repository as studentRepository,
@@ -288,5 +289,110 @@ export const useStudentDashboardHomeworkListQuery = ({
       }),
     ...settings,
     enabled: enabled ?? true,
+  });
+};
+
+/**
+ * 부모 대시보드 상단 통계 카드 데이터를 조회하는 훅입니다.
+ */
+export const useParentDashboardReportQuery = (options?: {
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: parentKeys.dashboard.report(),
+    queryFn: () => parentRepository.dashboard.getReport(),
+    ...settings,
+    enabled: options?.enabled ?? true,
+  });
+};
+
+/**
+ * 부모와 연결된 학생 및 학생별 스터디룸 목록을 조회하는 훅입니다.
+ */
+export const useParentDashboardConnectedStudentQuery = () => {
+  return useQuery({
+    queryKey: parentKeys.dashboard.connectedStudentList(),
+    queryFn: () => parentRepository.dashboard.getConnectedStudentList(),
+    ...settings,
+  });
+};
+
+/**
+ * 선택한 학생 기준으로 학습 소식 목록을 조회하는 훅입니다.
+ */
+export const useParentDashboardStudyNewsQuery = (
+  studentId: number | null,
+  params?: { page?: number; size?: number },
+  options?: { enabled?: boolean }
+) => {
+  const hasValidStudentId =
+    typeof studentId === 'number' &&
+    Number.isInteger(studentId) &&
+    studentId > 0;
+
+  return useQuery({
+    queryKey: parentKeys.dashboard.studyNewsList(studentId, params),
+    queryFn: () =>
+      parentRepository.dashboard.getStudyNewsList(studentId as number, params),
+    ...settings,
+    enabled: (options?.enabled ?? true) && hasValidStudentId,
+  });
+};
+
+/**
+ * 선택한 스터디룸 기준으로 상담일지 목록을 조회하는 훅입니다.
+ */
+export const useParentDashboardStudyConsultationQuery = (
+  studentId: number | null,
+  studyRoomId: number | null,
+  params?: { page?: number; size?: number },
+  options?: { enabled?: boolean }
+) => {
+  const hasValidStudentId =
+    typeof studentId === 'number' &&
+    Number.isInteger(studentId) &&
+    studentId > 0;
+  const hasValidStudyRoomId =
+    typeof studyRoomId === 'number' &&
+    Number.isInteger(studyRoomId) &&
+    studyRoomId > 0;
+
+  return useQuery({
+    queryKey: parentKeys.dashboard.studyConsultationList(
+      studentId,
+      studyRoomId,
+      params
+    ),
+    queryFn: () =>
+      parentRepository.dashboard.getStudyConsultationList(
+        studentId as number,
+        studyRoomId as number,
+        params
+      ),
+    ...settings,
+    enabled:
+      (options?.enabled ?? true) && hasValidStudentId && hasValidStudyRoomId,
+  });
+};
+
+/**
+ * 부모가 둘러볼 수 있는 스터디룸 미리보기 목록을 조회하는 훅입니다.
+ */
+export const useParentDashboardStudyRoomPreviewQuery = () => {
+  return useQuery({
+    queryKey: parentKeys.dashboard.studyRoomPreviewList(),
+    queryFn: () => parentRepository.dashboard.getStudyRoomPreviewList(),
+    ...settings,
+  });
+};
+
+/**
+ * 부모 대시보드의 문의 목록을 조회하는 훅입니다.
+ */
+export const useParentDashboardInquiryListQuery = () => {
+  return useQuery({
+    queryKey: parentKeys.dashboard.inquiryList(),
+    queryFn: () => parentRepository.dashboard.getInquiryList(),
+    ...settings,
   });
 };

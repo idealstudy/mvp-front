@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import { Pagination, StatusBadge } from '@/shared/components/ui';
 import { formatDateDot } from '@/shared/lib';
 import { Check } from 'lucide-react';
@@ -38,40 +40,42 @@ export const ClassConsultationHistoryItem = ({
 
       <div className="divide-line-line1 divide-y">
         {pagedContent.map((item) => (
-          <div
+          <Link
             key={item.id}
-            className="grid grid-cols-[minmax(0,1.8fr)_140px_140px_140px] items-center gap-4 px-6 py-5"
+            href={`/inquiry/${item.id}`}
           >
-            <p className="font-label-normal text-gray-11 truncate">
-              {item.title}
-            </p>
+            <div className="grid grid-cols-[minmax(0,1.8fr)_140px_140px_140px] items-center gap-4 px-6 py-5">
+              <p className="font-label-normal text-gray-11 truncate">
+                {item.title}
+              </p>
 
-            <div>
-              {item.status === 'COMPLETED' ? (
-                <span className="bg-system-success-alt text-system-success font-caption-heading inline-flex items-center gap-1 rounded-md px-3 py-2">
-                  답변 완료
-                  <Check
-                    className="h-4 w-4 shrink-0"
-                    strokeWidth={2.5}
+              <div>
+                {item.status === 'COMPLETED' ? (
+                  <span className="bg-system-success-alt text-system-success font-caption-heading inline-flex items-center gap-1 rounded-md px-3 py-2">
+                    답변 완료
+                    <Check
+                      className="h-4 w-4 shrink-0"
+                      strokeWidth={2.5}
+                    />
+                  </span>
+                ) : (
+                  <StatusBadge
+                    variant="primary"
+                    label="답변 대기 중"
+                    className="font-caption-heading rounded-md px-3 py-2"
                   />
-                </span>
-              ) : (
-                <StatusBadge
-                  variant="primary"
-                  label="답변 대기 중"
-                  className="font-caption-heading rounded-md px-3 py-2"
-                />
-              )}
+                )}
+              </div>
+
+              <span className="font-label-normal text-gray-11">
+                {formatDateDot(item.regDate)}
+              </span>
+
+              <span className="font-label-normal text-gray-11">
+                {item.teacherName} 선생님
+              </span>
             </div>
-
-            <span className="font-label-normal text-gray-11">
-              {formatDateDot(item.regDate)}
-            </span>
-
-            <span className="font-label-normal text-gray-11">
-              {item.teacherName} 선생님
-            </span>
-          </div>
+          </Link>
         ))}
       </div>
 

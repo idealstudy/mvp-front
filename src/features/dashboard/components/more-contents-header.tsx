@@ -6,11 +6,13 @@ import { ChevronLeft } from 'lucide-react';
 interface MoreContentsHeaderPorps {
   isTeacher?: boolean;
   kind?: string;
+  selectedStudentName?: string;
 }
 
 export const MoreContentsHeader = ({
   isTeacher,
   kind,
+  selectedStudentName,
 }: MoreContentsHeaderPorps) => {
   let headerTitle = '';
   switch (kind) {
@@ -18,10 +20,15 @@ export const MoreContentsHeader = ({
       headerTitle = isTeacher
         ? '답변이 필요한 질문만 확인해보세요'
         : '답변 받은 질문만 확인해보세요';
+      break;
     case 'STUDY_NEWS':
-      headerTitle = '내 아이의 학습 소식';
+      headerTitle = `${selectedStudentName}의 학습 소식`;
+      break;
     case 'STUDY_CONSULTATION':
-      headerTitle = '내 아이의 학습 일지';
+      headerTitle = `${selectedStudentName}의 기록 일지`;
+      break;
+    default:
+      headerTitle = '-';
   }
 
   return (

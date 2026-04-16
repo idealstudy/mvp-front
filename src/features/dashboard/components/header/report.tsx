@@ -3,7 +3,7 @@
 import { cn } from '@/shared/lib';
 
 export interface HeaderStat {
-  value: number;
+  value: number | '-';
   unit: string;
   label: string;
 }
@@ -32,7 +32,7 @@ export const HeaderReport = ({
           key={stat.label}
           className="tablet:gap-5 flex items-center gap-2"
         >
-          <div className="flex w-15 flex-col items-center gap-1">
+          <div className="flex w-15.5 flex-col items-center gap-1">
             {isPending ? (
               <>
                 <div className="bg-gray-3 tablet:h-6 desktop:h-8 h-5 w-12 animate-pulse rounded" />

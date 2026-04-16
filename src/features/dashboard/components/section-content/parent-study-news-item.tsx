@@ -1,33 +1,21 @@
+import Link from 'next/link';
+
+import { ParentDashboardStudyNewsItemDTO } from '@/entities/parent';
 import { StatusBadge } from '@/shared/components/ui';
 import { cn, formatDateDot } from '@/shared/lib';
 import {
   Check,
   ChevronRight,
-  FileText,
-  MessageSquareText,
+  File,
+  MessageCircleQuestionMark,
   PencilLine,
 } from 'lucide-react';
 
-export type ParentStudyNewsType = 'HOMEWORK' | 'TEACHING_NOTE' | 'QNA';
-export type ParentStudyNewsDeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
-export type ParentStudyNewsQnaStatus = 'PENDING' | 'COMPLETED';
-
-export interface ParentStudyNewsItemData {
-  type: ParentStudyNewsType;
-  id: number;
-  title: string;
-  regDate: string;
-  teacherName: string;
-  studyRoomName: string;
-  deadline?: string;
-  deadlineLabel?: ParentStudyNewsDeadlineLabel;
-  dday?: number;
-  status?: ParentStudyNewsQnaStatus;
-}
+type ParentStudyNewsType = 'HOMEWORK' | 'TEACHING_NOTE' | 'QNA';
+type ParentStudyNewsDeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
 
 interface StudyNewsItemProps {
-  item: ParentStudyNewsItemData;
-  className?: string;
+  data: ParentDashboardStudyNewsItemDTO;
 }
 
 const formatHomeworkDeadlineLabel = (
@@ -41,7 +29,7 @@ const formatHomeworkDeadlineLabel = (
 };
 
 const getTypeIcon = (type: ParentStudyNewsType) => {
-  const iconClassName = 'h-5 w-5 text-gray-12 shrink-0';
+  const iconClassName = 'h-5 w-5 shrink-0 text-gray-12';
 
   switch (type) {
     case 'HOMEWORK':
@@ -54,7 +42,7 @@ const getTypeIcon = (type: ParentStudyNewsType) => {
       );
     case 'QNA':
       return (
-        <MessageSquareText
+        <MessageCircleQuestionMark
           size={36}
           className={iconClassName}
           strokeWidth={1.8}
@@ -63,7 +51,7 @@ const getTypeIcon = (type: ParentStudyNewsType) => {
     case 'TEACHING_NOTE':
     default:
       return (
-        <FileText
+        <File
           size={36}
           className={iconClassName}
           strokeWidth={1.8}
@@ -72,80 +60,99 @@ const getTypeIcon = (type: ParentStudyNewsType) => {
   }
 };
 
-export const StudyNewsItem = ({ item, className }: StudyNewsItemProps) => {
-  const isHomework = item.type === 'HOMEWORK';
-  const isQna = item.type === 'QNA';
+export const StudyNewsItem = ({ data }: StudyNewsItemProps) => {
+  const isHomework = data.type === 'HOMEWORK';
+  const isQna = data.type === 'QNA';
+
+  let hrefLink = '';
+
+  switch (data.type) {
+    case 'HOMEWORK':
+      hrefLink = `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
+      break;
+    case 'QNA':
+      hrefLink = `/study-rooms/${data.studyRoomId}/qna/${data.id}`;
+      break;
+    case 'TEACHING_NOTE':
+      hrefLink = `/study-rooms/${data.studyRoomId}/note/${data.id}`;
+      break;
+  }
+
   const metaPrefix =
-    isHomework || isQna ? undefined : item.studyRoomName || undefined;
-  const metaText = `${formatDateDot(item.regDate)} 작성 · ${item.teacherName}선생님`;
-  const homeworkDeadlineLabel = formatHomeworkDeadlineLabel(
-    item.deadlineLabel,
-    item.dday
-  );
+    isHomework || isQna ? undefined : data.studyRoomName || undefined;
+  const metaText = `${formatDateDot(data.regDate)} 작성 · ${data.teacherName} 선생님`;
+  const homeworkDeadlineLabel =
+    data.type === 'HOMEWORK'
+      ? formatHomeworkDeadlineLabel(data.deadlineLabel, data.dday)
+      : '';
 
   return (
-    <button
-      type="button"
-      className={cn(
-        'hover:bg-gray-1 flex w-full items-start gap-3 rounded-lg px-2 py-3 text-left transition-colors',
-        className
-      )}
-    >
-      <div className="pt-1">{getTypeIcon(item.type)}</div>
-
-      <div className="min-w-0 flex-1">
-        {isQna && (
-          <p className="font-caption-heading text-orange-7 mb-1">
-            {item.studyRoomName}
-          </p>
+    <Link href={hrefLink}>
+      <div
+        className={cn(
+          'hover:bg-gray-1 flex w-full items-start gap-3 rounded-lg px-2 py-3 text-left transition-colors'
         )}
+      >
+        <div className="pt-1">{getTypeIcon(data.type)}</div>
 
-        <p className="font-body2-normal text-gray-12 truncate">{item.title}</p>
-
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          {isHomework && (
-            <span className="font-caption-normal text-gray-8 bg-gray-1 rounded px-1.5 py-0.5">
-              제출 전
-            </span>
+        <div className="min-w-0 flex-1">
+          {isQna && (
+            <p className="font-caption-heading text-orange-7 mb-1">
+              {data.studyRoomName}
+            </p>
           )}
 
-          {metaPrefix && (
-            <span className="font-caption-normal text-gray-8">
-              {metaPrefix}
-            </span>
-          )}
+          <p className="font-body2-normal text-gray-12 truncate">
+            {data.title}
+          </p>
 
-          <span className="font-caption-normal text-gray-8">{metaText}</span>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {isHomework && (
+              <span className="bg-gray-1 font-caption-normal text-gray-8 rounded px-1.5 py-0.5">
+                제출일
+              </span>
+            )}
 
-          {isHomework && homeworkDeadlineLabel && (
-            <StatusBadge
-              variant={item.deadlineLabel === 'OVERDUE' ? 'default' : 'primary'}
-              label={homeworkDeadlineLabel}
-              className="font-caption-heading rounded-[4px] px-2 py-1"
-            />
-          )}
+            {metaPrefix && (
+              <span className="font-caption-normal text-gray-8">
+                {metaPrefix}
+              </span>
+            )}
 
-          {isQna && item.status === 'COMPLETED' && (
-            <span className="bg-system-success-alt text-system-success font-caption-heading flex items-center gap-1 rounded-[4px] px-2 py-1">
-              답변 완료
-              <Check
-                className="h-3.5 w-3.5 shrink-0"
-                strokeWidth={2.4}
+            <span className="font-caption-normal text-gray-8">{metaText}</span>
+
+            {isHomework && homeworkDeadlineLabel && (
+              <StatusBadge
+                variant={
+                  data.deadlineLabel === 'OVERDUE' ? 'default' : 'primary'
+                }
+                label={homeworkDeadlineLabel}
+                className="font-caption-heading rounded-[4px] px-2 py-1"
               />
-            </span>
-          )}
+            )}
 
-          {isQna && item.status === 'PENDING' && (
-            <StatusBadge
-              variant="default"
-              label="답변 대기"
-              className="font-caption-heading rounded-[4px] px-2 py-1"
-            />
-          )}
+            {isQna && data.status === 'COMPLETED' && (
+              <span className="bg-system-success-alt text-system-success font-caption-heading flex items-center gap-1 rounded-[4px] px-2 py-1">
+                답변 완료
+                <Check
+                  className="h-3.5 w-3.5 shrink-0"
+                  strokeWidth={2.4}
+                />
+              </span>
+            )}
+
+            {isQna && data.status === 'PENDING' && (
+              <StatusBadge
+                variant="default"
+                label="답변 대기"
+                className="font-caption-heading rounded-[4px] px-2 py-1"
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      <ChevronRight className="text-gray-6 mt-1 h-5 w-5 shrink-0" />
-    </button>
+        <ChevronRight className="text-gray-6 mt-1 h-5 w-5 shrink-0" />
+      </div>
+    </Link>
   );
 };

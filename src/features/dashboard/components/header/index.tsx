@@ -3,6 +3,7 @@
 import Image from 'next/image';
 
 import {
+  useParentDashboardReportQuery,
   useStudentDashboardReportQuery,
   useTeacherDashboardReportQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
@@ -14,6 +15,20 @@ import { HeaderReport, type HeaderStat } from './report';
 const DashboardHeader = () => {
   const member = useMemberStore((s) => s.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
+
+  const { data: teacherReport, isPending: teacherIsPending } =
+    useTeacherDashboardReportQuery({
+      enabled: isTeacher,
+    });
+  const { data: studentReport, isPending: studentIsPending } =
+    useStudentDashboardReportQuery({
+      enabled: member?.role === 'ROLE_STUDENT',
+    });
+
+  const { data: parentReport, isPending: parentIsPending } =
+    useParentDashboardReportQuery({
+      enabled: member?.role === 'ROLE_PARENT',
+    });
 
   let nameSuffix = '님';
 
@@ -29,77 +44,81 @@ const DashboardHeader = () => {
   }
 
   let greetingMessage = '';
+  let isPending;
 
   switch (member?.role) {
     case 'ROLE_TEACHER':
       greetingMessage = '오늘은 어떤 수업을 진행하세요?';
+      isPending = teacherIsPending;
       break;
     case 'ROLE_PARENT':
       greetingMessage = '학습 여정을 함께 확인해보세요';
+      isPending = parentIsPending;
       break;
     case 'ROLE_STUDENT':
       greetingMessage = '학습기록이 차곡차곡 쌓이고 있어요';
+      isPending = studentIsPending;
       break;
     default:
       greetingMessage = '안녕하세요? 디에듀 입니다.';
   }
 
-  const { data: teacherReport, isPending: teacherIsPending } =
-    useTeacherDashboardReportQuery({
-      enabled: isTeacher,
-    });
-  const { data: studentReport, isPending: studentIsPending } =
-    useStudentDashboardReportQuery({
-      enabled: member?.role === 'ROLE_STUDENT',
-    });
-  // TODO: 부모님 대시보드 api 추가 예정
-
-  const isPending = isTeacher ? teacherIsPending : studentIsPending;
-
   const teacherStats: HeaderStat[] = [
     {
-      value: teacherReport?.studyRoomCount ?? 0,
+      value: teacherReport?.studyRoomCount ?? '-',
       unit: '개',
       label: '스터디룸',
     },
     {
-      value: teacherReport?.teachingNoteCount ?? 0,
+      value: teacherReport?.teachingNoteCount ?? '-',
       unit: '개',
       label: '수업노트',
     },
-    { value: teacherReport?.studentCount ?? 0, unit: '명', label: '학생' },
-    { value: teacherReport?.qnaCount ?? 0, unit: '개', label: '질문' },
+    { value: teacherReport?.studentCount ?? '-', unit: '명', label: '학생' },
+    { value: teacherReport?.qnaCount ?? '-', unit: '개', label: '질문' },
   ];
 
   const studentStats: HeaderStat[] = [
     {
-      value: studentReport?.studyRoomCount ?? 0,
+      value: studentReport?.studyRoomCount ?? '-',
       unit: '개',
       label: '스터디룸',
     },
     {
-      value: studentReport?.questionCount ?? 0,
+      value: studentReport?.questionCount ?? '-',
       unit: '개',
       label: '나의 질문',
     },
     // 해당 응답이 없어 임시 0 처리
     {
-      value: studentReport?.answerCount ?? 0,
+      value: studentReport?.answerCount ?? '-',
       unit: '개',
       label: '수집한 답변',
     },
     {
-      value: studentReport?.submittedHomeworkCount ?? 0,
+      value: studentReport?.submittedHomeworkCount ?? '-',
       unit: '개',
       label: '제출한 과제',
     },
   ];
 
   const parentStats: HeaderStat[] = [
-    { value: 10, unit: '개', label: '학습 소식' },
-    { value: 1, unit: '건', label: '답변 대기' },
-    { value: 2, unit: '건', label: '답변 완료' },
-    { value: 2, unit: '명', label: '매칭된 학생' },
+    { value: parentReport?.studyNews ?? '-', unit: '개', label: '학습 소식' },
+    {
+      value: parentReport?.waitingInquiries ?? '-',
+      unit: '건',
+      label: '답변 대기',
+    },
+    {
+      value: parentReport?.answeredInquiries ?? '-',
+      unit: '건',
+      label: '답변 완료',
+    },
+    {
+      value: parentReport?.myStudentCount ?? '-',
+      unit: '명',
+      label: '매칭된 학생',
+    },
   ];
 
   let stats: HeaderStat[] = [];
@@ -146,8 +165,7 @@ const DashboardHeader = () => {
           <HeaderReport
             className="tablet:flex hidden"
             stats={stats}
-            // TODO: api 연결 후 주석 풀기
-            // isPending={isPending}
+            isPending={isPending}
           />
         </div>
 

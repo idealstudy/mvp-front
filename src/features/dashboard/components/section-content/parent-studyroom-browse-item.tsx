@@ -1,25 +1,28 @@
+import Link from 'next/link';
+
+import { ParentDashboardStudyRoomPreviewListDTO } from '@/entities/parent';
 import { StudyRoomCard } from '@/features/list';
 
-import { StudyRoomBrowseItemType } from '../section/parent-studyroom-browse-section';
-
-interface StudyRoomBrowseItemProps {
-  studyRoom: StudyRoomBrowseItemType[];
-}
-
-export const StudyRoomBrowseItem = ({
+export const StudyRoomPreviewItem = ({
   studyRoom,
-}: StudyRoomBrowseItemProps) => {
+}: {
+  studyRoom: ParentDashboardStudyRoomPreviewListDTO;
+}) => {
   return (
     <div className="tablet:grid-cols-4 grid grid-cols-1 gap-4">
       {studyRoom.map((item) => (
-        <StudyRoomCard
+        <Link
           key={item.id}
-          studyRoom={{
-            ...item,
-            visibility: 'PUBLIC',
-            createdAt: '',
-          }}
-        />
+          href={`/study-room-preview/${item.id}/${item.teacherId}`}
+        >
+          <StudyRoomCard
+            studyRoom={{
+              ...item,
+              visibility: 'PUBLIC',
+              createdAt: '',
+            }}
+          />
+        </Link>
       ))}
     </div>
   );
