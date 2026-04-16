@@ -86,6 +86,10 @@ export function middleware(req: NextRequest) {
     });
   }
 
+  if (pathname.endsWith('/opengraph-image')) {
+    return NextResponse.next();
+  }
+
   if (isInfraRequest(req)) {
     return NextResponse.next();
   }
