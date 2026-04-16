@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
-import { trackDedu101StudyroomFeatureClick } from '@/shared/lib/gtm/trackers';
+import { trackDedu101StudyroomFeatureClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 import { PublicStudyRoom } from '../types/teacher.types';

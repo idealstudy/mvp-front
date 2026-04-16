@@ -5,7 +5,7 @@ import {
   useStudentDashboardQnaListQuery,
   useTeacherDashboardQnaListQuery,
 } from '@/features/dashboard/hooks/use-dashboard-query';
-import { trackDashboardQnaMoreClick } from '@/shared/lib/gtm/trackers';
+import { trackDashboardQnaMoreClick } from '@/shared/lib/analytics';
 
 import QnASectionContent from '../section-content/qna-section-content';
 import DashboardSection from './single-section';

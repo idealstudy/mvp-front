@@ -12,8 +12,8 @@ import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
 import { PRIVATE } from '@/shared/constants';
 import { getApiError } from '@/shared/lib';
+import { trackStudynoteCreateSuccess } from '@/shared/lib/analytics';
 import { classifyStudyNoteError, handleApiError } from '@/shared/lib/errors';
-import { trackStudynoteCreateSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { useQueryClient } from '@tanstack/react-query';
 

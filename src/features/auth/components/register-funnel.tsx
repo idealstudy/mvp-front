@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { trackAuthSignupStepEnter } from '@/shared/lib/gtm/trackers';
+import { trackAuthSignupStepEnter } from '@/shared/lib/analytics';
 
 import { CredentialStep } from './credential-step';
 import { EmailStep } from './email-step';

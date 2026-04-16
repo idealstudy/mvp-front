@@ -14,7 +14,7 @@ import { PUBLIC } from '@/shared/constants';
 import {
   trackAuthSignupFail,
   trackAuthSignupSuccess,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export const SocialSelectRole = () => {

@@ -46,7 +46,7 @@ import {
   trackGnbLogoutClick,
   trackGnbMenuClick,
   trackGnbProfileClick,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 export const Header = () => {

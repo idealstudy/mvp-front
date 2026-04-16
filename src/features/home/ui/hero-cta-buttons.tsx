@@ -8,7 +8,7 @@ import { cn } from '@/shared/lib';
 import {
   trackHomeDedu101Click,
   trackHomeStartClick,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
 
 export function HeroCtaButtons() {
   return (
