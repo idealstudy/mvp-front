@@ -1,9 +1,11 @@
 import { StudyNews } from '@/features/dashboard/components/study-news';
 
-export default function StudyNewsPage({
+export default async function StudyNewsPage({
   searchParams,
 }: {
-  searchParams: { studentId?: string };
+  searchParams: Promise<{ studentId?: string }>;
 }) {
-  return <StudyNews initialStudentId={searchParams.studentId} />;
+  const { studentId } = await searchParams;
+
+  return <StudyNews initialStudentId={studentId} />;
 }

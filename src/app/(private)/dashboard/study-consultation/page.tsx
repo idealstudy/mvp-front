@@ -1,14 +1,16 @@
 import { StudyConsultation } from '@/features/dashboard/components/study-consultation';
 
-export default function StudyConsultationPage({
+export default async function StudyConsultationPage({
   searchParams,
 }: {
-  searchParams: { studentId: string; studyRoomId: string };
+  searchParams: Promise<{ studentId: string; studyRoomId: string }>;
 }) {
+  const { studentId, studyRoomId } = await searchParams;
+
   return (
     <StudyConsultation
-      initialStudentId={searchParams.studentId}
-      initialStudyRoomId={searchParams.studyRoomId}
+      initialStudentId={studentId}
+      initialStudyRoomId={studyRoomId}
     />
   );
 }
