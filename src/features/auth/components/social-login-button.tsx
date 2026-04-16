@@ -11,18 +11,22 @@ export default function SocialLoginButton() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const inviteToken = searchParams.get('token');
+  const from = searchParams.get('from');
 
   const [kakaoAuthUrl, setKakaoAuthUrl] = useState('');
 
   useEffect(() => {
-    const state = inviteToken
-      ? `&state=${encodeURIComponent(`inviteToken:${inviteToken}`)}`
+    const stateParts: string[] = [];
+    if (inviteToken) stateParts.push(`inviteToken:${inviteToken}`);
+    if (from) stateParts.push(`from:${encodeURIComponent(from)}`);
+    const state = stateParts.length
+      ? `&state=${encodeURIComponent(stateParts.join('|'))}`
       : '';
 
     setKakaoAuthUrl(
       `https://kauth.kakao.com/oauth/authorize?client_id=${env.kakaoClientId}&redirect_uri=${serverEnv.backendApiUrl}/auth/kakao/callback&response_type=code${state}`
     );
-  }, [inviteToken]);
+  }, [inviteToken, from]);
 
   return (
     <div className="my-4 block items-center">

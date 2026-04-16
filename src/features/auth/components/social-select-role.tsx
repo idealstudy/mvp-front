@@ -21,6 +21,7 @@ export const SocialSelectRole = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('token');
+  const from = searchParams.get('from');
   const session = useSession();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const { acceptInvitation } = useAcceptInvitation();
@@ -47,7 +48,7 @@ export const SocialSelectRole = () => {
             router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
           }
         } else {
-          router.push('/dashboard');
+          router.push(from ? decodeURIComponent(from) : '/dashboard');
         }
       },
       onError: () => {
