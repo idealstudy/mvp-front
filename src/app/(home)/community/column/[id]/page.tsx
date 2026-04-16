@@ -1,6 +1,7 @@
 import { cache } from 'react';
 
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import { SITE_CONFIG } from '@/config/site';
@@ -27,7 +28,10 @@ export async function generateMetadata({
 
   try {
     const columnDetail = await getDetail(Number(id));
-    return generateColumnDetailMetadata(columnDetail);
+    const origin = await getRequestOrigin();
+    const ogImageUrl = `${origin}/community/column/${id}/opengraph-image`;
+
+    return generateColumnDetailMetadata(columnDetail, ogImageUrl);
   } catch {
     return { title: SITE_CONFIG.name };
   }
@@ -64,3 +68,11 @@ export default async function ColumnDetailPage({
     notFound();
   }
 }
+
+const getRequestOrigin = async () => {
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') ?? headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') ?? 'https';
+
+  return host ? `${protocol}://${host}` : SITE_CONFIG.url;
+};
