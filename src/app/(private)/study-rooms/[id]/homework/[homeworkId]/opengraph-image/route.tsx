@@ -19,14 +19,13 @@ type HomeworkTitleResponse = CommonResponse<{
 
 type HomeworkRole = 'teacher' | 'student';
 
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(_request: Request, { params }: RouteContext) {
   const { id, homeworkId } = await params;
   const title = await getHomeworkTitle(Number(id), Number(homeworkId));
 
   return createOgImage({
     title,
     theme: OG_THEME.HOMEWORK,
-    origin: new URL(request.url).origin,
   });
 }
 

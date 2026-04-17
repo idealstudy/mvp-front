@@ -9,7 +9,6 @@ import type { OgTheme } from './og-config';
 type CreateOgImageParams = {
   title: string;
   theme: OgTheme;
-  origin: string;
 };
 
 const truncateOgTitle = (title: string, maxLength = 28) => {
@@ -17,13 +16,9 @@ const truncateOgTitle = (title: string, maxLength = 28) => {
   return `${title.slice(0, maxLength)}...`;
 };
 
-export const createOgImage = ({
-  title,
-  theme,
-  origin,
-}: CreateOgImageParams) => {
-  const imageSrc = getPublicImageSrc(theme.image, origin);
-  const logoSrc = getPublicImageSrc('/og/og-logo.png', origin);
+export const createOgImage = ({ title, theme }: CreateOgImageParams) => {
+  const imageSrc = getPublicImageDataUrl(theme.image);
+  const logoSrc = getPublicImageDataUrl('/og/og-logo.png');
 
   return new ImageResponse(
     (
@@ -43,12 +38,10 @@ export const createOgImage = ({
   );
 };
 
-const getPublicImageSrc = (src: string, origin: string) => {
-  try {
-    const filePath = join(process.cwd(), 'public', src.replace(/^\//, ''));
-    const file = readFileSync(filePath);
-    return `data:image/png;base64,${file.toString('base64')}`;
-  } catch {
-    return new URL(src, origin).toString();
-  }
+const getPublicImageDataUrl = (src: string) => {
+  const filePath = join(process.cwd(), 'public', src.replace(/^\//, ''));
+  const file = readFileSync(filePath);
+  const base64 = file.toString('base64');
+
+  return `data:image/png;base64,${base64}`;
 };
