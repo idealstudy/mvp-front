@@ -1,4 +1,4 @@
-import { ConnectListPayload } from '../types';
+import { ConnectListPayload, ConnectSearchPayload } from '../types';
 
 // 무효화 키, 조회용 키
 export const connectionKeys = {
@@ -14,4 +14,8 @@ export const connectionKeys = {
   receivedLists: () => [...connectionKeys.all, 'received'] as const,
   receivedList: (query: ConnectListPayload) =>
     [...connectionKeys.receivedLists(), query] as const,
+
+  searches: () => [...connectionKeys.all, 'search'] as const,
+  search: (query: ConnectSearchPayload) =>
+    [...connectionKeys.searches(), query] as const,
 };

@@ -1,13 +1,21 @@
-import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
+import { useEffect, useMemo, useState } from 'react';
 
+import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
+import { useMemberStore } from '@/store';
+
+import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
 import DashboardHeader from '../header';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
 import StudyroomSection from '../section/studyroom-section';
+import { ConfirmParentRequestDialog } from './confirm-dialog';
 import StudentOnboarding from './student-onboarding';
 
 export const DashboardStudent = () => {
+  const memberEmail = useMemberStore((s) => s.member?.email);
+  const [isParentRequestDialogOpen, setIsParentRequestDialogOpen] =
+    useState(false);
   const { data: studyRooms } = useStudentStudyRoomsQuery();
   const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
     useOnboardingStatus({ rooms: studyRooms });
@@ -17,6 +25,28 @@ export const DashboardStudent = () => {
     hasAssignments,
     hasQuestions,
   ].every(Boolean);
+  const query = {
+    page: 0,
+    size: 10,
+    sort: 'regDate,DESC',
+  };
+
+  const { data: receivedData } = useReceivedConnectionList(query);
+  const receivedParentRequest = useMemo(
+    () =>
+      receivedData?.contentList.find(
+        (connection) =>
+          connection.state === 'PENDING' &&
+          connection.recipientEmail === memberEmail
+      ) ?? null,
+    [memberEmail, receivedData?.contentList]
+  );
+
+  useEffect(() => {
+    if (!receivedParentRequest) return;
+
+    setIsParentRequestDialogOpen(true);
+  }, [receivedParentRequest]);
 
   return (
     <div className="flex w-full flex-col">
@@ -29,6 +59,11 @@ export const DashboardStudent = () => {
           <StudentTabSection />
         </div>
       </main>
+      <ConfirmParentRequestDialog
+        connection={receivedParentRequest}
+        open={isParentRequestDialogOpen}
+        onOpenChange={setIsParentRequestDialogOpen}
+      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import {
   ConnectListPayload,
+  ConnectSearchPayload,
   connectionKeys,
   repository,
 } from '@/entities/connect';
@@ -31,11 +32,23 @@ export const useReceivedConnectionList = (query: ConnectListPayload) =>
     queryFn: () => repository.connect.getReceivedConnectionList(query),
   });
 
+// 연결 요청 가능한 사용자 검색
+export const useSearchConnectionMembers = (
+  query: ConnectSearchPayload,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: connectionKeys.search(query),
+    queryFn: () => repository.connect.searchConnectionMembers(query),
+    enabled: options?.enabled ?? query.keyword.trim().length > 0,
+  });
+
 // 공통 mutation onSuccess
 const invalidateConnectionQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: connectionKeys.lists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.sentLists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.receivedLists() });
+  queryClient.invalidateQueries({ queryKey: connectionKeys.searches() });
 };
 
 // 연결 요청

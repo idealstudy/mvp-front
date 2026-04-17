@@ -7,10 +7,21 @@ import Image from 'next/image';
 import { Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 
+import { useSentConnectionList } from '../../connect/hooks/use-connection';
 import { ConnectDialog } from '../section-content/parent-connect-dialog';
 
 export const ParentLinkSection = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { data: sentConnectionData } = useSentConnectionList({
+    page: 0,
+    size: 10,
+    sort: 'regDate,DESC',
+  });
+
+  const pendingConnection = sentConnectionData?.contentList.find(
+    (connection) => connection.state === 'PENDING' && connection.recipientEmail
+  );
+  const pendingStudentName = pendingConnection?.recipientEmail;
 
   return (
     <div className={cn('bg-orange-scale-orange-1 rounded-lg p-4')}>
@@ -26,10 +37,14 @@ export const ParentLinkSection = () => {
             />
             <div className="flex flex-col">
               <p className="font-body2-heading text-gray-12">
-                학생을 연결해볼까요?
+                {pendingStudentName
+                  ? `${pendingStudentName} 학생과 연결중...`
+                  : '학생을 연결해볼까요?'}
               </p>
               <p className="font-label-normal text-gray-11">
-                자녀의 학습 현황과 선생님 피드백을 실시간으로 확인할 수 있어요
+                {pendingStudentName
+                  ? `자녀가 보호자 연결을 승인할 수 있게 도와주세요`
+                  : '자녀의 학습 현황과 선생님 피드백을 실시간으로 확인할 수 있어요'}
               </p>
             </div>
           </div>
@@ -39,7 +54,7 @@ export const ParentLinkSection = () => {
             }}
             className="font-label-heading h-[35px] w-[121px]"
           >
-            학생 연결하기
+            {pendingConnection ? '학생 추가하기' : '학생 연결하기'}
           </Button>
         </div>
       </section>

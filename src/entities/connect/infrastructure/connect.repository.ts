@@ -1,6 +1,9 @@
 import type {
+  ConnectListItemDTO,
   ConnectListPageDTO,
   ConnectListPayload,
+  ConnectSearchMemberDTO,
+  ConnectSearchPayload,
 } from '@/entities/connect/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
@@ -52,19 +55,48 @@ const getReceivedConnectionList = async (
   return unwrapEnvelope(response, dto.listPage);
 };
 
+// 연결 요청할 사용자를 검색한다.
+const searchConnectionMembers = async (
+  query: ConnectSearchPayload
+): Promise<ConnectSearchMemberDTO[]> => {
+  const params = payload.searchQuery.parse(query);
+
+  const response = await api.private.get<
+    CommonResponse<ConnectSearchMemberDTO[]>
+  >(`${baseUrl.base}/search`, { params });
+  return unwrapEnvelope(response, dto.searchMembers);
+};
+
 // 연결을 요청한다.
-const createConnection = async (recipientEmail: string) => {
-  await api.private.post(baseUrl.base, { recipientEmail });
+const createConnection = async (
+  recipientEmail: string
+): Promise<ConnectListItemDTO> => {
+  const response = await api.private.post<CommonResponse<ConnectListItemDTO>>(
+    baseUrl.base,
+    undefined,
+    { params: { recipientEmail } }
+  );
+  return unwrapEnvelope(response, dto.listItem);
 };
 
 // 연결 요청을 거절한다.
-const rejectConnection = async (connectionId: number) => {
-  await api.private.patch(`${baseUrl.base}/${connectionId}/reject`);
+const rejectConnection = async (
+  connectionId: number
+): Promise<ConnectListItemDTO> => {
+  const response = await api.private.patch<CommonResponse<ConnectListItemDTO>>(
+    `${baseUrl.base}/${connectionId}/reject`
+  );
+  return unwrapEnvelope(response, dto.listItem);
 };
 
 // 연결 요청을 수락한다.
-const acceptConnection = async (connectionId: number) => {
-  await api.private.patch(`${baseUrl.base}/${connectionId}/accept`);
+const acceptConnection = async (
+  connectionId: number
+): Promise<ConnectListItemDTO> => {
+  const response = await api.private.patch<CommonResponse<ConnectListItemDTO>>(
+    `${baseUrl.base}/${connectionId}/accept`
+  );
+  return unwrapEnvelope(response, dto.listItem);
 };
 
 // 연결을 삭제한다.
@@ -81,5 +113,6 @@ export const repository = {
     getConnectionList,
     getSentConnectionList,
     getReceivedConnectionList,
+    searchConnectionMembers,
   },
 };

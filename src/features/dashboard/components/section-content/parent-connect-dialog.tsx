@@ -1,7 +1,11 @@
+import { useState } from 'react';
+
+import type { ConnectSearchMemberDTO } from '@/entities/connect';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { CircleAlert, XIcon } from 'lucide-react';
 
+import { useCreateConnection } from '../../connect/hooks/use-connection';
 import { ConnectTagInput } from './parent-connect-tag-input';
 
 interface ConnectDialogProps {
@@ -10,6 +14,25 @@ interface ConnectDialogProps {
 }
 
 export const ConnectDialog = ({ onOpenChange, open }: ConnectDialogProps) => {
+  const [input, setInput] = useState('');
+  const [selectedMember, setSelectedMember] =
+    useState<ConnectSearchMemberDTO | null>(null);
+
+  const { mutate, isPending } = useCreateConnection();
+
+  const handleSave = () => {
+    if (!selectedMember) return;
+
+    mutate(selectedMember.email, {
+      onSuccess: () => {
+        setInput('');
+        setSelectedMember(null);
+        onOpenChange(false);
+      },
+      // TODO: 에러처리
+    });
+  };
+
   return (
     <Dialog
       isOpen={open}
@@ -30,10 +53,17 @@ export const ConnectDialog = ({ onOpenChange, open }: ConnectDialogProps) => {
             </button>
           </Dialog.Close>
         </Dialog.Header>
-        <Dialog.Body className="mt-6 flex gap-3">
-          <ConnectTagInput placeholder="연결할 학생의 이름, 이메일, 전화번호 등을 입력해보세요" />
+        <Dialog.Body className="mt-6 flex flex-col gap-3">
+          <ConnectTagInput
+            input={input}
+            setInput={setInput}
+            selectedMember={selectedMember}
+            onSelectMember={setSelectedMember}
+            onClearMember={() => setSelectedMember(null)}
+            placeholder="연결할 학생의 이름, 이메일, 전화번호 등을 입력해보세요"
+          />
           <div className="font-label-heading text-text-sub2 flex items-center gap-2">
-            <CircleAlert size={24} /> 학생이 보호자 연결을 수락하면 학습 현황을
+            <CircleAlert size={22} /> 학생이 보호자 연결을 수락하면 학습 현황을
             확인할 수 있습니다.
           </div>
         </Dialog.Body>
@@ -41,7 +71,8 @@ export const ConnectDialog = ({ onOpenChange, open }: ConnectDialogProps) => {
           <Button
             className="w-[120px]"
             size="xsmall"
-            // onClick={handleSave}
+            onClick={handleSave}
+            disabled={!selectedMember || isPending}
           >
             신청하기
           </Button>
