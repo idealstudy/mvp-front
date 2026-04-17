@@ -15,13 +15,14 @@ type StudyNoteTitleResponse = CommonResponse<{
   title: string;
 }>;
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(request: Request, { params }: RouteContext) {
   const { noteId } = await params;
   const title = await getStudyNoteTitle(Number(noteId));
 
   return createOgImage({
     title,
     theme: OG_THEME.STUDYNOTE,
+    origin: new URL(request.url).origin,
   });
 }
 

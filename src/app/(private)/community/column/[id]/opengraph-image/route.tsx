@@ -12,13 +12,14 @@ type ColumnTitleResponse = CommonResponse<{
   title: string;
 }>;
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(request: Request, { params }: RouteContext) {
   const { id } = await params;
   const title = await getColumnTitle(Number(id));
 
   return createOgImage({
     title,
     theme: OG_THEME.COLUMN,
+    origin: new URL(request.url).origin,
   });
 }
 

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 
 type OgCardProps = {
   title: string;
@@ -68,7 +68,7 @@ export const OgCard = ({
             {label}
           </div>
 
-          <Image
+          <img
             src={logoSrc}
             alt="D'edu"
             style={{
@@ -95,7 +95,7 @@ export const OgCard = ({
           {title}
         </div>
 
-        <Image
+        <img
           src={imageSrc}
           alt=""
           style={{
