@@ -4,6 +4,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['app.dev.the-edu.site', '*.dev.the-edu.site'],
+  htmlLimitedBots: /.*/,
   images: {
     remotePatterns: [
       {
