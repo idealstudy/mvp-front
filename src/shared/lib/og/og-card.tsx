@@ -82,12 +82,11 @@ export const OgCard = ({
         <div
           style={{
             marginTop: '28px',
-            width: '540px',
-            height: '240px',
-            fontSize: 54,
-            fontWeight: 800,
-            color: '#333333',
-            lineHeight: '74px',
+            maxWidth: '760px',
+            fontSize: 64,
+            fontWeight: 700,
+            color: '#2C2A28',
+            lineHeight: 1.3,
             whiteSpace: 'pre-wrap',
             overflow: 'hidden',
           }}
@@ -100,8 +99,8 @@ export const OgCard = ({
           alt=""
           style={{
             position: 'absolute',
-            right: '34px',
-            bottom: '34px',
+            right: '54px',
+            bottom: '54px',
             width: '220px',
             height: '220px',
             objectFit: 'contain',
