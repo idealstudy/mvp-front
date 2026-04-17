@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-import { ShareRedirect } from '@/app/(public)/share/_components/share-redirect';
 import { SITE_CONFIG } from '@/config/site';
 
 type Props = {
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: 'ko_KR',
       type: 'article',
       title,
-      url: shareUrl,
+      url: targetUrl,
       siteName: SITE_CONFIG.name,
       images: [
         {
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ShareStudyNotePage({ params }: Props) {
   const { id, noteId } = await params;
 
-  return <ShareRedirect href={`/study-rooms/${id}/note/${noteId}`} />;
+  redirect(`/study-rooms/${id}/note/${noteId}`);
 }
 
 const getRequestOrigin = async () => {
