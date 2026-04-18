@@ -9,7 +9,6 @@ import {
   StudentNoteQueryKey,
   studentNoteRepository,
 } from '@/entities/student-study-note';
-import { useStudyNoteTimerProgress } from '@/features/dashboard/hooks';
 import {
   useStudentNoteDelete,
   useStudyNoteMonthly,
@@ -339,9 +338,6 @@ const CalendarSection = () => {
   const [yearRangeStart, setYearRangeStart] = useState(minYear);
   const [timerOpen, setTimerOpen] = useState(false);
 
-  const { data: progressData, isLoading: isProgressLoading } =
-    useStudyNoteTimerProgress({ enabled: timerOpen });
-
   const member = useMemberStore((s) => s.member);
   const studentId = member?.id ?? 0;
 
@@ -541,8 +537,6 @@ const CalendarSection = () => {
         </div>
         <TimerModal
           isOpen={timerOpen}
-          progressData={progressData}
-          isProgressLoading={isProgressLoading}
           onClose={() => setTimerOpen(false)}
         />
         <MonthCalendar

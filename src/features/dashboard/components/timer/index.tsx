@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import type { StudentNoteTimerProgress } from '@/entities/student-study-note';
 import {
   useStudyNoteTimerFinish,
   useStudyNoteTimerPause,
+  useStudyNoteTimerProgress,
   useStudyNoteTimerReset,
   useStudyNoteTimerResume,
   useStudyNoteTimerStart,
@@ -20,6 +20,7 @@ import {
 import type { TextEditorValue } from '@/shared/components/editor';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { PRIVATE } from '@/shared/constants';
+import { useSubjectList } from '@/shared/hooks';
 import { cn } from '@/shared/lib';
 
 import { CompleteView } from './complete-view';
@@ -32,17 +33,11 @@ type Step = 'setup' | 'running' | 'complete';
 type TimerModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  progressData?: StudentNoteTimerProgress;
-  isProgressLoading?: boolean;
 };
 
-export const TimerModal = ({
-  isOpen,
-  onClose,
-  progressData,
-  isProgressLoading = false,
-}: TimerModalProps) => {
+export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const router = useRouter();
+
   const [step, setStep] = useState<Step>('setup');
   const [topic, setTopic] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -55,29 +50,53 @@ export const TimerModal = ({
   const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const {
+    data: progressData,
+    isLoading: isProgressLoading,
+    refetch,
+  } = useStudyNoteTimerProgress();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    refetch().then((result) => {
+      const data = result.data;
+      if (!data?.ongoing) return;
+      const running = data.status === 'RUNNING';
+      let elapsedSec = data.studyTime ?? 0;
+      if (running && data.restartTime) {
+        elapsedSec += Math.max(
+          0,
+          Math.floor((Date.now() - new Date(data.restartTime).getTime()) / 1000)
+        );
+      }
+      setStudyNoteId(data.id);
+      setTopic(data.title ?? '');
+      setSelectedSubject(data.subject);
+      setElapsed(elapsedSec);
+      setIsRunning(running);
+      if (data.content) {
+        try {
+          setNoteContent(JSON.parse(data.content));
+        } catch {
+          // keep initial value
+        }
+      }
+      setStep('running');
+    });
+  }, [isOpen, refetch]);
+
+  const { data: subjects = [] } = useSubjectList();
+  const subjectMap = Object.fromEntries(subjects.map((s) => [s.code, s.name]));
+  const subjectLabel = selectedSubject
+    ? (subjectMap[selectedSubject] ?? selectedSubject)
+    : null;
+
   const { mutate: startTimer } = useStudyNoteTimerStart();
   const { mutate: pauseTimer } = useStudyNoteTimerPause();
   const { mutate: resumeTimer } = useStudyNoteTimerResume();
   const { mutate: resetTimer } = useStudyNoteTimerReset();
   const { mutate: finishTimer } = useStudyNoteTimerFinish();
   const { mutate: tempSaveTimer } = useStudyNoteTimerTempSave();
-
-  useEffect(() => {
-    if (!isOpen || !progressData?.ongoing) return;
-    const isRunning = progressData.status === 'RUNNING';
-    let elapsed = progressData.studyTime;
-    if (isRunning && progressData.restartTime) {
-      const nowKSTMs = Date.now() + 9 * 60 * 60 * 1000;
-      const restartMs = new Date(progressData.restartTime).getTime();
-      elapsed += Math.max(0, Math.floor((nowKSTMs - restartMs) / 1000));
-    }
-    setStudyNoteId(progressData.id);
-    setTopic(progressData.title);
-    setSelectedSubject(progressData.subject);
-    setElapsed(elapsed);
-    setIsRunning(isRunning);
-    setStep('running');
-  }, [isOpen, progressData]);
 
   useEffect(() => {
     if (isRunning) {
@@ -186,7 +205,7 @@ export const TimerModal = ({
             <div className="border-key-color-primary size-8 animate-spin rounded-full border-4 border-t-transparent" />
           </div>
         )}
-        {step === 'setup' && !isProgressLoading && (
+        {step === 'setup' && !isProgressLoading && !progressData?.ongoing && (
           <SetupView
             topic={topic}
             onTopicChange={setTopic}
@@ -219,7 +238,7 @@ export const TimerModal = ({
           <RunningView
             elapsed={elapsed}
             isRunning={isRunning}
-            subject={selectedSubject}
+            subjectLabel={subjectLabel}
             noteOpen={noteOpen}
             noteContent={noteContent}
             onNoteContentChange={setNoteContent}
@@ -236,22 +255,20 @@ export const TimerModal = ({
               });
             }}
             onFinish={handleFinish}
-            onBack={() => {
-              setIsRunning(false);
-              setStep('setup');
-            }}
           />
         )}
         {step === 'complete' && (
           <CompleteView
             elapsed={elapsed}
-            subject={selectedSubject}
+            subjectLabel={subjectLabel}
             topic={topic}
             dateStr={dateStr}
             onClose={handleClose}
             onWriteNote={() => {
               if (studyNoteId)
-                router.push(PRIVATE.STUDENT_NOTE.DETAIL(studyNoteId));
+                router.push(
+                  `${PRIVATE.STUDENT_NOTE.DETAIL(studyNoteId)}?edit=true`
+                );
               handleClose();
             }}
           />

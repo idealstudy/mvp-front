@@ -6,20 +6,21 @@ import { z } from 'zod';
  * ────────────────────────────────────────────────────*/
 export const StudentNoteTimerProgressSchema = z.object({
   id: z.number().int(),
-  studentId: z.number().int(),
-  title: z.string(),
-  subject: z.string(),
-  content: z.string(),
-  status: z.string(),
-  studyTime: z.number().int(),
+  studentId: z.number().int().nullable(),
+  title: z.string().nullable(),
+  subject: z.string().nullable(),
+  content: z.string().nullable(),
+  status: z.string().nullable(),
+  studyTime: z.number().int().nullable(),
   regDate: z.string().nullable(),
   modDate: z.string().nullable(),
   restartTime: z.string().nullable(),
   resolvedContent: z
     .object({
-      content: z.string(),
-      expiresAt: z.string(),
+      content: z.string().nullable().optional(),
+      expiresAt: z.string().nullable().optional(),
     })
+    .passthrough()
     .nullable()
     .optional(),
   ongoing: z.boolean(),
@@ -98,8 +99,8 @@ export const StudentNoteDailyResponseSchema = z.object({
   list: z.array(
     z.object({
       id: z.number().int(),
-      title: z.string().nullable().catch(''),
-      subject: z.string().nullable().catch(''),
+      title: z.string().nullable(),
+      subject: z.string().nullable(),
       studyTime: z.number().int(),
     })
   ),
@@ -117,16 +118,16 @@ export const StudentNoteCreatePayloadSchema = StudentNoteWritePayloadSchema;
  * ────────────────────────────────────────────────────*/
 export const StudentNoteListItemSchema = z.object({
   id: z.number().int(),
-  studentId: z.number().int().nullish().catch(null),
-  title: z.string().nullish().catch(''),
-  subject: z.string().nullish().catch(''),
-  content: z.string().nullish().catch(''),
-  status: z.string().nullish().catch(null),
-  studyTime: z.number().int().nullish().catch(null),
-  regDate: z.string().nullish().catch(null),
-  modDate: z.string().nullish().catch(null),
-  restartTime: z.string().nullish().catch(null),
-  ongoing: z.boolean().nullish().catch(null),
+  studentId: z.number().int().nullable().optional(),
+  title: z.string().nullable(),
+  subject: z.string().nullable().optional(),
+  content: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  studyTime: z.number().int().nullable(),
+  regDate: z.string().nullable().optional(),
+  modDate: z.string().nullable().optional(),
+  restartTime: z.string().nullable().optional(),
+  ongoing: z.boolean().nullable().optional(),
 });
 
 export const StudentNoteListResponseSchema = z.object({
@@ -142,22 +143,26 @@ export const StudentNoteListResponseSchema = z.object({
  * GET /api/common/study-note/{studyNoteId}
  * ────────────────────────────────────────────────────*/
 export const StudentNoteDetailSchema = z.object({
-  id: z.number().int(),
-  studentId: z.number().int().nullish().catch(null),
-  title: z.string().nullish().catch(''),
-  subject: z.string().nullish().catch(''),
-  content: z.string().nullish().catch(''),
-  status: z.string().nullish().catch(null),
-  studyTime: z.number().int().nullish().catch(null),
-  regDate: z.string().nullish().catch(null),
-  modDate: z.string().nullish().catch(null),
-  restartTime: z.string().nullish().catch(null),
+  id: z.number(),
+  studentId: z.number().nullable().optional(),
+  title: z.string().nullable().optional(),
+  subject: z.string().nullable().optional(),
+  content: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  studyTime: z.number().nullable().optional(),
+  regDate: z.string().nullable().optional(),
+  modDate: z.string().nullable().optional(),
+  restartTime: z.string().nullable().optional(),
   resolvedContent: z
-    .object({ content: z.string(), expiresAt: z.string() })
-    .nullish()
-    .catch(null),
-  ongoing: z.boolean().nullish().catch(null),
-  contentPreview: z.string().nullish().catch(null),
+    .object({
+      content: z.string().nullable().optional(),
+      expiresAt: z.string().nullable().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+  ongoing: z.boolean().nullable().optional(),
+  contentPreview: z.string().nullable().optional(),
 });
 
 /* ─────────────────────────────────────────────────────

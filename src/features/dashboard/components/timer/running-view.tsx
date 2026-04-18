@@ -1,14 +1,14 @@
 import { TextEditor } from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronDown, ChevronLeft, ChevronUp, Pause, Play } from 'lucide-react';
+import { ChevronDown, ChevronUp, Pause, Play } from 'lucide-react';
 
-import { SUBJECT_TO_KOREAN, formatHHMMSS } from './constants';
+import { formatHHMMSS } from './constants';
 
 export type RunningViewProps = {
   elapsed: number;
   isRunning: boolean;
-  subject: string | null;
+  subjectLabel: string | null;
   noteOpen: boolean;
   noteContent: TextEditorValue;
   onNoteContentChange: (v: TextEditorValue) => void;
@@ -17,13 +17,12 @@ export type RunningViewProps = {
   onTempSave: () => void;
   onReset: () => void;
   onFinish: () => void;
-  onBack: () => void;
 };
 
 export const RunningView = ({
   elapsed,
   isRunning,
-  subject,
+  subjectLabel,
   noteOpen,
   noteContent,
   onNoteContentChange,
@@ -32,26 +31,14 @@ export const RunningView = ({
   onTempSave,
   onReset,
   onFinish,
-  onBack,
 }: RunningViewProps) => (
   <div className="flex flex-col gap-6">
-    <button
-      type="button"
-      onClick={onBack}
-      className="text-text-sub font-body2-normal hover:text-text-main flex w-fit items-center gap-0.5"
-    >
-      <ChevronLeft size={16} />
-      과목 수정하기
-    </button>
-
     <div className="flex flex-col items-center gap-2">
       <p className="text-[56px] leading-none font-bold tracking-tight">
         {formatHHMMSS(elapsed)}
       </p>
       <p className="text-text-sub font-body2-normal">
-        {subject
-          ? `${SUBJECT_TO_KOREAN[subject] ?? subject} 공부 중...`
-          : '공부 중...'}
+        {subjectLabel ? `${subjectLabel} 공부 중...` : '공부 중...'}
       </p>
     </div>
 

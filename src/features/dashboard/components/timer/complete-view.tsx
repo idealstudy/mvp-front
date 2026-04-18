@@ -1,11 +1,11 @@
 import { Button } from '@/shared/components/ui/button';
 import { Check } from 'lucide-react';
 
-import { SUBJECT_TO_KOREAN, formatHHMMSS } from './constants';
+import { formatHHMMSS } from './constants';
 
 export type CompleteViewProps = {
   elapsed: number;
-  subject: string | null;
+  subjectLabel: string | null;
   topic: string;
   dateStr: string;
   onClose: () => void;
@@ -14,7 +14,7 @@ export type CompleteViewProps = {
 
 export const CompleteView = ({
   elapsed,
-  subject,
+  subjectLabel,
   topic,
   dateStr,
   onClose,
@@ -42,7 +42,7 @@ export const CompleteView = ({
       <span className="text-text-sub font-body2-normal">{dateStr}</span>
       <div className="bg-line-line2 h-4 w-px" />
       <span className="text-text-main font-body2-normal">
-        {subject ? `${SUBJECT_TO_KOREAN[subject] ?? subject} ` : ''}
+        {subjectLabel ? `${subjectLabel} ` : ''}
         {topic}
       </span>
     </div>
