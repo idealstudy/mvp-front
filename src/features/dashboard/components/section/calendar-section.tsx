@@ -175,7 +175,7 @@ const MonthCalendar = ({
                       handleOtherMonthClick(cell.type);
                   }}
                   className={cn(
-                    'border-gray-2 flex min-h-[100px] flex-col justify-between gap-1.5 border-[0.5px] p-3 transition-colors',
+                    'border-gray-2 flex min-h-[100px] flex-col items-start justify-start gap-1.5 border-[0.5px] p-3 transition-colors',
                     !isCurrent
                       ? 'hover:border-orange-6 hover:bg-orange-1 cursor-pointer'
                       : 'cursor-default'
@@ -190,7 +190,7 @@ const MonthCalendar = ({
                     {cell.day}
                   </span>
                   {notes.length > 0 && (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col items-start gap-1">
                       {notes.map((note) => {
                         const badge = getBadgeStyle(
                           note.studyTime,
