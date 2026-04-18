@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -89,7 +89,10 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   }, [isOpen, refetch]);
 
   const { data: subjects = [] } = useSubjectList();
-  const subjectMap = Object.fromEntries(subjects.map((s) => [s.code, s.name]));
+  const subjectMap = useMemo(
+    () => Object.fromEntries(subjects.map((s) => [s.code, s.name])),
+    [subjects]
+  );
   const subjectLabel = selectedSubject
     ? (subjectMap[selectedSubject] ?? selectedSubject)
     : null;

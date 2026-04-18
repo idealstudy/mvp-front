@@ -112,6 +112,7 @@ export const useStudyNoteTimerReset = () => {
  * 학습 일지 임시 저장
  * ────────────────────────────────────────────────────*/
 export const useStudyNoteTimerTempSave = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       studyNoteId,
@@ -120,5 +121,10 @@ export const useStudyNoteTimerTempSave = () => {
       studyNoteId: number;
       body: StudentNoteWritePayload;
     }) => studentNoteRepository.timer.tempSave(studyNoteId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: StudentNoteQueryKey.timerProgress(),
+      });
+    },
   });
 };

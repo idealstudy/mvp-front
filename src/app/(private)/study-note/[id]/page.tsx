@@ -46,6 +46,8 @@ type EditFormProps = {
   onCancel: () => void;
 };
 
+const LAYOUT_CLASS = 'tablet:flex-col desktop:flex-col flex flex-col gap-0';
+
 const EditForm = ({ data, noteId, onCancel }: EditFormProps) => {
   const parsedContent = parseContent(data);
   const { mutate: updateNote, isPending: isUpdating } = useStudentNoteUpdate();
@@ -81,7 +83,7 @@ const EditForm = ({ data, noteId, onCancel }: EditFormProps) => {
   };
 
   return (
-    <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0 pb-10">
+    <ColumnLayout className={`${LAYOUT_CLASS} pb-10`}>
       <BackLink className="mb-6" />
       <div className="border-line-line1 w-full rounded-xl border bg-white px-8 py-10">
         <div className="mb-8">
@@ -131,7 +133,7 @@ const StudentStudyNoteDetailPage = () => {
 
   if (isPending) {
     return (
-      <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0">
+      <ColumnLayout className={LAYOUT_CLASS}>
         <BackLink className="mb-6" />
         <div className="border-line-line1 h-64 w-full animate-pulse rounded-xl border bg-white" />
       </ColumnLayout>
@@ -140,7 +142,7 @@ const StudentStudyNoteDetailPage = () => {
 
   if (isError || !data) {
     return (
-      <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0">
+      <ColumnLayout className={LAYOUT_CLASS}>
         <BackLink className="mb-6" />
         <div className="border-line-line1 flex h-64 w-full items-center justify-center rounded-xl border bg-white">
           <p className="font-body2-normal text-gray-8">
@@ -167,7 +169,7 @@ const StudentStudyNoteDetailPage = () => {
     : null;
 
   return (
-    <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0">
+    <ColumnLayout className={LAYOUT_CLASS}>
       <BackLink className="mb-6" />
       <ColumnLayout className="desktop:px-0 items-start gap-6 p-0">
         <ColumnLayout.Left className="border-line-line1 !static top-0 h-fit space-y-5 rounded-xl border bg-white p-10">
