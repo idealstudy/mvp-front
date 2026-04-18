@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+const ResolvedContentSchema = z
+  .object({
+    content: z.string().nullable().optional(),
+    expiresAt: z.string().nullable().optional(),
+  })
+  .passthrough()
+  .nullable()
+  .optional();
+
 /* ─────────────────────────────────────────────────────
  * Timer - 진행 중인 학습 일지 조회
  * GET /api/student/study-note/timer/progress
@@ -16,26 +25,20 @@ export const StudentNoteTimerProgressSchema = z
     regDate: z.string().nullable().optional(),
     modDate: z.string().nullable().optional(),
     restartTime: z.string().nullable().optional(),
-    resolvedContent: z
-      .object({
-        content: z.string().nullable().optional(),
-        expiresAt: z.string().nullable().optional(),
-      })
-      .passthrough()
-      .nullable()
-      .optional(),
+    resolvedContent: ResolvedContentSchema,
     ongoing: z.boolean(),
     contentPreview: z.string().nullable().optional(),
   })
   .nullable();
 
 /* ─────────────────────────────────────────────────────
- * Timer - 공통 Payload
+ * Timer/CRUD - 공통 Payload
  * POST /api/student/study-note/timer/start
  * POST /api/student/study-note/timer/pause/{studyNoteId}
  * POST /api/student/study-note/timer/finish/{studyNoteId}
  * POST /api/student/study-note/temp/{studyNoteId}
  * POST /api/student/study-note
+ * PUT  /api/student/study-note/{studyNoteId}
  * ────────────────────────────────────────────────────*/
 export const StudentNoteWritePayloadSchema = z.object({
   title: z.string(),
@@ -52,13 +55,6 @@ export const StudentNoteWritePayloadSchema = z.object({
 export const StudentNoteTimerStartResponseSchema = z.object({
   id: z.number().int(),
 });
-
-export const StudentNoteTimerStartPayloadSchema = StudentNoteWritePayloadSchema;
-export const StudentNoteTimerFinishPayloadSchema =
-  StudentNoteWritePayloadSchema;
-export const StudentNoteTimerPausePayloadSchema = StudentNoteWritePayloadSchema;
-export const StudentNoteTimerTempSavePayloadSchema =
-  StudentNoteWritePayloadSchema;
 
 /* ─────────────────────────────────────────────────────
  * Timer - 학습 시간 초기화
@@ -109,12 +105,6 @@ export const StudentNoteDailyResponseSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * CRUD - 학습 일지 작성 (타이머 없이)
- * POST /api/student/study-note
- * ────────────────────────────────────────────────────*/
-export const StudentNoteCreatePayloadSchema = StudentNoteWritePayloadSchema;
-
-/* ─────────────────────────────────────────────────────
  * CRUD - 학습 일지 목록 조회
  * GET /api/common/study-note/list
  * ────────────────────────────────────────────────────*/
@@ -155,23 +145,10 @@ export const StudentNoteDetailSchema = z.object({
   regDate: z.string().nullable().optional(),
   modDate: z.string().nullable().optional(),
   restartTime: z.string().nullable().optional(),
-  resolvedContent: z
-    .object({
-      content: z.string().nullable().optional(),
-      expiresAt: z.string().nullable().optional(),
-    })
-    .passthrough()
-    .nullable()
-    .optional(),
+  resolvedContent: ResolvedContentSchema,
   ongoing: z.boolean().nullable().optional(),
   contentPreview: z.string().nullable().optional(),
 });
-
-/* ─────────────────────────────────────────────────────
- * CRUD - 학습 일지 수정
- * PUT /api/student/study-note/{studyNoteId}
- * ────────────────────────────────────────────────────*/
-export const StudentNoteUpdatePayloadSchema = StudentNoteWritePayloadSchema;
 
 /* ─────────────────────────────────────────────────────
  * 내보내기
@@ -193,12 +170,7 @@ export const studentNoteDto = {
 };
 
 export const studentNotePayload = {
-  timerStart: StudentNoteTimerStartPayloadSchema,
-  timerFinish: StudentNoteTimerFinishPayloadSchema,
-  timerPause: StudentNoteTimerPausePayloadSchema,
-  timerTempSave: StudentNoteTimerTempSavePayloadSchema,
+  write: StudentNoteWritePayloadSchema,
   monthlyQuery: StudentNoteMonthlyQuerySchema,
   dailyQuery: StudentNoteDailyQuerySchema,
-  create: StudentNoteCreatePayloadSchema,
-  update: StudentNoteUpdatePayloadSchema,
 };

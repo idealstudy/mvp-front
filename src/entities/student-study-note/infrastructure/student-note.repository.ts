@@ -25,7 +25,7 @@ const getTimerProgress = async (): Promise<StudentNoteTimerProgress | null> => {
 const startTimer = async (
   body: StudentNoteWritePayload
 ): Promise<StudentNoteTimerStartResponse> => {
-  const validatedBody = studentNotePayload.timerStart.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   const response = await api.private.post(
     '/student/study-note/timer/start',
     validatedBody
@@ -37,7 +37,7 @@ const finishTimer = async (
   studyNoteId: number,
   body: StudentNoteWritePayload
 ): Promise<void> => {
-  const validatedBody = studentNotePayload.timerFinish.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   await api.private.post(
     `/student/study-note/timer/finish/${studyNoteId}`,
     validatedBody
@@ -48,7 +48,7 @@ const pauseTimer = async (
   studyNoteId: number,
   body: StudentNoteWritePayload
 ): Promise<void> => {
-  const validatedBody = studentNotePayload.timerPause.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   await api.private.post(
     `/student/study-note/timer/pause/${studyNoteId}`,
     validatedBody
@@ -67,7 +67,7 @@ const tempSaveTimer = async (
   studyNoteId: number,
   body: StudentNoteWritePayload
 ): Promise<void> => {
-  const validatedBody = studentNotePayload.timerTempSave.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   await api.private.post(
     `/student/study-note/temp/${studyNoteId}`,
     validatedBody
@@ -84,9 +84,7 @@ const getMonthly = async (
   const validatedQuery = studentNotePayload.monthlyQuery.parse(query);
   const response = await api.private.get(
     `/common/study-note/month/${studentId}`,
-    {
-      params: validatedQuery,
-    }
+    { params: validatedQuery }
   );
   return unwrapEnvelope(response, studentNoteDto.calendar.monthlyResponse);
 };
@@ -105,7 +103,7 @@ const getDaily = async (
  * CRUD
  * ────────────────────────────────────────────────────*/
 const createNote = async (body: StudentNoteWritePayload): Promise<void> => {
-  const validatedBody = studentNotePayload.create.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   await api.private.post('/student/study-note', validatedBody);
 };
 
@@ -130,7 +128,7 @@ const updateNote = async (
   studyNoteId: number,
   body: StudentNoteWritePayload
 ): Promise<void> => {
-  const validatedBody = studentNotePayload.update.parse(body);
+  const validatedBody = studentNotePayload.write.parse(body);
   await api.private.put(`/student/study-note/${studyNoteId}`, validatedBody);
 };
 

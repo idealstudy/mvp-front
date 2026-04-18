@@ -31,9 +31,7 @@ export type StudentNoteListItem = z.infer<
 /* ─────────────────────────────────────────────────────
  * Payload (Request)
  * ────────────────────────────────────────────────────*/
-export type StudentNoteWritePayload = z.infer<
-  typeof studentNotePayload.timerStart
->;
+export type StudentNoteWritePayload = z.infer<typeof studentNotePayload.write>;
 export type StudentNoteMonthlyQuery = z.infer<
   typeof studentNotePayload.monthlyQuery
 >;
