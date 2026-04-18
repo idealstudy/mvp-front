@@ -1,5 +1,5 @@
 import { RegisterFunnel } from '@/features/auth/components/register-funnel';
-import { PageViewTracker } from '@/shared/components/gtm';
+import { PageViewTracker } from '@/shared/components/analytics';
 
 export default function RegisterPage() {
   return (

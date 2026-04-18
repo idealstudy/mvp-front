@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 import { DashboardContainer } from '@/features/dashboard/components/dashboard-container';
-import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
+
+// import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
 
 const SITE_NAME = '디에듀';
 const SITE_URL = 'https://d-edu.site/';
@@ -39,11 +41,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string }>;
+}) {
+  // OAuth 전용 리다이렉트
+  const { from } = await searchParams;
+
+  if (from) {
+    const decoded = decodeURIComponent(from);
+    if (decoded.startsWith('/')) redirect(decoded);
+  }
+
   return (
     <>
       <DashboardContainer />
-      <EmptyConnectionDialog />
+      {/* <EmptyConnectionDialog /> */}
     </>
   );
 }

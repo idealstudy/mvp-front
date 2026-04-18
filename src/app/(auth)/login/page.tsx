@@ -1,5 +1,5 @@
 import LoginForm from '@/features/auth/components/login-form';
-import { PageViewTracker } from '@/shared/components/gtm';
+import { PageViewTracker } from '@/shared/components/analytics';
 
 export default function LoginPage() {
   return (

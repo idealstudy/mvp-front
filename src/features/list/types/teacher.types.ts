@@ -27,8 +27,8 @@ export interface PublicStudyRoom {
   subjectType?: string;
   grade?: string;
   studentCount?: number;
-  visibility: 'PUBLIC' | 'PRIVATE';
-  createdAt: string;
+  visibility?: 'PUBLIC' | 'PRIVATE';
+  createdAt?: string;
 }
 
 // API 응답 타입

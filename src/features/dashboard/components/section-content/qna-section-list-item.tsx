@@ -4,7 +4,7 @@ import { StudentDashboardQnaListItemDTO } from '@/entities/student';
 import { TeacherDashboardQnaListItemDTO } from '@/entities/teacher';
 import { PRIVATE } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
-import { trackDashboardQnaClick } from '@/shared/lib/gtm/trackers';
+import { trackDashboardQnaClick } from '@/shared/lib/analytics';
 import { Check } from 'lucide-react';
 
 interface QnASectionListItemProps {
