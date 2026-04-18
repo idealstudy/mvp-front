@@ -18,6 +18,7 @@ export const useStudyNoteMonthly = (
     queryFn: () =>
       studentNoteRepository.calendar.getMonthly(studentId, { year, month }),
     enabled: !!studentId,
+    retry: false,
   });
 };
 
@@ -39,6 +40,7 @@ export const useStudentNoteList = (page: number, size = 6) => {
   return useQuery({
     queryKey: StudentNoteQueryKey.list(page, size),
     queryFn: () => studentNoteRepository.crud.getList(page, size),
+    retry: false,
   });
 };
 
@@ -50,6 +52,7 @@ export const useStudentNoteDetail = (studyNoteId: number) => {
     queryKey: StudentNoteQueryKey.detail(studyNoteId),
     queryFn: () => studentNoteRepository.crud.getDetail(studyNoteId),
     enabled: !!studyNoteId,
+    retry: false,
   });
 };
 

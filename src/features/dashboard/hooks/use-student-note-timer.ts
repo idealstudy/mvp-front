@@ -14,6 +14,8 @@ export const useStudyNoteTimerProgress = ({
   return useQuery({
     queryKey: StudentNoteQueryKey.timerProgress(),
     queryFn: studentNoteRepository.timer.getProgress,
+    refetchOnWindowFocus: false,
+    retry: false,
     enabled,
   });
 };
@@ -82,6 +84,22 @@ export const useStudyNoteTimerResume = () => {
   return useMutation({
     mutationFn: (studyNoteId: number) =>
       studentNoteRepository.timer.resume(studyNoteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: StudentNoteQueryKey.timerProgress(),
+      });
+    },
+  });
+};
+
+/* ─────────────────────────────────────────────────────
+ * 학습 시간 초기화
+ * ────────────────────────────────────────────────────*/
+export const useStudyNoteTimerReset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (studyNoteId: number) =>
+      studentNoteRepository.timer.reset(studyNoteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: StudentNoteQueryKey.timerProgress(),

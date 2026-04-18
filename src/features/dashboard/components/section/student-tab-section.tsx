@@ -18,6 +18,29 @@ import HomeworkSectionContent from '../section-content/homework-section-content'
 import NoteSectionContent from '../section-content/note-section-content';
 import TabbedSection from './tabbed-section';
 
+const extractTextFromContent = (
+  contentJson: string | null | undefined
+): string => {
+  if (!contentJson) return '';
+  try {
+    const doc = JSON.parse(contentJson);
+    const texts: string[] = [];
+    const walk = (node: {
+      type?: string;
+      text?: string;
+      content?: unknown[];
+    }) => {
+      if (node.text) texts.push(node.text);
+      if (node.content)
+        node.content.forEach((child) => walk(child as typeof node));
+    };
+    walk(doc);
+    return texts.join(' ');
+  } catch {
+    return '';
+  }
+};
+
 // ─── 수업노트 탭 ───────────────────────────────────────────────────────────────
 
 const StudentNoteTabContent = ({ studyRoomId }: { studyRoomId?: number }) => {
@@ -111,7 +134,7 @@ const StudentHomeworkTabContent = ({
 const StudentStudyNoteTabContent = () => {
   const [page, setPage] = useState(1);
   const { data, isPending } = useStudentNoteList(page - 1);
-  const notes = data?.list ?? [];
+  const notes = data?.content ?? [];
 
   if (isPending) {
     return (
@@ -150,7 +173,7 @@ const StudentStudyNoteTabContent = () => {
               {note.title}
             </span>
             <span className="font-body2-normal text-gray-12 line-clamp-2 leading-tight">
-              {note.content}
+              {extractTextFromContent(note.content)}
             </span>
           </Link>
         ))}

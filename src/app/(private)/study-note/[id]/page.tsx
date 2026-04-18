@@ -1,32 +1,93 @@
 'use client';
 
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+
 import { useParams } from 'next/navigation';
 
+import { SUBJECT_TO_KOREAN } from '@/features/dashboard/components/timer/constants';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
-import { useStudentNoteDetail } from '@/features/student-study-note/hooks';
+import {
+  StudentStudyNoteFields,
+  StudentStudyNoteSubmitButton,
+} from '@/features/student-study-note/components/student-study-note-form';
+import {
+  useStudentNoteDetail,
+  useStudentNoteUpdate,
+} from '@/features/student-study-note/hooks';
+import {
+  StudentStudyNoteForm,
+  studentStudyNoteSchema,
+} from '@/features/student-study-note/schemas/study-note';
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextViewer } from '@/shared/components/editor';
+import { TextViewer, prepareContentForSave } from '@/shared/components/editor';
+import { Button } from '@/shared/components/ui/button';
+import { Form } from '@/shared/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { JSONContent } from '@tiptap/react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { BookOpen, Tag } from 'lucide-react';
+import { BookOpen, Pencil, Tag } from 'lucide-react';
 
 const StudentStudyNoteDetailPage = () => {
   const params = useParams();
   const noteId = Number(params.id);
 
+  const [isEditing, setIsEditing] = useState(false);
+
   const { data, isPending } = useStudentNoteDetail(noteId);
+  const { mutate: updateNote, isPending: isUpdating } = useStudentNoteUpdate();
+
+  const resolvedContent = data?.resolvedContent?.content || data?.content;
+  let parsedContent: unknown = null;
+  try {
+    if (resolvedContent) parsedContent = JSON.parse(resolvedContent);
+  } catch {
+    parsedContent = null;
+  }
+
+  const methods = useForm<StudentStudyNoteForm>({
+    resolver: zodResolver(studentStudyNoteSchema),
+    values: {
+      title: data?.title ?? '',
+      studiedAt:
+        data?.regDate?.substring(0, 10) ??
+        new Date().toISOString().substring(0, 10),
+      subject: data?.subject ?? '',
+      content: (parsedContent ?? {}) as JSONContent,
+    },
+    mode: 'onChange',
+  });
+
+  const onSubmit = (formData: StudentStudyNoteForm) => {
+    const { contentString, mediaIds } = prepareContentForSave(formData.content);
+    updateNote(
+      {
+        studyNoteId: noteId,
+        body: {
+          title: formData.title,
+          subject: formData.subject,
+          content: contentString,
+          mediaIds,
+          finishTimestamp: new Date().toISOString(),
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
+      }
+    );
+  };
+
+  const handleCancel = () => {
+    methods.reset();
+    setIsEditing(false);
+  };
 
   const formattedDate = data?.regDate
     ? format(new Date(data.regDate), 'yyyy. MM. dd (E)', { locale: ko })
     : null;
-
-  const resolvedContent = data?.resolvedContent?.content ?? data?.content;
-  let content: unknown = null;
-  try {
-    if (resolvedContent) content = JSON.parse(resolvedContent);
-  } catch {
-    content = null;
-  }
 
   if (isPending) {
     return (
@@ -37,14 +98,68 @@ const StudentStudyNoteDetailPage = () => {
     );
   }
 
+  if (isEditing) {
+    return (
+      <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0 pb-10">
+        <BackLink className="mb-6" />
+        <div className="border-line-line1 w-full rounded-xl border bg-white px-8 py-10">
+          <div className="mb-8">
+            <div className="text-key-color-primary font-semibold">
+              학습노트 편집
+            </div>
+            <h1 className="mt-2 text-[32px] font-bold">
+              학습 내용을
+              <br />
+              수정해보세요.
+            </h1>
+          </div>
+          <FormProvider {...methods}>
+            <Form onSubmit={methods.handleSubmit(onSubmit)}>
+              <div className="space-y-8">
+                <StudentStudyNoteFields />
+                <div className="flex items-center justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="medium"
+                    onClick={handleCancel}
+                    className="w-[120px] rounded-sm"
+                  >
+                    취소
+                  </Button>
+                  <StudentStudyNoteSubmitButton isPending={isUpdating} />
+                </div>
+              </div>
+            </Form>
+          </FormProvider>
+        </div>
+      </ColumnLayout>
+    );
+  }
+
   return (
     <ColumnLayout className="tablet:flex-col desktop:flex-col flex flex-col gap-0">
       <BackLink className="mb-6" />
       <ColumnLayout className="desktop:px-0 items-start gap-6 p-0">
         <ColumnLayout.Left className="border-line-line1 !static top-0 h-fit space-y-5 rounded-xl border bg-white p-10">
-          <h1 className="font-headline1-heading text-text-main">
-            {data?.title}
-          </h1>
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="font-headline1-heading text-text-main">
+              {data?.title}
+            </h1>
+            <Button
+              type="button"
+              variant="outlined"
+              size="xsmall"
+              onClick={() => setIsEditing(true)}
+              className="shrink-0"
+            >
+              <Pencil
+                size={14}
+                className="mr-1"
+              />
+              편집
+            </Button>
+          </div>
 
           <hr className="border-line-line1 border" />
 
@@ -55,7 +170,9 @@ const StudentStudyNoteDetailPage = () => {
                 <span>과목</span>
               </div>
               <p className="font-body2-normal text-text-main">
-                {data?.subject}
+                {data?.subject
+                  ? (SUBJECT_TO_KOREAN[data.subject] ?? data.subject)
+                  : ''}
               </p>
             </div>
 
@@ -74,8 +191,8 @@ const StudentStudyNoteDetailPage = () => {
         </ColumnLayout.Left>
 
         <ColumnLayout.Right className="border-line-line1 desktop:max-w-[740px] max-h-[calc(100vh-var(--spacing-header-height)-48px)] overflow-y-auto rounded-xl border bg-white px-8 py-10">
-          {content ? (
-            <TextViewer value={content} />
+          {parsedContent ? (
+            <TextViewer value={parsedContent} />
           ) : (
             <p className="font-body2-normal text-gray-8">
               작성된 내용이 없어요.

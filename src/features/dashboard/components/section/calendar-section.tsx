@@ -3,8 +3,17 @@
 import { useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-import { useStudyNoteMonthly } from '@/features/student-study-note/hooks';
+import {
+  StudentNoteQueryKey,
+  studentNoteRepository,
+} from '@/entities/student-study-note';
+import { useStudyNoteTimerProgress } from '@/features/dashboard/hooks';
+import {
+  useStudentNoteDelete,
+  useStudyNoteMonthly,
+} from '@/features/student-study-note/hooks';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import {
@@ -12,56 +21,56 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shared/components/ui/popover';
+import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
+import { useQueries } from '@tanstack/react-query';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { TimerModal } from '../timer';
+import {
+  SUBJECT_TO_KOREAN,
+  formatHHMMSS,
+  formatMinSec,
+  formatStudyTime,
+} from '../timer/constants';
 
 /* ------------------------------------------------------------------ */
 /* Types & helpers                                                      */
 /* ------------------------------------------------------------------ */
 
-type StudyRecord = { seconds: number; noteTitle?: string; subject?: string };
-type StudyData = Record<number, StudyRecord>;
-
-const formatHHMMSS = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':');
+type DailyNote = {
+  id: number;
+  title: string | null;
+  subject: string | null;
+  studyTime: number;
 };
+type DayToNotes = Record<number, DailyNote[]>;
 
-const formatStudyTime = (seconds: number) => {
-  const hr = Math.floor(seconds / 3600);
-  const min = Math.floor((seconds % 3600) / 60);
-  const sec = seconds % 60;
-  if (hr > 0) return min > 0 ? `${hr}시간 ${min}분` : `${hr}시간`;
-  return sec > 0 ? `${min}분 ${sec}초` : `${min}분`;
-};
-
-const getBadge = (
-  seconds: number
-): { label: string; className: string } | null => {
-  if (seconds <= 0) return null;
+const getBadgeStyle = (
+  seconds: number,
+  subject: string | null
+): { className: string; label: string } => {
+  if (subject === 'ART_PE')
+    return { className: 'bg-gray-2 text-gray-7', label: '학습일지' };
   if (seconds >= 25200)
     return {
-      label: formatStudyTime(seconds),
       className: 'bg-orange-7 text-white',
+      label: formatMinSec(seconds),
     };
   if (seconds >= 10800)
     return {
-      label: formatStudyTime(seconds),
       className: 'bg-orange-6 text-white',
+      label: formatMinSec(seconds),
     };
   if (seconds >= 3600)
     return {
-      label: formatStudyTime(seconds),
       className: 'bg-orange-5 text-white',
+      label: formatMinSec(seconds),
     };
   return {
-    label: formatStudyTime(seconds),
     className: 'bg-orange-4 text-orange-12',
+    label: formatMinSec(seconds),
   };
 };
 
@@ -74,7 +83,7 @@ const WEEK_DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 const MonthCalendar = ({
   year,
   month,
-  studyData = {},
+  dayToNotes = {},
   onNavigate,
   minYear,
   todayYear,
@@ -82,14 +91,16 @@ const MonthCalendar = ({
 }: {
   year: number;
   month: number;
-  studyData?: StudyData;
+  dayToNotes?: DayToNotes;
   onNavigate: (year: number, month: number) => void;
   minYear: number;
   todayYear: number;
   todayMonth: number;
 }) => {
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const router = useRouter();
+  const [selectedNote, setSelectedNote] = useState<DailyNote | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const { mutate: deleteNote } = useStudentNoteDelete();
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const daysInPrevMonth = new Date(year, month - 1, 0).getDate();
@@ -133,9 +144,6 @@ const MonthCalendar = ({
     weeks.push(cells.slice(i, i + 7));
   }
 
-  const selectedRecord =
-    selectedDay !== null ? studyData[selectedDay] : undefined;
-
   return (
     <>
       <div className="w-full overflow-hidden rounded-md">
@@ -156,21 +164,21 @@ const MonthCalendar = ({
           >
             {week.map((cell, di) => {
               const isCurrent = cell.type === 'current';
-              const record = isCurrent ? studyData[cell.day] : undefined;
-              const badge = record ? getBadge(record.seconds) : null;
-              const hasRecord = isCurrent && !!record;
+              const notes = isCurrent ? (dayToNotes[cell.day] ?? []) : [];
               return (
                 <div
                   key={di}
                   onClick={() => {
-                    if (hasRecord) setSelectedDay(cell.day);
-                    else if (cell.type === 'prev' || cell.type === 'next')
+                    if (
+                      !isCurrent &&
+                      (cell.type === 'prev' || cell.type === 'next')
+                    )
                       handleOtherMonthClick(cell.type);
                   }}
                   className={cn(
-                    'border-gray-2 hover:border-orange-6 hover:bg-orange-1 flex min-h-[100px] flex-col justify-between gap-1.5 border-[0.5px] p-3 transition-colors',
-                    hasRecord || !isCurrent
-                      ? 'cursor-pointer'
+                    'border-gray-2 flex min-h-[100px] flex-col justify-between gap-1.5 border-[0.5px] p-3 transition-colors',
+                    !isCurrent
+                      ? 'hover:border-orange-6 hover:bg-orange-1 cursor-pointer'
                       : 'cursor-default'
                   )}
                 >
@@ -182,15 +190,31 @@ const MonthCalendar = ({
                   >
                     {cell.day}
                   </span>
-                  {badge && (
-                    <span
-                      className={cn(
-                        'font-label-normal w-fit rounded-[6px] px-1.5 py-[3px]',
-                        badge.className
-                      )}
-                    >
-                      {badge.label}
-                    </span>
+                  {notes.length > 0 && (
+                    <div className="flex flex-col gap-1">
+                      {notes.map((note) => {
+                        const badge = getBadgeStyle(
+                          note.studyTime,
+                          note.subject
+                        );
+                        return (
+                          <button
+                            key={note.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedNote(note);
+                            }}
+                            className={cn(
+                              'font-label-normal w-fit cursor-pointer rounded-[6px] px-1.5 py-[3px] hover:opacity-80',
+                              badge.className
+                            )}
+                          >
+                            {badge.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               );
@@ -199,27 +223,30 @@ const MonthCalendar = ({
         ))}
       </div>
 
-      {/* Detail dialog */}
+      {/* Note detail dialog */}
       <Dialog
-        isOpen={selectedDay !== null && !deleteConfirmOpen}
+        isOpen={selectedNote !== null && !deleteConfirmOpen}
         onOpenChange={(open) => {
-          if (!open) setSelectedDay(null);
+          if (!open) setSelectedNote(null);
         }}
       >
-        <Dialog.Content className="tablet:max-w-125 gap-6">
+        <Dialog.Content className="tablet:max-w-[400px] gap-6">
           <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
             <X size={20} />
           </Dialog.Close>
           <Dialog.Title className="font-headline1-heading text-center">
-            {formatHHMMSS(selectedRecord?.seconds ?? 0)} 공부 완료
+            {formatHHMMSS(selectedNote?.studyTime ?? 0)}
           </Dialog.Title>
-          <div className="bg-gray-1 flex flex-col rounded-md px-4 py-3">
-            <span className="font-body2-normal text-text-main pb-3">
-              {selectedRecord?.noteTitle ?? '-'}
+          <div className="bg-gray-1 flex flex-col gap-2 rounded-lg px-4 py-3">
+            <span className="font-body2-heading text-text-main">
+              {selectedNote?.title ?? ''}
             </span>
             <div className="bg-line-line2 h-px w-full" />
-            <span className="font-body2-normal text-text-sub pt-3">
-              {selectedRecord?.subject ?? '-'}
+            <span className="font-body2-normal text-text-sub">
+              {selectedNote?.subject
+                ? (SUBJECT_TO_KOREAN[selectedNote.subject] ??
+                  selectedNote.subject)
+                : ''}
             </span>
           </div>
           <div className="flex gap-3">
@@ -230,7 +257,15 @@ const MonthCalendar = ({
             >
               학습 내용 삭제하기
             </Button>
-            <Button className="flex-1">학습노트 가기</Button>
+            <Button
+              className="flex-1"
+              onClick={() => {
+                if (selectedNote)
+                  router.push(PRIVATE.STUDENT_NOTE.DETAIL(selectedNote.id));
+              }}
+            >
+              학습노트 보기
+            </Button>
           </div>
         </Dialog.Content>
       </Dialog>
@@ -242,7 +277,7 @@ const MonthCalendar = ({
           if (!open) setDeleteConfirmOpen(false);
         }}
       >
-        <Dialog.Content className="tablet:max-w-125 gap-6">
+        <Dialog.Content className="tablet:max-w-[400px] gap-6">
           <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
             <X size={20} />
           </Dialog.Close>
@@ -270,8 +305,13 @@ const MonthCalendar = ({
             <Button
               className="flex-1"
               onClick={() => {
-                setDeleteConfirmOpen(false);
-                setSelectedDay(null);
+                if (!selectedNote) return;
+                deleteNote(selectedNote.id, {
+                  onSuccess: () => {
+                    setDeleteConfirmOpen(false);
+                    setSelectedNote(null);
+                  },
+                });
               }}
             >
               확인
@@ -299,21 +339,44 @@ const CalendarSection = () => {
   const [yearRangeStart, setYearRangeStart] = useState(minYear);
   const [timerOpen, setTimerOpen] = useState(false);
 
+  const { data: progressData, isLoading: isProgressLoading } =
+    useStudyNoteTimerProgress({ enabled: timerOpen });
+
   const member = useMemberStore((s) => s.member);
   const studentId = member?.id ?? 0;
+
   const { data: monthlyData } = useStudyNoteMonthly(
     studentId,
     selectedYear,
     selectedMonth
   );
 
-  const studyData: StudyData = Object.fromEntries(
-    (monthlyData?.list ?? []).map((item) => [
-      item.day,
-      { seconds: item.studyTime },
-    ])
-  );
   const totalStudyTime = monthlyData?.totalStudyTime ?? 0;
+
+  // days that have at least some study time
+  const daysWithStudy = (monthlyData?.list ?? [])
+    .filter((item) => item.studyTime > 0)
+    .map((item) => item.day);
+
+  // fetch daily notes for each day with study time in parallel
+  const dailyResults = useQueries({
+    queries: daysWithStudy.map((day) => {
+      const date = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      return {
+        queryKey: StudentNoteQueryKey.daily(studentId, date),
+        queryFn: () =>
+          studentNoteRepository.calendar.getDaily({ studentId, date }),
+        enabled: !!studentId,
+        retry: false,
+      };
+    }),
+  });
+
+  const dayToNotes: DayToNotes = {};
+  daysWithStudy.forEach((day, i) => {
+    const data = dailyResults[i]?.data;
+    if (data) dayToNotes[day] = data.list;
+  });
 
   const years = Array.from({ length: 9 }, (_, i) => yearRangeStart + i);
 
@@ -462,7 +525,8 @@ const CalendarSection = () => {
             />
             {totalStudyTime > 0 ? (
               <p>
-                {selectedMonth}월은 총 {totalStudyTime}시간 공부했어요!
+                {selectedMonth}월은 총 {formatStudyTime(totalStudyTime)}{' '}
+                공부했어요!
               </p>
             ) : (
               <p>{selectedMonth}월의 공부, 지금 시작해보세요!</p>
@@ -474,15 +538,17 @@ const CalendarSection = () => {
           >
             타이머 켜기
           </Button>
-          <TimerModal
-            isOpen={timerOpen}
-            onClose={() => setTimerOpen(false)}
-          />
         </div>
+        <TimerModal
+          isOpen={timerOpen}
+          progressData={progressData}
+          isProgressLoading={isProgressLoading}
+          onClose={() => setTimerOpen(false)}
+        />
         <MonthCalendar
           year={selectedYear}
           month={selectedMonth}
-          studyData={studyData}
+          dayToNotes={dayToNotes}
           onNavigate={(y, m) => {
             setSelectedYear(y);
             setSelectedMonth(m);

@@ -3,7 +3,7 @@ import type { TextEditorValue } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronDown, ChevronLeft, ChevronUp, Pause, Play } from 'lucide-react';
 
-import { formatHHMMSS } from './constants';
+import { SUBJECT_TO_KOREAN, formatHHMMSS } from './constants';
 
 export type RunningViewProps = {
   elapsed: number;
@@ -49,7 +49,9 @@ export const RunningView = ({
         {formatHHMMSS(elapsed)}
       </p>
       <p className="text-text-sub font-body2-normal">
-        {subject ? `${subject} 공부 중...` : '공부 중...'}
+        {subject
+          ? `${SUBJECT_TO_KOREAN[subject] ?? subject} 공부 중...`
+          : '공부 중...'}
       </p>
     </div>
 
