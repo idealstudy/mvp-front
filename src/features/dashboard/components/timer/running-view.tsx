@@ -1,7 +1,7 @@
 import { TextEditor } from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronDown, ChevronUp, Pause, Play } from 'lucide-react';
+import { ChevronDown, ChevronUp, Pause, Play, X } from 'lucide-react';
 
 import { formatHHMMSS } from './constants';
 
@@ -17,6 +17,7 @@ export type RunningViewProps = {
   onTempSave: () => void;
   onReset: () => void;
   onFinish: () => void;
+  onClose: () => void;
 };
 
 export const RunningView = ({
@@ -31,8 +32,19 @@ export const RunningView = ({
   onTempSave,
   onReset,
   onFinish,
+  onClose,
 }: RunningViewProps) => (
   <div className="flex flex-col gap-6">
+    <div className="flex justify-end">
+      <button
+        type="button"
+        onClick={onClose}
+        className="cursor-pointer"
+      >
+        <X size={22} />
+      </button>
+    </div>
+
     <div className="flex flex-col items-center gap-2">
       <p className="text-[56px] leading-none font-bold tracking-tight">
         {formatHHMMSS(elapsed)}

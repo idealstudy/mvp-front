@@ -255,6 +255,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
               });
             }}
             onFinish={handleFinish}
+            onClose={handleClose}
           />
         )}
         {step === 'complete' && (

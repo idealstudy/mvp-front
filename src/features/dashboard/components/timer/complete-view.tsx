@@ -1,5 +1,5 @@
 import { Button } from '@/shared/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 import { formatHHMMSS } from './constants';
 
@@ -21,6 +21,15 @@ export const CompleteView = ({
   onWriteNote,
 }: CompleteViewProps) => (
   <div className="flex flex-col items-center gap-6">
+    <div className="flex w-full justify-end">
+      <button
+        type="button"
+        onClick={onClose}
+        className="cursor-pointer"
+      >
+        <X size={22} />
+      </button>
+    </div>
     <div className="bg-key-color-primary flex size-16 items-center justify-center rounded-full">
       <Check
         size={32}
