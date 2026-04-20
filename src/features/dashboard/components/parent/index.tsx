@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { usePublicStudyRoomsQuery } from '@/features/list';
+
 import {
   useParentDashboardConnectedStudentQuery,
   useParentDashboardInquiryListQuery,
   useParentDashboardStudyConsultationQuery,
   useParentDashboardStudyNewsQuery,
-  useParentDashboardStudyRoomPreviewQuery,
 } from '../../hooks/use-dashboard-query';
 import DashboardHeader from '../header';
 import { ClassConsultationHistorySection } from '../section/parent-class-consultation-history-section';
@@ -92,9 +93,15 @@ const DashboardParent = () => {
         enabled: selectedStudentId !== null && selectedStudyRoomId !== null,
       }
     );
-  // 스터디룸 둘러보기
+  // TODO: 스터디룸 둘러보기 - 임시로 /public/study-rooms 갖다쓰기
+  // const { data: studyRoomPreviewData, isPending: studyRoomPreviewIsPending } =
+  //   useParentDashboardStudyRoomPreviewQuery();
+
   const { data: studyRoomPreviewData, isPending: studyRoomPreviewIsPending } =
-    useParentDashboardStudyRoomPreviewQuery();
+    usePublicStudyRoomsQuery({
+      page: 0,
+      size: 4,
+    });
 
   // 문의 목록 조회
   const { data: inquiryListData, isPending: inquiryListIsPending } =
@@ -124,7 +131,7 @@ const DashboardParent = () => {
             selectedStudentName={selectedStudentName}
           />
           <StudyRoomPreviewSection
-            studyRoomPreviewData={studyRoomPreviewData ?? []}
+            studyRoomPreviewData={studyRoomPreviewData?.content ?? []}
             studyRoomPreviewIsPending={studyRoomPreviewIsPending}
           />
           <ClassConsultationHistorySection
