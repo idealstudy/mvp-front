@@ -6,6 +6,7 @@ import { useInviteTokenHandler } from '@/features/invite/hooks';
 import { trackPageView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
+import DashboardParent from './parent';
 import { DashboardStudent } from './student';
 import DashboardTeacher from './teacher';
 
@@ -35,6 +36,8 @@ export const DashboardContainer = () => {
       return <DashboardTeacher />;
     case 'ROLE_STUDENT':
       return <DashboardStudent />;
+    case 'ROLE_PARENT':
+      return <DashboardParent />;
     default:
       return null;
   }

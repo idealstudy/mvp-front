@@ -1,47 +1,30 @@
 import { ImageResponse } from 'next/og';
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
 import { OgCard } from './og-card';
-import type { OgTheme } from './og-config';
+import { OG_ASSETS, OG_IMAGE_SIZE, type OgPreset } from './og-config';
 
-type CreateOgImageParams = {
-  title: string;
-  theme: OgTheme;
+type CreateOgImageOptions = {
+  preset: OgPreset;
+  origin: string;
 };
 
-const truncateOgTitle = (title: string, maxLength = 28) => {
-  if (title.length <= maxLength) return title;
-  return `${title.slice(0, maxLength)}...`;
-};
-
-export const createOgImage = ({ title, theme }: CreateOgImageParams) => {
-  const imageSrc = getPublicImageDataUrl(theme.image);
-  const logoSrc = getPublicImageDataUrl('/og/og-logo.png');
-
+export const createOgImage = ({ preset, origin }: CreateOgImageOptions) => {
   return new ImageResponse(
     (
       <OgCard
-        title={truncateOgTitle(title)}
-        label={theme.label}
-        imageSrc={imageSrc}
-        logoSrc={logoSrc}
-        backgroundColor={theme.backgroundColor}
-        bottomBarColor={theme.bottomBarColor}
+        title={preset.title}
+        imageSrc={toAbsoluteUrl(preset.image, origin)}
+        imageAlt={preset.imageAlt}
+        logoSrc={toAbsoluteUrl(OG_ASSETS.logo, origin)}
       />
     ),
     {
-      width: 1200,
-      height: 630,
+      width: OG_IMAGE_SIZE.width,
+      height: OG_IMAGE_SIZE.height,
     }
   );
 };
 
-const getPublicImageDataUrl = (src: string) => {
-  const filePath = join(process.cwd(), 'public', src.replace(/^\//, ''));
-  const file = readFileSync(filePath);
-  const base64 = file.toString('base64');
-
-  return `data:image/png;base64,${base64}`;
+const toAbsoluteUrl = (path: string, origin: string) => {
+  return new URL(path, origin).toString();
 };

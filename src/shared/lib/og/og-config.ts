@@ -1,22 +1,28 @@
-export const OG_THEME = {
-  STUDYNOTE: {
+export const OG_IMAGE_SIZE = {
+  width: 1200,
+  height: 630,
+} as const;
+
+export const OG_ASSETS = {
+  logo: '/og/og-logo.png',
+} as const;
+
+export const OG_PRESETS = {
+  STUDY_NOTE: {
+    title: '한눈에 정리되는\n수업노트',
     image: '/og/og-note.png',
-    label: '수업노트',
-    backgroundColor: '#FCFBFA',
-    bottomBarColor: '#F6EDE4',
+    imageAlt: '수업노트',
   },
   HOMEWORK: {
+    title: '실력을 늘리는 과제',
     image: '/og/og-homework.png',
-    label: '과제',
-    backgroundColor: '#FCFBFA',
-    bottomBarColor: '#F6EDE4',
+    imageAlt: '과제',
   },
   COLUMN: {
+    title: '놓치기 아까운\n칼럼 게시글',
     image: '/og/og-column.png',
-    label: '컬럼',
-    backgroundColor: '#FCFBFA',
-    bottomBarColor: '#F6EDE4',
+    imageAlt: '칼럼',
   },
 } as const;
 
-export type OgTheme = (typeof OG_THEME)[keyof typeof OG_THEME];
+export type OgPreset = (typeof OG_PRESETS)[keyof typeof OG_PRESETS];

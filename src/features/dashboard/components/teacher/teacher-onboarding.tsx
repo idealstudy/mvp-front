@@ -51,7 +51,10 @@ const TeacherOnboarding = () => {
     'font-body1-heading tablet:font-headline1-heading text-orange-12 text-balance';
 
   return (
-    <div className={cn('bg-orange-scale-orange-1 rounded-2xl p-8')}>
+    <div
+      className={cn('bg-orange-scale-orange-1 rounded-2xl p-8')}
+      data-testid="teacher-onboarding"
+    >
       <div className="flex w-full items-center justify-between gap-2 text-left">
         {isInviteStudentCompleted ? (
           <span className={titleClassName}>
@@ -59,8 +62,7 @@ const TeacherOnboarding = () => {
           </span>
         ) : (
           <span className={titleClassName}>
-            먼저 나만의 스터디룸을 생성하고
-            <br className="tablet:hidden" />
+            먼저 나만의 스터디룸을 생성하고 <br className="tablet:hidden" />
             학생을 초대해주세요
           </span>
         )}

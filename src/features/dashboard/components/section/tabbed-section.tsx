@@ -26,12 +26,16 @@ export type StudyRoom = { id: number; name: string };
 type DropdownProps = {
   studyRooms: StudyRoom[];
   selectedId: number | null;
+  student?: boolean;
+  parent?: boolean;
   onSelect: (id: number | null) => void;
 };
 
 export const StudyRoomDropdown = ({
   studyRooms,
   selectedId,
+  student,
+  parent,
   onSelect,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +57,7 @@ export const StudyRoomDropdown = ({
   return (
     <div
       ref={ref}
-      className="relative inline-block w-fit"
+      className="tablet:w-48 relative inline-block w-40"
     >
       <button
         type="button"
@@ -61,13 +65,15 @@ export const StudyRoomDropdown = ({
         className={cn(
           'bg-gray-1 flex items-center gap-2.5 rounded-lg px-4 py-2.5',
           'font-body1-heading tablet:font-headline1-heading text-gray-12',
+          'w-full',
           isOpen && 'rounded-b-none'
         )}
       >
-        {label}
+        <span className="min-w-0 flex-1 truncate text-left">{label}</span>
         <ChevronDown
           className={cn(
-            'text-gray-12 size-6 transition-transform duration-200',
+            'text-gray-12 size-6 flex-shrink-0',
+            'transition-transform duration-200',
             isOpen && 'rotate-180'
           )}
         />
@@ -76,27 +82,29 @@ export const StudyRoomDropdown = ({
       {isOpen && (
         <ul
           className={cn(
-            'absolute top-full left-0 z-10 w-full',
+            'absolute top-full left-0 z-10 max-h-[300px] w-full overflow-y-auto',
             'bg-gray-1 rounded-b-lg shadow-md',
             'flex flex-col py-1'
           )}
         >
-          <li>
-            <button
-              type="button"
-              onClick={() => {
-                onSelect(null);
-                setIsOpen(false);
-              }}
-              className={cn(
-                'font-body1-normal text-gray-12 w-full px-5 py-3 text-left',
-                'hover:bg-gray-2 transition-colors',
-                selectedId === null && 'font-body1-heading text-orange-7'
-              )}
-            >
-              전체 스터디룸
-            </button>
-          </li>
+          {!student && !parent && (
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelect(null);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  'font-body1-normal text-gray-12 w-full px-5 py-3 text-left',
+                  'hover:bg-gray-2 transition-colors',
+                  selectedId === null && 'font-body1-heading text-orange-7'
+                )}
+              >
+                전체 스터디룸
+              </button>
+            </li>
+          )}
           {studyRooms.map((room) => (
             <li key={room.id}>
               <button

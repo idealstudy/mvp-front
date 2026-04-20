@@ -1,113 +1,95 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
+import { OG_ASSETS } from './og-config';
 
 type OgCardProps = {
   title: string;
-  label: string;
   imageSrc: string;
-  logoSrc: string;
-  backgroundColor: string;
-  bottomBarColor: string;
+  imageAlt?: string;
+  logoSrc?: string;
 };
 
 export const OgCard = ({
   title,
-  label,
   imageSrc,
-  logoSrc,
-  backgroundColor,
-  bottomBarColor,
+  imageAlt = '',
+  logoSrc = OG_ASSETS.logo,
 }: OgCardProps) => {
   return (
     <div
       style={{
-        width: '1200px',
-        height: '630px',
+        width: 1200,
+        height: 630,
         display: 'flex',
         position: 'relative',
-        backgroundColor,
-        fontFamily: 'Pretendard',
+        overflow: 'hidden',
+        backgroundColor: '#FCFBFA',
+        fontFamily: 'Pretendard, Arial, sans-serif',
       }}
     >
       <div
         style={{
           position: 'absolute',
+          right: 0,
           bottom: 0,
           left: 0,
-          width: '100%',
-          height: '65px',
-          backgroundColor: bottomBarColor,
+          height: 94,
+          backgroundColor: '#F6EFE8',
         }}
       />
 
       <div
         style={{
-          width: '100%',
-          height: '100%',
+          position: 'absolute',
+          top: 72,
+          left: 64,
           display: 'flex',
-          flexDirection: 'column',
-          padding: '56px 60px',
-          position: 'relative',
         }}
       >
-        <div
+        <img
+          src={logoSrc}
+          alt="D'edu"
+          width={125}
+          height={34}
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            width: '100%',
-          }}
-        >
-          <div
-            style={{
-              fontSize: 30,
-              fontWeight: 500,
-              color: '#5F5A54',
-              lineHeight: 1.2,
-            }}
-          >
-            {label}
-          </div>
-
-          <Image
-            src={logoSrc}
-            alt="D'edu"
-            style={{
-              width: '99px',
-              height: '27px',
-              objectFit: 'contain',
-            }}
-          />
-        </div>
-
-        <div
-          style={{
-            marginTop: '28px',
-            width: '540px',
-            height: '240px',
-            fontSize: 54,
-            fontWeight: 800,
-            color: '#333333',
-            lineHeight: '74px',
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-          }}
-        >
-          {title}
-        </div>
-
-        <Image
-          src={imageSrc}
-          alt=""
-          style={{
-            position: 'absolute',
-            right: '34px',
-            bottom: '34px',
-            width: '220px',
-            height: '220px',
+            width: 125,
+            height: 34,
             objectFit: 'contain',
           }}
         />
       </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: 150,
+          left: 64,
+          maxWidth: 680,
+          display: 'flex',
+          whiteSpace: 'pre-wrap',
+          color: '#333333',
+          fontSize: 78,
+          fontWeight: 800,
+          lineHeight: 1.18,
+          letterSpacing: 0,
+        }}
+      >
+        {title}
+      </div>
+
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        width={260}
+        height={260}
+        style={{
+          position: 'absolute',
+          right: 72,
+          bottom: 58,
+          width: 260,
+          height: 260,
+          objectFit: 'contain',
+        }}
+      />
     </div>
   );
 };

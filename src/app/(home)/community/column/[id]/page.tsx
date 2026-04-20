@@ -27,11 +27,9 @@ export async function generateMetadata({
   if (preview === 'true') return { title: SITE_CONFIG.name };
 
   try {
-    const columnDetail = await getDetail(Number(id));
     const origin = await getRequestOrigin();
-    const ogImageUrl = `${origin}/community/column/${id}/opengraph-image`;
-
-    return generateColumnDetailMetadata(columnDetail, ogImageUrl);
+    const columnDetail = await getDetail(Number(id));
+    return generateColumnDetailMetadata(columnDetail, origin);
   } catch {
     return { title: SITE_CONFIG.name };
   }
