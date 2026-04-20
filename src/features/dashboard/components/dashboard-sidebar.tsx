@@ -101,7 +101,7 @@ export const DashboardSidebar = () => {
             <li>
               <Sidebar.Item
                 href={PRIVATE.ADMIN.COLUMN.LIST}
-                matchPath="/admin/column"
+                matchPath={PRIVATE.ADMIN.COLUMN.LIST}
                 className="h-12 items-center justify-start gap-[2px]"
               >
                 <ListIcon />
@@ -116,7 +116,7 @@ export const DashboardSidebar = () => {
 
       <Sidebar.Item
         href={PUBLIC.CORE.LIST.TEACHERS}
-        matchPath="/list"
+        matchPath={PUBLIC.CORE.LIST.BASE}
       >
         <FindingIcon className="shrink-0" />
         <Sidebar.Text>탐색하기</Sidebar.Text>
@@ -124,7 +124,7 @@ export const DashboardSidebar = () => {
 
       <Sidebar.Item
         href={PUBLIC.COMMUNITY.COLUMN.LIST}
-        matchPath="/community"
+        matchPath={PUBLIC.COMMUNITY.BASE}
       >
         <NotepadIcon className="shrink-0" />
         <Sidebar.Text>게시판</Sidebar.Text>
@@ -132,7 +132,7 @@ export const DashboardSidebar = () => {
 
       <Sidebar.Item
         href={PRIVATE.MYPAGE}
-        matchPath="/mypage"
+        matchPath={PRIVATE.MYPAGE}
       >
         <User2Icon className="shrink-0" />
         <Sidebar.Text>마이페이지</Sidebar.Text>

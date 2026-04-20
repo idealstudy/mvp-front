@@ -38,6 +38,7 @@ import {
   PRIVATE,
   PUBLIC,
   ROLE_META_MAP,
+  link,
 } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import {
@@ -113,7 +114,7 @@ export const Header = () => {
                 href={PUBLIC.CORE.LIST.TEACHERS}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith('/list')
+                  pathname.startsWith(PUBLIC.CORE.LIST.BASE)
                     ? 'bg-gray-11'
                     : 'hover:bg-gray-11'
                 )}
@@ -124,7 +125,7 @@ export const Header = () => {
                 href={PUBLIC.COMMUNITY.COLUMN.LIST}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith('/community')
+                  pathname.startsWith(PUBLIC.COMMUNITY.BASE)
                     ? 'bg-gray-11'
                     : 'hover:bg-gray-11'
                 )}
@@ -338,7 +339,7 @@ export const Header = () => {
 
                   <div className="mt-2 flex flex-col gap-1">
                     <Link
-                      href="https://pf.kakao.com/_LMcpn"
+                      href={link.kakao}
                       className="text-gray-scale-gray-30 flex items-center justify-end gap-1.5 text-sm font-semibold"
                       target="_blank"
                       rel="noopener noreferrer"

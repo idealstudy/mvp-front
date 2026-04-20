@@ -24,7 +24,7 @@ export const Footer = () => {
             />
           </Link>
           <Link
-            href="https://pf.kakao.com/_LMcpn"
+            href={link.kakao}
             className={cn(
               'border-gray-3 ml-2 flex h-[46px] items-center gap-2 rounded-sm border px-8',
               'max-desktop:hidden',

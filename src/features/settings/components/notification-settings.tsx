@@ -6,6 +6,7 @@ import {
   useUpdateNotificationSetting,
 } from '@/features/settings/hooks/use-notification';
 import { Toggle } from '@/shared/components/ui/toggle';
+import { Info } from 'lucide-react';
 
 type ServiceSubCategory = Extract<
   NotificationCategory,
@@ -84,9 +85,10 @@ export default function NotificationSettings() {
                 disabled={!serviceEnabled}
               />
               <span>{SERVICE_SUB_ITEMS[category].label}</span>
-              <span className="font-caption-normal text-text-sub2">
-                ⓘ {SERVICE_SUB_ITEMS[category].description}
-              </span>
+              <p className="font-caption-normal text-text-sub2 flex items-center gap-1">
+                <Info size={12} />
+                <span>{SERVICE_SUB_ITEMS[category].description}</span>
+              </p>
             </div>
           ))}
         </div>

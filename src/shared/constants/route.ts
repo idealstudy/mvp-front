@@ -6,6 +6,7 @@ const CORE = {
   LOGIN: '/login',
   SIGNUP: '/register',
   LIST: {
+    BASE: '/list',
     TEACHERS: '/list/teachers',
     STUDY_ROOMS: '/list/study-rooms',
   },
@@ -96,6 +97,7 @@ const MYPAGE = '/mypage';
  * COMMUNITY
  * ────────────────────────────────────────────────────*/
 const PUBLIC_COMMUNITY = {
+  BASE: '/community',
   COLUMN: {
     LIST: '/community/column',
     DETAIL: (id: number) => `/community/column/${id}`,
