@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 
-import { useWithdraw } from '@/features/settings/hooks/use-withdraw';
-import { Button, Dialog } from '@/shared/components/ui';
+import WithdrawDialog from '@/features/settings/components/withdraw-dialog';
+import { Button } from '@/shared/components/ui';
 
 export default function AccountSettings() {
-  const [open, setOpen] = useState(false);
-  const { mutate: withdraw, isPending } = useWithdraw();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -26,7 +25,7 @@ export default function AccountSettings() {
             <Button
               variant="secondary"
               size="xsmall"
-              onClick={() => setOpen(true)}
+              onClick={() => setIsOpen(true)}
             >
               탈퇴하기
             </Button>
@@ -35,43 +34,10 @@ export default function AccountSettings() {
       </div>
 
       {/* 탈퇴 확인 Dialog */}
-      <Dialog
-        isOpen={open}
-        onOpenChange={isPending ? undefined : setOpen}
-      >
-        <Dialog.Content className="w-[400px]">
-          <Dialog.Header>
-            <Dialog.Title className="text-center">
-              정말 탈퇴하시겠어요?
-            </Dialog.Title>
-          </Dialog.Header>
-          <Dialog.Body className="mt-4">
-            <Dialog.Description className="text-center">
-              탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.
-            </Dialog.Description>
-          </Dialog.Body>
-          <Dialog.Footer className="mt-6 justify-center gap-4">
-            <Button
-              variant="outlined"
-              size="xsmall"
-              className="w-[120px]"
-              onClick={() => setOpen(false)}
-              disabled={isPending}
-            >
-              취소
-            </Button>
-            <Button
-              variant="secondary"
-              size="xsmall"
-              className="w-[120px]"
-              onClick={() => withdraw()}
-              disabled={isPending}
-            >
-              탈퇴하기
-            </Button>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog>
+      <WithdrawDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 }
