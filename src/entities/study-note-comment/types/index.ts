@@ -13,6 +13,7 @@ export type CommentCreateRequestDTO = z.infer<typeof dto.createRequest>;
 export type CommentUpdateRequestDTO = z.infer<typeof dto.updateRequest>;
 
 export type CommentListDTO = z.infer<typeof dto.list>;
+export type ParentCommentListDTO = z.infer<typeof dto.parentList>;
 export type CommentReadListDTO = z.infer<typeof dto.readList>;
 
 export type CommentResolvedContent = z.infer<typeof domain.resolvedContent>;
@@ -21,4 +22,5 @@ export type CommentChildItem = z.infer<typeof domain.childItem>;
 export type CommentItem = z.infer<typeof domain.item>;
 export type CommentReadItem = z.infer<typeof domain.readItem>;
 export type CommentList = z.infer<typeof domain.list>;
+export type ParentCommentList = z.infer<typeof domain.parentList>;
 export type CommentReadList = z.infer<typeof domain.readList>;

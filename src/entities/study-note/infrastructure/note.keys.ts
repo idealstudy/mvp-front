@@ -36,6 +36,14 @@ export const StudyNoteQueryKey = {
     ] as const,
   detail: (teachingNoteId: number) =>
     [...StudyNoteQueryKey.all, 'detail', teachingNoteId] as const,
+  parentDetail: (studentId: number, teachingNoteId: number) =>
+    [
+      ...StudyNoteQueryKey.all,
+      'parentDetail',
+      studentId,
+      teachingNoteId,
+    ] as const,
+
   members: (
     role: 'teacher' | 'student',
     studyRoomId: number,

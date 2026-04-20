@@ -26,6 +26,11 @@ const NoteListDataAdapter = sharedSchema.response(dto.listData);
 const NoteDetailAdapter = sharedSchema.response(dto.detail);
 
 /* ─────────────────────────────────────────────────────
+ * 보호자 - 수업 노트 상세 내용 조회 응답
+ * ────────────────────────────────────────────────────*/
+const ParentNoteDetailAdapter = sharedSchema.response(dto.parentDetail);
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const adapters = {
@@ -34,4 +39,5 @@ export const adapters = {
   list: NoteListDataAdapter,
   listItem: NoteListAdapter,
   details: NoteDetailAdapter,
+  parentDetails: ParentNoteDetailAdapter,
 };

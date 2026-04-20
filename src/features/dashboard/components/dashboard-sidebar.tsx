@@ -50,22 +50,25 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
 
-      <Sidebar.Header>
-        <div className="flex items-center gap-2">
-          <Sidebar.SectionIcon />
-          <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
-        </div>
-        {/* 선생님만 스터디룸 생성 버튼 표시 */}
-        {role === 'ROLE_TEACHER' && (
-          <Sidebar.Item
-            href={PRIVATE.ROOM.CREATE}
-            className="h-9 w-9 justify-center bg-transparent px-0"
-          >
-            <PlusIcon />
-            <span className="sr-only">스터디룸 생성</span>
-          </Sidebar.Item>
-        )}
-      </Sidebar.Header>
+      {/* 부모에겐 보여주지 않기 */}
+      {role !== 'ROLE_PARENT' && (
+        <Sidebar.Header>
+          <div className="flex items-center gap-2">
+            <Sidebar.SectionIcon />
+            <Sidebar.HeaderText>스터디룸</Sidebar.HeaderText>
+          </div>
+          {/* 선생님만 스터디룸 생성 버튼 표시 */}
+          {role === 'ROLE_TEACHER' && (
+            <Sidebar.Item
+              href={PRIVATE.ROOM.CREATE}
+              className="h-9 w-9 justify-center bg-transparent px-0"
+            >
+              <PlusIcon />
+              <span className="sr-only">스터디룸 생성</span>
+            </Sidebar.Item>
+          )}
+        </Sidebar.Header>
+      )}
 
       <Sidebar.ScrollArea>
         <Sidebar.List>

@@ -10,6 +10,8 @@ import {
   CommentReadList,
   CommentReadListDTO,
   CommentUpdateRequestDTO,
+  ParentCommentList,
+  ParentCommentListDTO,
 } from '../types';
 
 /* ─────────────────────────────────────────────────────
@@ -35,6 +37,20 @@ const getReadCommentList = async (
   );
 
   return unwrapEnvelope(response.data, domain.readList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 부모님 - 댓글 목록 조회
+ * ──────────────────────────────────────────────────── */
+const getParentCommentList = async (
+  studentId: number,
+  teachingNoteId: number
+): Promise<ParentCommentList> => {
+  const response = await api.private.get<CommonResponse<ParentCommentListDTO>>(
+    `/parent/student/${studentId}/teaching-notes/${teachingNoteId}/comments`
+  );
+
+  return unwrapEnvelope(response, domain.parentList);
 };
 
 /* ─────────────────────────────────────────────────────
@@ -80,5 +96,6 @@ export const repository = {
     delete: deleteComment,
     getCommentList,
     getReadCommentList,
+    getParentCommentList,
   },
 };

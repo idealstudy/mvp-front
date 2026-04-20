@@ -85,6 +85,34 @@ export const NoteDetailDTO = z.object({
   studentInfos: z.array(StudentInfoSchema),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 보호자 - 수업 노트 상세 내용 조회 응답 DTO
+ * GET /api/parent/student/{studentId}/teaching-notes/{teachingNoteId}
+ * ────────────────────────────────────────────────────*/
+const ParentResolvedContentDTO = z.object({
+  content: z.string(),
+  expiresAt: z.string().datetime(),
+});
+
+const ParentStudentInfosDto = z.object({
+  studentId: z.number().int(),
+  studentName: z.string(),
+  readAt: z.string().datetime(),
+});
+
+export const ParentNoteDetailDTO = z.object({
+  id: z.number().int(),
+  studyRoomId: z.number().int(),
+  studyRoomName: z.string(),
+  groupId: z.number().int(),
+  title: z.string(),
+  content: z.string(),
+  resolvedContent: z.array(ParentResolvedContentDTO),
+  taughtAt: z.string().datetime(),
+  visibility: NoteVisibilitySchema,
+  studentInfos: z.array(ParentStudentInfosDto),
+});
+
 export const dto = {
   request: NoteRequestDTO,
   detail: NoteDetailDTO,
@@ -92,4 +120,5 @@ export const dto = {
   listData: NoteListResponseDataDTO,
   visibility: NoteVisibilitySchema,
   studentInfo: StudentInfoSchema,
+  parentDetail: ParentNoteDetailDTO,
 };
