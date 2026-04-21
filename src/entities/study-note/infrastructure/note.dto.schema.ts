@@ -13,6 +13,7 @@ export const NoteVisibilitySchema = z.enum([
 ]);
 
 const ResponseDateStringSchema = z.string();
+const NullableResponseDateStringSchema = ResponseDateStringSchema.nullish();
 
 export const StudentInfoSchema = z.object({
   studentId: z.number().int(),
@@ -48,8 +49,8 @@ export const NoteListItemDTO = z.object({
   teacherName: z.string(),
   title: z.string(),
   visibility: NoteVisibilitySchema,
-  taughtAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  taughtAt: ResponseDateStringSchema,
+  updatedAt: ResponseDateStringSchema,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -71,8 +72,8 @@ export const NoteListResponseDataDTO = z.object({
  * ────────────────────────────────────────────────────*/
 const ResolvedContentDTO = z.object({
   content: z.string(),
-  imgExpiresAt: ResponseDateStringSchema.optional(),
-  expiresAt: ResponseDateStringSchema.optional(),
+  imgExpiresAt: NullableResponseDateStringSchema,
+  expiresAt: NullableResponseDateStringSchema,
 });
 
 export const NoteDetailDTO = z.object({
@@ -94,8 +95,8 @@ export const NoteDetailDTO = z.object({
  * ────────────────────────────────────────────────────*/
 const ParentResolvedContentDTO = z.object({
   content: z.string(),
-  expiresAt: ResponseDateStringSchema.optional(),
-  imgExpiresAt: ResponseDateStringSchema.optional(),
+  expiresAt: NullableResponseDateStringSchema,
+  imgExpiresAt: NullableResponseDateStringSchema,
 });
 
 const ParentStudentInfosDto = z.object({

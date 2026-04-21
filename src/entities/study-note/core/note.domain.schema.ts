@@ -12,8 +12,8 @@ const NoteDomainSchema = z.object({
   title: z.string(),
   content: z.string(),
   visibility: dto.visibility,
-  taughtAt: z.string().datetime(),
-  updatedAt: z.string().datetime().optional(),
+  taughtAt: z.string(),
+  updatedAt: z.string().optional(),
   studentIds: z.array(z.number().int()).optional(),
   imageIds: z.array(z.string()).optional(),
 });
