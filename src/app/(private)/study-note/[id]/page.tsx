@@ -21,7 +21,12 @@ import {
   studentStudyNoteSchema,
 } from '@/features/student-study-note/schemas/study-note';
 import { ColumnLayout } from '@/layout/column-layout';
-import { TextViewer, prepareContentForSave } from '@/shared/components/editor';
+import {
+  TextViewer,
+  hasMeaningfulEditorContent,
+  parseEditorContent,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,16 +34,6 @@ import { JSONContent } from '@tiptap/react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { BookOpen, Pencil, Tag } from 'lucide-react';
-
-const parseContent = (data: StudentNoteDetail): unknown => {
-  const raw = data.resolvedContent?.content || data.content;
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-};
 
 type EditFormProps = {
   data: StudentNoteDetail;
@@ -49,7 +44,9 @@ type EditFormProps = {
 const LAYOUT_CLASS = 'tablet:flex-col desktop:flex-col flex flex-col gap-0';
 
 const EditForm = ({ data, noteId, onCancel }: EditFormProps) => {
-  const parsedContent = parseContent(data);
+  const parsedContent = parseEditorContent(
+    data.resolvedContent?.content || data.content || ''
+  );
   const { mutate: updateNote, isPending: isUpdating } = useStudentNoteUpdate();
 
   const methods = useForm<StudentStudyNoteForm>({
@@ -60,7 +57,7 @@ const EditForm = ({ data, noteId, onCancel }: EditFormProps) => {
         data.regDate?.substring(0, 10) ??
         new Date().toISOString().substring(0, 10),
       subject: data.subject ?? '',
-      content: (parsedContent ?? {}) as JSONContent,
+      content: parsedContent as JSONContent,
     },
     mode: 'onChange',
   });
@@ -163,7 +160,9 @@ const StudentStudyNoteDetailPage = () => {
     );
   }
 
-  const parsedContent = parseContent(data);
+  const parsedContent = parseEditorContent(
+    data.resolvedContent?.content || data.content || ''
+  );
   const formattedDate = data.regDate
     ? format(new Date(data.regDate), 'yyyy. MM. dd (E)', { locale: ko })
     : null;
@@ -222,7 +221,7 @@ const StudentStudyNoteDetailPage = () => {
         </ColumnLayout.Left>
 
         <ColumnLayout.Right className="border-line-line1 desktop:max-w-[740px] max-h-[calc(100vh-var(--spacing-header-height)-48px)] overflow-y-auto rounded-xl border bg-white px-8 py-10">
-          {parsedContent ? (
+          {hasMeaningfulEditorContent(parsedContent) ? (
             <TextViewer value={parsedContent} />
           ) : (
             <p className="font-body2-normal text-gray-8">
