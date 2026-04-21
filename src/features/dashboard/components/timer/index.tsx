@@ -13,8 +13,11 @@ import {
   useStudyNoteTimerStart,
   useStudyNoteTimerTempSave,
 } from '@/features/dashboard/hooks';
+import { useStudentNoteDetail } from '@/features/student-study-note/hooks';
 import {
   initialTextEditorValue,
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import type { TextEditorValue } from '@/shared/components/editor';
@@ -49,12 +52,15 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   );
   const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const contentInitializedRef = useRef(false);
 
   const {
     data: progressData,
     isLoading: isProgressLoading,
     refetch,
   } = useStudyNoteTimerProgress();
+
+  const { data: noteDetail } = useStudentNoteDetail(studyNoteId ?? 0);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -77,16 +83,22 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       setSelectedSubject(data.subject ?? null);
       setElapsed(elapsedSec);
       setIsRunning(running);
-      if (data.content) {
-        try {
-          setNoteContent(JSON.parse(data.content));
-        } catch {
-          // keep initial value
-        }
-      }
       setStep('running');
     });
   }, [isOpen, refetch]);
+
+  useEffect(() => {
+    if (!noteDetail?.content || contentInitializedRef.current) return;
+    const rawContent = parseEditorContent(noteDetail.content);
+    const content = noteDetail.resolvedContent?.content
+      ? mergeResolvedContentWithMediaIds(
+          rawContent,
+          parseEditorContent(noteDetail.resolvedContent.content)
+        )
+      : rawContent;
+    setNoteContent(content);
+    contentInitializedRef.current = true;
+  }, [noteDetail]);
 
   const { data: subjects = [] } = useSubjectList();
   const subjectMap = useMemo(
@@ -124,6 +136,7 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     setNoteOpen(true);
     setNoteContent(initialTextEditorValue);
     setStudyNoteId(null);
+    contentInitializedRef.current = false;
     onClose();
   };
 

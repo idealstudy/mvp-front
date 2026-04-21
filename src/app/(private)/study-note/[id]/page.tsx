@@ -24,6 +24,7 @@ import { ColumnLayout } from '@/layout/column-layout';
 import {
   TextViewer,
   hasMeaningfulEditorContent,
+  mergeResolvedContentWithMediaIds,
   parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
@@ -44,9 +45,13 @@ type EditFormProps = {
 const LAYOUT_CLASS = 'tablet:flex-col desktop:flex-col flex flex-col gap-0';
 
 const EditForm = ({ data, noteId, onCancel }: EditFormProps) => {
-  const parsedContent = parseEditorContent(
-    data.resolvedContent?.content || data.content || ''
-  );
+  const rawContent = parseEditorContent(data.content || '');
+  const parsedContent = data.resolvedContent?.content
+    ? mergeResolvedContentWithMediaIds(
+        rawContent,
+        parseEditorContent(data.resolvedContent.content)
+      )
+    : rawContent;
   const { mutate: updateNote, isPending: isUpdating } = useStudentNoteUpdate();
 
   const methods = useForm<StudentStudyNoteForm>({
