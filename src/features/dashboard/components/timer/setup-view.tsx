@@ -43,7 +43,7 @@ export const SetupView = ({
           type="text"
           value={topic}
           onChange={(e) => onTopicChange(e.target.value)}
-          placeholder="과목 이름을 작성해주세요"
+          placeholder="공부 주제를 작성해주세요"
         />
       </div>
 
