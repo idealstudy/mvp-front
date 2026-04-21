@@ -73,6 +73,7 @@ export const StudyNewsSection = ({
           <StudyNewsItem
             key={`${data.type}-${data.id}`}
             data={data}
+            selectedStudentId={selectedStudentId}
           />
         ))}
       </div>

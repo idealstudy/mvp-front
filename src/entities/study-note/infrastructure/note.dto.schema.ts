@@ -12,10 +12,12 @@ export const NoteVisibilitySchema = z.enum([
   'PUBLIC',
 ]);
 
+const ResponseDateStringSchema = z.string();
+
 export const StudentInfoSchema = z.object({
   studentId: z.number().int(),
   studentName: z.string(),
-  readAt: z.string().datetime(),
+  readAt: ResponseDateStringSchema.nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -69,7 +71,8 @@ export const NoteListResponseDataDTO = z.object({
  * ────────────────────────────────────────────────────*/
 const ResolvedContentDTO = z.object({
   content: z.string(),
-  imgExpiresAt: z.string().datetime(),
+  imgExpiresAt: ResponseDateStringSchema.optional(),
+  expiresAt: ResponseDateStringSchema.optional(),
 });
 
 export const NoteDetailDTO = z.object({
@@ -80,7 +83,7 @@ export const NoteDetailDTO = z.object({
   title: z.string(),
   content: z.string(),
   resolvedContent: ResolvedContentDTO,
-  taughtAt: z.string().datetime(),
+  taughtAt: ResponseDateStringSchema,
   visibility: NoteVisibilitySchema,
   studentInfos: z.array(StudentInfoSchema),
 });
@@ -91,24 +94,25 @@ export const NoteDetailDTO = z.object({
  * ────────────────────────────────────────────────────*/
 const ParentResolvedContentDTO = z.object({
   content: z.string(),
-  expiresAt: z.string().datetime(),
+  expiresAt: ResponseDateStringSchema.optional(),
+  imgExpiresAt: ResponseDateStringSchema.optional(),
 });
 
 const ParentStudentInfosDto = z.object({
   studentId: z.number().int(),
   studentName: z.string(),
-  readAt: z.string().datetime(),
+  readAt: ResponseDateStringSchema.nullable(),
 });
 
 export const ParentNoteDetailDTO = z.object({
   id: z.number().int(),
   studyRoomId: z.number().int(),
   studyRoomName: z.string(),
-  groupId: z.number().int(),
+  groupId: z.number().int().nullable(),
   title: z.string(),
   content: z.string(),
-  resolvedContent: z.array(ParentResolvedContentDTO),
-  taughtAt: z.string().datetime(),
+  resolvedContent: ParentResolvedContentDTO,
+  taughtAt: ResponseDateStringSchema,
   visibility: NoteVisibilitySchema,
   studentInfos: z.array(ParentStudentInfosDto),
 });

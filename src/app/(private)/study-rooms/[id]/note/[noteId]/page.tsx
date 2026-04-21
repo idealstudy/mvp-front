@@ -7,10 +7,15 @@ import { PageViewTracker } from '@/shared/components/gtm';
 
 type Props = {
   params: Promise<{ id: string; noteId: string }>;
+  searchParams: Promise<{ studentId?: string }>;
 };
 
-export default async function StudyNoteDetailPage({ params }: Props) {
+export default async function StudyNoteDetailPage({
+  params,
+  searchParams,
+}: Props) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
 
   return (
     <>
@@ -18,8 +23,14 @@ export default async function StudyNoteDetailPage({ params }: Props) {
       <div className="w-full flex-col">
         <BackLink />
         <ColumnLayout className="desktop:p-6 items-start gap-6">
-          <StudyNoteDetailMetaSection id={resolvedParams.noteId} />
-          <StudyNoteDetailContentsSection id={resolvedParams.noteId} />
+          <StudyNoteDetailMetaSection
+            id={resolvedParams.noteId}
+            studentId={resolvedSearchParams.studentId}
+          />
+          <StudyNoteDetailContentsSection
+            id={resolvedParams.noteId}
+            studentId={resolvedSearchParams.studentId}
+          />
         </ColumnLayout>
         <ColumnLayout>
           <StudyNoteDetailCommentSection

@@ -5,7 +5,10 @@ import { useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
-import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import {
+  useParentStudyNoteDetailQuery,
+  useStudyNoteDetailQuery,
+} from '@/features/dashboard/studynote/detail/service/query';
 import { useRemoveStudyNote } from '@/features/study-notes/hooks';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
@@ -19,18 +22,58 @@ import { Check, Eye, LockKeyhole, UserRound, X } from 'lucide-react';
 
 import { NoteMainSkeleton, NoteSideSkeleton } from './note-skeleton';
 
-export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
+export const StudyNoteDetailMetaSection = ({
+  id,
+  studentId,
+}: {
+  id: string;
+  studentId?: string;
+}) => {
   const router = useRouter();
 
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { role } = useRole();
+  const { role, isLoading: isRoleLoading } = useRole();
+  const teachingNoteId = Number(id);
+  const parentStudentId = studentId ? Number(studentId) : null;
+  const hasValidParentStudentId =
+    parentStudentId !== null &&
+    Number.isInteger(parentStudentId) &&
+    parentStudentId > 0;
+  const isParent = role === 'ROLE_PARENT';
   const canManage = role === 'ROLE_TEACHER';
 
-  const { data, isPending, isError } = useStudyNoteDetailQuery(Number(id));
+  const {
+    data: commonNoteData,
+    isPending: isCommonNotePending,
+    isError: isCommonNoteError,
+  } = useStudyNoteDetailQuery(teachingNoteId, {
+    enabled: !isRoleLoading && !isParent,
+  });
+
+  const {
+    data: parentNoteData,
+    isPending: isParentNotePending,
+    isError: isParentNoteError,
+  } = useParentStudyNoteDetailQuery(parentStudentId ?? 0, teachingNoteId, {
+    enabled: !isRoleLoading && isParent && hasValidParentStudentId,
+  });
+
+  const noteData = isParent ? parentNoteData : commonNoteData;
+  const isPending =
+    isRoleLoading || (isParent ? isParentNotePending : isCommonNotePending);
+  const isError = isParent ? isParentNoteError : isCommonNoteError;
 
   const { mutate: removeNoteMutate } = useRemoveStudyNote();
+
+  if (isParent && !hasValidParentStudentId) {
+    return (
+      <p className="flex flex-col items-center">
+        학생 정보를 확인할 수 없어 수업노트를 불러오지 못했습니다.
+      </p>
+    );
+  }
 
   if (isPending)
     return (
@@ -51,27 +94,26 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
       </p>
     );
   }
-  if (!data) {
+
+  if (!noteData) {
     return (
       <p className="flex flex-col items-center">등록된 수업노트가 없어요.</p>
     );
   }
   const visibilityText =
-    data.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
-  const hasStudents = data.studentInfos.length > 0;
+    noteData.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
+  const hasStudents = noteData.studentInfos.length > 0;
 
   const handleEdit = () => {
-    // 편집 페이지로 이동
-    router.push(PRIVATE.NOTE.EDIT(data.studyRoomId, Number(id)));
-    // router.push(`/study-rooms/${data.studyRoomId}/note/${id}/edit`);
+    router.push(PRIVATE.NOTE.EDIT(noteData.studyRoomId, teachingNoteId));
   };
 
   const handleDelete = () => {
     removeNoteMutate(
       {
-        studyNoteId: Number(id),
-        studyRoomId: data.studyRoomId,
-        groupId: data.groupId ?? null,
+        studyNoteId: teachingNoteId,
+        studyRoomId: noteData.studyRoomId,
+        groupId: noteData.groupId ?? null,
         // DeleteMutationVar 타입에 pageable이 필수라 전달하지만, 실제 캐시 무효화는 listPrefix(studyRoomId)로 처리되므로 값은 사용되지 않음
         pageable: { page: 0, size: 20, sortKey: 'LATEST_EDITED' },
       },
@@ -87,7 +129,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
         <div className="flex items-center justify-between">
           {/* 메뉴 버튼 */}
           <div className="text-key-color-primary font-body1-normal">
-            {data.studyRoomName}
+            {noteData.studyRoomName}
           </div>
           {canManage && (
             <div className="relative">
@@ -134,7 +176,9 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
             </div>
           )}
         </div>
-        <h1 className="text-text-main font-headline1-heading">{data.title}</h1>
+        <h1 className="text-text-main font-headline1-heading">
+          {noteData.title}
+        </h1>
 
         <hr className="border-line-line1 border" />
 
@@ -164,7 +208,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
                 </div>
               </div>
               <ul className="text-text-main font-body2-normal m-0 list-none space-y-1 p-0">
-                {data.studentInfos.map((student) => (
+                {noteData.studentInfos.map((student) => (
                   <li
                     key={student.studentId}
                     className="flex justify-between"
@@ -209,7 +253,7 @@ export const StudyNoteDetailMetaSection = ({ id }: { id: string }) => {
           open
           dispatch={dispatch}
           onRefresh={() =>
-            router.replace(`/study-rooms/${data.studyRoomId}/note`)
+            router.replace(`/study-rooms/${noteData.studyRoomId}/note`)
           }
           description="수업노트가 삭제되었습니다."
         />

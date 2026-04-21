@@ -89,6 +89,7 @@ export const StudyNewsList = ({
               <StudyNewsItem
                 key={`${item.type}-${item.id}`}
                 data={item}
+                selectedStudentId={selectedStudentId}
               />
             ))}
           </>
