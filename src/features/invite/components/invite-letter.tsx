@@ -61,15 +61,24 @@ export const InviteLetter = ({
         />
         <div className="tablet:top-36 tablet:gap-7 absolute top-25 left-0 flex w-full flex-col gap-4">
           <div className="tablet:gap-4.5 flex w-full flex-col gap-3">
-            <p className="font-label-heading tablet:font-body2-heading text-gray-12 w-full text-center">
+            <p
+              data-testid="invite-teacher-name"
+              className="font-label-heading tablet:font-body2-heading text-gray-12 w-full text-center"
+            >
               From. {data?.teacherName}선생님
             </p>
-            <p className="font-body2-heading tablet:font-headline2-heading text-gray-12 w-full text-center">
+            <p
+              data-testid="invite-study-room-name"
+              className="font-body2-heading tablet:font-headline2-heading text-gray-12 w-full text-center"
+            >
               {data?.studyRoomName} 초대장
             </p>
           </div>
           <div className="tablet:gap-2 flex w-full flex-col gap-1">
-            <p className="font-label-normal tablet:font-body2-heading text-gray-12 w-full text-center">
+            <p
+              data-testid="invite-message"
+              className="font-label-normal tablet:font-body2-heading text-gray-12 w-full text-center"
+            >
               {data?.message.split('\n')[0]}
             </p>
             <p className="font-label-normal tablet:font-body2-heading text-gray-12 w-full text-center">
@@ -79,6 +88,7 @@ export const InviteLetter = ({
           {/* tablet ~ desktop 버튼*/}
           <div className="tablet:flex mt-1 hidden w-full justify-center gap-2">
             <Button
+              data-testid="invite-reject-button"
               variant="outlined"
               className="font-label-normal h-[35px] rounded-sm px-9"
               size="xsmall"
@@ -87,6 +97,7 @@ export const InviteLetter = ({
               거절하기
             </Button>
             <Button
+              data-testid="invite-accept-button"
               variant="primary"
               className="font-label-normal h-[35px] rounded-sm px-9"
               size="xsmall"
@@ -100,6 +111,7 @@ export const InviteLetter = ({
       {/* mobile 버튼 */}
       <div className="bg-gray-white tablet:hidden fixed bottom-0 left-0 flex h-22 w-full gap-2 px-4.5 pt-2.5 pb-6">
         <Button
+          data-testid="invite-reject-button"
           variant="outlined"
           className="font-body2-normal flex-1"
           onClick={onOpenExitModal}
@@ -107,6 +119,7 @@ export const InviteLetter = ({
           거절하기
         </Button>
         <Button
+          data-testid="invite-accept-button"
           variant="primary"
           className="font-body2-normal flex-1"
           onClick={handleAccept}

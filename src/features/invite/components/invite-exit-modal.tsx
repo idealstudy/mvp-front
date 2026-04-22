@@ -16,7 +16,10 @@ export const InviteExitModal = ({
 }: InviteExitModalProps) => {
   return (
     <Dialog isOpen={isOpen}>
-      <Dialog.Content className="tablet:w-125 tablet:p-9 w-[285px] gap-6 p-5">
+      <Dialog.Content
+        data-testid="invite-exit-modal"
+        className="tablet:w-125 tablet:p-9 w-[285px] gap-6 p-5"
+      >
         <Dialog.Header className="flex-col items-end gap-2">
           <button
             type="button"
@@ -45,6 +48,7 @@ export const InviteExitModal = ({
         <Dialog.Body className="tablet:px-6">
           <div className="flex gap-3">
             <Button
+              data-testid="invite-exit-modal-cancel-button"
               variant="outlined"
               size="small"
               className="w-full rounded-lg"
@@ -53,6 +57,7 @@ export const InviteExitModal = ({
               취소
             </Button>
             <Button
+              data-testid="invite-exit-modal-confirm-button"
               size="small"
               className="w-full rounded-lg"
               onClick={onConfirm}
