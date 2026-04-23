@@ -32,6 +32,7 @@ const ColumnDetailDtoSchema = z.object({
   authorNickname: z.string().nullable(),
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
+  content: z.string(),
   resolvedContent: z.object({
     content: z.string(),
     expiresAt: z.string().nullable(),

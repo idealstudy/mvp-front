@@ -19,6 +19,7 @@ type TagInputProps = {
   error?: boolean;
   placeholder: string;
   disabled?: boolean;
+  dataTestId?: string;
 };
 
 export default function TagInput({
@@ -28,6 +29,7 @@ export default function TagInput({
   error,
   placeholder,
   disabled,
+  dataTestId,
 }: TagInputProps) {
   const [input, setInput] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -59,6 +61,7 @@ export default function TagInput({
       >
         <PopoverTrigger asChild>
           <div
+            data-testid={dataTestId}
             className={cn(
               'flex min-h-[56px] cursor-text flex-wrap items-center gap-2 rounded-[4px] border px-6 py-[15px] text-sm',
               'border-gray-scale-gray-50',
@@ -80,6 +83,9 @@ export default function TagInput({
                 {selected.map((student) => (
                   <div
                     key={student.id}
+                    data-testid={
+                      dataTestId ? `${dataTestId}-selected-item` : undefined
+                    }
                     className="bg-background-gray border-line-line1 flex items-center gap-1 rounded-sm py-2 pl-[12px] text-sm"
                   >
                     <span className="text-base text-black">{student.name}</span>
@@ -115,6 +121,7 @@ export default function TagInput({
           {/* 검색 입력 */}
           <input
             ref={inputRef}
+            data-testid={dataTestId ? `${dataTestId}-search` : undefined}
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
@@ -140,6 +147,9 @@ export default function TagInput({
                 return (
                   <button
                     key={student.id}
+                    data-testid={
+                      dataTestId ? `${dataTestId}-option` : undefined
+                    }
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

@@ -6,6 +6,7 @@ const CORE = {
   LOGIN: '/login',
   SIGNUP: '/register',
   LIST: {
+    BASE: '/list',
     TEACHERS: '/list/teachers',
     STUDY_ROOMS: '/list/study-rooms',
   },
@@ -23,8 +24,12 @@ const CORE = {
 const DASHBOARD = {
   INDEX: '/dashboard',
   INQUIRY: '/dashboard/inquiry',
-  SETTINGS: '/dashboard/settings',
 } as const;
+
+/* ─────────────────────────────────────────────────────
+ * SETTINGS
+ * ────────────────────────────────────────────────────*/
+const SETTINGS = '/settings';
 
 /* ─────────────────────────────────────────────────────
  * STUDY ROOM
@@ -92,6 +97,7 @@ const MYPAGE = '/mypage';
  * COMMUNITY
  * ────────────────────────────────────────────────────*/
 const PUBLIC_COMMUNITY = {
+  BASE: '/community',
   COLUMN: {
     LIST: '/community/column',
     DETAIL: (id: number) => `/community/column/${id}`,
@@ -149,4 +155,5 @@ export const PRIVATE = {
   COMMUNITY: PRIVATE_COMMUNITY,
   MYPAGE,
   ADMIN,
+  SETTINGS,
 } as const;

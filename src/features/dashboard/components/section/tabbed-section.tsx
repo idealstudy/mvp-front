@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/shared/lib';
-import type { DashboardTab } from '@/shared/lib/gtm/events';
+import type { DashboardTab } from '@/shared/lib/analytics';
 import {
   trackDashboardStudyroomFilter,
   trackDashboardTabClick,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 import { ChevronDown } from 'lucide-react';
 

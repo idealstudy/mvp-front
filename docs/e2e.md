@@ -115,4 +115,11 @@ await page.goto('/login');
 ## Key Flows
 
 - `login.spec.ts` — teacher account login, student account login
+
+<!-- homework -->
+
+- `homework.spec.ts` — teacher creates homework with deadline and student submits homework
+<!-- - `homework-student.spec.ts` — student submits homework -->
+- Detailed scenario doc: `docs/e2e-homework.md`
+
 - (more to be added)

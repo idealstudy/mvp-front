@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
-import { trackHomeDedu101Click } from '@/shared/lib/gtm/trackers';
+import { trackHomeDedu101Click } from '@/shared/lib/analytics';
 
 export default function FloatingCTA() {
   return (

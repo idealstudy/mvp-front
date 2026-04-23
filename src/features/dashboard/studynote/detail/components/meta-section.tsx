@@ -137,6 +137,7 @@ export const StudyNoteDetailMetaSection = ({
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-text-sub2 hover:text-text-main cursor-pointer rounded p-1 transition-colors"
                 aria-label="메뉴"
+                data-testid="note-menu-button"
               >
                 <EllipsisIcon className="h-5 w-5" />
               </button>
@@ -155,6 +156,7 @@ export const StudyNoteDetailMetaSection = ({
                         setIsMenuOpen(false);
                       }}
                       className="text-text-main hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
+                      data-testid="note-edit-menu-item"
                     >
                       편집하기
                     </button>
@@ -167,6 +169,7 @@ export const StudyNoteDetailMetaSection = ({
                         })
                       }
                       className="text-key-color-primary hover:bg-background-gray font-body2-normal w-full px-4 py-3 text-center transition-colors"
+                      data-testid="note-delete-menu-item"
                     >
                       삭제하기
                     </button>

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const NotificationCategorySchema = z.enum([
+  'ALL',
   'SYSTEM',
   'HOMEWORK',
   'TEACHING_NOTE',
@@ -34,7 +35,7 @@ const TargetMetadataSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
- * api 응답(DTO 객체)
+ * api 응답(DTO 객체) - 알림
  * ────────────────────────────────────────────────────*/
 const NotificationDtoSchema = z.object({
   id: z.number().int().nonnegative(),
@@ -45,8 +46,19 @@ const NotificationDtoSchema = z.object({
   read: z.boolean(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * api 응답(DTO 객체) - 알림 수신 설정
+ * ────────────────────────────────────────────────────*/
+const NotificationSettingDtoSchema = z.object({
+  category: NotificationCategorySchema,
+  label: z.string(),
+  enabled: z.boolean(),
+});
+
 export const dto = {
   schema: NotificationDtoSchema,
   arraySchema: z.array(NotificationDtoSchema),
   category: NotificationCategorySchema,
+  setting: NotificationSettingDtoSchema,
+  settingArray: z.array(NotificationSettingDtoSchema),
 };

@@ -86,6 +86,8 @@ export const TeacherHomeworkList = ({
       }
       href={`/study-rooms/${studyRoomId}/homework/${item.id}`}
       id={item.id}
+      dataTestId={`homework-list-item`}
+      titleTestId={`homework-list-title`}
     />
   ));
 };

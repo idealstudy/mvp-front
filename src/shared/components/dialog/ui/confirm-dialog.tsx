@@ -22,6 +22,7 @@ export const ConfirmDialog = ({
   onCancel,
   pending = false,
   emphasis = 'desc-strong',
+  confirmButtonTestId,
 }: {
   open: boolean;
   dispatch: (action: DialogAction) => void;
@@ -34,6 +35,7 @@ export const ConfirmDialog = ({
   onCancel?: () => void;
   pending?: boolean;
   emphasis?: 'title-strong' | 'desc-strong' | 'none';
+  confirmButtonTestId?: string;
 }) => {
   const isTwoButtons = variant === 'delete' || variant === 'confirm-cancel';
   const _confirmText =
@@ -102,6 +104,7 @@ export const ConfirmDialog = ({
               onConfirm?.();
             }}
             disabled={pending}
+            data-testid={confirmButtonTestId}
           >
             {_confirmText}
           </Button>

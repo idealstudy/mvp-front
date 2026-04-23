@@ -188,7 +188,7 @@ body {
   --color-gray-black: var(--gray-black);
 
   /* Spacing */
-  --spacing-header-height: 76px;
+  --spacing-header-height: 60px;
   --spacing-sidebar-width: 260px;
   --spacing-grid-margin: 20px;
 
@@ -330,7 +330,25 @@ body {
   }
 }
 
-@keyframes toast-fade-in  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes toast-fade-out { from { opacity: 1; } to { opacity: 0; } }
-.toast-fade-enter { animation: toast-fade-in  0.15s ease forwards; }
-.toast-fade-exit  { animation: toast-fade-out 0.15s ease forwards; }
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.toast-fade-enter {
+  animation: toast-fade-in 0.15s ease forwards;
+}
+.toast-fade-exit {
+  animation: toast-fade-out 0.15s ease forwards;
+}

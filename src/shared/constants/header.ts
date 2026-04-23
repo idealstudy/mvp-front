@@ -24,7 +24,4 @@ export const ROLE_META_MAP = {
 
 // 버튼 스타일
 export const BUTTON_BASE =
-  'cursor-pointer border border-[#1A1A1A] px-6 py-3 text-base font-bold text-white';
-
-export const FEEDBACK_BUTTON_BASE =
-  'flex items-center gap-1.5 rounded-full border border-gray-scale-gray-60 bg-transparent px-4 py-1.5 text-sm font-semibold text-gray-scale-gray-30 transition-colors hover:border-gray-scale-gray-30 hover:text-white cursor-pointer';
+  'cursor-pointer border px-8 content-center rounded-sm h-[46px] text-white';

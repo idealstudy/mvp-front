@@ -8,7 +8,7 @@ import ProfileCard from '@/features/profile/components/profile-card/profile-card
 import TeacherSections from '@/features/profile/components/teacher-sections';
 import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
 import { ColumnLayout } from '@/layout';
-import { trackDedu101ProfileEnter } from '@/shared/lib/gtm/trackers';
+import { trackDedu101ProfileEnter } from '@/shared/lib/analytics';
 
 export default function ProfileMain({
   basicInfo,

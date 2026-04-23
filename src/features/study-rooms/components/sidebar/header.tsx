@@ -33,7 +33,10 @@ export const StudyroomSidebarHeader = ({
       rightSlot={
         canManage ? (
           <DropdownMenu>
-            <DropdownMenu.Trigger className="flex cursor-pointer items-center justify-center">
+            <DropdownMenu.Trigger
+              className="flex cursor-pointer items-center justify-center"
+              data-testid="study-room-kebab-button"
+            >
               <Image
                 src="/studyroom/ic-kebab.png"
                 alt="kebab-menu"
@@ -63,6 +66,7 @@ export const StudyroomSidebarHeader = ({
                     kind: 'delete',
                   })
                 }
+                data-testid="study-room-delete-menu-item"
               >
                 삭제하기
               </DropdownMenu.Item>

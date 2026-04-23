@@ -45,6 +45,7 @@ export default async function HomeworkDetailPage({
   params,
   searchParams,
 }: Props) {
+export default async function HomeworkDetailPage({ params }: Props) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
 

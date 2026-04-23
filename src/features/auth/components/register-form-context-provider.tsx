@@ -7,11 +7,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Form } from '@/shared/components/ui/form';
 import { PUBLIC } from '@/shared/constants';
 import { useCheckboxGroup } from '@/shared/hooks/use-checkbox-group';
-import { createContextFactory } from '@/shared/lib/context';
 import {
   trackAuthSignupFail,
   trackAuthSignupSuccess,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
+import { createContextFactory } from '@/shared/lib/context';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterForm } from '../schemas/register';

@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { useInviteTokenHandler } from '@/features/invite/hooks';
-import { trackPageView } from '@/shared/lib/gtm/trackers';
+import { trackPageView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 import DashboardParent from './parent';

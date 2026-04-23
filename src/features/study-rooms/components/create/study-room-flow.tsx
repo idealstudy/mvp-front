@@ -42,8 +42,8 @@ import {
   parseEditorContent,
 } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
+import { trackStudyroomCreateSuccess } from '@/shared/lib/analytics';
 import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
-import { trackStudyroomCreateSuccess } from '@/shared/lib/gtm/trackers';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -151,7 +151,7 @@ export default function StudyRoomFlow({
       schoolInfo: {
         schoolLevel: data.schoolInfo
           .schoolLevel as StudyRoomFormValues['schoolInfo']['schoolLevel'],
-        grade: data.schoolInfo.grade,
+        grade: data.schoolInfo.grade ?? undefined,
       },
     });
   }, [mode, data, methods]);
@@ -360,6 +360,7 @@ export default function StudyRoomFlow({
             cancelText="취소"
             onConfirm={onConfirmClick}
             pending={isMutating}
+            confirmButtonTestId="study-room-edit-confirm-button"
           />
         )}
       {mode === 'edit' &&

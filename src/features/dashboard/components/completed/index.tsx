@@ -1,6 +1,7 @@
 'use client';
 
 import { Role } from '@/entities/member';
+import { link } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 // import { DashboardCtx } from './dashboard-ctx';
@@ -52,7 +53,7 @@ export const DashboardCompleted = ({ role }: DashboardCompletedProps) => {
               개발팀에게 직접 요청해주세요!
             </p>
             <a
-              href="https://pf.kakao.com/_LMcpn"
+              href={link.kakao}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-lg bg-[#FEE500] px-4 py-2 text-sm font-semibold text-gray-900 transition-colors hover:bg-[#FEE500]/90"
