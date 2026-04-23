@@ -1,35 +1,60 @@
 import { useState } from 'react';
 
 import type { ConnectSearchMemberDTO } from '@/entities/connect';
+import type { ParentDashboardConnectedStudentListDTO } from '@/entities/parent';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
+import { classifyConnectionError, handleApiError } from '@/shared/lib/errors';
 import { CircleAlert, XIcon } from 'lucide-react';
 
 import { useCreateConnection } from '../../connect/hooks/use-connection';
 import { ConnectTagInput } from './parent-connect-tag-input';
 
 interface ConnectDialogProps {
+  connectedStudents: ParentDashboardConnectedStudentListDTO;
+  pendingStudentEmails: string[];
   onOpenChange: (open: boolean) => void;
   open?: boolean;
 }
 
-export const ConnectDialog = ({ onOpenChange, open }: ConnectDialogProps) => {
+export const ConnectDialog = ({
+  connectedStudents,
+  pendingStudentEmails,
+  onOpenChange,
+  open,
+}: ConnectDialogProps) => {
   const [input, setInput] = useState('');
   const [selectedMember, setSelectedMember] =
     useState<ConnectSearchMemberDTO | null>(null);
 
   const { mutate, isPending } = useCreateConnection();
 
+  const resetConnectionInput = () => {
+    setInput('');
+    setSelectedMember(null);
+  };
+
   const handleSave = () => {
     if (!selectedMember) return;
 
     mutate(selectedMember.email, {
       onSuccess: () => {
-        setInput('');
-        setSelectedMember(null);
+        resetConnectionInput();
         onOpenChange(false);
       },
-      // TODO: 에러처리
+      onError: (error) => {
+        handleApiError(error, classifyConnectionError, {
+          // DUPLICATE_CONNECTION_REQUEST, CONNECTION_LIMIT_EXCEEDED_*, INVALID_CONNECTION_RELATION, MEMBER_NOT_EXIST
+          onField: () => {
+            resetConnectionInput();
+          },
+          // 요청 상태가 서버와 달라졌을 때 stale UI 정리
+          onContext: () => {
+            resetConnectionInput();
+            onOpenChange(false);
+          },
+        });
+      },
     });
   };
 
@@ -55,6 +80,8 @@ export const ConnectDialog = ({ onOpenChange, open }: ConnectDialogProps) => {
         </Dialog.Header>
         <Dialog.Body className="mt-6 flex flex-col gap-3">
           <ConnectTagInput
+            connectedStudents={connectedStudents}
+            pendingStudentEmails={pendingStudentEmails}
             input={input}
             setInput={setInput}
             selectedMember={selectedMember}

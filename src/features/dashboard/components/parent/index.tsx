@@ -141,7 +141,7 @@ const DashboardParent = () => {
     <div className="flex w-full flex-col">
       <DashboardHeader />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
-        <ParentLinkSection />
+        <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           {shouldShowStudentSections && (
             <StudyNewsSection

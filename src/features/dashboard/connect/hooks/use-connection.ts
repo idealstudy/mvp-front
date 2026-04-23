@@ -41,6 +41,7 @@ export const useSearchConnectionMembers = (
     queryKey: connectionKeys.search(query),
     queryFn: () => repository.connect.searchConnectionMembers(query),
     enabled: options?.enabled ?? query.keyword.trim().length > 0,
+    retry: false,
   });
 
 // 공통 mutation onSuccess
