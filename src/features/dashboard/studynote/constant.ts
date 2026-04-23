@@ -6,3 +6,12 @@ export const STUDY_NOTE_VISIBILITY = {
   STUDY_ROOM_STUDENTS_AND_PARENTS: 'STUDY_ROOM_STUDENTS_AND_PARENTS',
   PUBLIC: 'PUBLIC',
 } as const;
+
+export const STUDY_NOTE_VISIBILITY_LABEL: Record<string, string> = {
+  TEACHER_ONLY: '나만 보기',
+  SPECIFIC_STUDENTS_ONLY: '수업 대상 학생',
+  SPECIFIC_STUDENTS_AND_PARENTS: '수업 대상 학생 (보호자 공개)',
+  STUDY_ROOM_STUDENTS_ONLY: '스터디 룸',
+  STUDY_ROOM_STUDENTS_AND_PARENTS: '스터디 룸 (보호자 공개)',
+  PUBLIC: '전체 공개',
+};
