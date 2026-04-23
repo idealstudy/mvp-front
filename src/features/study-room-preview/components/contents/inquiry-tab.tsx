@@ -5,6 +5,7 @@ import { FormEvent, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import InquiryItem from '@/features/study-room-preview/components/contents/inquiry-item';
+import InquiryNotice from '@/features/study-room-preview/components/contents/inquiry-notice';
 import { usePreviewInquiries } from '@/features/study-room-preview/hooks/use-preview';
 import { MiniSpinner } from '@/shared/components/loading';
 import { Button, Input, Pagination } from '@/shared/components/ui';
@@ -32,6 +33,7 @@ export const StudyroomPreviewInquiryTab = ({
 
   const member = useMemberStore((state) => state.member);
   const isTeacher = member?.role === 'ROLE_TEACHER';
+  const isOwner = member?.id === teacherId;
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -72,6 +74,7 @@ export const StudyroomPreviewInquiryTab = ({
 
   return (
     <div className="space-y-5">
+      {/* 문의 작성하기 */}
       {!isTeacher && (
         <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-6">
           <h1 className="font-headline1-heading">
@@ -97,12 +100,16 @@ export const StudyroomPreviewInquiryTab = ({
         </div>
       )}
 
+      {/* 문의 목록 */}
       <div
         className={cn(
           'border-line-line1 rounded-xl border bg-white p-6',
           isTeacher ? 'rounded-tl-none' : ''
         )}
       >
+        {/* 문의 공지 */}
+        <InquiryNotice isOwner={isOwner} />
+
         {isLoading && (
           <div className="flex justify-center py-10">
             <MiniSpinner />
