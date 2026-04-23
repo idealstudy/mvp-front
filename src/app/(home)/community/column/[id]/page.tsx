@@ -1,6 +1,7 @@
 import { cache } from 'react';
 
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import { SITE_CONFIG } from '@/config/site';
@@ -26,8 +27,9 @@ export async function generateMetadata({
   if (preview === 'true') return { title: SITE_CONFIG.name };
 
   try {
+    const origin = await getRequestOrigin();
     const columnDetail = await getDetail(Number(id));
-    return generateColumnDetailMetadata(columnDetail);
+    return generateColumnDetailMetadata(columnDetail, origin);
   } catch {
     return { title: SITE_CONFIG.name };
   }
@@ -64,3 +66,11 @@ export default async function ColumnDetailPage({
     notFound();
   }
 }
+
+const getRequestOrigin = async () => {
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') ?? headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') ?? 'https';
+
+  return host ? `${protocol}://${host}` : SITE_CONFIG.url;
+};

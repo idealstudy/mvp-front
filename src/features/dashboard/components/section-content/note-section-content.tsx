@@ -7,7 +7,7 @@ import { TeacherDashboardNoteListItemDTO } from '@/entities/teacher';
 import { AddNoteIcon } from '@/shared/components/icons';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
-import { trackDashboardNoteClick } from '@/shared/lib/gtm/trackers';
+import { trackDashboardNoteClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
 type NoteItem =

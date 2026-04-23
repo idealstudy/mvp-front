@@ -110,6 +110,7 @@ export default function StepTwo({
                       <RadioCard.Item
                         key={option.value}
                         value={option.value}
+                        data-testid={`study-room-${el.name}-${option.value}`}
                         className={`border-line-line2 flex h-32 flex-1 cursor-pointer items-center justify-center ${field.value === option.value ? 'border-key-color-primary bg-key-color-primary/10 text-key-color-primary' : ''} `}
                       >
                         <div className="text-center">
@@ -145,12 +146,14 @@ export default function StepTwo({
                         <Select.Trigger
                           placeholder="학교를 선택하세요"
                           className="max-desktop:w-full w-[240px]"
+                          data-testid="study-room-school-level-trigger"
                         />
                         <Select.Content>
                           {el.options.school.map((option) => (
                             <Select.Option
                               key={option.value}
                               value={option.value}
+                              data-testid={`study-room-school-level-${option.value}`}
                             >
                               {option.label}
                             </Select.Option>
@@ -176,6 +179,7 @@ export default function StepTwo({
                           placeholder="학년을 선택하세요"
                           disabled={!school || school === 'OTHER'}
                           className="max-desktop:w-full w-[240px]"
+                          data-testid="study-room-grade-trigger"
                         />
                         <Select.Content>
                           {el.options.grade
@@ -212,6 +216,7 @@ export default function StepTwo({
               type="button"
               className="max-desktop:w-full text-orange-7 border-orange-7 hover:bg-orange-7/10 w-48 self-end bg-white"
               onClick={onCancel}
+              data-testid="study-room-cancel-button"
             >
               취소
             </Button>
@@ -220,6 +225,7 @@ export default function StepTwo({
               className="max-desktop:w-full w-48 self-end"
               disabled={disabled || !(canSubmitEdit ?? isDirty)}
               onClick={onRequestEdit}
+              data-testid="study-room-edit-button"
             >
               {disabled ? '수정 중...' : '수정하기'}
             </Button>
@@ -230,6 +236,7 @@ export default function StepTwo({
             className="max-desktop:w-full w-48 self-end"
             disabled={disabled || !isValid}
             onClick={onRequestSubmit}
+            data-testid="study-room-submit-button"
           >
             {disabled ? '생성 중...' : '완료'}
           </Button>

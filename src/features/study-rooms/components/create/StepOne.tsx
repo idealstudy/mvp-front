@@ -50,6 +50,7 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
             {...register('name')}
             placeholder="스터디룸 이름을 입력해주세요"
             required
+            data-testid="study-room-name-input"
           />
         </Form.Control>
         <Form.ErrorMessage>{errors.name?.message}</Form.ErrorMessage>
@@ -70,6 +71,7 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
             maxLength={200}
             {...register('description')}
             required
+            data-testid="study-room-description-textarea"
           />
         </Form.Control>
 
@@ -165,6 +167,7 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
           type="button"
           onClick={onNext}
           disabled={disabled}
+          data-testid="study-room-next-button"
         >
           다음
         </Button>

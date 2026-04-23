@@ -7,6 +7,7 @@ import { StudyNoteDetailContentsSection } from '@/features/dashboard/studynote/d
 import { StudyNoteDetailMetaSection } from '@/features/dashboard/studynote/detail/components/meta-section';
 import { StudyNoteDetailCommentSection } from '@/features/study-note-comment/components';
 import { ColumnLayout } from '@/layout/column-layout';
+import { PageViewTracker } from '@/shared/components/analytics';
 
 type Props = {
   params: Promise<{ id: string; noteId: string }>;
@@ -54,6 +55,7 @@ export default async function StudyNoteDetailPage({
 
   return (
     <>
+      <PageViewTracker pageName="studynote_detail" />
       <div className="w-full flex-col">
         <BackLink />
         <ColumnLayout className="desktop:p-6 items-start gap-6">

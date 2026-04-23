@@ -11,11 +11,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { PUBLIC } from '@/shared/constants';
-import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
 import {
   trackAuthLoginClick,
   trackAuthLoginFail,
-} from '@/shared/lib/gtm/trackers';
+} from '@/shared/lib/analytics';
+import { extractErrorMessage } from '@/shared/lib/bff/utils.message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 

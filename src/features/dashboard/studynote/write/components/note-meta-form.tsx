@@ -48,6 +48,7 @@ export const NoteMetaFields = () => {
             type="text"
             placeholder="수업 노트의 제목을 입력해주세요."
             disabled={isPending}
+            data-testid="note-title-input"
           />
         </Form.Control>
         <Form.ErrorMessage className="text-system-warning text-sm">

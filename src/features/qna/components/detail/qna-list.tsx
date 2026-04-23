@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
-import { trackQuestionClick } from '@/shared/lib/gtm/trackers';
+import { trackQuestionClick } from '@/shared/lib/analytics';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
 

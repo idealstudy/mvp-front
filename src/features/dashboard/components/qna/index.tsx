@@ -10,7 +10,7 @@ export const QnA = () => {
   const isTeacher = member?.role === 'ROLE_TEACHER';
 
   return (
-    <div className="flex min-h-[calc(100vh-76px)] w-full flex-col">
+    <div className="flex min-h-[calc(100vh-var(--spacing-header-height))] w-full flex-col">
       <MoreContentsHeader
         isTeacher={isTeacher}
         kind="QNA"

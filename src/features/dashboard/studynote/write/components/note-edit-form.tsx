@@ -8,9 +8,13 @@ import { useRouter } from 'next/navigation';
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { teacherKeys } from '@/entities/teacher';
 import { StudyNoteDetailQueryKey } from '@/features/dashboard/studynote/detail/service/query-options';
+import { StudyNoteWriteQueryKey } from '@/features/dashboard/studynote/write/services/query-options';
 import { useUpdateStudyNote } from '@/features/study-notes/hooks';
 import { prepareContentForSave } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
+import { PRIVATE } from '@/shared/constants';
+import { getApiError } from '@/shared/lib';
+import { classifyStudyNoteError, handleApiError } from '@/shared/lib/errors';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { STUDY_NOTE_VISIBILITY } from '../../constant';
@@ -30,7 +34,8 @@ const StudyNoteEditForm = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutate: updateStudyNote } = useUpdateStudyNote();
-  const { handleSubmit } = useFormContext<StudyNoteForm>();
+  const { handleSubmit, setError, resetField } =
+    useFormContext<StudyNoteForm>();
 
   const onSubmit = (data: StudyNoteForm) => {
     const parsingData = transformFormDataToServerFormat(data);
@@ -86,6 +91,34 @@ const StudyNoteEditForm = ({
 
           // 상세 페이지로 이동 (데이터가 이미 갱신된 후)
           router.replace(`/study-rooms/${studyRoomId}/note/${noteId}`);
+        },
+        onError: (error) => {
+          const apiError = getApiError(error);
+
+          handleApiError(error, classifyStudyNoteError, {
+            // DUPLICATED_TEACHING_NOTE_TITLE, TEACHING_NOTE_GROUP_NOT_EXIST
+            onField: (message) => {
+              if (apiError?.code === 'DUPLICATED_TEACHING_NOTE_TITLE') {
+                setError('title', { message });
+              }
+              if (apiError?.code === 'TEACHING_NOTE_GROUP_NOT_EXIST') {
+                queryClient.invalidateQueries({
+                  queryKey: StudyNoteWriteQueryKey.studyNoteGroups(
+                    data.studyRoomId
+                  ),
+                });
+                resetField('teachingNoteGroupId');
+              }
+            },
+            // TEACHING_NOTE_NOT_EXIST
+            onContext: () => {
+              router.replace(PRIVATE.NOTE.LIST(studyRoomId));
+            },
+            // MEMBER_NOT_EXIST
+            onAuth: () => {
+              setTimeout(() => router.replace('/login'), 1500);
+            },
+          });
         },
       }
     );
