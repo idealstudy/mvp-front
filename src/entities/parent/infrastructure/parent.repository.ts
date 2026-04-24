@@ -51,12 +51,13 @@ const getParentDashboardStudyConsultationList = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * TODO: 임시로 /public/study-rooms 갖다쓰기
  * [Read] 부모님 대시보드 - 스터디룸 둘러보기
  * ────────────────────────────────────────────────────*/
-const getParentDashboardStudyRoomPreviewList = async () => {
-  const response = await api.private.get(`/parent/dashboard/study-rooms`);
-  return unwrapEnvelope(response, dto.dashboard.studyRoomPreviewList);
-};
+// const getParentDashboardStudyRoomPreviewList = async () => {
+//   const response = await api.private.get(`/parent/dashboard/study-rooms`);
+//   return unwrapEnvelope(response, dto.dashboard.studyRoomPreviewList);
+// };
 
 /* ─────────────────────────────────────────────────────
  * [Read] 부모님 대시보드 - 문의 목록 조회
@@ -72,7 +73,7 @@ export const repository = {
     getReport: getParentDashboardReport,
     getStudyNewsList: getParentDashboardStudyNewsList,
     getStudyConsultationList: getParentDashboardStudyConsultationList,
-    getStudyRoomPreviewList: getParentDashboardStudyRoomPreviewList,
+    // getStudyRoomPreviewList: getParentDashboardStudyRoomPreviewList,
     getInquiryList: getParentDashboardInquiryList,
   },
 };

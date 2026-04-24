@@ -12,6 +12,7 @@ export type NoteRequest = z.infer<typeof dto.request>;
 
 export type NoteListItem = z.infer<typeof dto.listItem>;
 export type NoteDetail = z.infer<typeof dto.detail>;
+export type ParentNoteDetail = z.infer<typeof dto.parentDetail>;
 
 /* ─────────────────────────────────────────────────────
  * 도메인

@@ -376,15 +376,16 @@ export const useParentDashboardStudyConsultationQuery = (
 };
 
 /**
+ * TODO: 임시로 /public/study-rooms 갖다쓰기
  * 부모가 둘러볼 수 있는 스터디룸 미리보기 목록을 조회하는 훅입니다.
  */
-export const useParentDashboardStudyRoomPreviewQuery = () => {
-  return useQuery({
-    queryKey: parentKeys.dashboard.studyRoomPreviewList(),
-    queryFn: () => parentRepository.dashboard.getStudyRoomPreviewList(),
-    ...settings,
-  });
-};
+// export const useParentDashboardStudyRoomPreviewQuery = () => {
+//   return useQuery({
+//     queryKey: parentKeys.dashboard.studyRoomPreviewList(),
+//     queryFn: () => parentRepository.dashboard.getStudyRoomPreviewList(),
+//     ...settings,
+//   });
+// };
 
 /**
  * 부모 대시보드의 문의 목록을 조회하는 훅입니다.

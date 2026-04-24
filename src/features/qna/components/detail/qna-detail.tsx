@@ -10,7 +10,10 @@ import { MiniSpinner } from '@/shared/components/loading';
 import { useRole } from '@/shared/hooks/use-role';
 import { cn } from '@/shared/lib/utils';
 
-import { useQnADetailQuery } from '../../services/query';
+import {
+  useQnADetailQuery,
+  useQnAParentDetailQuery,
+} from '../../services/query';
 import QuestionAnswer from '../sidebar/question-answer';
 import QuestionContent from '../sidebar/question-content';
 import QnAMessageFormProvider from '../write/qna-message-provider';
@@ -19,6 +22,7 @@ import WriteArea from '../write/qna-message-write-area';
 type Props = {
   studyRoomId: number;
   contextId: number;
+  studentId?: number;
 };
 
 const statusMessage = {
@@ -26,12 +30,35 @@ const statusMessage = {
   COMPLETED: '피드백 완료',
 };
 
-export function QuestionDetail({ studyRoomId, contextId }: Props) {
-  const { role } = useRole();
-  const { data: qnaDetail, isPending } = useQnADetailQuery(role, {
+export function QuestionDetail({ studyRoomId, contextId, studentId }: Props) {
+  const { role, isLoading: isRoleLoading } = useRole();
+  const isParent = role === 'ROLE_PARENT';
+  const hasValidParentStudentId =
+    studentId !== undefined && Number.isInteger(studentId) && studentId > 0;
+
+  const {
+    data: commonQnaDetail,
+    isPending: isCommonQnaPending,
+    isError: isCommonQnaError,
+  } = useQnADetailQuery(role, {
     studyRoomId,
     contextId,
   });
+  const {
+    data: parentQnaDetail,
+    isPending: isParentQnaPending,
+    isError: isParentQnaError,
+  } = useQnAParentDetailQuery({
+    studentId: studentId ?? 0,
+    studyRoomId,
+    contextId,
+    enabled: !isRoleLoading && isParent && hasValidParentStudentId,
+  });
+
+  const qnaDetail = isParent ? parentQnaDetail : commonQnaDetail;
+  const isPending =
+    isRoleLoading || (isParent ? isParentQnaPending : isCommonQnaPending);
+  const isError = isParent ? isParentQnaError : isCommonQnaError;
 
   const qnaVisibility = (visibility: string) => {
     if (visibility === 'STUDENT_ONLY') return '보호자 비공개';
@@ -47,7 +74,23 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
   const canWrite =
     role === 'ROLE_STUDENT' || (role === 'ROLE_TEACHER' && hasStudentQnA);
 
+  if (isParent && !hasValidParentStudentId) {
+    return (
+      <p className="flex flex-col items-center">
+        학생 정보를 확인할 수 없어 질문을 불러오지 못했습니다.
+      </p>
+    );
+  }
+
   if (isPending) return <MiniSpinner />;
+
+  if (isError) {
+    return (
+      <p className="flex flex-col items-center">
+        질문을 불러오는 중 오류가 발생했습니다.
+      </p>
+    );
+  }
 
   return (
     <>
@@ -80,7 +123,9 @@ export function QuestionDetail({ studyRoomId, contextId }: Props) {
             <div>
               {qnaDetail?.relatedTeachingNote ? (
                 <Link
-                  href={`/study-rooms/${studyRoomId}/note/${qnaDetail.relatedTeachingNote.id}`}
+                  href={`/study-rooms/${studyRoomId}/note/${qnaDetail.relatedTeachingNote.id}${
+                    isParent && studentId ? `?studentId=${studentId}` : ''
+                  }`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-orange-scale-orange-50"

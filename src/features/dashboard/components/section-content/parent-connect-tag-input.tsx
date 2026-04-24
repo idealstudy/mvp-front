@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 import type { ConnectSearchMemberDTO } from '@/entities/connect';
+import type { ParentDashboardConnectedStudentListDTO } from '@/entities/parent';
 import { cn } from '@/shared/lib';
 import {
   Popover,
@@ -15,6 +16,8 @@ import {
 import { useSearchConnectionMembers } from '../../connect/hooks/use-connection';
 
 interface TagInputProps {
+  connectedStudents: ParentDashboardConnectedStudentListDTO;
+  pendingStudentEmails: string[];
   placeholder: string;
   input: string;
   setInput: (value: string) => void;
@@ -24,6 +27,8 @@ interface TagInputProps {
 }
 
 export const ConnectTagInput = ({
+  connectedStudents,
+  pendingStudentEmails,
   placeholder,
   input,
   setInput,
@@ -35,6 +40,11 @@ export const ConnectTagInput = ({
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isConnectedStudent = (memberId: number) =>
+    connectedStudents.some((student) => student.studentId === memberId);
+  const isPendingStudent = (memberEmail: string) =>
+    pendingStudentEmails.includes(memberEmail);
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setDebouncedKeyword(input.trim());
@@ -43,15 +53,18 @@ export const ConnectTagInput = ({
     return () => window.clearTimeout(timer);
   }, [input]);
 
-  const { data: searchedMemberData = [], isFetching } =
-    useSearchConnectionMembers(
-      {
-        keyword: debouncedKeyword,
-      },
-      {
-        enabled: debouncedKeyword.length > 0,
-      }
-    );
+  const {
+    data: searchedMemberData = [],
+
+    isFetching,
+  } = useSearchConnectionMembers(
+    {
+      keyword: debouncedKeyword,
+    },
+    {
+      enabled: debouncedKeyword.length > 0,
+    }
+  );
 
   const handleInputChange = (value: string) => {
     setInput(value);
@@ -150,8 +163,9 @@ export const ConnectTagInput = ({
           ) : (
             <div className="max-h-[216px] overflow-y-auto py-2">
               {searchedMemberData.map((student) => {
-                const isSelected =
-                  selectedMember?.memberId === student.memberId;
+                const isAlreadyConnected = isConnectedStudent(student.memberId);
+                const isAlreadyPending = isPendingStudent(student.email);
+
                 return (
                   <button
                     type="button"
@@ -159,14 +173,19 @@ export const ConnectTagInput = ({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+
+                      if (isAlreadyConnected) return;
+                      if (isAlreadyPending) return;
+
                       handleSelectMember(student);
                     }}
                     className={cn(
-                      'hover:bg-background-gray flex w-full items-center justify-between gap-3 px-5 py-3 text-left text-sm transition-colors',
-                      isSelected
-                        ? 'bg-background-orange text-black'
-                        : 'text-text-sub1'
+                      'hover:bg-background-gray text-text-sub1 flex w-full items-center justify-between gap-3 px-5 py-3 text-left text-sm transition-colors',
+
+                      (isAlreadyConnected || isAlreadyPending) &&
+                        'cursor-not-allowed opacity-50 hover:bg-white'
                     )}
+                    disabled={isAlreadyConnected || isAlreadyPending}
                   >
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
                       <span className="font-body2-heading text-gray-12 truncate">
@@ -174,18 +193,22 @@ export const ConnectTagInput = ({
                       </span>
                       <span
                         className={cn(
-                          'font-label-normal truncate',
-                          isSelected
-                            ? 'text-orange-scale-orange-50'
-                            : 'text-text-sub1'
+                          'font-label-normal text-text-sub1 truncate'
                         )}
                       >
                         {student.email}
                       </span>
                     </div>
-                    {isSelected ? (
-                      <span className="ml-1 text-orange-500">✓</span>
-                    ) : null}
+                    {isAlreadyConnected && (
+                      <span className="font-label-normal text-gray-scale-gray-50 shrink-0">
+                        이미 연결됨
+                      </span>
+                    )}
+                    {isAlreadyPending && (
+                      <span className="font-label-normal text-gray-scale-gray-50 shrink-0">
+                        이미 요청함
+                      </span>
+                    )}
                   </button>
                 );
               })}

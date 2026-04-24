@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
@@ -35,10 +35,10 @@ import {
 } from '@/shared/components/ui/popover';
 import {
   BUTTON_BASE,
-  FEEDBACK_BUTTON_BASE,
   PRIVATE,
   PUBLIC,
   ROLE_META_MAP,
+  link,
 } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import {
@@ -52,6 +52,7 @@ import { useMemberStore } from '@/store';
 export const Header = () => {
   const session = useMemberStore((s) => s.member);
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   // 역할에 따라 조건부로 API 호출
@@ -106,33 +107,35 @@ export const Header = () => {
             width={44}
             height={20}
           />
-          <Link
-            href="https://forms.gle/ktLvekAsKTkqTcpQ6"
-            className={cn(FEEDBACK_BUTTON_BASE, 'ml-2', 'max-desktop:hidden')}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/ic_question_mark.svg"
-              alt="피드백"
-              width={16}
-              height={16}
-            />
-            소중한 의견 보내기
-          </Link>
-          <Link
-            href="/list/teachers?sort=LATEST&subject=ALL"
-            className="hover:text-orange-scale-orange-50 max-desktop:hidden ml-4 border-r border-white pr-2 text-sm font-medium text-white transition-colors"
-          >
-            디에듀 101 목록
-          </Link>
-          <Link
-            href={PUBLIC.COMMUNITY.COLUMN.LIST}
-            className="hover:text-orange-scale-orange-50 max-desktop:hidden text-sm font-medium text-white transition-colors"
-          >
-            게시판
-          </Link>
+
+          {!session && (
+            <div className="ml-5 flex gap-2">
+              <Link
+                href={PUBLIC.CORE.LIST.TEACHERS}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.CORE.LIST.BASE)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                탐색하기
+              </Link>
+              <Link
+                href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.COMMUNITY.BASE)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                게시판
+              </Link>
+            </div>
+          )}
         </div>
+
         {session && (
           <div className="desktop:gap-4 flex items-center gap-1">
             <NotificationPopover />
@@ -148,16 +151,28 @@ export const Header = () => {
                 <Image
                   src={'/img_header_profile.svg'}
                   alt="프로필 사진"
-                  width={48}
-                  height={48}
+                  width={36}
+                  height={36}
                   className="desktop:flex hidden cursor-pointer rounded-full"
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
-                <DropdownMenu.Item onClick={() => goToMypage()}>
+                <DropdownMenu.Item
+                  className="justify-self-center"
+                  onClick={() => goToMypage()}
+                >
                   마이페이지
                 </DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => handleLogout()}>
+                <DropdownMenu.Item
+                  className="justify-self-center"
+                  onClick={() => router.push(PRIVATE.SETTINGS)}
+                >
+                  환경설정
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="text-system-warning justify-self-center"
+                  onClick={() => handleLogout()}
+                >
                   로그아웃
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -304,6 +319,14 @@ export const Header = () => {
                       마이페이지
                     </PopoverItem>
                     <PopoverItem
+                      onClick={() => {
+                        router.push(PRIVATE.SETTINGS);
+                        setIsOpen(false);
+                      }}
+                    >
+                      환경설정
+                    </PopoverItem>
+                    <PopoverItem
                       variant="danger"
                       onClick={() => {
                         handleLogout();
@@ -316,7 +339,7 @@ export const Header = () => {
 
                   <div className="mt-2 flex flex-col gap-1">
                     <Link
-                      href="https://forms.gle/ktLvekAsKTkqTcpQ6"
+                      href={link.kakao}
                       className="text-gray-scale-gray-30 flex items-center justify-end gap-1.5 text-sm font-semibold"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -337,12 +360,12 @@ export const Header = () => {
         )}
 
         {!session && (
-          <div className="flex gap-5">
+          <div className="flex gap-2">
             <Link
               href={PUBLIC.CORE.LOGIN}
               className={cn(
                 BUTTON_BASE,
-                'max-desktop:border-line-line1 max-desktop:py-2'
+                'border-gray-3 max-desktop:py-2 hover:bg-gray-10'
               )}
             >
               로그인
@@ -351,7 +374,7 @@ export const Header = () => {
               href={PUBLIC.CORE.SIGNUP}
               className={cn(
                 BUTTON_BASE,
-                'bg-key-color-primary hover:bg-key-color-secondary',
+                'bg-key-color-primary border-gray-11 hover:bg-orange-6',
                 'max-desktop:hidden'
               )}
             >

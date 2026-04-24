@@ -3,6 +3,7 @@ import type {
   CommentList,
   CommentReadList,
   CommentUpdateRequestDTO,
+  ParentCommentList,
 } from '@/entities/study-note-comment';
 import { commentKeys, repository } from '@/entities/study-note-comment';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,11 +12,31 @@ const FIVE_MINUTE = 5 * 60 * 1000;
 
 // 스터디 노트 답글 info
 
-export const useCommentList = (teachingNoteId: number) =>
+export const useCommentList = (teachingNoteId: number, enabled = true) =>
   useQuery<CommentList>({
     queryKey: commentKeys.list(teachingNoteId),
     queryFn: () => repository.comment.getCommentList(teachingNoteId),
-    enabled: Number.isInteger(teachingNoteId) && teachingNoteId > 0,
+    enabled: enabled && Number.isInteger(teachingNoteId) && teachingNoteId > 0,
+    refetchInterval: FIVE_MINUTE,
+    refetchOnWindowFocus: true,
+  });
+
+// 보호자 - 스터디 노트 댓글 목록
+export const useParentCommentList = (
+  studentId: number,
+  teachingNoteId: number,
+  enabled = true
+) =>
+  useQuery<ParentCommentList>({
+    queryKey: commentKeys.parentList(studentId, teachingNoteId),
+    queryFn: () =>
+      repository.comment.getParentCommentList(studentId, teachingNoteId),
+    enabled:
+      enabled &&
+      Number.isInteger(studentId) &&
+      studentId > 0 &&
+      Number.isInteger(teachingNoteId) &&
+      teachingNoteId > 0,
     refetchInterval: FIVE_MINUTE,
     refetchOnWindowFocus: true,
   });

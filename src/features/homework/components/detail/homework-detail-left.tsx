@@ -12,11 +12,13 @@ import { useRole } from '@/shared/hooks';
 import { cn } from '@/shared/lib';
 import { Check, Eye, Link, UserRound, X } from 'lucide-react';
 
+import { useParentHomeworkDetail } from '../../hooks/parent/useStudentHomeworkQuries';
 import { useStudentHomeworkDetail } from '../../hooks/student/useStudentHomeworkQuries';
 import { useGetTeacherHomeworkDetail } from '../../hooks/teacher/useTeacherHomeworkQuries';
 import { HomeworkDialog } from '../dialog';
 
 type Props = {
+  studentId?: number;
   studyRoomId: number;
   homeworkId: number;
   dialog: DialogState;
@@ -24,48 +26,92 @@ type Props = {
 };
 
 export const HomeworkDetailLeft = ({
+  studentId,
   studyRoomId,
   homeworkId,
   dialog,
   dispatch,
 }: Props) => {
   const router = useRouter();
-  const { role } = useRole();
+  const { role, isLoading: isRoleLoading } = useRole();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const teacherQuery = useGetTeacherHomeworkDetail(studyRoomId, homeworkId);
-  const studentQuery = useStudentHomeworkDetail(studyRoomId, homeworkId);
   const isTeacher = role === 'ROLE_TEACHER';
+  const isParent = role === 'ROLE_PARENT';
+  const hasValidParentStudentId =
+    studentId !== undefined && Number.isInteger(studentId) && studentId > 0;
+
+  const teacherQuery = useGetTeacherHomeworkDetail(
+    studyRoomId,
+    homeworkId,
+    !isRoleLoading && isTeacher
+  );
+  const studentQuery = useStudentHomeworkDetail(
+    studyRoomId,
+    homeworkId,
+    !isRoleLoading && !isTeacher && !isParent
+  );
+  const parentQuery = useParentHomeworkDetail(
+    studentId ?? 0,
+    studyRoomId,
+    homeworkId,
+    !isRoleLoading && isParent && hasValidParentStudentId
+  );
 
   const teacherData = teacherQuery.data;
   const studentData = studentQuery.data;
-  const data = isTeacher ? teacherData : studentData;
+  const parentData = parentQuery.data;
+  const data = isTeacher ? teacherData : isParent ? parentData : studentData;
   const homework = data?.homework;
-  const isPending = isTeacher ? teacherQuery.isPending : studentQuery.isPending;
-  const isError = isTeacher ? teacherQuery.isError : studentQuery.isError;
+  const isPending =
+    isRoleLoading ||
+    (isTeacher
+      ? teacherQuery.isPending
+      : isParent
+        ? parentQuery.isPending
+        : studentQuery.isPending);
+  const isError = isTeacher
+    ? teacherQuery.isError
+    : isParent
+      ? parentQuery.isError
+      : studentQuery.isError;
 
   const teachingNotes = homework?.teachingNoteInfoList ?? [];
   const homeworkStudents = teacherData?.homeworkStudents ?? [];
-  const assignmentTargets = isTeacher
-    ? homeworkStudents.map((student) => ({
+  const assignmentTargets = (() => {
+    if (isTeacher) {
+      return homeworkStudents.map((student) => ({
         id: student.studentId,
         name: student.studentName,
         readAt: student.readAt,
-      }))
-    : studentData
-      ? [
-          {
-            id: studentData.myHomeworkStudent.id,
-            name: studentData.myHomeworkStudent.studentName,
-            readAt: studentData.myHomeworkStudent.readAt,
-          },
-          ...studentData.otherHomeworkStudents.map((student, index) => ({
-            id: index,
-            name: student.studentName,
-            readAt: student.readAt,
-          })),
-        ]
-      : [];
+      }));
+    }
+
+    if (isParent && parentData) {
+      return [
+        {
+          id: parentData.myHomeworkStudent.studentId,
+          name: parentData.myHomeworkStudent.studentName,
+          readAt: parentData.myHomeworkStudent.readAt,
+        },
+      ];
+    }
+
+    if (!studentData) return [];
+
+    return [
+      {
+        id: studentData.myHomeworkStudent.id,
+        name: studentData.myHomeworkStudent.studentName,
+        readAt: studentData.myHomeworkStudent.readAt,
+      },
+      ...studentData.otherHomeworkStudents.map((student, index) => ({
+        id: index,
+        name: student.studentName,
+        readAt: student.readAt,
+      })),
+    ];
+  })();
 
   // 마감기한 계산
   const deadLineTime = (time?: string) => {
@@ -197,7 +243,9 @@ export const HomeworkDetailLeft = ({
                 teachingNotes.map((note) => (
                   <div key={note.id}>
                     <a
-                      href={`/study-rooms/${studyRoomId}/note/${note.id}`}
+                      href={`/study-rooms/${studyRoomId}/note/${note.id}${
+                        isParent && studentId ? `?studentId=${studentId}` : ''
+                      }`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-orange-scale-orange-50 cursor-pointer"

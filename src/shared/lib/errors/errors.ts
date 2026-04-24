@@ -89,6 +89,7 @@ export function classifyPreviewError(code?: string): ApiErrorType {
   }
 }
 
+// 수업노트 댓글 관련 에러
 export function classifyStudyNoteCommentError(code?: string): ApiErrorType {
   switch (code) {
     case 'MEMBER_NOT_EXIST':
@@ -143,6 +144,27 @@ export function classifyInquiryError(code?: string): ApiErrorType {
   }
 }
 
+// 부모님 대시보드 - 학생연결 관련 에러
+export function classifyConnectionError(code?: string): ApiErrorType {
+  switch (code) {
+    // FIELD (연결 대상 변경 등 사용자가 입력/선택을 바꿔 복구 가능)
+    case 'DUPLICATE_CONNECTION_REQUEST':
+    case 'CONNECTION_LIMIT_EXCEEDED_SELF':
+    case 'CONNECTION_LIMIT_EXCEEDED_TARGET':
+    case 'INVALID_CONNECTION_RELATION':
+    case 'MEMBER_NOT_EXIST':
+      return 'FIELD';
+
+    // CONTEXT (이미 처리되었거나 삭제되어 현재 요청 컨텍스트가 유효하지 않음)
+    case 'INVALID_CONNECTION_STATE':
+    case 'CONNECTION_NOT_FOUND':
+      return 'CONTEXT';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 // 스터디노트 관련 에러
 export function classifyStudyNoteError(code?: string): ApiErrorType {
   switch (code) {
@@ -157,6 +179,17 @@ export function classifyStudyNoteError(code?: string): ApiErrorType {
       return 'CONTEXT';
 
     // AUTH
+    case 'MEMBER_NOT_EXIST':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
+// 탈퇴 관련 에러
+export function classifyWithdrawError(code?: string): ApiErrorType {
+  switch (code) {
     case 'MEMBER_NOT_EXIST':
       return 'AUTH';
 

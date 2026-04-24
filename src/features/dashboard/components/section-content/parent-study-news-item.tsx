@@ -16,6 +16,7 @@ type ParentStudyNewsDeadlineLabel = 'UPCOMING' | 'TODAY' | 'OVERDUE';
 
 interface StudyNewsItemProps {
   data: ParentDashboardStudyNewsItemDTO;
+  selectedStudentId?: number | null;
 }
 
 const formatHomeworkDeadlineLabel = (
@@ -60,7 +61,10 @@ const getTypeIcon = (type: ParentStudyNewsType) => {
   }
 };
 
-export const StudyNewsItem = ({ data }: StudyNewsItemProps) => {
+export const StudyNewsItem = ({
+  data,
+  selectedStudentId,
+}: StudyNewsItemProps) => {
   const isHomework = data.type === 'HOMEWORK';
   const isQna = data.type === 'QNA';
 
@@ -68,13 +72,22 @@ export const StudyNewsItem = ({ data }: StudyNewsItemProps) => {
 
   switch (data.type) {
     case 'HOMEWORK':
-      hrefLink = `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
+      hrefLink =
+        selectedStudentId !== undefined && selectedStudentId !== null
+          ? `/study-rooms/${data.studyRoomId}/homework/${data.id}?studentId=${selectedStudentId}`
+          : `/study-rooms/${data.studyRoomId}/homework/${data.id}`;
       break;
     case 'QNA':
-      hrefLink = `/study-rooms/${data.studyRoomId}/qna/${data.id}`;
+      hrefLink =
+        selectedStudentId !== undefined && selectedStudentId !== null
+          ? `/study-rooms/${data.studyRoomId}/qna/${data.id}?studentId=${selectedStudentId}`
+          : `/study-rooms/${data.studyRoomId}/qna/${data.id}`;
       break;
     case 'TEACHING_NOTE':
-      hrefLink = `/study-rooms/${data.studyRoomId}/note/${data.id}`;
+      hrefLink =
+        selectedStudentId !== undefined && selectedStudentId !== null
+          ? `/study-rooms/${data.studyRoomId}/note/${data.id}?studentId=${selectedStudentId}`
+          : `/study-rooms/${data.studyRoomId}/note/${data.id}`;
       break;
   }
 

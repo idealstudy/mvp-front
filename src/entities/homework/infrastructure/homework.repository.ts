@@ -5,6 +5,7 @@ import { domain } from '../core';
 import type {
   HomeworkPageable,
   PageableResponse,
+  ParentHomeworkDetailData,
   StudentHomeworkDetailData,
   StudentHomeworkItem,
   TeacherHomeworkDetailData,
@@ -150,6 +151,23 @@ const getStudentHomeworkDetail = async (
 };
 
 /* ─────────────────────────────────────────────────────
+ * [Parent] 과제 상세 조회
+ * ────────────────────────────────────────────────────*/
+const getParentHomeworkDetail = async (
+  studentId: number,
+  studyRoomId: number,
+  homeworkId: number
+): Promise<ParentHomeworkDetailData> => {
+  const response = await api.private.get(
+    `/parent/student/${studentId}/study-rooms/${studyRoomId}/homeworks/${homeworkId}`
+  );
+
+  return domain.parent.detail.parse(
+    unwrapEnvelope(response, dto.parent.detail)
+  );
+};
+
+/* ─────────────────────────────────────────────────────
  * [Student] 과제 제출 생성/수정/삭제
  * ────────────────────────────────────────────────────*/
 const createStudentHomeworkSubmission = async (
@@ -204,5 +222,8 @@ export const repository = {
     submit: createStudentHomeworkSubmission,
     updateSubmission: updateStudentHomeworkSubmission,
     deleteSubmission: deleteStudentHomeworkSubmission,
+  },
+  parent: {
+    getDetail: getParentHomeworkDetail,
   },
 };

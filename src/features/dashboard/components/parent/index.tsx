@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { usePublicStudyRoomsQuery } from '@/features/list';
+
 import {
   useParentDashboardConnectedStudentQuery,
   useParentDashboardInquiryListQuery,
   useParentDashboardStudyConsultationQuery,
   useParentDashboardStudyNewsQuery,
-  useParentDashboardStudyRoomPreviewQuery,
 } from '../../hooks/use-dashboard-query';
 import DashboardHeader from '../header';
 import { ClassConsultationHistorySection } from '../section/parent-class-consultation-history-section';
@@ -17,7 +18,7 @@ import { StudyNewsSection } from '../section/parent-study-news-section';
 import { StudyRoomPreviewSection } from '../section/parent-studyroom-preview-section';
 
 const DashboardParent = () => {
-  const { data: connectedStudentData } =
+  const { data: connectedStudentData, isPending: connectedStudentIsPending } =
     useParentDashboardConnectedStudentQuery();
 
   // 첫번째 학생의 id
@@ -68,6 +69,13 @@ const DashboardParent = () => {
     firstSelectedStudyRoomId,
   ]);
 
+  const hasValidSelectedStudyRoom = selectedStudyRooms.some(
+    (room) => room.studyRoomId === selectedStudyRoomId
+  );
+  const validSelectedStudyRoomId = hasValidSelectedStudyRoom
+    ? selectedStudyRoomId
+    : null;
+
   // 기본 초기값
   const basicData = {
     pageNumber: 0,
@@ -86,45 +94,79 @@ const DashboardParent = () => {
   const { data: studyConsultationData, isPending: studyConsultationIsPending } =
     useParentDashboardStudyConsultationQuery(
       selectedStudentId,
-      selectedStudyRoomId,
+      validSelectedStudyRoomId,
       undefined,
       {
-        enabled: selectedStudentId !== null && selectedStudyRoomId !== null,
+        enabled:
+          selectedStudentId !== null && validSelectedStudyRoomId !== null,
       }
     );
-  // 스터디룸 둘러보기
+  // TODO: 스터디룸 둘러보기 - 임시로 /public/study-rooms 갖다쓰기
+  // const { data: studyRoomPreviewData, isPending: studyRoomPreviewIsPending } =
+  //   useParentDashboardStudyRoomPreviewQuery();
+
   const { data: studyRoomPreviewData, isPending: studyRoomPreviewIsPending } =
-    useParentDashboardStudyRoomPreviewQuery();
+    usePublicStudyRoomsQuery({
+      page: 0,
+      size: 4,
+    });
 
   // 문의 목록 조회
   const { data: inquiryListData, isPending: inquiryListIsPending } =
     useParentDashboardInquiryListQuery();
 
+  const hasConnectedStudents = (connectedStudentData?.length ?? 0) > 0;
+
+  const shouldShowStudentSections =
+    connectedStudentIsPending || hasConnectedStudents;
+
+  const isSelectingInitialStudent =
+    hasConnectedStudents && selectedStudentId === null;
+
+  const isSelectingInitialStudyRoom =
+    selectedStudentId !== null &&
+    selectedStudyRooms.length > 0 &&
+    validSelectedStudyRoomId === null;
+
+  const isStudyNewsLoading =
+    connectedStudentIsPending || isSelectingInitialStudent || studyNewsPending;
+
+  const isStudyConsultationLoading =
+    connectedStudentIsPending ||
+    isSelectingInitialStudent ||
+    isSelectingInitialStudyRoom ||
+    (validSelectedStudyRoomId !== null && studyConsultationIsPending);
+
   return (
     <div className="flex w-full flex-col">
       <DashboardHeader />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
-        <ParentLinkSection />
+        <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
-          <StudyNewsSection
-            connectedStudentData={connectedStudentData ?? []}
-            studyNewsData={studyNewsData ?? basicData}
-            studyNewsPending={studyNewsPending}
-            selectedStudentId={selectedStudentId}
-            setSelectedStudentId={setSelectedStudentId}
-          />
+          {shouldShowStudentSections && (
+            <StudyNewsSection
+              connectedStudentData={connectedStudentData ?? []}
+              studyNewsData={studyNewsData ?? basicData}
+              studyNewsPending={isStudyNewsLoading}
+              selectedStudentId={selectedStudentId}
+              setSelectedStudentId={setSelectedStudentId}
+            />
+          )}
 
-          <ConsultationSection
-            connectedStudentData={connectedStudentData ?? []}
-            studyConsultationData={studyConsultationData ?? basicData}
-            studyConsultationIsPending={studyConsultationIsPending}
-            selectedStudentId={selectedStudentId}
-            selectedStudyRoomId={selectedStudyRoomId}
-            setSelectedStudyRoomId={setSelectedStudyRoomId}
-            selectedStudentName={selectedStudentName}
-          />
+          {shouldShowStudentSections && (
+            <ConsultationSection
+              connectedStudentData={connectedStudentData ?? []}
+              studyConsultationData={studyConsultationData ?? basicData}
+              studyConsultationIsPending={isStudyConsultationLoading}
+              selectedStudentId={selectedStudentId}
+              selectedStudyRoomId={validSelectedStudyRoomId}
+              setSelectedStudyRoomId={setSelectedStudyRoomId}
+              selectedStudentName={selectedStudentName}
+            />
+          )}
+
           <StudyRoomPreviewSection
-            studyRoomPreviewData={studyRoomPreviewData ?? []}
+            studyRoomPreviewData={studyRoomPreviewData?.content ?? []}
             studyRoomPreviewIsPending={studyRoomPreviewIsPending}
           />
           <ClassConsultationHistorySection

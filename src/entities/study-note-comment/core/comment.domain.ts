@@ -94,6 +94,7 @@ const CommentChildItemDomainSchema =
 const CommentItemDomainSchema = dto.item.transform(toCommentItem);
 const CommentReadItemDomainSchema = dto.readItem.transform(toCommentReadItem);
 const CommentListDomainSchema = z.array(CommentItemDomainSchema);
+const ParentCommentListDomainSchema = z.array(CommentItemDomainSchema);
 const CommentReadListDomainSchema = z.array(CommentReadItemDomainSchema);
 
 /* ─────────────────────────────────────────────────────
@@ -106,5 +107,6 @@ export const domain = {
   item: CommentItemDomainSchema,
   readItem: CommentReadItemDomainSchema,
   list: CommentListDomainSchema,
+  parentList: ParentCommentListDomainSchema,
   readList: CommentReadListDomainSchema,
 };

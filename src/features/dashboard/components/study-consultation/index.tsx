@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { usePathname, useRouter } from 'next/navigation';
+
 import {
   ParentDashboardConnectedStudentListDTO,
   ParentDashboardConsultationListDTO,
@@ -21,6 +23,9 @@ export const StudyConsultation = ({
   initialStudentId?: string;
   initialStudyRoomId?: string;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [page, setPage] = useState(1);
 
   const { data: connectedStudentData } =
@@ -104,6 +109,21 @@ export const StudyConsultation = ({
   useEffect(() => {
     setPage(1);
   }, [selectedStudentId]);
+
+  // 드롭다운 변경시 url 적용
+  useEffect(() => {
+    if (selectedStudyRoomId === null) return;
+
+    const currentSearch = window.location.search.replace(/^\?/, '');
+    const params = new URLSearchParams(currentSearch);
+    params.set('studyRoomId', String(selectedStudyRoomId));
+
+    const nextSearch = params.toString();
+
+    if (nextSearch !== currentSearch) {
+      router.replace(`${pathname}?${nextSearch}`, { scroll: false });
+    }
+  }, [pathname, router, selectedStudyRoomId]);
 
   const { data: studyConsultationData, isPending: studyConsultationIsPending } =
     useParentDashboardStudyConsultationQuery(

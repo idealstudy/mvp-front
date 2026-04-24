@@ -78,6 +78,12 @@ const CommentUpdateRequestSchema = z.object({
 const CommentListResponseDataSchema = z.array(CommentItemDtoSchema);
 
 /* ─────────────────────────────────────────────────────
+ * 부모님 댓글/대댓글 목록 data DTO
+ * GET /api/parent/student/{studentId}/teaching-notes/{teachingNoteId}/comments
+ * ──────────────────────────────────────────────────── */
+const ParentCommentListResponseDataSchema = z.array(CommentItemDtoSchema);
+
+/* ─────────────────────────────────────────────────────
  * 댓글 읽음 정보 data DTO
  * ──────────────────────────────────────────────────── */
 const CommentReadResponseDataSchema = z.array(CommentItemReadDtoSchema);
@@ -87,6 +93,10 @@ const CommentReadResponseDataSchema = z.array(CommentItemReadDtoSchema);
  * ──────────────────────────────────────────────────── */
 const CommentListEnvelopeSchema = sharedSchema.response(
   CommentListResponseDataSchema
+);
+
+const ParentCommentListEnvelopeSchema = sharedSchema.response(
+  ParentCommentListResponseDataSchema
 );
 
 const CommentReadEnvelopeSchema = sharedSchema.response(
@@ -115,9 +125,11 @@ export const dto = {
   updateRequest: CommentUpdateRequestSchema,
 
   list: CommentListResponseDataSchema,
+  parentList: ParentCommentListResponseDataSchema,
   readList: CommentReadResponseDataSchema,
 
   listEnvelope: CommentListEnvelopeSchema,
+  parentListEnvelope: ParentCommentListEnvelopeSchema,
   readEnvelope: CommentReadEnvelopeSchema,
   createEnvelope: CommentCreateEnvelopeSchema,
   updateEnvelope: CommentUpdateEnvelopeSchema,

@@ -1,8 +1,10 @@
 'use client';
 
-import type { ConnectListItemDTO } from '@/entities/connect';
+import { type ConnectListItemDTO, connectionKeys } from '@/entities/connect';
 import { Button } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
+import { classifyConnectionError, handleApiError } from '@/shared/lib/errors';
+import { useQueryClient } from '@tanstack/react-query';
 import { XIcon } from 'lucide-react';
 
 import {
@@ -25,8 +27,19 @@ export const ConfirmParentRequestDialog = ({
     useAcceptConnection();
   const { mutate: rejectConnection, isPending: isRejecting } =
     useRejectConnection();
+  const queryClient = useQueryClient();
 
   const isPending = isAccepting || isRejecting;
+
+  const handleConnectionError = (error: unknown) => {
+    handleApiError(error, classifyConnectionError, {
+      // INVALID_CONNECTION_STATE, CONNECTION_NOT_FOUND
+      onContext: () => {
+        onOpenChange(false);
+        queryClient.invalidateQueries({ queryKey: connectionKeys.all });
+      },
+    });
+  };
 
   const handleAccept = () => {
     if (!connection) return;
@@ -35,6 +48,7 @@ export const ConfirmParentRequestDialog = ({
       onSuccess: () => {
         onOpenChange(false);
       },
+      onError: handleConnectionError,
     });
   };
 
@@ -45,6 +59,7 @@ export const ConfirmParentRequestDialog = ({
       onSuccess: () => {
         onOpenChange(false);
       },
+      onError: handleConnectionError,
     });
   };
 

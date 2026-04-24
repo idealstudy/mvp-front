@@ -13,7 +13,7 @@ type Props = {
   className?: string;
   isMore?: boolean;
   isMoreHref?: string;
-  isAll?: boolean;
+  isMoreDescription?: string;
   headerAction?: React.ReactNode;
   count?: number;
   onMoreClick?: () => void;
@@ -27,7 +27,7 @@ const DashboardSection = ({
   className,
   isMore = false,
   isMoreHref = '',
-  isAll = false,
+  isMoreDescription = '',
   headerAction,
   count,
   onMoreClick,
@@ -75,7 +75,7 @@ const DashboardSection = ({
             onClick={onMoreClick}
           >
             <span className="font-body2-heading">
-              {isAll ? '전체 보기' : '더보기'}
+              {isMoreDescription ? isMoreDescription : '더보기'}
             </span>
             <ChevronRight className="h-5 w-5" />
           </Link>

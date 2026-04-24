@@ -18,13 +18,7 @@ export const ClassConsultationHistorySection = ({
 
   let content;
 
-  if (inquiryListLength === 0) {
-    content = (
-      <div className="flex h-22 w-full flex-col items-center justify-center gap-3">
-        <p className="font-body2-normal text-gray-8">상담 내역이 없어요.</p>
-      </div>
-    );
-  } else if (inquiryListIsPending) {
+  if (inquiryListIsPending) {
     content = (
       <div className="flex w-full flex-col gap-1">
         {Array.from({ length: 3 }).map((_, i) => (
@@ -33,6 +27,12 @@ export const ClassConsultationHistorySection = ({
             className="h-12"
           />
         ))}
+      </div>
+    );
+  } else if (inquiryListLength === 0) {
+    content = (
+      <div className="flex h-22 w-full flex-col items-center justify-center gap-3">
+        <p className="font-body2-normal text-gray-8">상담 내역이 없어요.</p>
       </div>
     );
   } else {
@@ -44,6 +44,9 @@ export const ClassConsultationHistorySection = ({
       <DashboardSection
         title="나의 수업 상담하기 내역"
         description="선생님과 주고받은 문의사항을 확인하세요."
+        isMore
+        isMoreDescription="상담하기"
+        isMoreHref="/list/teachers"
       >
         {content}
       </DashboardSection>

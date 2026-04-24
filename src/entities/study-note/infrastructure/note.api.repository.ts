@@ -1,5 +1,6 @@
 import { StudyNoteGroupPageable } from '@/features/study-notes/model';
 import { api } from '@/shared/api';
+import { unwrapEnvelope } from '@/shared/lib/api-utils';
 import { CommonResponse, EmptyData, PaginationData } from '@/types';
 import type { SuccessId } from '@/types';
 
@@ -9,8 +10,10 @@ import type {
   NoteDomain,
   NoteListItem,
   NoteRequest,
+  ParentNoteDetail,
 } from '../types/note.types';
 import { adapters } from './note.adapters';
+import { dto } from './note.dto.schema';
 
 /* ─────────────────────────────────────────────────────
  * TODO: Role 리포지토리가 생성될 때 외부에서 주입작업 필요
@@ -102,6 +105,17 @@ const getNoteDetail = async (teachingNoteId: number): Promise<NoteDomain> => {
   return factory.fromDetail(validatedResponse.data);
 };
 
+const getParentNoteDetail = async (
+  studentId: number,
+  teachingNoteId: number
+): Promise<ParentNoteDetail> => {
+  const response = await api.private.get<CommonResponse<ParentNoteDetail>>(
+    `/parent/student/${studentId}/teaching-notes/${teachingNoteId}`
+  );
+
+  return unwrapEnvelope(response, dto.parentDetail);
+};
+
 /* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
@@ -112,4 +126,5 @@ export const repository = {
   delete: deleteNote,
   getList: getNoteList,
   getDetail: getNoteDetail,
+  getParentDetail: getParentNoteDetail,
 };

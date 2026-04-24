@@ -27,7 +27,7 @@ export const ConsultationItemDetail = ({
       <Dialog.Content className="h-[524px] w-[720px] max-w-[calc(100%-4rem)] p-10">
         <Dialog.Header className="flex-row items-center justify-between">
           <Dialog.Title className="font-headline1-heading text-gray-12">
-            {titleDate ? `${titleDate} 학습 일지` : '학습 일지'}
+            {titleDate ? `${titleDate} 기록 일지` : '기록 일지'}
           </Dialog.Title>
           <Dialog.Close
             asChild

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { usePathname, useRouter } from 'next/navigation';
+
 import type {
   ParentDashboardConnectedStudentListDTO,
   ParentDashboardStudyNewsListDTO,
@@ -27,6 +29,9 @@ export const StudyNews = ({
 }: {
   initialStudentId?: string;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [page, setPage] = useState(1);
   const { data: connectedStudentData } =
     useParentDashboardConnectedStudentQuery();
@@ -45,6 +50,7 @@ export const StudyNews = ({
     const parsedStudentId =
       initialStudentId !== undefined ? Number(initialStudentId) : null;
 
+    // URL의 studentId가 현재 부모의 연결 학생 목록에 있는지 확인합니다.
     const hasInitialStudent =
       parsedStudentId !== null &&
       !Number.isNaN(parsedStudentId) &&
@@ -63,6 +69,21 @@ export const StudyNews = ({
   useEffect(() => {
     setPage(1);
   }, [selectedStudentId]);
+
+  // 드롭다운 변경시 url 적용
+  useEffect(() => {
+    if (selectedStudentId === null) return;
+
+    const currentSearch = window.location.search.replace(/^\?/, '');
+    const params = new URLSearchParams(currentSearch);
+    params.set('studentId', String(selectedStudentId));
+
+    const nextSearch = params.toString();
+
+    if (nextSearch !== currentSearch) {
+      router.replace(`${pathname}?${nextSearch}`, { scroll: false });
+    }
+  }, [pathname, router, selectedStudentId]);
 
   const { data: studyNewsData, isPending: studyNewsPending } =
     useParentDashboardStudyNewsQuery(

@@ -53,3 +53,17 @@ export const StudentHomeworkQueryKey = {
       homeworkId,
     ] as const,
 };
+
+// 보호자
+export const ParentHomeworkQueryKey = {
+  all: ['parentHomeworks'] as const,
+
+  detail: (studentId: number, studyRoomId: number, homeworkId: number) =>
+    [
+      ...ParentHomeworkQueryKey.all,
+      'detail',
+      studentId,
+      studyRoomId,
+      homeworkId,
+    ] as const,
+};

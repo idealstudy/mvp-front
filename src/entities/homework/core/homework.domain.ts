@@ -48,6 +48,23 @@ const StudentHomeworkDetailSchema = dto.student.detail.transform((data) => ({
 }));
 
 /* ─────────────────────────────────────────────────────
+ * Parent Detail Domain
+ * ────────────────────────────────────────────────────*/
+const ParentHomeworkDetailSchema = dto.parent.detail.transform((data) => ({
+  ...data,
+  homework: normalizeResolvedContent(data.homework),
+  myHomeworkStudent: {
+    ...data.myHomeworkStudent,
+    submission: data.myHomeworkStudent.submission
+      ? normalizeResolvedContent(data.myHomeworkStudent.submission)
+      : undefined,
+    feedback: data.myHomeworkStudent.feedback
+      ? normalizeResolvedContent(data.myHomeworkStudent.feedback)
+      : undefined,
+  },
+}));
+
+/* ─────────────────────────────────────────────────────
  * Domain export
  * - 현재 list는 DTO 그대로 사용
  * - 이후 dday / deadlineLabel 계산이 필요하면 listItem/listPage transform 추가
@@ -62,5 +79,8 @@ export const domain = {
     listItem: dto.student.listItem,
     listPage: dto.student.listPage,
     detail: StudentHomeworkDetailSchema,
+  },
+  parent: {
+    detail: ParentHomeworkDetailSchema,
   },
 };

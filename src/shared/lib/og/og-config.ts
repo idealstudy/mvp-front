@@ -25,4 +25,8 @@ export const OG_PRESETS = {
   },
 } as const;
 
-export type OgPreset = (typeof OG_PRESETS)[keyof typeof OG_PRESETS];
+export type OgPreset = {
+  title: string;
+  image: string;
+  imageAlt: string;
+};

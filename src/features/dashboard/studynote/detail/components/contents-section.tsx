@@ -2,19 +2,50 @@
 
 import Image from 'next/image';
 
-import { useStudyNoteDetailQuery } from '@/features/dashboard/studynote/detail/service/query';
+import {
+  useParentStudyNoteDetailQuery,
+  useStudyNoteDetailQuery,
+} from '@/features/dashboard/studynote/detail/service/query';
 import { ColumnLayout } from '@/layout/column-layout';
 import { TextViewer } from '@/shared/components/editor';
+import { parseEditorContent } from '@/shared/components/editor/utils';
+import { useRole } from '@/shared/hooks';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-export const StudyNoteDetailContentsSection = ({ id }: { id: string }) => {
-  const { data } = useStudyNoteDetailQuery(Number(id));
+export const StudyNoteDetailContentsSection = ({
+  id,
+  studentId,
+}: {
+  id: string;
+  studentId?: string;
+}) => {
+  const { role, isLoading: isRoleLoading } = useRole();
+  const teachingNoteId = Number(id);
+  const parentStudentId = studentId ? Number(studentId) : null;
+  const hasValidParentStudentId =
+    parentStudentId !== null &&
+    Number.isInteger(parentStudentId) &&
+    parentStudentId > 0;
+  const isParent = role === 'ROLE_PARENT';
+
+  const { data: commonNoteData } = useStudyNoteDetailQuery(teachingNoteId, {
+    enabled: !isRoleLoading && !isParent,
+  });
+  const { data: parentNoteData } = useParentStudyNoteDetailQuery(
+    parentStudentId ?? 0,
+    teachingNoteId,
+    {
+      enabled: !isRoleLoading && isParent && hasValidParentStudentId,
+    }
+  );
+
+  const data = isParent ? parentNoteData : commonNoteData;
 
   if (!data) return null;
 
   const contentString = data.resolvedContent?.content || data.content;
-  const content = JSON.parse(contentString);
+  const content = parseEditorContent(contentString);
   const formattedDate = format(
     new Date(data.taughtAt),
     'yyyy. MM. dd (E) 수업',

@@ -225,3 +225,18 @@ export const updateQnAStatus = async (args: {
     { status: args.status }
   );
 };
+
+/**
+ * GET /api/parent/student/{studentId}/study-rooms/{studyRoomId}/qna/{contextId}
+ * 부모님 - 보호자가 자신의 학생의 QNA 상세 내용을 조회한다.
+ */
+export const getParentQnADetail = async (args: {
+  studentId: number;
+  studyRoomId: number;
+  contextId: number;
+}) => {
+  const response = await api.private.get<CommonResponse<QnADetailResponse>>(
+    `/parent/student/${args.studentId}/study-rooms/${args.studyRoomId}/qna/${args.contextId}`
+  );
+  return response.data;
+};

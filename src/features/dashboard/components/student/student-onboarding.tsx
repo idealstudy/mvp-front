@@ -58,7 +58,10 @@ const StudentOnboarding = () => {
     'font-body1-heading tablet:font-headline1-heading text-orange-12 text-balance';
 
   return (
-    <div className={cn('bg-orange-scale-orange-1 rounded-2xl p-8')}>
+    <div
+      className={cn('bg-orange-scale-orange-1 rounded-2xl p-8')}
+      data-testid="student-onboarding"
+    >
       <div className="flex w-full items-center justify-between gap-2 text-left">
         {isInviteCompleted ? (
           <span className={titleClassName}>

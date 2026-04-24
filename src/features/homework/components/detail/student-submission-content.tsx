@@ -37,6 +37,7 @@ type Props = {
   homeworkId: number;
   dialog: DialogState;
   dispatch: (action: DialogAction) => void;
+  readOnly?: boolean;
 };
 // 학생이 과제 제출시 내용 담는 ui
 export const StudentSubmissionContent = ({
@@ -50,6 +51,7 @@ export const StudentSubmissionContent = ({
   submitStatus,
   dialog,
   dispatch,
+  readOnly = false,
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState<JSONContent | null>(null);
@@ -173,30 +175,32 @@ export const StudentSubmissionContent = ({
             )}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md hover:bg-gray-100">
-              <Image
-                src="/studynotes/gray-kebab.svg"
-                width={24}
-                height={24}
-                alt="study-notes"
-                className="cursor-pointer"
-              />
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <>
-                <DropdownMenu.Item onClick={handleUpdate}>
-                  {isUpdating ? '수정중...' : '수정하기'}
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  variant="danger"
-                  onClick={() => handleDelete()}
-                >
-                  {isDeleting ? '삭제중...' : '삭제하기'}
-                </DropdownMenu.Item>
-              </>
-            </DropdownMenu.Content>
-          </DropdownMenu>
+          {!readOnly && (
+            <DropdownMenu>
+              <DropdownMenu.Trigger className="flex size-8 cursor-pointer items-center justify-center rounded-md hover:bg-gray-100">
+                <Image
+                  src="/studynotes/gray-kebab.svg"
+                  width={24}
+                  height={24}
+                  alt="study-notes"
+                  className="cursor-pointer"
+                />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <>
+                  <DropdownMenu.Item onClick={handleUpdate}>
+                    {isUpdating ? '수정중...' : '수정하기'}
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    variant="danger"
+                    onClick={() => handleDelete()}
+                  >
+                    {isDeleting ? '삭제중...' : '삭제하기'}
+                  </DropdownMenu.Item>
+                </>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          )}
         </div>
         {isEditing ? (
           <div className="space-y-3">

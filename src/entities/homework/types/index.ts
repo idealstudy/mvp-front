@@ -37,6 +37,11 @@ export type MyHomeworkStudentDTO = z.infer<
 export type OtherHomeworkStudentDTO = z.infer<
   typeof dto.student.otherHomeworkStudent
 >;
+export type ParentHomeworkDetailDTO = z.infer<typeof dto.parent.detail>;
+export type ParentHomeworkDetailInputDTO = z.input<typeof dto.parent.detail>;
+export type ParentHomeworkStudentDTO = z.infer<
+  typeof dto.parent.myHomeworkStudent
+>;
 
 /* ─────────────────────────────────────────────────────
  * Payload (Request)
@@ -80,3 +85,4 @@ export type OtherHomeworkStudent = z.infer<
   typeof domain.student.detail
 >['otherHomeworkStudents'][number];
 export type StudentHomeworkDetailData = z.infer<typeof domain.student.detail>;
+export type ParentHomeworkDetailData = z.infer<typeof domain.parent.detail>;

@@ -1,5 +1,7 @@
 'use client';
 
+import { useRole } from '@/shared/hooks';
+
 import { CommentCardHeader } from './comment-card-header';
 // import { SmilePlus } from 'lucide-react';
 
@@ -52,6 +54,9 @@ export const CommentAnswerCardHeader = ({
   onReply,
   setIsDialogOpen,
 }: CommentAnswerCardHeaderProps) => {
+  const { role, isLoading: isRoleLoading } = useRole();
+  const canShowDropdown = !isRoleLoading && role !== 'ROLE_PARENT';
+
   return (
     <div className="flex justify-between gap-4">
       <CommentCardHeader
@@ -105,13 +110,15 @@ export const CommentAnswerCardHeader = ({
               />
             </PopoverContent>
           </Popover> */}
-          <CommentDropdown
-            isOwner={isOwner}
-            canReply={canReply}
-            onEdit={onEdit}
-            onReply={onReply}
-            setIsDialogOpen={setIsDialogOpen}
-          />
+          {canShowDropdown && (
+            <CommentDropdown
+              isOwner={isOwner}
+              canReply={canReply}
+              onEdit={onEdit}
+              onReply={onReply}
+              setIsDialogOpen={setIsDialogOpen}
+            />
+          )}
         </div>
       )}
     </div>

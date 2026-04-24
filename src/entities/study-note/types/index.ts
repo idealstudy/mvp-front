@@ -7,6 +7,7 @@ export type {
   NoteRequest,
   NoteListItem,
   NoteDetail,
+  ParentNoteDetail,
 } from './note.types';
 
 /* ─────────────────────────────────────────────────────

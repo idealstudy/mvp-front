@@ -50,10 +50,6 @@ export const ConsultationList = ({
       name: room.studyRoomName,
     })) ?? [];
 
-  const selectedStudyRoom = studyRoomOptions.find(
-    (studyRoom) => studyRoom.id === selectedStudyRoomId
-  );
-
   const studyConsultationDataLength = studyConsultationData.content.length;
 
   return (
@@ -66,13 +62,12 @@ export const ConsultationList = ({
       >
         <div className="flex w-full flex-col gap-8">
           <div className="flex items-center gap-2">
-            {studyConsultationData.totalElements > 1 ? (
-              <StudyRoomDropdown
-                studyRooms={studyRoomOptions}
-                selectedId={selectedStudyRoomId}
-                onSelect={setSelectedStudyRoomId}
-              />
-            ) : null}
+            <StudyRoomDropdown
+              studyRooms={studyRoomOptions}
+              selectedId={selectedStudyRoomId}
+              onSelect={setSelectedStudyRoomId}
+              parent
+            />
 
             <div className="font-body1-heading text-gray-12">
               {studyConsultationDataLength > 1 ? (
@@ -84,7 +79,7 @@ export const ConsultationList = ({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  {selectedStudyRoom?.name ?? '기록일지'} 스터디룸 기록일지
+                  스터디룸 기록일지
                   <span className="text-orange-7 font-headline1-normal">
                     {studyConsultationDataLength}
                   </span>
@@ -119,13 +114,11 @@ export const ConsultationList = ({
             </>
           )}
         </div>
-        {studyConsultationData.totalPages && (
-          <Pagination
-            page={page}
-            onPageChange={onPageChange}
-            totalPages={studyConsultationData.totalPages}
-          />
-        )}
+        <Pagination
+          page={page}
+          onPageChange={onPageChange}
+          totalPages={studyConsultationData.totalPages}
+        />
       </div>
       <ConsultationItemDetail
         open={selectedConsultationItem !== null}

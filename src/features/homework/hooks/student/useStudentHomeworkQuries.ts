@@ -17,11 +17,12 @@ export const useGetStudentHomeworkList = (
 // 학생 과제 상세 내용
 export const useStudentHomeworkDetail = (
   studyRoomId: number,
-  homeworkId: number
+  homeworkId: number,
+  enabled = true
 ) => {
   return useQuery({
     queryKey: StudentHomeworkQueryKey.detail(studyRoomId, homeworkId),
     queryFn: () => repository.student.getDetail(studyRoomId, homeworkId),
-    enabled: !!studyRoomId && !!homeworkId,
+    enabled: enabled && !!studyRoomId && !!homeworkId,
   });
 };

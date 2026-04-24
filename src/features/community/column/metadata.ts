@@ -11,12 +11,16 @@ export function generateColumnDetailMetadata(
   origin: string = SITE_CONFIG.url
 ): Metadata {
   const url = `${origin}/community/column/${column.id}`;
-  const ogImageUrl = `${url}/opengraph-image`;
+  const fallbackOgImageUrl = `${url}/opengraph-image`;
 
   const description = extractText(column.resolvedContent.content).slice(
     0,
     DESCRIPTION_MAX_LENGTH
   );
+
+  const ogImages = column.thumbnailUrl
+    ? [{ url: column.thumbnailUrl, width: 1200, height: 630 }]
+    : [{ url: fallbackOgImageUrl, width: 1200, height: 630, alt: '칼럼' }];
 
   return {
     title: `${column.title} | ${SITE_CONFIG.name}`,
@@ -30,13 +34,13 @@ export function generateColumnDetailMetadata(
       description,
       url,
       siteName: SITE_CONFIG.name,
-      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: '칼럼' }],
+      images: ogImages,
     },
     twitter: {
       card: 'summary_large_image',
       title: column.title,
       description,
-      images: [ogImageUrl],
+      images: [column.thumbnailUrl ?? fallbackOgImageUrl],
     },
     robots: { index: true, follow: true },
   };

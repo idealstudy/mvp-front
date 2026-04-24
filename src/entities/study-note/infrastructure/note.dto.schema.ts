@@ -12,10 +12,13 @@ export const NoteVisibilitySchema = z.enum([
   'PUBLIC',
 ]);
 
+const ResponseDateStringSchema = z.string();
+const NullableResponseDateStringSchema = ResponseDateStringSchema.nullish();
+
 export const StudentInfoSchema = z.object({
   studentId: z.number().int(),
   studentName: z.string(),
-  readAt: z.string().datetime(),
+  readAt: ResponseDateStringSchema.nullable(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -46,8 +49,8 @@ export const NoteListItemDTO = z.object({
   teacherName: z.string(),
   title: z.string(),
   visibility: NoteVisibilitySchema,
-  taughtAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  taughtAt: ResponseDateStringSchema,
+  updatedAt: ResponseDateStringSchema,
 });
 
 /* ─────────────────────────────────────────────────────
@@ -69,7 +72,8 @@ export const NoteListResponseDataDTO = z.object({
  * ────────────────────────────────────────────────────*/
 const ResolvedContentDTO = z.object({
   content: z.string(),
-  imgExpiresAt: z.string().datetime(),
+  imgExpiresAt: NullableResponseDateStringSchema,
+  expiresAt: NullableResponseDateStringSchema,
 });
 
 export const NoteDetailDTO = z.object({
@@ -80,9 +84,38 @@ export const NoteDetailDTO = z.object({
   title: z.string(),
   content: z.string(),
   resolvedContent: ResolvedContentDTO,
-  taughtAt: z.string().datetime(),
+  taughtAt: ResponseDateStringSchema,
   visibility: NoteVisibilitySchema,
   studentInfos: z.array(StudentInfoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 보호자 - 수업 노트 상세 내용 조회 응답 DTO
+ * GET /api/parent/student/{studentId}/teaching-notes/{teachingNoteId}
+ * ────────────────────────────────────────────────────*/
+const ParentResolvedContentDTO = z.object({
+  content: z.string(),
+  expiresAt: NullableResponseDateStringSchema,
+  imgExpiresAt: NullableResponseDateStringSchema,
+});
+
+const ParentStudentInfosDto = z.object({
+  studentId: z.number().int(),
+  studentName: z.string(),
+  readAt: ResponseDateStringSchema.nullable(),
+});
+
+export const ParentNoteDetailDTO = z.object({
+  id: z.number().int(),
+  studyRoomId: z.number().int(),
+  studyRoomName: z.string(),
+  groupId: z.number().int().nullable(),
+  title: z.string(),
+  content: z.string(),
+  resolvedContent: ParentResolvedContentDTO,
+  taughtAt: ResponseDateStringSchema,
+  visibility: NoteVisibilitySchema,
+  studentInfos: z.array(ParentStudentInfosDto),
 });
 
 export const dto = {
@@ -92,4 +125,5 @@ export const dto = {
   listData: NoteListResponseDataDTO,
   visibility: NoteVisibilitySchema,
   studentInfo: StudentInfoSchema,
+  parentDetail: ParentNoteDetailDTO,
 };

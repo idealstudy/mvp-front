@@ -52,10 +52,10 @@ export const ConsultationSection = ({
   const headerAction =
     studyRoomOptions.length === 0 ? null : (
       <StudyRoomDropdown
-        parent
         studyRooms={studyRoomOptions}
         selectedId={selectedStudyRoomId}
         onSelect={setSelectedStudyRoomId}
+        parent
       />
     );
 
@@ -100,7 +100,7 @@ export const ConsultationSection = ({
           studentName={selectedStudentName}
           title="스터디룸 기록일지"
           headerAction={headerAction}
-          description="선생님이 직접 작성한 기록일지예요"
+          description="선생님이 직접 작성한 기록일지예요."
           count={studyConsultationDataLength}
           isMoreHref={
             selectedStudentId !== null && selectedStudyRoomId !== null
@@ -108,7 +108,7 @@ export const ConsultationSection = ({
               : '/dashboard/study-consultation'
           }
           isMore={studyConsultationDataLength === 0 ? false : true}
-          isAll
+          isMoreDescription="전체보기"
         >
           {content}
         </DashboardSection>

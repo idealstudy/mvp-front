@@ -7,6 +7,7 @@ import {
   deleteQnA,
   deleteStudentQnAMessage,
   deleteTeacherQnAMessage,
+  getParentQnADetail,
   getStudentQnADetail,
   getStudentQnAList,
   getTeacherQnADetail,
@@ -274,5 +275,32 @@ export const useUpdateQnAStatus = (role: Role | undefined) => {
         refetchType: 'active',
       });
     },
+  });
+};
+
+export const useQnAParentDetailQuery = ({
+  enabled = true,
+  ...args
+}: {
+  studentId: number;
+  studyRoomId: number;
+  contextId: number;
+  enabled?: boolean;
+}) => {
+  return useQuery({
+    queryKey: ['qnaParentDetail', args],
+    queryFn: () => getParentQnADetail(args),
+    enabled:
+      enabled &&
+      Number.isInteger(args.studentId) &&
+      args.studentId > 0 &&
+      Number.isInteger(args.studyRoomId) &&
+      args.studyRoomId > 0 &&
+      Number.isInteger(args.contextId) &&
+      args.contextId > 0,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
   });
 };

@@ -35,6 +35,7 @@ export const OnboardingStep = ({
         grouped ? 'border-orange-6 tablet:rounded-none tablet:border-0' : '',
         className
       )}
+      data-testid={`onboarding-${label}-${variant}`}
     >
       <span
         data-icon-wrapper
