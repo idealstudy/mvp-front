@@ -25,7 +25,10 @@ export const StudentNoteTimerProgressSchema = z
     regDate: z.string().nullable().optional(),
     modDate: z.string().nullable().optional(),
     restartTime: z.string().nullable().optional(),
-    resolvedContent: ResolvedContentSchema,
+    resolvedContent: z.object({
+      content: z.string(),
+      expiresAt: z.string().nullable(),
+    }),
     ongoing: z.boolean(),
     contentPreview: z.string().nullable().optional(),
   })

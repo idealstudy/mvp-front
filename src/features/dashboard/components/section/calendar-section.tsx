@@ -9,8 +9,16 @@ import { StudentNoteMonthlyDailyItemDTO } from '@/entities/student-study-note';
 import {
   useStudentNoteDelete,
   useStudentNoteDetail,
+  useStudentNoteUpdate,
   useStudyNoteMonthly,
 } from '@/features/student-study-note/hooks';
+import {
+  TextEditor,
+  TextViewer,
+  mergeResolvedContentWithMediaIds,
+  parseEditorContent,
+  prepareContentForSave,
+} from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import {
@@ -21,6 +29,7 @@ import {
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
+import { JSONContent } from '@tiptap/react';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { TimerModal } from '../timer';
@@ -81,10 +90,29 @@ const MonthCalendar = ({
   todayMonth: number;
 }) => {
   const router = useRouter();
-  const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<{
+    id: number;
+    studyTime: number;
+  } | null>(null);
+  const [timerDeleteOpen, setTimerDeleteOpen] = useState(false);
+  const [noTimerEditOpen, setNoTimerEditOpen] = useState(false);
+  const [noTimerDeleteOpen, setNoTimerDeleteOpen] = useState(false);
+  const [editContent, setEditContent] = useState<JSONContent | null>(null);
   const { mutate: deleteNote } = useStudentNoteDelete();
-  const { data: selectedNote } = useStudentNoteDetail(selectedNoteId ?? 0);
+  const { mutate: updateNote, isPending: isUpdating } = useStudentNoteUpdate();
+  const { data: selectedNote } = useStudentNoteDetail(selectedEntry?.id ?? 0);
+
+  const selectedNoteId = selectedEntry?.id ?? null;
+  const isNoTimerNote = selectedEntry !== null && selectedEntry.studyTime === 0;
+  const isTimerNote = selectedEntry !== null && selectedEntry.studyTime > 0;
+
+  const closeAll = () => {
+    setSelectedEntry(null);
+    setTimerDeleteOpen(false);
+    setNoTimerEditOpen(false);
+    setNoTimerDeleteOpen(false);
+    setEditContent(null);
+  };
 
   const daysInMonth = new Date(year, month, 0).getDate();
   const daysInPrevMonth = new Date(year, month - 1, 0).getDate(); // 전 달
@@ -186,7 +214,10 @@ const MonthCalendar = ({
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedNoteId(note.id);
+                              setSelectedEntry({
+                                id: note.id,
+                                studyTime: note.studyTime,
+                              });
                             }}
                             className={cn(
                               'font-label-normal w-fit cursor-pointer rounded-[6px] px-1.5 py-[3px] hover:opacity-80',
@@ -206,11 +237,175 @@ const MonthCalendar = ({
         ))}
       </div>
 
-      {/* Note detail dialog */}
+      {/* 타이머 없는 학습노트 상세 모달 */}
       <Dialog
-        isOpen={selectedNoteId !== null && !deleteConfirmOpen}
+        isOpen={isNoTimerNote && !noTimerEditOpen && !noTimerDeleteOpen}
         onOpenChange={(open) => {
-          if (!open) setSelectedNoteId(null);
+          if (!open) closeAll();
+        }}
+      >
+        <Dialog.Content className="tablet:max-w-[640px] gap-4">
+          <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
+            <X size={20} />
+          </Dialog.Close>
+          <div className="flex flex-col gap-1">
+            <Dialog.Title className="font-headline1-heading text-text-main pr-8">
+              {selectedNote?.title ?? ''}
+            </Dialog.Title>
+            <span className="font-body2-normal text-text-sub">
+              {selectedNote?.regDate
+                ? `${selectedNote.regDate.slice(0, 10).replace(/-/g, '.')} 학습노트`
+                : '학습노트'}
+            </span>
+          </div>
+          <div className="border-gray-3 rounded-lg border">
+            <TextViewer
+              className="max-h-[360px] min-h-[240px] overflow-y-auto px-4 py-4"
+              value={parseEditorContent(
+                selectedNote?.resolvedContent?.content ||
+                  selectedNote?.content ||
+                  ''
+              )}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setNoTimerDeleteOpen(true)}
+            >
+              삭제
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => {
+                const rawContent = parseEditorContent(
+                  selectedNote?.content || ''
+                );
+                const parsed = selectedNote?.resolvedContent?.content
+                  ? mergeResolvedContentWithMediaIds(
+                      rawContent,
+                      parseEditorContent(selectedNote.resolvedContent.content)
+                    )
+                  : rawContent;
+                setEditContent(parsed as JSONContent);
+                setNoTimerEditOpen(true);
+              }}
+            >
+              수정
+            </Button>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* 타이머 없는 학습노트 수정 모달 */}
+      <Dialog
+        isOpen={isNoTimerNote && noTimerEditOpen}
+        onOpenChange={(open) => {
+          if (!open) closeAll();
+        }}
+      >
+        <Dialog.Content className="tablet:max-w-[640px] gap-4">
+          <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
+            <X size={20} />
+          </Dialog.Close>
+          <div className="flex flex-col gap-1">
+            <Dialog.Title className="font-headline1-heading text-text-main pr-8">
+              {selectedNote?.title ?? ''}
+            </Dialog.Title>
+            <span className="font-body2-normal text-text-sub">
+              {selectedNote?.regDate
+                ? `${selectedNote.regDate.slice(0, 10).replace(/-/g, '.')} 학습노트`
+                : '학습노트'}
+            </span>
+          </div>
+          <TextEditor
+            value={editContent!}
+            onChange={(v) => setEditContent(v)}
+            minHeight="240px"
+            maxHeight="360px"
+          />
+          <div className="flex justify-end">
+            <Button
+              className="px-10"
+              disabled={isUpdating}
+              onClick={() => {
+                if (!selectedNoteId || !editContent) return;
+                const { contentString, mediaIds } =
+                  prepareContentForSave(editContent);
+                updateNote(
+                  {
+                    studyNoteId: selectedNoteId,
+                    body: {
+                      title: selectedNote?.title ?? '',
+                      subject: selectedNote?.subject ?? '',
+                      content: contentString,
+                      mediaIds,
+                      finishTimestamp: new Date().toISOString(),
+                    },
+                  },
+                  { onSuccess: () => setNoTimerEditOpen(false) }
+                );
+              }}
+            >
+              수정 완료
+            </Button>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* 타이머 없는 학습노트 삭제 확인 모달 */}
+      <Dialog
+        isOpen={isNoTimerNote && noTimerDeleteOpen}
+        onOpenChange={(open) => {
+          if (!open) setNoTimerDeleteOpen(false);
+        }}
+      >
+        <Dialog.Content className="tablet:max-w-[400px] gap-6">
+          <Dialog.Close className="absolute top-6 right-6 cursor-pointer">
+            <X size={20} />
+          </Dialog.Close>
+          <div className="flex flex-col items-center gap-4">
+            <div className="bg-orange-2 flex size-12 items-center justify-center rounded-full">
+              <span className="text-orange-9 font-headline1-heading">!</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Dialog.Title className="font-headline2-heading text-text-main">
+                학습노트를 삭제하시겠습니까?
+              </Dialog.Title>
+              <p className="font-body2-normal text-text-sub">
+                삭제된 학습노트는 복구할 수 없습니다.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setNoTimerDeleteOpen(false)}
+            >
+              취소
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={() => {
+                if (!selectedNoteId) return;
+                deleteNote(selectedNoteId, {
+                  onSuccess: () => closeAll(),
+                });
+              }}
+            >
+              확인
+            </Button>
+          </div>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* 타이머 있는 학습노트 상세 모달 */}
+      <Dialog
+        isOpen={isTimerNote && !timerDeleteOpen}
+        onOpenChange={(open) => {
+          if (!open) closeAll();
         }}
       >
         <Dialog.Content className="tablet:max-w-[400px] gap-6">
@@ -236,7 +431,7 @@ const MonthCalendar = ({
             <Button
               variant="secondary"
               className="flex-1"
-              onClick={() => setDeleteConfirmOpen(true)}
+              onClick={() => setTimerDeleteOpen(true)}
             >
               학습 내용 삭제하기
             </Button>
@@ -253,11 +448,11 @@ const MonthCalendar = ({
         </Dialog.Content>
       </Dialog>
 
-      {/* Delete confirmation dialog */}
+      {/* 타이머 있는 학습노트 삭제 확인 모달 */}
       <Dialog
-        isOpen={deleteConfirmOpen}
+        isOpen={timerDeleteOpen}
         onOpenChange={(open) => {
-          if (!open) setDeleteConfirmOpen(false);
+          if (!open) setTimerDeleteOpen(false);
         }}
       >
         <Dialog.Content className="tablet:max-w-[400px] gap-6">
@@ -281,7 +476,7 @@ const MonthCalendar = ({
             <Button
               variant="secondary"
               className="flex-1"
-              onClick={() => setDeleteConfirmOpen(false)}
+              onClick={() => setTimerDeleteOpen(false)}
             >
               취소
             </Button>
@@ -290,10 +485,7 @@ const MonthCalendar = ({
               onClick={() => {
                 if (!selectedNoteId) return;
                 deleteNote(selectedNoteId, {
-                  onSuccess: () => {
-                    setDeleteConfirmOpen(false);
-                    setSelectedNoteId(null);
-                  },
+                  onSuccess: () => closeAll(),
                 });
               }}
             >

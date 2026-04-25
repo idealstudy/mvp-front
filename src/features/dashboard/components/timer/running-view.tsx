@@ -34,7 +34,7 @@ export const RunningView = ({
   onFinish,
   onClose,
 }: RunningViewProps) => (
-  <div className="flex flex-col gap-6">
+  <div className="flex min-h-0 flex-1 flex-col gap-6">
     <div className="flex justify-end">
       <button
         type="button"
@@ -90,8 +90,8 @@ export const RunningView = ({
       </button>
     </div>
 
-    <div className="border-line-line1 rounded-lg border">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div className="border-line-line1 flex min-h-0 flex-1 flex-col rounded-lg border">
+      <div className="flex shrink-0 items-center justify-between px-4 py-3">
         <span className="font-headline2-heading">학습노트</span>
         <div className="flex items-center gap-2">
           <Button
@@ -116,8 +116,7 @@ export const RunningView = ({
             value={noteContent}
             onChange={onNoteContentChange}
             placeholder="생각나는 내용을 자유롭게 기록해보세요"
-            minHeight="200px"
-            maxHeight="320px"
+            maxHeight="280px"
           />
         </div>
       )}

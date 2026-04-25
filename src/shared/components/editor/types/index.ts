@@ -54,6 +54,8 @@ export type NotionEditorProps = TextEditorProps & {
   onError?: (message: string) => void;
   /** 접근성 레이블 */
   ariaLabel?: string;
+  /** 부모 flex 컨테이너를 채우고 editor 내부에서 스크롤 */
+  fillHeight?: boolean;
 };
 
 // ============================================================================

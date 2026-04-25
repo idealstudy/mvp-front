@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -13,10 +13,8 @@ import {
   useStudyNoteTimerStart,
   useStudyNoteTimerTempSave,
 } from '@/features/dashboard/hooks';
-import { useStudentNoteDetail } from '@/features/student-study-note/hooks';
 import {
   initialTextEditorValue,
-  mergeResolvedContentWithMediaIds,
   parseEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
@@ -52,7 +50,6 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   );
   const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const contentInitializedRef = useRef(false);
 
   const {
     data: progressData,
@@ -60,16 +57,11 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     refetch,
   } = useStudyNoteTimerProgress();
 
-  const { data: noteDetail } = useStudentNoteDetail(studyNoteId ?? 0);
+  const progressDataRef = useRef(progressData);
+  progressDataRef.current = progressData;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    refetch().then((result) => {
-      const data = result.data;
-      if (!data?.ongoing) {
-        setStep('setup');
-        return;
-      }
+  const applyProgressData = useCallback(
+    (data: NonNullable<typeof progressData>) => {
       const running = data.status === 'RUNNING';
       let elapsedSec = data.studyTime ?? 0;
       if (running && data.restartTime) {
@@ -83,22 +75,30 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       setSelectedSubject(data.subject ?? null);
       setElapsed(elapsedSec);
       setIsRunning(running);
+      const content = data.resolvedContent?.content
+        ? parseEditorContent(data.resolvedContent.content)
+        : parseEditorContent(data.content ?? '');
+      setNoteContent(content);
       setStep('running');
-    });
-  }, [isOpen, refetch]);
+    },
+    []
+  );
 
   useEffect(() => {
-    if (!noteDetail?.content || contentInitializedRef.current) return;
-    const rawContent = parseEditorContent(noteDetail.content);
-    const content = noteDetail.resolvedContent?.content
-      ? mergeResolvedContentWithMediaIds(
-          rawContent,
-          parseEditorContent(noteDetail.resolvedContent.content)
-        )
-      : rawContent;
-    setNoteContent(content);
-    contentInitializedRef.current = true;
-  }, [noteDetail]);
+    if (!isOpen) return;
+    // 캐시에 ongoing 데이터가 있으면 즉시 running으로 전환 (refetch 응답 전 공백 방지)
+    if (progressDataRef.current?.ongoing) {
+      applyProgressData(progressDataRef.current);
+    }
+    refetch().then((result) => {
+      const data = result.data;
+      if (!data?.ongoing) {
+        setStep('setup');
+        return;
+      }
+      applyProgressData(data);
+    });
+  }, [isOpen, refetch, applyProgressData]);
 
   const { data: subjects = [] } = useSubjectList();
   const subjectMap = useMemo(
@@ -136,7 +136,6 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     setNoteOpen(true);
     setNoteContent(initialTextEditorValue);
     setStudyNoteId(null);
-    contentInitializedRef.current = false;
     onClose();
   };
 
