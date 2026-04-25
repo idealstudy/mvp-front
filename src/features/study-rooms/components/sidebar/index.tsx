@@ -20,6 +20,7 @@ import {
 } from '@/shared/components/dialog/model/dialog-reducer';
 import { SidebarButton } from '@/shared/components/sidebar';
 import { Toggle } from '@/shared/components/ui';
+import { StudyroomStatusToggle } from '@/shared/components/ui';
 import { showBottomToast } from '@/shared/components/ui/bottom-toast';
 import { useRole } from '@/shared/hooks/use-role';
 import { Info } from 'lucide-react';
@@ -55,6 +56,9 @@ export const StudyroomSidebar = ({
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
+  const [studyroomStatus, setStudyroomStatus] = useState<
+    'RECRUITING' | 'OPERATING' | null
+  >(null);
   const { role } = useRole();
   const { mutate: deleteStudyRoom } = useDeleteStudyRoom();
   const { mutate: updateRoomName } = useUpdateStudyRoomTitle();
@@ -179,6 +183,15 @@ export const StudyroomSidebar = ({
           numberOfQuestion={studyRoomDetail?.numberOfQuestion}
         />
         <StudyIntro description={studyRoomDetail?.description} />
+
+        {/* 운영 상태 토글 - 선생님만 노출 */}
+        {canManage && (
+          <StudyroomStatusToggle
+            value={studyroomStatus}
+            onChange={setStudyroomStatus}
+          />
+        )}
+
         {/* 학생 초대 버튼 - 선생님만 노출 */}
         {canManage && (
           <div className="flex flex-col gap-4">

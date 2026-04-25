@@ -8,6 +8,7 @@ import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
 import { Button } from '@/shared/components/ui';
+import { StudyroomStatusToggle } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
@@ -35,6 +36,9 @@ export const StudyroomPreviewSidebar = ({
 
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [studyroomStatus, setStudyroomStatus] = useState<
+    'RECRUITING' | 'OPERATING' | null
+  >(null);
   const member = useMemberStore((s) => s.member);
 
   const isMyStudyRoom =
@@ -123,6 +127,14 @@ export const StudyroomPreviewSidebar = ({
         numberOfStudents={data.numberOfStudents}
         numberOfQuestion={data.numberOfQuestions}
       />
+
+      {/* 운영 상태 토글 - 본인 스터디룸만 노출 */}
+      {isMyStudyRoom && (
+        <StudyroomStatusToggle
+          value={studyroomStatus}
+          onChange={setStudyroomStatus}
+        />
+      )}
 
       <div className="flex flex-col gap-2">
         {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
