@@ -91,6 +91,7 @@ const StudyRoomPreviewSideDataSchema = z.object({
   numberOfTeachingNotes: z.number().int(),
   numberOfStudents: z.number().int(),
   numberOfQuestions: z.number().int(),
+  thumbnailUrl: z.string().nullish(),
 });
 
 /* ─────────────────────────────────────────────────────

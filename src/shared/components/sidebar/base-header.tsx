@@ -19,6 +19,8 @@ type BaseHeaderProps = {
   wrapperClassName?: string;
   imageWrapperClassName?: string;
   rightSlot?: ReactNode;
+  thumbnailUrl?: string | null;
+  onThumbnailClick?: () => void;
 };
 
 export const BaseHeader = ({
@@ -32,6 +34,8 @@ export const BaseHeader = ({
   wrapperClassName = 'flex flex-col gap-6',
   imageWrapperClassName = 'bg-orange-scale-orange-1 relative h-[200px] w-full overflow-hidden rounded-[12px]',
   rightSlot,
+  thumbnailUrl,
+  onThumbnailClick,
 }: BaseHeaderProps) => {
   const router = useRouter();
   const teacherId = useMemberStore((s) => s.member?.id);
@@ -58,7 +62,13 @@ export const BaseHeader = ({
           </p>
         )}
       </div>
-      <div className={imageWrapperClassName}>
+      <div
+        className={cn(
+          imageWrapperClassName,
+          onThumbnailClick && 'cursor-pointer'
+        )}
+        onClick={onThumbnailClick}
+      >
         {!isPreviewPage ? (
           <button
             type="button"
@@ -76,11 +86,12 @@ export const BaseHeader = ({
             프리뷰
           </button>
         ) : null}
+
         <Image
-          src="/studyroom/profile.svg"
+          src={thumbnailUrl || '/studyroom/profile.svg'}
           alt="study-room-profile"
           fill
-          className="object-contain"
+          className={thumbnailUrl ? 'object-cover' : 'object-contain'}
         />
       </div>
     </div>

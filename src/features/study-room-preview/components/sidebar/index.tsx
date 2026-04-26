@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateThumbnail } from '@/features/study-room-preview/hooks/use-update-thumbnail';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
@@ -43,6 +44,22 @@ export const StudyroomPreviewSidebar = ({
 
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
+
+  // 파일 input ref (썸네일)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateThumbnailMutation = useUpdateThumbnail(teacherId, studyRoomId);
+
+  const handleThumbnailClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    updateThumbnailMutation.mutate(file);
+    e.target.value = '';
+  };
 
   const onInquiryClick = () => {
     if (loading) return;
@@ -121,7 +138,19 @@ export const StudyroomPreviewSidebar = ({
 
   return (
     <>
-      <StudyroomPreviewSidebarHeader studyRoomName={data.name} />
+      <StudyroomPreviewSidebarHeader
+        studyRoomName={data.name}
+        thumbnailUrl={data.thumbnailUrl}
+        onThumbnailClick={isMyStudyRoom ? handleThumbnailClick : undefined}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <StudyStats
         numberOfTeachingNote={data.numberOfTeachingNotes}
         numberOfStudents={data.numberOfStudents}

@@ -27,6 +27,7 @@ export const RoomSchema = z.object({
   name: z.string(),
   description: z.string(),
   visibility: RoomVisibilitySchema,
+  thumbnailUrl: z.string().nullish(),
 });
 
 export const base = {

@@ -114,6 +114,13 @@ const InviteFailItemSchema = z.object({
 });
 
 /* ─────────────────────────────────────────────────────
+ * 선생님 - 스터디룸 프리뷰 썸네일 이미지 변경
+ * ────────────────────────────────────────────────────*/
+const ThumbnailResponseSchema = z.object({
+  id: z.number().int(),
+});
+
+/* ─────────────────────────────────────────────────────
  * 학생 - 스터디룸 목록
  * ────────────────────────────────────────────────────*/
 const StudentRoomListItemSchema = z.object({
@@ -167,6 +174,7 @@ const teacher = {
   inviteSuccess: InviteSuccessItemSchema,
   inviteFail: InviteFailItemSchema,
   inviteToken: InviteTokenDataSchema,
+  thumbnailResponse: ThumbnailResponseSchema,
 };
 
 const student = {

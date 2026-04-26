@@ -61,6 +61,17 @@ export const studyRoomRepository = {
       );
       return unwrapEnvelope(response, dto.teacher.inviteToken);
     },
+
+    updateThumbnail: async (
+      studyRoomId: number,
+      thumbnailMediaId: string | null
+    ) => {
+      const response = await api.private.patch(
+        `/teacher/study-rooms/${studyRoomId}/thumbnail`,
+        { thumbnailMediaId }
+      );
+      return unwrapEnvelope(response, dto.teacher.thumbnailResponse);
+    },
   },
 
   /* ─────────────────────────────────────────────────────
