@@ -25,7 +25,7 @@ export interface PublicStudyRoom {
   teacherId: number;
   teacherName: string;
   teacherProfileImageUrl?: string;
-  studyRoomImageUrl?: string; // 스터디룸 이미지
+  thumbnailUrl?: string | null; // 스터디룸 이미지
   subjectType?: string;
   grade?: string;
   studentCount?: number;

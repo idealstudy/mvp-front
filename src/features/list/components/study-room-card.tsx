@@ -41,7 +41,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
         {/* 상단 영역 */}
         <div className="bg-orange-1 relative h-[150px] overflow-hidden">
           <Image
-            src="/studyroom/profile.svg"
+            src={studyRoom.thumbnailUrl || '/studyroom/profile.svg'}
             width={440}
             height={150}
             alt="스터디룸 프리뷰 기본 이미지"

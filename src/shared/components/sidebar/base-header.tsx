@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '@/shared/lib/utils';
 import { useMemberStore } from '@/store';
+import { SwitchCameraIcon } from 'lucide-react';
 
 type BaseHeaderProps = {
   studyRoomId?: number;
@@ -93,6 +94,15 @@ export const BaseHeader = ({
           fill
           className={thumbnailUrl ? 'object-cover' : 'object-contain'}
         />
+
+        {onThumbnailClick && (
+          <div className="absolute right-2 bottom-2 z-1 flex h-12 w-12 items-center justify-center rounded-full bg-white/70">
+            <SwitchCameraIcon
+              size={24}
+              className="text-gray-12"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
