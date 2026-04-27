@@ -1,5 +1,11 @@
 export const parentKeys = {
   all: ['parent'] as const,
+
+  mypage: {
+    all: () => [...parentKeys.all, 'mypage'] as const,
+    basicInfo: () => [...parentKeys.mypage.all(), 'basicInfo'] as const,
+  },
+
   dashboard: {
     all: () => [...parentKeys.all, 'dashboard'] as const,
     report: () => [...parentKeys.dashboard.all(), 'report'] as const,

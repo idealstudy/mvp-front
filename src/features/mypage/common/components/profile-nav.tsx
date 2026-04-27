@@ -17,7 +17,10 @@ const NAV_ITEMS: Partial<Record<string, NavItem[]>> = {
     { key: 'profile', label: '내 프로필 수정' },
     { key: 'inquiries', label: '내 문의 목록' },
   ],
-  ROLE_PARENT: [{ key: 'inquiries', label: '내 문의 목록' }],
+  ROLE_PARENT: [
+    { key: 'profile', label: '내 프로필 수정' },
+    { key: 'inquiries', label: '내 문의 목록' },
+  ],
 };
 
 export default function ProfileNav({ role }: { role: string }) {

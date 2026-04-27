@@ -24,6 +24,8 @@ import {
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useUpdateParentBasicInfo } from '../hooks/parent/use-basic-info';
+
 interface EditProfileCardProps {
   basicInfo: UserBasicInfo;
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
@@ -38,6 +40,7 @@ export default function EditProfileCard({
   // TODO Parent API 추가
   const updateTeacherBasicInfoMutation = useUpdateTeacherBasicInfo();
   const updateStudentBasicInfoMutation = useUpdateStudentBasicInfo();
+  const updateParentBasicInfoMutation = useUpdateParentBasicInfo();
 
   const {
     register,
@@ -93,6 +96,29 @@ export default function EditProfileCard({
           name: data.name,
           isProfilePublic: data.isProfilePublic,
           learningGoal: data.learningGoal ?? '',
+        },
+        {
+          onSuccess: () => {
+            setIsEditMode(false);
+          },
+          onError: (error) => {
+            handleApiError(error, classifyMypageError, {
+              onAuth: () => {
+                // MEMBER_NOT_EXIST
+                setTimeout(() => {
+                  router.replace('/login');
+                }, 1500);
+              },
+              onUnknown: () => {},
+            });
+          },
+        }
+      );
+    } else if (basicInfo.role === 'ROLE_PARENT') {
+      updateParentBasicInfoMutation.mutate(
+        {
+          name: data.name,
+          isProfilePublic: data.isProfilePublic,
         },
         {
           onSuccess: () => {

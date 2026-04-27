@@ -13,14 +13,14 @@ import { useMemberStore } from '@/store';
 const VALID_TABS: Partial<Record<string, string[]>> = {
   ROLE_TEACHER: ['profile', 'columns', 'received-inquiries'],
   ROLE_STUDENT: ['profile', 'inquiries'],
-  ROLE_PARENT: ['inquiries'],
+  ROLE_PARENT: ['profile', 'inquiries'],
 };
 
 // 기본 탭
 const DEFAULT_TAB: Partial<Record<string, string>> = {
   ROLE_TEACHER: 'profile',
   ROLE_STUDENT: 'profile',
-  ROLE_PARENT: 'inquiries',
+  ROLE_PARENT: 'profile',
 };
 
 export default function MypageSidebar() {
@@ -43,12 +43,9 @@ export default function MypageSidebar() {
 
   return (
     <ColumnLayout.Left>
-      {/* TODO 보호자 기본 정보 조회 필요 */}
-      {role !== 'ROLE_PARENT' && (
-        <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
-          <EditableProfileCard role={role} />
-        </div>
-      )}
+      <div className="border-line-line1 flex flex-col gap-9 rounded-xl border bg-white p-8">
+        <EditableProfileCard role={role} />
+      </div>
 
       <div className="border-line-line1 mt-2 space-y-2 rounded-xl border bg-white p-8">
         <h4 className="font-body1-heading">목록</h4>

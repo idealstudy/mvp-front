@@ -1,33 +1,33 @@
 import { memberKeys } from '@/entities/member';
 import {
-  UpdateStudentBasicInfoPayload,
+  UpdateParentBasicInfoPayload,
+  parentKeys,
   repository,
-  studentKeys,
-} from '@/entities/student';
+} from '@/entities/parent';
 import { useMemberStore } from '@/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
- * [GET] 학생 기본 정보 조회
+ * [GET] 부모님 기본 정보 조회
  */
-export const useStudentBasicInfo = (options?: { enabled?: boolean }) =>
+export const useParentBasicInfo = (options?: { enabled?: boolean }) =>
   useQuery({
-    queryKey: studentKeys.mypage.basicInfo(),
-    queryFn: () => repository.mypage.basicInfo.getBasicInfo(),
+    queryKey: parentKeys.mypage.basicInfo(),
+    queryFn: () => repository.mypage.getBasicInfo(),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });
 
 /**
- * [PATCH] 학생 기본 정보 변경
+ * [PATCH] 부모님 기본 정보 변경
  */
-export const useUpdateStudentBasicInfo = () => {
+export const useUpdateParentBasicInfo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (basicInfo: UpdateStudentBasicInfoPayload) =>
-      repository.mypage.basicInfo.updateBasicInfo(basicInfo),
+    mutationFn: (basicInfo: UpdateParentBasicInfoPayload) =>
+      repository.mypage.updateBasicInfo(basicInfo),
     onSuccess: (_, basicInfo) => {
       const { member, setMember } = useMemberStore.getState();
 
@@ -38,7 +38,7 @@ export const useUpdateStudentBasicInfo = () => {
         });
       }
       queryClient.invalidateQueries({
-        queryKey: studentKeys.mypage.basicInfo(),
+        queryKey: parentKeys.mypage.basicInfo(),
       });
       queryClient.invalidateQueries({
         queryKey: memberKeys.info(),

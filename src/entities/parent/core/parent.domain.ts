@@ -1,17 +1,19 @@
-import { domain } from './core';
-import { dto } from './infrastructure';
+import { z } from 'zod';
 
 /* ─────────────────────────────────────────────────────
- * API
+ * 부모님 기본 정보 Domain 스키마
  * ────────────────────────────────────────────────────*/
-export * from './infrastructure';
-export * from './core';
-export * from './types';
+const BasicInfoDomainSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  isProfilePublic: z.boolean(),
+  role: z.literal('ROLE_PARENT'),
+  profilePublicKorean: z.enum(['공개', '비공개']),
+});
 
 /* ─────────────────────────────────────────────────────
- * 스키마
+ * 내보내기
  * ────────────────────────────────────────────────────*/
-export const parent = {
-  domain,
-  dto,
+export const domain = {
+  basicInfo: BasicInfoDomainSchema,
 };

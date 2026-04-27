@@ -51,21 +51,14 @@ const ConnectListItemSchema = z.object({
   opponent: ConnectOpponentSchema,
 });
 
-const ConnectListPageSchema = z
-  .object({
-    contentList: z.array(ConnectListItemSchema).optional(),
-    connectionList: z.array(ConnectListItemSchema).optional(),
-    page: z.number().int(),
-    size: z.number().int(),
-    totalPages: z.number().int(),
-    totalElements: z.number().int(),
-    last: z.boolean(),
-  })
-  .transform(({ connectionList, contentList, ...page }) => ({
-    ...page,
-    contentList: contentList ?? connectionList ?? [],
-  }));
-
+const ConnectListPageSchema = z.object({
+  connectionList: z.array(ConnectListItemSchema),
+  page: z.number().int(),
+  size: z.number().int(),
+  totalPages: z.number().int(),
+  totalElements: z.number().int(),
+  last: z.boolean(),
+});
 export const payload = {
   listQuery: ConnectListQuerySchema,
   searchQuery: ConnectSearchQuerySchema,

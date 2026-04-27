@@ -34,12 +34,12 @@ export const DashboardStudent = () => {
   const { data: receivedData } = useReceivedConnectionList(query);
   const receivedParentRequest = useMemo(
     () =>
-      receivedData?.contentList.find(
+      receivedData?.connectionList.find(
         (connection) =>
           connection.state === 'PENDING' &&
           connection.recipientEmail === memberEmail
       ) ?? null,
-    [memberEmail, receivedData?.contentList]
+    [memberEmail, receivedData?.connectionList]
   );
 
   useEffect(() => {

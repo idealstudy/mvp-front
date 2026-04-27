@@ -11,6 +11,8 @@ import { useTeacherReport } from '@/features/mypage/common/hooks/teacher/use-rep
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import { Pen } from 'lucide-react';
 
+import { useParentBasicInfo } from '../hooks/parent/use-basic-info';
+
 export default function EditableProfileCard({ role }: { role: Role }) {
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -22,22 +24,35 @@ export default function EditableProfileCard({ role }: { role: Role }) {
   const studentBasicInfoQuery = useStudentBasicInfo({
     enabled: role === 'ROLE_STUDENT',
   });
+  const parentBasicInfoQuery = useParentBasicInfo({
+    enabled: role === 'ROLE_PARENT',
+  });
 
   const teacherReportQuery = useTeacherReport({
     enabled: role === 'ROLE_TEACHER',
   });
 
-  const basicInfoQuery =
-    role === 'ROLE_TEACHER' ? teacherBasicInfoQuery : studentBasicInfoQuery;
+  let basicInfoQuery;
+  switch (role) {
+    case 'ROLE_TEACHER':
+      basicInfoQuery = teacherBasicInfoQuery;
+      break;
+    case 'ROLE_STUDENT':
+      basicInfoQuery = studentBasicInfoQuery;
+      break;
+    case 'ROLE_PARENT':
+      basicInfoQuery = parentBasicInfoQuery;
+      break;
+  }
 
   if (
-    basicInfoQuery.isLoading ||
+    basicInfoQuery?.isLoading ||
     (role === 'ROLE_TEACHER' && teacherReportQuery.isLoading)
   ) {
     return <div className="text-center">로딩중...</div>;
   }
 
-  if (!basicInfoQuery.data || !memberId) {
+  if (!basicInfoQuery?.data || !memberId) {
     return <div className="text-center">프로필 정보를 불러올 수 없습니다.</div>;
   }
 

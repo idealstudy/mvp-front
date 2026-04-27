@@ -23,17 +23,19 @@ export const ParentLinkSection = ({
     sort: 'regDate,DESC',
   });
 
-  const pendingConnection = sentConnectionData?.contentList.find(
+  const pendingConnection = sentConnectionData?.connectionList.find(
     (connection) => connection.state === 'PENDING' && connection.recipientEmail
   );
   const pendingStudentEmail = pendingConnection?.recipientEmail;
   const pendingStudentEmails =
-    sentConnectionData?.contentList
+    sentConnectionData?.connectionList
       .filter(
         (connection) =>
           connection.state === 'PENDING' && connection.recipientEmail
       )
       .map((connection) => connection.recipientEmail) ?? [];
+
+  const hasPendingConnections = pendingStudentEmails.length > 0;
 
   return (
     <div className={cn('bg-orange-scale-orange-1 rounded-lg p-4')}>
@@ -49,8 +51,8 @@ export const ParentLinkSection = ({
             />
             <div className="flex flex-col">
               <p className="font-body2-heading text-gray-12">
-                {pendingStudentEmail
-                  ? `${pendingStudentEmail} 학생과 연결중...`
+                {hasPendingConnections
+                  ? `${pendingStudentEmails.join(', ')} 학생과 연결중...`
                   : '학생을 연결해볼까요?'}
               </p>
               <p className="font-label-normal text-gray-11">
@@ -66,7 +68,7 @@ export const ParentLinkSection = ({
             }}
             className="font-label-heading h-[35px] w-[121px]"
           >
-            {pendingConnection ? '학생 추가하기' : '학생 연결하기'}
+            {hasPendingConnections ? '학생 추가하기' : '학생 연결하기'}
           </Button>
         </div>
       </section>

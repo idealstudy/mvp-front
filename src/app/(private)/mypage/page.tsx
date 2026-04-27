@@ -10,7 +10,7 @@ export default async function MypagePage({
 }) {
   const { tab } = await searchParams;
 
-  // TEACHER, STUDENT
+  // TEACHER, STUDENT, PARENT
   if (tab === 'profile') return <ProfileMain />;
 
   // STUDENT, PARENT

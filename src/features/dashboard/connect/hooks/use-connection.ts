@@ -4,6 +4,7 @@ import {
   connectionKeys,
   repository,
 } from '@/entities/connect';
+import { parentKeys } from '@/entities/parent';
 import {
   QueryClient,
   useMutation,
@@ -50,6 +51,14 @@ const invalidateConnectionQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: connectionKeys.sentLists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.receivedLists() });
   queryClient.invalidateQueries({ queryKey: connectionKeys.searches() });
+
+  queryClient.invalidateQueries({
+    queryKey: parentKeys.dashboard.connectedStudentList(),
+  });
+
+  queryClient.invalidateQueries({
+    queryKey: parentKeys.dashboard.report(),
+  });
 };
 
 // 연결 요청
