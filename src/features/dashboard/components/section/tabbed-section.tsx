@@ -57,7 +57,7 @@ export const StudyRoomDropdown = ({
   return (
     <div
       ref={ref}
-      className="tablet:w-48 relative inline-block w-40"
+      className="tablet:w-48 relative inline-block w-30"
     >
       <button
         type="button"
