@@ -1,4 +1,4 @@
-import { StudyNoteQueryKey } from '@/entities/study-note';
+import { StudyNoteQueryKey, repository } from '@/entities/study-note';
 import { studyRoomsQueryKey } from '@/entities/study-room';
 import { teacherKeys } from '@/entities/teacher';
 import { teacherMutationOptions } from '@/features/study-notes/api';
@@ -61,6 +61,22 @@ export const createTeacherStudyNoteMutations = () => {
     });
   };
 
+  // 수업 노트 복제
+  const useCopyStudyNote = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: ({ teachingNoteId }: { teachingNoteId: number }) =>
+        repository.copy(teachingNoteId),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: StudyNoteQueryKey.all,
+          refetchType: 'none',
+        });
+      },
+    });
+  };
+
   // 수업 노트 삭제
   const useRemoveStudyNote = () => {
     const queryClient = useQueryClient();
@@ -93,5 +109,6 @@ export const createTeacherStudyNoteMutations = () => {
     useMoveNoteToGroup,
     useRemoveNoteFromGroup,
     useRemoveStudyNote,
+    useCopyStudyNote,
   };
 };

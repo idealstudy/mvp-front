@@ -63,6 +63,14 @@ const NOTE = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * STUDENT STUDY NOTE
+ * ────────────────────────────────────────────────────*/
+const STUDENT_NOTE = {
+  CREATE: '/study-note/new',
+  DETAIL: (noteId: number) => `/study-note/${noteId}`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * HOMEWORK
  * ────────────────────────────────────────────────────*/
 const HOMEWORK = {
@@ -150,6 +158,7 @@ export const PRIVATE = {
   DASHBOARD,
   ROOM,
   NOTE,
+  STUDENT_NOTE,
   HOMEWORK,
   QUESTIONS,
   COMMUNITY: PRIVATE_COMMUNITY,

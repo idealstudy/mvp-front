@@ -3,6 +3,7 @@ import { useReducer } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { useCopyStudyNote } from '@/features/study-notes/hooks';
 import {
   StudyNote,
   StudyNoteGroupPageable,
@@ -30,6 +31,11 @@ export const StudyNotesDropdown = ({
   onRefresh: () => void;
 }) => {
   const [dialog, dispatch] = useReducer(dialogReducer, initialDialogState);
+  const { mutate: copyNote } = useCopyStudyNote();
+
+  const handleCopy = () => {
+    copyNote({ teachingNoteId: item.id }, { onSuccess: onRefresh });
+  };
 
   const handleDelete = () => {
     dispatch({
@@ -107,6 +113,12 @@ export const StudyNotesDropdown = ({
             >
               편집하기
             </Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            className="justify-center"
+            onClick={handleCopy}
+          >
+            복제하기
           </DropdownMenu.Item>
           <DropdownMenu.Item
             variant="danger"

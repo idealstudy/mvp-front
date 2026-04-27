@@ -7,5 +7,5 @@ import { adapters } from './infrastructure/note.adapters';
 import { dto } from './infrastructure/note.dto.schema';
 
 export const note = { domain, dto, adapters, factory };
-export { repository, StudyNoteQueryKey } from './infrastructure';
+export { StudyNoteQueryKey, repository } from './infrastructure';
 export * from './types';

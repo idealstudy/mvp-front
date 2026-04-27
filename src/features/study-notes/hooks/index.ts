@@ -32,4 +32,5 @@ export const {
   useMoveNoteToGroup,
   useRemoveNoteFromGroup,
   useRemoveStudyNote,
+  useCopyStudyNote,
 } = teacherMutationHooks;

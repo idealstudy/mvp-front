@@ -42,7 +42,8 @@ function isInfraRequest(req: NextRequest) {
     req.headers.get('rsc') === '1' ||
     searchParams.has('_rsc') ||
     pathname.startsWith('/_next') ||
-    pathname === '/favicon.ico'
+    pathname === '/favicon.ico' ||
+    /\.(?:png|jpg|jpeg|gif|svg|ico|webp|css|js|woff|woff2)$/.test(pathname)
   );
 }
 

@@ -39,6 +39,16 @@ const createNote = async (dto: NoteRequest): Promise<SuccessId> => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * 수업 노트 복제
+ * ────────────────────────────────────────────────────*/
+const copyNote = async (teachingNoteId: number): Promise<SuccessId> => {
+  const response = await api.private.post<CommonResponse<SuccessId>>(
+    `${TEACHING_NOTE_PATH(teachingNoteId)}/copy`
+  );
+  return response.data;
+};
+
+/* ─────────────────────────────────────────────────────
  * 수업 노트 수정
  * ────────────────────────────────────────────────────*/
 const updateNote = async (
@@ -111,6 +121,7 @@ const getParentNoteDetail = async (
  * ────────────────────────────────────────────────────*/
 export const repository = {
   create: createNote,
+  copy: copyNote,
   update: updateNote,
   delete: deleteNote,
   getList: getNoteList,
