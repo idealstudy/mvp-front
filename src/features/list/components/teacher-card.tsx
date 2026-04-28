@@ -35,12 +35,6 @@ export const TeacherCard = ({
     (teacher.specialties?.length ?? 0) - MAX_VISIBLE_TAGS
   );
 
-  const stats = [
-    { label: '스터디룸', value: teacher.studyRoomCount },
-    { label: '학생', value: teacher.studentCount ?? 0 },
-    { label: '수업노트', value: teacher.teachingNoteCount ?? 0 },
-  ];
-
   const handleTeacherClick = () => {
     trackDedu101TeacherClick(
       { teacher_id: teacher.id, card_index: cardIndex, sort, subject },
@@ -101,21 +95,7 @@ export const TeacherCard = ({
         </div>
       </div>
 
-      {/* 간단 소개 */}
-      {teacher.bio && <p className="line-clamp-2">{teacher.bio}</p>}
-
-      {/* 하단 통계 */}
-      <div className="border-gray-3 divide-gray-3 flex divide-x rounded-lg border">
-        {stats.map(({ label, value }) => (
-          <div
-            key={label}
-            className="flex flex-1 items-center justify-center gap-1 py-2.5"
-          >
-            <span className="font-caption-heading">{label}</span>
-            <span className="font-caption-heading text-orange-6">{value}</span>
-          </div>
-        ))}
-      </div>
+      {/* TODO api 연결 */}
     </Link>
   );
 };
