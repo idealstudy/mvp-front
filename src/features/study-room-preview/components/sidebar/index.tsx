@@ -46,10 +46,8 @@ export const StudyroomPreviewSidebar = ({
   );
   const { data: mainData } = usePreviewMainInfo(studyRoomId);
 
-  const { mutate: updateThumbnail } = useUpdateThumbnail(
-    teacherId,
-    studyRoomId
-  );
+  const { mutate: updateThumbnail, isPending: isUploadingThumbnail } =
+    useUpdateThumbnail(teacherId, studyRoomId);
   const { mutate: updateEnrollmentStatus } = useUpdateEnrollmentStatus(
     teacherId,
     studyRoomId
@@ -71,6 +69,9 @@ export const StudyroomPreviewSidebar = ({
     updateThumbnail(file);
     e.target.value = '';
   };
+
+  // 썸네일 삭제
+  const handleThumbnailDelete = () => updateThumbnail(null);
 
   const onInquiryClick = () => {
     if (loading) return;
@@ -153,6 +154,8 @@ export const StudyroomPreviewSidebar = ({
         studyRoomName={data.name}
         thumbnailUrl={data.thumbnailUrl}
         onThumbnailClick={isMyStudyRoom ? handleThumbnailClick : undefined}
+        onThumbnailDelete={isMyStudyRoom ? handleThumbnailDelete : undefined}
+        isUploading={isUploadingThumbnail}
       />
       <input
         ref={fileInputRef}

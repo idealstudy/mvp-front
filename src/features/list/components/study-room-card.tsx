@@ -65,13 +65,18 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
       {/* 기존 카드 */}
       <div className="transition-opacity duration-300 group-hover:opacity-0">
         {/* 상단 영역 */}
-        <div className="bg-orange-1 relative h-[150px] overflow-hidden">
+        <div
+          className={cn(
+            'relative h-[150px] overflow-hidden',
+            studyRoom.thumbnailUrl ? '' : 'bg-orange-1'
+          )}
+        >
           <Image
             src={studyRoom.thumbnailUrl || '/studyroom/profile.svg'}
             width={440}
             height={150}
             alt="스터디룸 프리뷰 기본 이미지"
-            className="object-cover"
+            className="max-h-[150px] object-contain"
           />
           {/* 모집 상태 */}
           <span className="bg-gray-black/40 font-label-heading text-gray-white absolute top-4 left-4 rounded-lg px-2.5 py-1">
@@ -79,7 +84,7 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
           </span>
         </div>
         {/* 하단 영역 */}
-        <div className="items-center space-y-2 bg-white p-5 pt-4">
+        <div className="border-line-line1 items-center space-y-2 border-t bg-white p-5 pt-4">
           <p className="font-body1-heading">{studyRoom.name}</p>
           <div className="flex items-center gap-2">
             <Image

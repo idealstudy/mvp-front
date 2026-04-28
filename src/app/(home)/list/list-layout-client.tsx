@@ -124,7 +124,7 @@ export default function ListLayoutClient({
         <div className="mb-4 min-h-screen w-full bg-white">
           <div className="bg-system-background w-full">
             <div className="mx-auto max-w-[1440px] px-4 pt-8 md:px-8 lg:px-20">
-              <BackLink />
+              {!isAuthenticated && <BackLink />}
 
               <div className="mt-4 mb-10">
                 <h1 className="font-title-heading text-2xl leading-[135%] tracking-tight lg:text-3xl">
