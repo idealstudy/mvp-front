@@ -30,7 +30,12 @@ export async function POST(request: NextRequest) {
 
   if (!logoutResponse.ok && logoutResponse.status !== 204) {
     const message = extractErrorMessage(payload) ?? '로그아웃에 실패했습니다.';
-    return NextResponse.json({ message }, { status: logoutResponse.status });
+    const errorResponse = NextResponse.json(
+      { message },
+      { status: logoutResponse.status }
+    );
+    applySetCookies(logoutResponse, errorResponse);
+    return errorResponse;
   }
 
   return response;
