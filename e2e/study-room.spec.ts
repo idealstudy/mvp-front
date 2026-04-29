@@ -72,8 +72,8 @@ test.describe.serial('스터디룸 CRUD', () => {
     ).toBeVisible();
     await page.getByTestId('study-room-edit-confirm-button').click();
 
-    await page.waitForURL(`/study-room-preview/${studyRoomId}/**`);
-    await expect(page).toHaveURL(/\/study-room-preview\/\d+\/\d+/);
+    await page.waitForURL(PRIVATE.ROOM.DETAIL(studyRoomId));
+    await expect(page).toHaveURL(PRIVATE.ROOM.DETAIL(studyRoomId));
   });
 
   /* ─────────────────────────────────────────────────────
