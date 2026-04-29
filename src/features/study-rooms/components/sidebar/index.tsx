@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useReducer, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -10,6 +10,7 @@ import {
   useTeacherStudyRoomDetailQuery,
 } from '@/features/study-rooms/hooks';
 import { useUpdateEnrollmentStatus } from '@/features/study-rooms/hooks/use-update-enrollment-status';
+import { useUpdateThumbnail } from '@/features/study-rooms/hooks/use-update-thumbnail';
 import { ColumnLayout } from '@/layout/column-layout';
 import {
   InputDialog,
@@ -57,9 +58,7 @@ export const StudyroomSidebar = ({
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
-  const [studyroomStatus, setStudyroomStatus] = useState<
-    'OPEN' | 'OPERATING' | null
-  >(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { role } = useRole();
 
@@ -71,6 +70,8 @@ export const StudyroomSidebar = ({
     useToggleInvitation(studyRoomId);
   const { mutate: updateEnrollmentStatus } =
     useUpdateEnrollmentStatus(studyRoomId);
+  const { mutate: updateThumbnail, isPending: isUploadingThumbnail } =
+    useUpdateThumbnail(studyRoomId);
 
   // 스터디룸 상세 정보 조회 (선생님)
   const { data: teacherStudyRoomDetail } = useTeacherStudyRoomDetailQuery(
@@ -95,7 +96,7 @@ export const StudyroomSidebar = ({
   // 삭제, 수정, 학생 초대 등 관리 권한
   const canManage = role === 'ROLE_TEACHER';
 
-  // TODO: 스터디룸 이름 변경 API 연결
+  // 스터디룸 이름 변경
   const handleSubmitRoomRename = (name: string, others: StudyRoomDetail) => {
     updateRoomName(
       { studyRoomId, name, others },
@@ -107,7 +108,7 @@ export const StudyroomSidebar = ({
     );
   };
 
-  // TODO: 스터디룸 삭제 API 연결
+  // 스터디룸 삭제
   const handleDeleteGroup = () => {
     deleteStudyRoom(
       { studyRoomId },
@@ -122,6 +123,18 @@ export const StudyroomSidebar = ({
   const onConfirmDelete = () => {
     router.push('/dashboard');
   };
+
+  // 썸네일 핸들러
+  const handleThumbnailClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    updateThumbnail(file);
+    e.target.value = '';
+  };
+
+  const handleThumbnailDelete = () => updateThumbnail(null);
 
   // 초대 링크 복사 후 Bottom Toast 표시, token 수정 필요
   const handleCopyInviteLink = async () => {
@@ -180,6 +193,18 @@ export const StudyroomSidebar = ({
           studyRoomName={studyRoomDetail?.name}
           teacherName={studyRoomDetail?.teacherName}
           canManage={canManage}
+          thumbnailUrl={studyRoomDetail?.thumbnailUrl}
+          onThumbnailClick={canManage ? handleThumbnailClick : undefined}
+          onThumbnailDelete={canManage ? handleThumbnailDelete : undefined}
+          isUploading={isUploadingThumbnail}
+        />
+        {/* 썸네일 input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
         />
 
         <StudyStats
@@ -192,9 +217,8 @@ export const StudyroomSidebar = ({
         {/* 운영 상태 토글 - 선생님만 노출 */}
         {canManage && (
           <StudyroomStatusToggle
-            value={studyroomStatus}
+            value={studyRoomDetail?.enrollmentStatus ?? null}
             onChange={(status) => {
-              setStudyroomStatus(status);
               updateEnrollmentStatus(status);
             }}
           />

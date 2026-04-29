@@ -9,7 +9,16 @@ export const RoomModalitySchema = z.enum(['ONLINE', 'OFFLINE']);
 
 export const RoomClassFormSchema = z.enum(['ONE_ON_ONE', 'ONE_TO_MANY']);
 
-export const RoomSubjectSchema = z.enum(['KOREAN', 'ENGLISH', 'MATH', 'OTHER']);
+export const RoomSubjectSchema = z.enum([
+  'KOREAN',
+  'ENGLISH',
+  'MATH',
+  'SCIENCE',
+  'SOCIETY',
+  'ART_PE',
+  'ESSAY',
+  'OTHER',
+]);
 
 export const SchoolLevelSchema = z.enum(['ELEMENTARY', 'MIDDLE', 'HIGH']);
 

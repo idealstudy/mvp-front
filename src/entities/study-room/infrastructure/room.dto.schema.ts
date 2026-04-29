@@ -37,6 +37,7 @@ const TeacherRoomDetailSchema = TeacherRoomListItemSchema.extend({
   subjectType: base.subject,
   schoolInfo: base.schoolInfo,
   numberOfQuestion: z.number().int(),
+  enrollmentStatus: z.enum(['OPEN', 'OPERATING']),
 });
 
 /* ─────────────────────────────────────────────────────

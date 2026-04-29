@@ -53,6 +53,8 @@ export type StudyRoomDetail = {
   numberOfTeachingNote: number;
   studentNames: string[];
   numberOfQuestion: number;
+  thumbnailUrl?: string | null;
+  enrollmentStatus?: 'OPEN' | 'OPERATING';
 };
 
 export type StudentStudyRoom = {

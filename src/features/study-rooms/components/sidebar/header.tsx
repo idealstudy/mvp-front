@@ -9,6 +9,7 @@ import { DialogAction } from '@/shared/components/dialog';
 import { BaseHeader } from '@/shared/components/sidebar';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { PRIVATE } from '@/shared/constants';
+import { cn } from '@/shared/lib';
 
 export const StudyroomSidebarHeader = ({
   dispatch,
@@ -16,12 +17,20 @@ export const StudyroomSidebarHeader = ({
   studyRoomName,
   teacherName,
   canManage,
+  thumbnailUrl,
+  onThumbnailClick,
+  onThumbnailDelete,
+  isUploading,
 }: {
   dispatch: Dispatch<DialogAction>;
   studyRoomId: number;
   studyRoomName?: string;
   teacherName?: string;
   canManage?: boolean;
+  thumbnailUrl?: string | null;
+  onThumbnailClick?: () => void;
+  onThumbnailDelete?: () => void;
+  isUploading?: boolean;
 }) => {
   const router = useRouter();
 
@@ -30,10 +39,17 @@ export const StudyroomSidebarHeader = ({
       studyRoomId={studyRoomId}
       studyRoomName={studyRoomName}
       teacherName={!canManage ? teacherName : undefined}
+      thumbnailUrl={thumbnailUrl}
+      onThumbnailClick={onThumbnailClick}
+      isUploading={isUploading}
+      onThumbnailDelete={onThumbnailDelete}
       teacherSuffix="선생님"
       fallbackStudyRoomName="스터디룸"
       titleClassName="desktop:max-w-[260px] truncate text-[28px] leading-tight font-bold"
-      imageWrapperClassName="bg-orange-scale-orange-1 relative mx-auto h-[300px] w-full overflow-hidden rounded-[12px]"
+      imageWrapperClassName={cn(
+        thumbnailUrl ? '' : 'bg-orange-scale-orange-1',
+        'tablet:h-[200px] relative h-[150px] w-full overflow-hidden rounded-[12px]'
+      )}
       rightSlot={
         canManage ? (
           <DropdownMenu>

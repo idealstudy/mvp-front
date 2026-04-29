@@ -24,6 +24,7 @@ const TeacherRoomDetailDomainSchema = TeacherRoomDomainSchema.extend({
   classForm: base.classForm.optional().default('ONE_ON_ONE'),
   subjectType: base.subject.optional().default('OTHER'),
   schoolInfo: base.schoolInfo.optional(),
+  enrollmentStatus: z.enum(['OPEN', 'OPERATING']).optional(),
 });
 
 /* ─────────────────────────────────────────────────────

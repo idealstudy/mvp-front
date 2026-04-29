@@ -92,7 +92,10 @@ export const BaseHeader = ({
             className={cn(
               'border-gray-5 bg-gray-12/40 font-label-normal absolute top-2 right-2 z-10 flex h-8 w-20 cursor-pointer items-center justify-center gap-2 rounded-[8px] border pt-1 pr-2.5 pb-1 pl-1.5 text-white'
             )}
-            onClick={onMoveToPreview}
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveToPreview();
+            }}
           >
             <Image
               src="/studyroom/ic-direct.png"
@@ -138,7 +141,7 @@ export const BaseHeader = ({
           >
             <button
               type="button"
-              className="font-label-heading text-system-warning cursor-pointer rounded-md bg-white/90 px-4 py-2 hover:bg-white"
+              className="font-label-heading text-system-warning cursor-pointer rounded-md bg-white/90 px-4 py-2"
               onClick={(e) => {
                 e.stopPropagation();
                 onThumbnailDelete?.();

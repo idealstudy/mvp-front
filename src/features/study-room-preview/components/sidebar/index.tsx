@@ -48,10 +48,8 @@ export const StudyroomPreviewSidebar = ({
 
   const { mutate: updateThumbnail, isPending: isUploadingThumbnail } =
     useUpdateThumbnail(teacherId, studyRoomId);
-  const { mutate: updateEnrollmentStatus } = useUpdateEnrollmentStatus(
-    teacherId,
-    studyRoomId
-  );
+  const { mutate: updateEnrollmentStatus } =
+    useUpdateEnrollmentStatus(studyRoomId);
 
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
