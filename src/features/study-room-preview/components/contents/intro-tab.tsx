@@ -51,7 +51,9 @@ export const StudyroomPreviewIntroTab = ({
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   const moveToStudyRoomEditPage = () => {
-    router.push(PRIVATE.ROOM.EDIT(studyRoomId));
+    router.push(
+      `${PRIVATE.ROOM.EDIT(studyRoomId)}?from=preview&teacherId=${teacherId}`
+    );
   };
 
   const characteristicContent =
@@ -189,13 +191,15 @@ export const StudyroomPreviewIntroTab = ({
   const classStyle = `${data.modalityKorean} · ${data.classFormKorean} 수업`;
 
   return (
-    <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-6">
-      <section className="flex w-full flex-col gap-6">
+    <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-8">
+      <section className="flex w-full flex-col gap-12">
+        {/* 스터디룸 소개 */}
         <article
           data-track-section="intro"
           ref={introSectionRef}
           className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
         >
+          {/* 수정하기 버튼 */}
           {isMyStudyRoom && (
             <button
               type="button"
@@ -222,32 +226,26 @@ export const StudyroomPreviewIntroTab = ({
               수정하기
             </button>
           )}
-          <header className="flex flex-col gap-1">
-            <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
-              스터디룸 소개
-            </p>
-            <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">
-              선생님이 직접 작성한 스터디룸 소개글이에요.
-            </p>
-          </header>
+          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
+            스터디룸 소개
+          </p>
           <p className="font-body2-normal text-gray-scale-gray-95 break-keep">
             {data.description || '선생님이 작성한 소개글이 아직 없어요.'}
           </p>
         </article>
 
+        {/* 스터디룸 특징 */}
         {(hasCharacteristic || isMyStudyRoom) && (
-          <article className="bg-system-background-alt flex flex-col gap-1 rounded-xl">
-            <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
+          <article className="bg-system-background-alt flex flex-col rounded-xl">
+            <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
               스터디룸 특징
             </p>
-            <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">
-              선생님이 강조한 스터디룸의 특징이에요.
-            </p>
+
             {hasCharacteristic ? (
               <TextViewer value={parsedContent} />
             ) : (
-              <div className="flex flex-col items-center justify-center gap-1">
-                <p className="font-body2-normal text-gray-5">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <p className="font-label-normal text-gray-7">
                   아직 작성된 스터디룸 특징이 없어요.
                 </p>
                 <button
@@ -264,12 +262,13 @@ export const StudyroomPreviewIntroTab = ({
           </article>
         )}
 
+        {/* 스터디룸 운영 방식 */}
         <article
           data-track-section="curriculum"
           ref={curriculumSectionRef}
           className="bg-system-background-alt flex flex-col gap-1 rounded-xl"
         >
-          <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
+          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
             스터디룸 운영 방식
           </p>
           <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col gap-4">
@@ -300,19 +299,15 @@ export const StudyroomPreviewIntroTab = ({
           </div>
         </article>
 
+        {/* 스터디룸 후기 */}
         <article
           data-track-section="review"
           ref={reviewSectionRef}
           className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
         >
-          <header className="flex flex-col gap-1">
-            <p className="font-body1-heading tablet:font-headline1-heading text-text-main">
-              스터디룸 후기
-            </p>
-            <p className="font-caption-normal tablet:font-body2-normal text-text-sub1">
-              실제 스터디룸 참여 학생과 보호자들의 후기예요.
-            </p>
-          </header>
+          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
+            스터디룸 후기
+          </p>
 
           {hasReviews ? (
             <>

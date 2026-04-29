@@ -13,12 +13,19 @@ import { Input } from '@/shared/components/ui/input';
 import { Select } from '@/shared/components/ui/select';
 import { toPlainText } from '@/shared/lib';
 
-export default function StepOne({ onNext, disabled }: CreateStepForm) {
+export default function StepOne({
+  onNext,
+  disabled,
+  mode,
+  onCancel,
+  onRequestEdit,
+  canSubmitEdit,
+}: CreateStepForm) {
   const {
     register,
     control,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useFormContext<StudyRoomFormValues>();
   const description = watch('description') ?? '';
   const characteristic = watch('characteristic') ?? '';
@@ -154,23 +161,48 @@ export default function StepOne({ onNext, disabled }: CreateStepForm) {
           )}
         />
       </Form.Item>
-      <div className="text-text-sub2 my-6">
-        <h3>스터디룸 공개 범위 설정</h3>
+      <div className="text-text-sub2 my-4 text-sm">
         <p>
           스터디룸은 모든 사용자에게 공개하거나 비공개로 설정할 수 있습니다.
         </p>
         <p>비공개로 설정하면 스터디룸에 초대된 사용자만 조회할 수 있습니다.</p>
       </div>
-      <div className="ml-auto w-fit">
-        <Button
-          className="w-48"
-          type="button"
-          onClick={onNext}
-          disabled={disabled}
-          data-testid="study-room-next-button"
-        >
-          다음
-        </Button>
+
+      <div className="mt-10 flex justify-between">
+        {mode === 'edit' && (
+          <Button
+            variant="outlined"
+            className="tablet:w-48"
+            type="button"
+            onClick={onCancel}
+            data-testid="study-room-cancel-button"
+          >
+            취소
+          </Button>
+        )}
+        <div className="ml-auto flex gap-2">
+          <Button
+            variant="secondary"
+            className="tablet:w-48"
+            type="button"
+            onClick={onNext}
+            disabled={disabled}
+            data-testid="study-room-next-button"
+          >
+            다음
+          </Button>
+          {mode === 'edit' && (
+            <Button
+              type="button"
+              className="tablet:w-48"
+              disabled={disabled || !(canSubmitEdit ?? isDirty)}
+              onClick={onRequestEdit}
+              data-testid="study-room-edit-button"
+            >
+              {disabled ? '수정 중...' : '수정하기'}
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );

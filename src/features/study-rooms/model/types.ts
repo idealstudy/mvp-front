@@ -16,6 +16,10 @@ export interface StudyNoteGroup {
 export interface CreateStepForm {
   onNext: () => void;
   disabled: boolean;
+  mode: 'edit' | 'create';
+  onCancel?: () => void;
+  onRequestEdit?: () => void;
+  canSubmitEdit?: boolean;
 }
 
 export type StudyRoom = {
@@ -49,6 +53,8 @@ export type StudyRoomDetail = {
   numberOfTeachingNote: number;
   studentNames: string[];
   numberOfQuestion: number;
+  thumbnailUrl?: string | null;
+  enrollmentStatus?: 'OPEN' | 'OPERATING';
 };
 
 export type StudentStudyRoom = {

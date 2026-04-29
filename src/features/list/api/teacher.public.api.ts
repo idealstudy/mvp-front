@@ -1,3 +1,8 @@
+import {
+  CLASS_FORM_TO_KOREAN,
+  ENROLLMENT_STATUS_TO_KOREAN,
+  SUBJECT_TO_KOREAN,
+} from '@/entities/study-room-preview/core/preview.domain';
 import { api } from '@/shared/api';
 import type { CommonResponse } from '@/types/http';
 
@@ -33,6 +38,9 @@ export const getPublicStudyRooms = async (params?: {
   size?: number;
   sort?: 'LATEST' | 'OLDEST' | 'ALPHABETICAL';
   teacherId?: number; // TBD: 강사별 필터링
+  enrollmentStatus?: keyof typeof ENROLLMENT_STATUS_TO_KOREAN;
+  classForm?: keyof typeof CLASS_FORM_TO_KOREAN;
+  subjectType?: keyof typeof SUBJECT_TO_KOREAN;
 }): Promise<PublicStudyRoomsResponse> => {
   const requestParams = {
     ...params,

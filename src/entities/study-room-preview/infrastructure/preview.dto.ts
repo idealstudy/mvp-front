@@ -55,6 +55,7 @@ const StudyRoomPreviewCoreSchema = z.object({
   classForm: base.classForm,
   subjectType: base.subject,
   schoolInfo: PreviewSchoolInfoSchema,
+  enrollmentStatus: z.enum(['OPEN', 'OPERATING']),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -91,6 +92,7 @@ const StudyRoomPreviewSideDataSchema = z.object({
   numberOfTeachingNotes: z.number().int(),
   numberOfStudents: z.number().int(),
   numberOfQuestions: z.number().int(),
+  thumbnailUrl: z.string().nullish(),
 });
 
 /* ─────────────────────────────────────────────────────

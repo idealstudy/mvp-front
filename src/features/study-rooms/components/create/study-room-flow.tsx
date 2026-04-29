@@ -42,6 +42,7 @@ import {
   parseEditorContent,
 } from '@/shared/components/editor';
 import { Form } from '@/shared/components/ui/form';
+import { PRIVATE } from '@/shared/constants';
 import { trackStudyroomCreateSuccess } from '@/shared/lib/analytics';
 import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
@@ -56,6 +57,7 @@ type StudyRoomFlowProps = {
   mode: 'create' | 'edit';
   initialValues?: Partial<StudyRoomFormValues>;
   studyRoomId?: number;
+  returnUrl?: string;
 };
 
 const buildCharacteristicForEditor = (
@@ -91,6 +93,7 @@ export default function StudyRoomFlow({
   mode,
   initialValues,
   studyRoomId,
+  returnUrl,
 }: StudyRoomFlowProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -189,6 +192,18 @@ export default function StudyRoomFlow({
     dispatch({ type: 'NEXT' });
   };
 
+  const handlePrev = () => dispatch({ type: 'PREV' });
+
+  const fallbackUrl = studyRoomId ? PRIVATE.ROOM.DETAIL(studyRoomId) : '/';
+
+  const handleCancel = () => {
+    if (methods.formState.isDirty) {
+      dialogDispatch({ type: 'OPEN', scope: 'studyroom', kind: 'cancel' });
+    } else {
+      router.replace(returnUrl ?? fallbackUrl);
+    }
+  };
+
   const handleIndicatorMove = (to: number) => dispatch({ type: 'GO', to });
 
   const handleSubmit = React.useCallback(() => {
@@ -257,9 +272,7 @@ export default function StudyRoomFlow({
               queryKey: StudyRoomsQueryKey.detail(studyRoomId),
             });
             methods.reset(formValues);
-            router.replace(
-              `/study-room-preview/${studyRoomId}/${data.teacherId}`
-            );
+            router.replace(returnUrl ?? fallbackUrl);
           },
           onError: (error) => {
             handleApiError(error, classifyPreviewError, {
@@ -270,11 +283,10 @@ export default function StudyRoomFlow({
               },
 
               onContext: () => {
-                setTimeout(() => {
-                  router.replace(
-                    `/study-room-preview/${studyRoomId}/${data.teacherId}`
-                  );
-                }, 1500);
+                setTimeout(
+                  () => router.replace(returnUrl ?? fallbackUrl),
+                  1500
+                );
               },
 
               onUnknown: () => {},
@@ -290,6 +302,8 @@ export default function StudyRoomFlow({
     methods,
     updateStudyRoom,
     queryClient,
+    returnUrl,
+    fallbackUrl,
     router,
   ]);
 
@@ -317,15 +331,11 @@ export default function StudyRoomFlow({
         >
           {step === 'basic' && (
             <StepOne
-              onNext={handleNext}
-              disabled={!isStepValid}
-            />
-          )}
-          {step === 'profile' && (
-            <StepTwo
               mode={mode}
-              disabled={isMutating}
+              onNext={handleNext}
+              disabled={!isStepValid || isMutating}
               canSubmitEdit={canSubmitEdit}
+              onCancel={handleCancel}
               onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
@@ -333,13 +343,22 @@ export default function StudyRoomFlow({
                   kind: 'onConfirm',
                 })
               }
-              onCancel={() =>
+            />
+          )}
+          {step === 'profile' && (
+            <StepTwo
+              mode={mode}
+              disabled={isMutating}
+              canSubmitEdit={canSubmitEdit}
+              onCancel={handleCancel}
+              onRequestEdit={() =>
                 dialogDispatch({
                   type: 'OPEN',
                   scope: 'studyroom',
-                  kind: 'cancel',
+                  kind: 'onConfirm',
                 })
               }
+              onPrev={handlePrev}
               onRequestSubmit={handleSubmit}
             />
           )}
@@ -354,8 +373,9 @@ export default function StudyRoomFlow({
             open
             dispatch={dialogDispatch}
             variant="confirm-cancel"
+            emphasis="title-strong"
             title="수정하시겠습니까?"
-            description="수정이 완료되면 프리뷰 페이지로 돌아갑니다."
+            description="수정이 완료되면 이전 페이지로 돌아갑니다."
             confirmText="확인"
             cancelText="취소"
             onConfirm={onConfirmClick}
@@ -371,11 +391,12 @@ export default function StudyRoomFlow({
             open
             dispatch={dialogDispatch}
             variant="confirm-cancel"
+            emphasis="title-strong"
             title="수정 내용을 취소할까요?"
             description="취소하면 이전 페이지로 이동하며 변경사항은 저장되지 않습니다."
             confirmText="나가기"
             cancelText="계속 수정"
-            onConfirm={() => router.back()}
+            onConfirm={() => router.replace(returnUrl ?? fallbackUrl)}
           />
         )}
     </section>

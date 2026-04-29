@@ -5,6 +5,7 @@ import { useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import EllipsisIcon from '@/assets/icons/ellipsis-vertical.svg';
+import { STUDY_NOTE_VISIBILITY_LABEL } from '@/features/dashboard/studynote/constant';
 import {
   useParentStudyNoteDetailQuery,
   useStudyNoteDetailQuery,
@@ -100,8 +101,9 @@ export const StudyNoteDetailMetaSection = ({
       <p className="flex flex-col items-center">등록된 수업노트가 없어요.</p>
     );
   }
+
   const visibilityText =
-    noteData.visibility === 'PUBLIC' ? '수업대상 공개' : '수업대상 비공개';
+    STUDY_NOTE_VISIBILITY_LABEL[noteData.visibility] ?? noteData.visibility;
   const hasStudents = noteData.studentInfos.length > 0;
 
   const handleEdit = () => {

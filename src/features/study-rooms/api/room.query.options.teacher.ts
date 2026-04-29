@@ -26,7 +26,7 @@ export const createTeacherStudyRoomQueryOptions = (
   // 스터디룸 상세 조회
   const teacherDetail = (studyRoomId: number) =>
     queryOptions<StudyRoomDetail>({
-      queryKey: StudyRoomsQueryKey.detail(studyRoomId),
+      queryKey: StudyRoomsQueryKey.teacherDetail(studyRoomId),
       queryFn: () => api.getStudyRoomDetail(studyRoomId),
       ...opt,
     });

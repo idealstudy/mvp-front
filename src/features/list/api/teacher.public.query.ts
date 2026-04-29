@@ -1,3 +1,8 @@
+import {
+  CLASS_FORM_TO_KOREAN,
+  ENROLLMENT_STATUS_TO_KOREAN,
+  SUBJECT_TO_KOREAN,
+} from '@/entities/study-room-preview/core/preview.domain';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -26,7 +31,9 @@ export const StudyRoomsQueryKey = {
     page?: number;
     size?: number;
     sort?: SortOption;
-    // subject?:SortSubjectOption;
+    enrollmentStatus?: keyof typeof ENROLLMENT_STATUS_TO_KOREAN;
+    classForm?: keyof typeof CLASS_FORM_TO_KOREAN;
+    subjectType?: keyof typeof SUBJECT_TO_KOREAN;
     teacherId?: number;
   }) => ['publicStudyRooms', 'list', params] as const,
 };
@@ -49,7 +56,9 @@ export const usePublicStudyRoomsQuery = (params?: {
   page?: number;
   size?: number;
   sort?: SortOption;
-  subject?: SortSubjectOption;
+  enrollmentStatus?: keyof typeof ENROLLMENT_STATUS_TO_KOREAN;
+  classForm?: keyof typeof CLASS_FORM_TO_KOREAN;
+  subjectType?: keyof typeof SUBJECT_TO_KOREAN;
   teacherId?: number;
 }) => {
   return useQuery({

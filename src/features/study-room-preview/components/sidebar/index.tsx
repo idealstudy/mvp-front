@@ -1,17 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useUpdateEnrollmentStatus } from '@/features/study-room-preview/hooks/use-update-enrollment-status';
+import { useUpdateThumbnail } from '@/features/study-room-preview/hooks/use-update-thumbnail';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
 import { Button } from '@/shared/components/ui';
+import { StudyroomStatusToggle } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
-import { usePreviewSideInfo } from '../../hooks/use-preview';
+import {
+  usePreviewMainInfo,
+  usePreviewSideInfo,
+} from '../../hooks/use-preview';
 import { PreviewSideSkeleton } from '../preview-skeleton';
 import { StudyroomPreviewSidebarHeader } from './header';
 import { TeacherOtherStudyrooms } from './teacher-other-studyrooms';
@@ -27,18 +33,43 @@ export const StudyroomPreviewSidebar = ({
   teacherId,
   studyRoomId,
 }: StudyroomPreviewContentsProps) => {
-  const { data, isPending, isError } = usePreviewSideInfo(
-    teacherId,
-    studyRoomId
-  );
   const router = useRouter();
 
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const member = useMemberStore((s) => s.member);
+
+  const { data, isPending, isError } = usePreviewSideInfo(
+    teacherId,
+    studyRoomId
+  );
+  const { data: mainData } = usePreviewMainInfo(studyRoomId);
+
+  const { mutate: updateThumbnail, isPending: isUploadingThumbnail } =
+    useUpdateThumbnail(teacherId, studyRoomId);
+  const { mutate: updateEnrollmentStatus } =
+    useUpdateEnrollmentStatus(studyRoomId);
 
   const isMyStudyRoom =
     member?.role === 'ROLE_TEACHER' && member.id === teacherId;
+
+  // 파일 input ref (썸네일)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleThumbnailClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    updateThumbnail(file);
+    e.target.value = '';
+  };
+
+  // 썸네일 삭제
+  const handleThumbnailDelete = () => updateThumbnail(null);
 
   const onInquiryClick = () => {
     if (loading) return;
@@ -117,26 +148,54 @@ export const StudyroomPreviewSidebar = ({
 
   return (
     <>
-      <StudyroomPreviewSidebarHeader studyRoomName={data.name} />
+      <StudyroomPreviewSidebarHeader
+        studyRoomName={data.name}
+        thumbnailUrl={data.thumbnailUrl}
+        onThumbnailClick={isMyStudyRoom ? handleThumbnailClick : undefined}
+        onThumbnailDelete={isMyStudyRoom ? handleThumbnailDelete : undefined}
+        isUploading={isUploadingThumbnail}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <StudyStats
         numberOfTeachingNote={data.numberOfTeachingNotes}
         numberOfStudents={data.numberOfStudents}
         numberOfQuestion={data.numberOfQuestions}
       />
-      {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
-        <SidebarButton
-          onClick={handleBtnClick}
-          btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
-          disabled={loading}
+
+      {/* 운영 상태 토글 - 본인 스터디룸만 노출 */}
+      {isMyStudyRoom && (
+        <StudyroomStatusToggle
+          value={mainData?.enrollmentStatus ?? null}
+          onChange={(status) => {
+            updateEnrollmentStatus(status);
+          }}
         />
       )}
-      <Button
-        onClick={moveToProfile}
-        variant="secondary"
-        disabled={loading}
-      >
-        {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
-      </Button>
+
+      <div className="flex flex-col gap-2">
+        {(isMyStudyRoom || member?.role !== 'ROLE_TEACHER') && (
+          <SidebarButton
+            onClick={handleBtnClick}
+            btnName={isMyStudyRoom ? `스터디룸으로 이동하기` : `수업 상담하기`}
+            disabled={loading}
+          />
+        )}
+        <Button
+          onClick={moveToProfile}
+          variant="secondary"
+          disabled={loading}
+        >
+          {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
+        </Button>
+      </div>
+
       {data.otherStudyRooms.length ? (
         <TeacherOtherStudyrooms
           studyRoomName={data.name}

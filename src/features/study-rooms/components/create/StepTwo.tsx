@@ -51,6 +51,7 @@ export default function StepTwo({
   onRequestSubmit,
   onRequestEdit,
   onCancel,
+  onPrev,
   mode,
 }: {
   disabled?: boolean;
@@ -58,13 +59,13 @@ export default function StepTwo({
   onRequestSubmit?: () => void;
   onRequestEdit?: () => void;
   onCancel?: () => void;
+  onPrev?: () => void;
   mode: 'edit' | 'create';
 }) {
   const {
     control,
     getValues,
     setValue,
-
     formState: { isValid, isDirty },
   } = useFormContext();
   const title = getValues('basic.title') ?? '';
@@ -206,41 +207,56 @@ export default function StepTwo({
         );
       })}
 
-      <div className="flex flex-col gap-4">
-        <p className="text-muted-foreground bg-key-color-secondary text-text-sub2 rounded-md p-2 text-sm">
+      <div className="mt-10 flex flex-col gap-4">
+        <p className="text-text-sub2 text-sm">
           작성하신 정보는 더 나은 디에듀 서비스를 제공하는데에 활용됩니다.
         </p>
-        {mode === 'edit' ? (
-          <div className="flex justify-end gap-2">
+
+        <div className="flex justify-between">
+          {mode === 'edit' && (
             <Button
+              variant="outlined"
               type="button"
-              className="max-desktop:w-full text-orange-7 border-orange-7 hover:bg-orange-7/10 w-48 self-end bg-white"
+              className="tablet:w-48"
               onClick={onCancel}
               data-testid="study-room-cancel-button"
             >
               취소
             </Button>
+          )}
+          <div className="ml-auto flex gap-2">
             <Button
+              variant="secondary"
               type="button"
-              className="max-desktop:w-full w-48 self-end"
-              disabled={disabled || !(canSubmitEdit ?? isDirty)}
-              onClick={onRequestEdit}
-              data-testid="study-room-edit-button"
+              className="tablet:w-48"
+              onClick={onPrev}
+              data-testid="study-room-prev-button"
             >
-              {disabled ? '수정 중...' : '수정하기'}
+              이전
             </Button>
+            {mode === 'edit' ? (
+              <Button
+                type="button"
+                className="tablet:w-48"
+                disabled={disabled || !(canSubmitEdit ?? isDirty)}
+                onClick={onRequestEdit}
+                data-testid="study-room-edit-button"
+              >
+                {disabled ? '수정 중...' : '수정하기'}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                className="tablet:w-48"
+                disabled={disabled || !isValid}
+                onClick={onRequestSubmit}
+                data-testid="study-room-submit-button"
+              >
+                {disabled ? '생성 중...' : '완료'}
+              </Button>
+            )}
           </div>
-        ) : (
-          <Button
-            type="button"
-            className="max-desktop:w-full w-48 self-end"
-            disabled={disabled || !isValid}
-            onClick={onRequestSubmit}
-            data-testid="study-room-submit-button"
-          >
-            {disabled ? '생성 중...' : '완료'}
-          </Button>
-        )}
+        </div>
       </div>
     </>
   );

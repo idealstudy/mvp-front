@@ -52,6 +52,8 @@
           "value": "MATH",
           "label": "수학"
         },
+        { "value": "SCIENCE", "label": "과학" },
+        { "value": "SOCIETY", "label": "사회" },
         {
           "value": "OTHER",
           "label": "기타"

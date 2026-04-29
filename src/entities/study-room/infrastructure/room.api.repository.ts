@@ -61,6 +61,29 @@ export const studyRoomRepository = {
       );
       return unwrapEnvelope(response, dto.teacher.inviteToken);
     },
+
+    updateThumbnail: async (
+      studyRoomId: number,
+      thumbnailMediaId: string | null
+    ) => {
+      const response = await api.private.patch(
+        `/teacher/study-rooms/${studyRoomId}/thumbnail`,
+        { thumbnailMediaId }
+      );
+      return unwrapEnvelope(response, dto.teacher.thumbnailResponse);
+    },
+
+    updateEnrollmentStatus: async (
+      studyRoomId: number,
+      status: 'OPEN' | 'OPERATING'
+    ) => {
+      const response = await api.private.patch(
+        `/teacher/study-rooms/${studyRoomId}/enrollment-status`,
+        null,
+        { params: { status } }
+      );
+      return unwrapEnvelope(response, dto.teacher.enrollmentStatusResponse);
+    },
   },
 
   /* ─────────────────────────────────────────────────────
