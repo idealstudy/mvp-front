@@ -44,7 +44,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const [step, setStep] = useState<Step>('setup');
   const [topic, setTopic] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
-  const [elapsed, setElapsed] = useState(0);
+  const [elapsedBase, setElapsedBase] = useState(0);
+  const [runningSinceMs, setRunningSinceMs] = useState<number | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [isRunning, setIsRunning] = useState(false);
   const [noteOpen, setNoteOpen] = useState(true);
   const [noteContent, setNoteContent] = useState<TextEditorValue>(
@@ -55,6 +57,12 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   );
   const [studyNoteId, setStudyNoteId] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const elapsed = useMemo(() => {
+    if (!isRunning || runningSinceMs === null) return elapsedBase;
+    return (
+      elapsedBase + Math.max(0, Math.floor((nowMs - runningSinceMs) / 1000))
+    );
+  }, [elapsedBase, isRunning, nowMs, runningSinceMs]);
 
   const {
     data: progressData,
@@ -68,17 +76,17 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
   const applyProgressData = useCallback(
     (data: NonNullable<typeof progressData>) => {
       const running = data.status === 'RUNNING';
-      let elapsedSec = data.studyTime ?? 0;
-      if (running && data.restartTime) {
-        elapsedSec += Math.max(
-          0,
-          Math.floor((Date.now() - new Date(data.restartTime).getTime()) / 1000)
-        );
-      }
+      const elapsedSec = data.studyTime ?? 0;
       setStudyNoteId(data.id);
       setTopic(data.title ?? '');
       setSelectedSubject(data.subject ?? null);
-      setElapsed(elapsedSec);
+      setElapsedBase(elapsedSec);
+      setRunningSinceMs(
+        running && data.restartTime
+          ? new Date(data.restartTime).getTime()
+          : null
+      );
+      setNowMs(Date.now());
       setIsRunning(running);
       const content = data.resolvedContent?.content
         ? parseEditorContent(data.resolvedContent.content)
@@ -124,12 +132,15 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
 
   useEffect(() => {
     if (isRunning) {
-      intervalRef.current = setInterval(() => setElapsed((t) => t + 1), 1000);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => setNowMs(Date.now()), 250);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = null;
     };
   }, [isRunning]);
 
@@ -137,7 +148,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
     setStep('setup');
     setTopic('');
     setSelectedSubject(null);
-    setElapsed(0);
+    setElapsedBase(0);
+    setRunningSinceMs(null);
+    setNowMs(Date.now());
     setIsRunning(false);
     setNoteOpen(true);
     setNoteContent(initialTextEditorValue);
@@ -160,10 +173,23 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
             finishTimestamp: nowKST(),
           },
         },
-        { onSuccess: () => setIsRunning(false) }
+        {
+          onSuccess: () => {
+            setElapsedBase(elapsed);
+            setRunningSinceMs(null);
+            setNowMs(Date.now());
+            setIsRunning(false);
+          },
+        }
       );
     } else {
-      resumeTimer(studyNoteId, { onSuccess: () => setIsRunning(true) });
+      resumeTimer(studyNoteId, {
+        onSuccess: () => {
+          setRunningSinceMs(Date.now());
+          setNowMs(Date.now());
+          setIsRunning(true);
+        },
+      });
     }
   };
 
@@ -206,6 +232,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       },
       {
         onSuccess: () => {
+          setElapsedBase(elapsed);
+          setRunningSinceMs(null);
+          setNowMs(Date.now());
           setIsRunning(false);
           setStep('complete');
         },
@@ -273,7 +302,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
                 {
                   onSuccess: ({ id }) => {
                     setStudyNoteId(id);
-                    setElapsed(0);
+                    setElapsedBase(0);
+                    setRunningSinceMs(Date.now());
+                    setNowMs(Date.now());
                     setIsRunning(true);
                     setStep('running');
                   },
@@ -299,7 +330,9 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
               if (!studyNoteId) return;
               resetTimer(studyNoteId, {
                 onSuccess: () => {
-                  setElapsed(0);
+                  setElapsedBase(0);
+                  setRunningSinceMs(Date.now());
+                  setNowMs(Date.now());
                   setIsRunning(true);
                 },
               });
