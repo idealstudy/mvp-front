@@ -18,7 +18,10 @@ export const InviteLoginModal = ({
 }: InviteLoginModalProps) => {
   return (
     <Dialog isOpen={isOpen}>
-      <Dialog.Content className="tablet:w-125 tablet:p-9 w-[285px] gap-6 p-5">
+      <Dialog.Content
+        data-testid="invite-login-modal"
+        className="tablet:w-125 tablet:p-9 w-[285px] gap-6 p-5"
+      >
         <Dialog.Header className="flex-col items-end gap-2">
           <button
             type="button"
@@ -45,6 +48,7 @@ export const InviteLoginModal = ({
             href={`${PUBLIC.CORE.LOGIN}?token=${encodeURIComponent(inviteToken)}`}
           >
             <Button
+              data-testid="invite-login-modal-submit-button"
               size="small"
               className="w-full rounded-sm"
             >
