@@ -12,11 +12,11 @@ interface CommentCardHeaderProps {
   roleLabel: string;
 }
 
-const getFallbackProfileImage = (roleLabel: string): string => {
+const getFallbackProfileImage = (roleLabel: string) => {
   if (roleLabel === '학생') return DEFAULT_PROFILE_IMAGE.STUDENT;
   if (roleLabel === '부모님') return DEFAULT_PROFILE_IMAGE.PARENT;
-
-  return DEFAULT_PROFILE_IMAGE.TEACHER;
+  if (roleLabel === '선생님') return DEFAULT_PROFILE_IMAGE.TEACHER;
+  return DEFAULT_PROFILE_IMAGE.COMMON;
 };
 
 export const CommentCardHeader = ({
@@ -24,19 +24,19 @@ export const CommentCardHeader = ({
   authorName,
   roleLabel,
 }: CommentCardHeaderProps) => {
+  // 역할에 맞는 기본 이미지 계산
   const fallbackProfileImage = useMemo(
     () => getFallbackProfileImage(roleLabel),
     [roleLabel]
   );
-  const safeProfileImageSrc = useMemo(
-    () => getProfileImageSrc(profileImageSrc, fallbackProfileImage),
-    [fallbackProfileImage, profileImageSrc]
+
+  const [imageSrc, setImageSrc] = useState(() =>
+    getProfileImageSrc(profileImageSrc, fallbackProfileImage)
   );
-  const [imageSrc, setImageSrc] = useState(safeProfileImageSrc);
 
   useEffect(() => {
-    setImageSrc(safeProfileImageSrc);
-  }, [safeProfileImageSrc]);
+    setImageSrc(getProfileImageSrc(profileImageSrc, fallbackProfileImage));
+  }, [profileImageSrc, fallbackProfileImage]);
 
   const handleImageError = (): void => {
     setImageSrc(fallbackProfileImage);
