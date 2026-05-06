@@ -10,6 +10,7 @@ import {
 } from '@/features/dashboard/connect/hooks/use-connection';
 import { ConfirmDialog, DialogAction } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 import { X } from 'lucide-react';
 
 export default function ParentProfileExtra() {
@@ -67,7 +68,7 @@ export default function ParentProfileExtra() {
               <div className="flex min-w-0 items-center gap-2">
                 <div className="bg-background-gray relative size-8 shrink-0 overflow-hidden rounded-full">
                   <Image
-                    src="/character/img_profile_student01.png"
+                    src={DEFAULT_PROFILE_IMAGE.STUDENT}
                     alt="프로필 이미지"
                     fill
                     sizes="32px"

@@ -12,7 +12,7 @@ import {
   parseEditorContent,
 } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
-import { PRIVATE, PUBLIC } from '@/shared/constants';
+import { DEFAULT_PROFILE_IMAGE, PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { trackDedu101StudyroomInfoView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
@@ -342,7 +342,7 @@ export const StudyroomPreviewIntroTab = ({
                     >
                       <div className="flex items-start gap-3">
                         <Image
-                          src="/character/img_profile_student01.png"
+                          src={DEFAULT_PROFILE_IMAGE.STUDENT}
                           alt="student"
                           width={36}
                           height={36}

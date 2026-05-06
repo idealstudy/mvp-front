@@ -6,6 +6,7 @@ import { z } from 'zod';
 const BasicInfoDomainSchema = z.object({
   name: z.string(),
   email: z.string(),
+  profileImageUrl: z.string().nullable(),
   isProfilePublic: z.boolean(),
   role: z.literal('ROLE_PARENT'),
   profilePublicKorean: z.enum(['공개', '비공개']),

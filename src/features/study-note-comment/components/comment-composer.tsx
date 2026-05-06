@@ -7,12 +7,14 @@ import {
   getCommentProfileImageSrc,
   getCommentRoleLabel,
 } from '@/entities/study-note-comment';
+import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import {
   TextEditor,
   hasMeaningfulEditorContent,
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
+import { getProfileImageSrc } from '@/shared/constants';
 import { PRIVATE } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks';
 import {
@@ -50,11 +52,18 @@ export const CommentComposer = ({
 }: CommentComposerProps) => {
   const { role } = useRole();
   const { member } = useMemberStore();
+  const { data: profileImageData } = useProfileImage({
+    enabled: !!member,
+  });
   const { mutate, isPending } = useCreateComment();
   const router = useRouter();
 
   const isSubmitDisabled = !hasMeaningfulEditorContent(value) || isPending;
-  const profileImageSrc = getCommentProfileImageSrc(role);
+  const fallbackProfileImageSrc = getCommentProfileImageSrc(role);
+  const profileImageSrc = getProfileImageSrc(
+    profileImageData?.imageUrl,
+    fallbackProfileImageSrc
+  );
   const roleLabel = getCommentRoleLabel(role);
   const authorName = member?.name ?? roleLabel;
 

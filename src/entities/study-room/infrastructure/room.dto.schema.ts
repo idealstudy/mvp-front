@@ -3,6 +3,12 @@ import { z } from 'zod';
 
 import { base } from './room.base.schema';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 공용
  * ────────────────────────────────────────────────────*/
@@ -72,6 +78,7 @@ const RoomMemberItemSchema = z.object({
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
+    profileImageUrl: NullableProfileImageUrlSchema,
     joinDate: z.string(),
   }),
   parentInfo: z.object({
@@ -79,6 +86,7 @@ const RoomMemberItemSchema = z.object({
     id: z.number().int(),
     name: z.string(),
     email: z.string(),
+    profileImageUrl: NullableProfileImageUrlSchema,
     joinDate: z.string(),
   }),
 });

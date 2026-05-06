@@ -219,7 +219,7 @@ const QuestionAnswer = ({
               src="/qna/reply.svg"
               width={56}
               height={24}
-              alt="replay icon"
+              alt="reply icon"
             />
             <span className="font-body2-heading">선생님 답글</span>
           </div>

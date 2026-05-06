@@ -3,7 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { PUBLIC } from '@/shared/constants';
+import {
+  DEFAULT_PROFILE_IMAGE,
+  PUBLIC,
+  getProfileImageSrc,
+} from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { trackDedu101TeacherClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
@@ -25,8 +29,6 @@ export const TeacherCard = ({
   sort,
   subject,
 }: TeacherCardProps) => {
-  // TODO 프로필 이미지 연결
-  const teacherImg = teacher.id % 2 === 0 ? '1' : '2';
   const role = useMemberStore((s) => s.member?.role ?? null);
 
   const visibleTags = teacher.specialties?.slice(0, MAX_VISIBLE_TAGS) ?? [];
@@ -56,10 +58,10 @@ export const TeacherCard = ({
         <div className="border-gray-3 relative h-16 w-16 shrink-0 overflow-hidden rounded-full border bg-gray-50 p-0.5">
           <div className="relative h-full w-full overflow-hidden rounded-full">
             <Image
-              src={
-                teacher.profileImageUrl ??
-                `/character/img_profile_teacher0${teacherImg}.png`
-              }
+              src={getProfileImageSrc(
+                teacher.profileImageUrl,
+                DEFAULT_PROFILE_IMAGE.TEACHER
+              )}
               alt={teacher.name}
               fill
               className="object-cover"

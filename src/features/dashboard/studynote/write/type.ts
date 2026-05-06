@@ -17,6 +17,7 @@ export interface ConnectedMember {
   id: number;
   name: string;
   email: string;
+  profileImageUrl: string | null;
   joinDate: string | null;
 }
 

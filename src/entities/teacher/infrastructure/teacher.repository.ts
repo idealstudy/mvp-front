@@ -37,6 +37,7 @@ const transformBasicInfoToFrontend = (
   domain.basicInfo.parse({
     name: basicInfoDto.name,
     email: basicInfoDto.email,
+    profileImageUrl: basicInfoDto.profileImageUrl,
     isProfilePublic: basicInfoDto.isProfilePublic,
     simpleIntroduction: basicInfoDto.simpleIntroduction,
     role: 'ROLE_TEACHER' as const,
