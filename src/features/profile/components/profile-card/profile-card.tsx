@@ -4,11 +4,10 @@ import Image from 'next/image';
 
 import { UserBasicInfo } from '@/entities/member/types';
 import { FrontendTeacherReport } from '@/entities/teacher';
+import ParentProfileExtra from '@/features/profile/components/profile-card/parent-profile-extra';
 import StudentProfileExtra from '@/features/profile/components/profile-card/student-profile-extra';
 import TeacherProfileExtra from '@/features/profile/components/profile-card/teacher-profile-extra';
 import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
-
-import ParentProfileExtra from './parent-profile-extra';
 
 export default function ProfileCard({
   basicInfo,

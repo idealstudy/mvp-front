@@ -6,6 +6,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { UserBasicInfo } from '@/entities/member/types';
+import { parentKeys } from '@/entities/parent';
+import { studentKeys } from '@/entities/student';
+import { teacherKeys } from '@/entities/teacher';
 import EditProfileImageField from '@/features/mypage/common/components/edit-profile-image-field';
 import { useUpdateStudentBasicInfo } from '@/features/mypage/common/hooks/student/use-basic-info';
 import { useUpdateTeacherBasicInfo } from '@/features/mypage/common/hooks/teacher/use-basic-info';
@@ -14,7 +17,7 @@ import {
   BasicInfoForm,
   BasicInfoFormSchema,
 } from '@/features/mypage/common/schema/schema';
-import { ProfileChangeModal } from '@/features/profile-image/components/profile_change_modal';
+import { ProfileChangeModal } from '@/features/profile-image/components/profile-change-modal';
 import {
   useProfileImage,
   useUpdateProfileImage,
@@ -31,6 +34,7 @@ import {
 } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useUpdateParentBasicInfo } from '../hooks/parent/use-basic-info';
 
@@ -44,8 +48,8 @@ export default function EditProfileCard({
   setIsEditMode,
 }: EditProfileCardProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // TODO Parent API 추가
   const updateTeacherBasicInfoMutation = useUpdateTeacherBasicInfo();
   const updateStudentBasicInfoMutation = useUpdateStudentBasicInfo();
   const updateParentBasicInfoMutation = useUpdateParentBasicInfo();
@@ -82,6 +86,26 @@ export default function EditProfileCard({
     mode: 'onChange',
   });
 
+  const invalidateBasicInfo = () => {
+    if (basicInfo.role === 'ROLE_TEACHER') {
+      queryClient.invalidateQueries({ queryKey: teacherKeys.basicInfo() });
+      return;
+    }
+
+    if (basicInfo.role === 'ROLE_STUDENT') {
+      queryClient.invalidateQueries({
+        queryKey: studentKeys.mypage.basicInfo(),
+      });
+      return;
+    }
+
+    if (basicInfo.role === 'ROLE_PARENT') {
+      queryClient.invalidateQueries({
+        queryKey: parentKeys.mypage.basicInfo(),
+      });
+    }
+  };
+
   const handleSaveError = (error: unknown) => {
     handleApiError(error, classifyMypageError, {
       onAuth: () => {
@@ -96,7 +120,6 @@ export default function EditProfileCard({
 
   const updateBasicInfoIfNeeded = async (data: BasicInfoForm) => {
     if (!isDirty) return;
-
     if (basicInfo.role === 'ROLE_TEACHER') {
       await updateTeacherBasicInfoMutation.mutateAsync({
         name: data.name,
@@ -128,6 +151,7 @@ export default function EditProfileCard({
 
     const uploaded = await uploadAsync(profileImage.imageFile);
     await updateImage({ mediaId: uploaded.mediaId });
+    invalidateBasicInfo();
   };
 
   const onSubmit = async (data: BasicInfoForm) => {
