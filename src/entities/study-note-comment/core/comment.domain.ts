@@ -33,12 +33,12 @@ const ROLE_META: Record<
   },
   ROLE_PARENT: {
     label: '부모님',
-    profileImageSrc: DEFAULT_PROFILE_IMAGE.TEACHER,
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.PARENT,
     isStudent: false,
   },
   ROLE_ADMIN: {
     label: '관리자',
-    profileImageSrc: DEFAULT_PROFILE_IMAGE.TEACHER,
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.COMMON,
     isStudent: false,
   },
   ROLE_MEMBER: {
