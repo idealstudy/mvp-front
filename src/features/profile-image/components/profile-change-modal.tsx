@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { Button, Dialog } from '@/shared/components/ui';
 import { cn } from '@/shared/lib/utils';
-import { ImagePlus, MoreVertical, X } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 
 import { illustrationItems } from '../constants/illustration-items';
 
@@ -43,7 +43,6 @@ const ActionItem = ({ icon, label, withDivider = true }: ActionItemProps) => {
   );
 };
 
-// TODO: 이미지 자르기 추가
 export const ProfileChangeModal = ({
   isOpen,
   onOpenChange,
@@ -90,7 +89,7 @@ export const ProfileChangeModal = ({
             프로필 사진 추가
           </Dialog.Title>
 
-          <button
+          {/* <button
             type="button"
             aria-label="프로필 사진 더보기"
             className={cn(
@@ -100,7 +99,7 @@ export const ProfileChangeModal = ({
             )}
           >
             <MoreVertical size={22} />
-          </button>
+          </button> */}
         </Dialog.Header>
         <Dialog.Body className="bg-gray-white overflow-hidden">
           <section className="border-gray-2 border-b px-4 py-5">
@@ -110,7 +109,6 @@ export const ProfileChangeModal = ({
               </h3>
             </div>
 
-            {/* 샘플 썸네일 UI만 제공하며 실제 선택 로직은 아직 연결하지 않습니다. */}
             <div className="relative">
               <div
                 className="flex gap-3 overflow-hidden px-2"
