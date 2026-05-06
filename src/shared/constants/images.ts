@@ -12,6 +12,10 @@ export const IMG = {
       label: '학부모',
       src: '/character/img_signup_type03.png',
     },
+    HEADER: {
+      label: '헤더',
+      src: '/img_header_profile.svg',
+    },
   },
 } as const;
 
@@ -24,6 +28,7 @@ export const DEFAULT_PROFILE_IMAGE = {
   PARENT: '/character/img_signup_type03.png',
   MEMBER: '/character/img_signup_type01.png',
   COMMON: '/character/img_signup_type01.png',
+  HEADER: '/img_header_profile.svg',
 } as const;
 
 export const getProfileImageSrc = (

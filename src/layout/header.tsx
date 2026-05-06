@@ -36,9 +36,11 @@ import {
 } from '@/shared/components/ui/popover';
 import {
   BUTTON_BASE,
+  DEFAULT_PROFILE_IMAGE,
   PRIVATE,
   PUBLIC,
   ROLE_META_MAP,
+  getProfileImageSrc,
   link,
 } from '@/shared/constants';
 import { cn } from '@/shared/lib';
@@ -58,8 +60,10 @@ export const Header = () => {
   const { data: profileImageData } = useProfileImage({
     enabled: !!session,
   });
-  const profileImageSrc =
-    profileImageData?.imageUrl || '/img_header_profile.svg';
+  const profileImageSrc = getProfileImageSrc(
+    profileImageData?.imageUrl,
+    DEFAULT_PROFILE_IMAGE.HEADER
+  );
 
   // 역할에 따라 조건부로 API 호출
   const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({

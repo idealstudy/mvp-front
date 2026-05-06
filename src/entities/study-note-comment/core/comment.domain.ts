@@ -56,6 +56,16 @@ export const getCommentProfileImageSrc = (role?: Role): string => {
   return role ? ROLE_META[role].profileImageSrc : DEFAULT_PROFILE_IMAGE.TEACHER;
 };
 
+export const getCommentProfileImageSrcByRoleLabel = (
+  roleLabel: string
+): string => {
+  const roleMeta = Object.values(ROLE_META).find(
+    (meta) => meta.label === roleLabel
+  );
+
+  return roleMeta?.profileImageSrc ?? DEFAULT_PROFILE_IMAGE.COMMON;
+};
+
 const toCommentAuthorInfo = (authorInfo: z.infer<typeof dto.authorInfo>) => ({
   ...authorInfo,
   roleLabel: getCommentRoleLabel(authorInfo.role),

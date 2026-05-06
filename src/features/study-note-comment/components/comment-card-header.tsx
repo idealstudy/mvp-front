@@ -4,20 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Image from 'next/image';
 
-import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
+import { getCommentProfileImageSrcByRoleLabel } from '@/entities/study-note-comment';
+import { getProfileImageSrc } from '@/shared/constants';
 
 interface CommentCardHeaderProps {
   profileImageSrc: string;
   authorName: string;
   roleLabel: string;
 }
-
-const getFallbackProfileImage = (roleLabel: string) => {
-  if (roleLabel === '학생') return DEFAULT_PROFILE_IMAGE.STUDENT;
-  if (roleLabel === '부모님') return DEFAULT_PROFILE_IMAGE.PARENT;
-  if (roleLabel === '선생님') return DEFAULT_PROFILE_IMAGE.TEACHER;
-  return DEFAULT_PROFILE_IMAGE.COMMON;
-};
 
 export const CommentCardHeader = ({
   profileImageSrc,
@@ -26,7 +20,7 @@ export const CommentCardHeader = ({
 }: CommentCardHeaderProps) => {
   // 역할에 맞는 기본 이미지 계산
   const fallbackProfileImage = useMemo(
-    () => getFallbackProfileImage(roleLabel),
+    () => getCommentProfileImageSrcByRoleLabel(roleLabel),
     [roleLabel]
   );
 
