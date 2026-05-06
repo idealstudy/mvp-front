@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FieldPath, FormProvider, useForm } from 'react-hook-form';
 
 import { useRouter } from 'next/navigation';
@@ -48,6 +48,7 @@ import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { JSONContent } from '@tiptap/react';
 
 import { useUpdateStudyRoom } from '../sidebar/services/query';
 
@@ -87,6 +88,11 @@ export const fieldsPerStep: Record<Step, FieldPath<StudyRoomFormValues>[]> = {
     'schoolInfo.schoolLevel',
     'schoolInfo.grade',
   ],
+};
+
+const hasUploadingNode = (node: JSONContent): boolean => {
+  if (node.attrs?.isUploading === true) return true;
+  return (node.content ?? []).some(hasUploadingNode);
 };
 
 export default function StudyRoomFlow({
@@ -307,6 +313,12 @@ export default function StudyRoomFlow({
     router,
   ]);
 
+  const characteristic = methods.watch('characteristic');
+  const isCharacteristicUploading = useMemo(
+    () => hasUploadingNode(characteristic),
+    [characteristic]
+  );
+
   return (
     <section className="flex flex-col">
       <div className="mx-auto w-fit">
@@ -333,7 +345,7 @@ export default function StudyRoomFlow({
             <StepOne
               mode={mode}
               onNext={handleNext}
-              disabled={!isStepValid || isMutating}
+              disabled={!isStepValid || isMutating || isCharacteristicUploading}
               canSubmitEdit={canSubmitEdit}
               onCancel={handleCancel}
               onRequestEdit={() =>
