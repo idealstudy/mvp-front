@@ -23,6 +23,7 @@ const transformBasicInfoToFrontend = (
   domain.basicInfo.parse({
     name: basicInfoDto.name,
     email: basicInfoDto.email,
+    profileImageUrl: basicInfoDto.profileImageUrl,
     isProfilePublic: basicInfoDto.isProfilePublic,
     role: 'ROLE_PARENT' as const,
     profilePublicKorean: getProfilePublicKorean(basicInfoDto.isProfilePublic),

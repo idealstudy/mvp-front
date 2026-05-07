@@ -19,6 +19,7 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui/button';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
@@ -37,6 +38,7 @@ type Props = {
   content: string;
   rawContent?: string;
   authorName: string;
+  authorProfileImageUrl: string | null;
   regDate: string;
   studyRoomId: number;
   contextId: number;
@@ -48,6 +50,7 @@ const QuestionContent = ({
   content,
   rawContent,
   authorName,
+  authorProfileImageUrl,
   regDate,
   studyRoomId,
   contextId,
@@ -238,7 +241,16 @@ const QuestionContent = ({
       <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
         <div className="flex flex-row justify-between">
           <div className="flex flex-row items-center gap-3">
-            <div className="bg-gray-scale-gray-10 h-10 w-10 rounded-full" />
+            <Image
+              src={getProfileImageSrc(
+                authorProfileImageUrl,
+                DEFAULT_PROFILE_IMAGE.STUDENT
+              )}
+              width={40}
+              height={40}
+              alt={`${authorName} 프로필`}
+              className="h-10 w-10 rounded-full object-cover"
+            />
             <span className="font-body2-heading">{authorName}</span>
           </div>
           {role === 'ROLE_STUDENT' && (

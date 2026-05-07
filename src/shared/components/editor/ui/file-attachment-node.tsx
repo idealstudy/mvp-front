@@ -1,11 +1,13 @@
 'use client';
 
+import { useEditorViewerContext } from '@/shared/components/editor/model/editor-viewer-context';
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react';
 import {
   Download,
   FileArchive,
   FileSpreadsheet,
   FileText,
+  Lock,
   Presentation,
 } from 'lucide-react';
 
@@ -35,13 +37,21 @@ const getFileIcon = (filename: string) => {
 
 export const FileAttachmentNode = ({ node }: NodeViewProps) => {
   const { url, name, size, isUploading } = node.attrs as {
-    url: string;
+    url: string | null;
     name: string;
     size: number;
     isUploading?: boolean;
   };
 
+  const { onLoginRequired, shouldBlockDownload } = useEditorViewerContext();
+  const isMasked = (!url || shouldBlockDownload) && !isUploading;
+
   const handleDownload = () => {
+    if (!url || shouldBlockDownload) {
+      onLoginRequired?.();
+      return;
+    }
+
     const link = document.createElement('a');
     link.href = url;
     link.download = name;
@@ -76,11 +86,16 @@ export const FileAttachmentNode = ({ node }: NodeViewProps) => {
             type="button"
             onClick={handleDownload}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-300"
-            title="다운로드"
+            title={isMasked ? '로그인 후 다운로드 가능' : '다운로드'}
           >
-            <Download className="h-4 w-4" />
+            {isMasked ? (
+              <Lock className="h-4 w-4" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
           </button>
         )}
+
         {isUploading && (
           <div className="flex h-8 w-8 shrink-0 items-center justify-center">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />

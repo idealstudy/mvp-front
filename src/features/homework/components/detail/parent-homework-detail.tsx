@@ -64,6 +64,7 @@ export const ParentHomeworkDetail = ({
               }
               rawContent={myHomeworkStudent.submission.content ?? '-'}
               authorName={myHomeworkStudent.studentName}
+              profileImageUrl={myHomeworkStudent.studentProfileImageUrl}
               regDate={myHomeworkStudent.submission.modifiedSubmissionAt ?? '-'}
               submitStatus={myHomeworkStudent.status}
               studyRoomId={studyRoomId}

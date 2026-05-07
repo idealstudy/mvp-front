@@ -11,7 +11,7 @@ export interface PublicTeacherProfile {
   id: number;
   name: string;
   nickname?: string;
-  profileImageUrl?: string;
+  profileImageUrl: string | null;
   bio?: string;
   specialties?: string[]; // 과목, 학년 등
   experience?: string;
@@ -32,7 +32,7 @@ export interface PublicStudyRoom {
   description: string;
   teacherId: number;
   teacherName: string;
-  teacherProfileImageUrl?: string;
+  teacherProfileImageUrl?: string | null;
   thumbnailUrl?: string | null;
   subjectType?: keyof typeof SUBJECT_TO_KOREAN;
   modality?: keyof typeof MODALITY_TO_KOREAN;

@@ -17,6 +17,7 @@ const StudentDashboardHomeworkListShape = dto.dashboard.homeworkList;
 const BasicInfoDomainSchema = z.object({
   name: z.string(),
   email: z.string(),
+  profileImageUrl: z.string().nullable(),
   isProfilePublic: z.boolean(),
   learningGoal: z.string().nullable(),
   role: z.literal('ROLE_STUDENT'),

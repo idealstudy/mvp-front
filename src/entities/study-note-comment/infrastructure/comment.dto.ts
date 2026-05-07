@@ -2,6 +2,12 @@ import { dto as memberDto } from '@/entities/member';
 import { sharedSchema } from '@/types';
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 공통 하위 DTO - 댓글 해석 결과
  * ──────────────────────────────────────────────────── */
@@ -17,6 +23,7 @@ const CommentAuthorInfoDtoSchema = z.object({
   id: z.number().int().nonnegative(),
   role: memberDto.role,
   name: z.string(),
+  profileImageUrl: NullableProfileImageUrlSchema,
 });
 
 /* ─────────────────────────────────────────────────────

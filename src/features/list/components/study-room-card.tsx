@@ -10,6 +10,7 @@ import {
   SCHOOL_LEVEL_TO_KOREAN,
   SUBJECT_TO_KOREAN,
 } from '@/entities/study-room-preview/core/preview.domain';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { trackDedu101StudyroomFeatureClick } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
@@ -95,7 +96,10 @@ export const StudyRoomCard = ({ studyRoom }: StudyRoomCardProps) => {
           <p className="font-body1-heading">{studyRoom.name}</p>
           <div className="flex items-center gap-2">
             <Image
-              src="/character/img_profile_teacher01.png"
+              src={getProfileImageSrc(
+                studyRoom.teacherProfileImageUrl,
+                DEFAULT_PROFILE_IMAGE.TEACHER
+              )}
               width={32}
               height={32}
               alt={`${studyRoom.teacherName} 선생님 프로필 이미지`}

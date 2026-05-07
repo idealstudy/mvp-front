@@ -8,6 +8,7 @@ import { useStudentHomeworkDetail } from '@/features/homework/hooks/student/useS
 import { ColumnLayout } from '@/layout/column-layout';
 import { DialogAction, DialogState } from '@/shared/components/dialog';
 import { MiniSpinner } from '@/shared/components/loading';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 
 import { FeedbackAnswer } from '../write/components/homework-feedback-answer';
 import { WriteFormArea } from '../write/components/homework-write-form-area';
@@ -95,6 +96,9 @@ export const StudentHomeworkDetail = ({
               '-'
             }
             authorName={data.homework.teacherName ?? '-'}
+            profileImageUrl={data.homework.teacherProfileImageUrl}
+            defaultProfileImageUrl={DEFAULT_PROFILE_IMAGE.TEACHER}
+            authorSuffix="선생님"
             regDate={data.homework.modifiedAt ?? '-'}
           />
         )}
@@ -116,6 +120,7 @@ export const StudentHomeworkDetail = ({
                   }
                   rawContent={item.data.submission?.content ?? '-'}
                   authorName={item.data.studentName}
+                  profileImageUrl={item.data.studentProfileImageUrl}
                   regDate={item.data.submission?.modifiedSubmissionAt ?? '-'}
                   submitStatus={item.data.status}
                   studyRoomId={studyRoomId}
@@ -153,6 +158,7 @@ export const StudentHomeworkDetail = ({
               <StudentHomeworkContent
                 content="다른 학생이 제출한 과제는 확인할 수 없습니다."
                 authorName={item.data.studentName}
+                profileImageUrl={item.data.studentProfileImageUrl}
                 regDate={item.data.modifiedSubmissionAt ?? '-'}
               />
 

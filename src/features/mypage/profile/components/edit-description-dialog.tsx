@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -21,10 +21,16 @@ import {
 } from '@/shared/components/editor';
 import { Button, Dialog } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
+import { JSONContent } from '@tiptap/react';
 import { Pen } from 'lucide-react';
 
 type EditHighlightDialogProps = {
   description?: FrontendTeacherDescription;
+};
+
+const hasUploadingNode = (node: JSONContent): boolean => {
+  if (node.attrs?.isUploading === true) return true;
+  return (node.content ?? []).some(hasUploadingNode);
 };
 
 export default function EditHighlightDialog({
@@ -107,6 +113,9 @@ export default function EditHighlightDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog.status]);
 
+  // 이미지 업로드 상태
+  const isUploading = useMemo(() => hasUploadingNode(value), [value]);
+
   return (
     <>
       <button
@@ -154,7 +163,11 @@ export default function EditHighlightDialog({
               variant="secondary"
               size="small"
               onClick={handleSave}
-              disabled={updateTeacherDescriptionMutation.isPending || !isDirty}
+              disabled={
+                updateTeacherDescriptionMutation.isPending ||
+                !isDirty ||
+                isUploading
+              }
             >
               저장
             </Button>

@@ -22,6 +22,7 @@ export const transformMembersData = (
       joinText: formatDateDot(info.joinDate),
       outText: info.outDate ? formatDateDot(info.outDate) : null,
       guardianCount,
+      avatarSrc: info.profileImageUrl || undefined,
       consultationCount: info.consultationCount ?? 0,
       isTerminated: member.studentInfo.state === 'TERMINATED',
     });
