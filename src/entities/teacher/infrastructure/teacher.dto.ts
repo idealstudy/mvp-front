@@ -11,7 +11,7 @@ const NullableProfileImageUrlSchema = z
  * ────────────────────────────────────────────────────*/
 const BasicInfoDtoSchema = z.object({
   name: z.string(),
-  email: z.string(),
+  email: z.string().nullable(),
   profileImageUrl: NullableProfileImageUrlSchema,
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string().nullable(),

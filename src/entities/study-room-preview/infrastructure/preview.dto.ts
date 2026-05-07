@@ -116,6 +116,9 @@ const PreviewInquiryItemSchema = z.object({
   status: z.enum(['PENDING', 'ANSWERED']),
   regDate: z.string(),
   masked: z.boolean(),
+  title: z.string().nullable().optional(),
+  inquirerName: z.string().nullable().optional(),
+  isWrittenByMe: z.boolean().optional(),
 });
 
 const PreviewInquiryListSchema = z.object({
