@@ -4,9 +4,12 @@ import { ColumnDetail } from '@/entities/column';
 import {
   useColumnDetail,
   useMyColumnDetail,
+  useToggleColumnLike,
 } from '@/features/community/column/hooks/use-column-detail';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { getRelativeTimeString } from '@/shared/lib';
+import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { Heart } from 'lucide-react';
 
 export default function ColumnDetailView({
   id,
@@ -28,6 +31,8 @@ export default function ColumnDetailView({
     isError: privateError,
   } = useMyColumnDetail(id, { enabled: isPrivate });
 
+  const toggleColumnLikeMutation = useToggleColumnLike(id);
+
   const data = isPrivate ? privateData : publicData;
   const isLoading = isPrivate ? privateLoading : publicLoading;
   const isError = isPrivate ? privateError : publicError;
@@ -37,6 +42,16 @@ export default function ColumnDetailView({
   if (!data) return null;
 
   const content = parseEditorContent(data.resolvedContent.content);
+
+  const handleLikeToggle = () => {
+    toggleColumnLikeMutation.mutate(undefined, {
+      onError: (error) => {
+        handleApiError(error, classifyColumnError, {
+          onContext: () => {},
+        });
+      },
+    });
+  };
 
   return (
     <article>
@@ -62,6 +77,27 @@ export default function ColumnDetailView({
         ))}
       </div>
       <TextViewer value={content} />
+
+      {/* 좋아요 버튼 */}
+      {!isPrivate && (
+        <div className="mt-10 flex justify-center">
+          <button
+            onClick={handleLikeToggle}
+            disabled={toggleColumnLikeMutation.isPending}
+            className="border-line-line1 hover:bg-background-orange flex cursor-pointer items-center gap-1.5 rounded-full border px-8 py-2 transition-colors"
+          >
+            <Heart
+              size={28}
+              className={
+                data.liked === true
+                  ? 'fill-orange-5 text-orange-5'
+                  : 'text-gray-5'
+              }
+            />
+            <span className="text-gray-5">{data.likeCount}</span>
+          </button>
+        </div>
+      )}
     </article>
   );
 }

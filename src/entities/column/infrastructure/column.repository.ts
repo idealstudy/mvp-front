@@ -126,6 +126,14 @@ const approveColumn = async (id: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [PATCH] 칼럼 좋아요 토글 (본인 글 제외)
+ * ────────────────────────────────────────────────────*/
+const toggleColumnLike = async (id: number) => {
+  const response = await api.private.patch(`/common/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.likeToggle);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
@@ -139,4 +147,5 @@ export const repository = {
   getAdminColumnList,
   getAdminColumnDetail,
   approveColumn,
+  toggleColumnLike,
 };

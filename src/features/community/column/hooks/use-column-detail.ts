@@ -1,5 +1,5 @@
 import { ColumnDetail, columnKeys, repository } from '@/entities/column';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
  * [GET] 칼럼 상세 조회
@@ -32,3 +32,14 @@ export const useMyColumnDetail = (
     gcTime: 30 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });
+
+export const useToggleColumnLike = (id: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => repository.toggleColumnLike(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: columnKeys.all });
+    },
+  });
+};
