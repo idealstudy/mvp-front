@@ -65,6 +65,7 @@ export default function ColumnDetailView({
         <span>{data.authorName ?? data.authorNickname ?? '알 수 없음'}</span>
         <span>{getRelativeTimeString(data.regDate)}</span>
         <span>조회 {data.viewCount}</span>
+        <span>좋아요 {data.likeCount}</span>
       </div>
       <div className="mb-6 flex flex-wrap gap-2">
         {data.tags.map((tag) => (
