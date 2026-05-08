@@ -96,6 +96,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // 백엔드 공개 API 경로는 인증 없이 통과 (BFF에서 쿠키는 자동으로 붙음)
+  if (pathname.startsWith('/api/v1/public/')) {
+    return NextResponse.next();
+  }
+
   // 인증 가드
   return handleAuthGuard(req);
 }
