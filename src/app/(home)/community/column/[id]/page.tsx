@@ -9,6 +9,7 @@ import { repository } from '@/entities/column';
 import ColumnDetailView from '@/features/community/column/components/column-detail-view';
 import { generateColumnDetailMetadata } from '@/features/community/column/metadata';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
+import { isAxiosError } from 'axios';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,8 +31,9 @@ export async function generateMetadata({
     const origin = await getRequestOrigin();
     const columnDetail = await getDetail(Number(id));
     return generateColumnDetailMetadata(columnDetail, origin);
-  } catch {
-    notFound();
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 404) notFound();
+    return { title: SITE_CONFIG.name };
   }
 }
 
