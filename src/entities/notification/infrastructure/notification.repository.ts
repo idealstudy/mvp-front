@@ -64,6 +64,22 @@ const updateNotificationSetting = async (
   });
 };
 
+/* ─────────────────────────────────────────────────────
+ * [Read] 마케팅 수신 동의 여부 조회
+ * ────────────────────────────────────────────────────*/
+const getMarketingConsent = async () => {
+  const response = await api.private.get('/members/marketing-consent');
+  return unwrapEnvelope(response, dto.marketingConsent);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Update] 마케팅 수신 동의 여부 변경
+ * ────────────────────────────────────────────────────*/
+const toggleMarketingConsent = async () => {
+  const response = await api.private.patch('/members/marketing-consent/toggle');
+  return unwrapEnvelope(response, dto.marketingConsent);
+};
+
 export const repository = {
   notification: {
     getList: getNotificationList,
@@ -72,5 +88,7 @@ export const repository = {
     delete: deleteNotifications,
     getSettings: getNotificationSettings,
     updateSetting: updateNotificationSetting,
+    getMarketingConsent,
+    toggleMarketingConsent,
   },
 };

@@ -1,11 +1,16 @@
 'use client';
 
+import Link from 'next/link';
+
 import { NotificationCategory } from '@/entities/notification';
 import {
+  useMarketingConsent,
   useNotificationSettings,
+  useToggleMarketingConsent,
   useUpdateNotificationSetting,
 } from '@/features/settings/hooks/use-notification';
 import { Toggle } from '@/shared/components/ui/toggle';
+import { link } from '@/shared/constants';
 import { Info } from 'lucide-react';
 
 type ServiceSubCategory = Extract<
@@ -32,9 +37,10 @@ const SERVICE_SUB_ITEMS: Record<
 const SERVICE_SUB_KEYS = Object.keys(SERVICE_SUB_ITEMS) as ServiceSubCategory[];
 
 export default function NotificationSettings() {
-  // const [event, setEvent] = useState(true);
   const { data: notificationSettings } = useNotificationSettings();
   const updateNotificationSettingMutation = useUpdateNotificationSetting();
+  const { data: marketingConsent } = useMarketingConsent();
+  const toggleMarketingConsentMutation = useToggleMarketingConsent();
 
   const settingsMap = new Map(
     notificationSettings?.map((setting) => [setting.category, setting.enabled])
@@ -94,18 +100,14 @@ export default function NotificationSettings() {
         </div>
       </div>
 
-      {/* TODO API 연결 */}
       {/* 이벤트 혜택 알림 */}
-      {/* <div className="border-line-line1 rounded-xl border bg-white p-6">
+      <div className="border-line-line1 rounded-xl border bg-white p-6">
         <div className="mb-2 flex items-center gap-2">
           <Toggle
-            checked={event}
-            onCheckedChange={setEvent}
+            checked={marketingConsent ?? false}
+            onCheckedChange={() => toggleMarketingConsentMutation.mutate()}
           />
           <span className="font-body1-heading">이벤트 혜택 알림</span>
-          <span className="font-caption-normal text-text-sub2">
-            수신 동의 일자 : 2026.04.12 14:12
-          </span>
         </div>
         <p>
           <span aria-hidden>&gt;</span>
@@ -118,7 +120,7 @@ export default function NotificationSettings() {
             혜택 및 이벤트 정보 수신 동의 전문 보기
           </Link>
         </p>
-      </div> */}
+      </div>
     </div>
   );
 }

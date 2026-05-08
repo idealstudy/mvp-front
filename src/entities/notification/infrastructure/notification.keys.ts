@@ -3,4 +3,6 @@ export const notificationKeys = {
   list: () => [...notificationKeys.all, 'list'] as const,
   unread: () => [...notificationKeys.all, 'unread'] as const,
   settings: () => [...notificationKeys.all, 'settings'] as const,
+  marketingConsent: () =>
+    [...notificationKeys.all, 'marketingConsent'] as const,
 };

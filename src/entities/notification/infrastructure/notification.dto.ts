@@ -55,10 +55,16 @@ const NotificationSettingDtoSchema = z.object({
   enabled: z.boolean(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * api 응답(DTO 객체) - 마케팅 수신 동의 여부
+ * ────────────────────────────────────────────────────*/
+const MarketingConsentDtoSchema = z.boolean();
+
 export const dto = {
   schema: NotificationDtoSchema,
   arraySchema: z.array(NotificationDtoSchema),
   category: NotificationCategorySchema,
   setting: NotificationSettingDtoSchema,
   settingArray: z.array(NotificationSettingDtoSchema),
+  marketingConsent: MarketingConsentDtoSchema,
 };
