@@ -37,9 +37,11 @@ const SERVICE_SUB_ITEMS: Record<
 const SERVICE_SUB_KEYS = Object.keys(SERVICE_SUB_ITEMS) as ServiceSubCategory[];
 
 export default function NotificationSettings() {
-  const { data: notificationSettings } = useNotificationSettings();
+  const { data: notificationSettings, isLoading: isSettingsLoading } =
+    useNotificationSettings();
   const updateNotificationSettingMutation = useUpdateNotificationSetting();
-  const { data: marketingConsent } = useMarketingConsent();
+  const { data: marketingConsent, isLoading: isMarketingLoading } =
+    useMarketingConsent();
   const toggleMarketingConsentMutation = useToggleMarketingConsent();
 
   const settingsMap = new Map(
@@ -66,6 +68,11 @@ export default function NotificationSettings() {
                 enabled: checked,
               })
             }
+            disabled={
+              isSettingsLoading ||
+              (updateNotificationSettingMutation.isPending &&
+                updateNotificationSettingMutation.variables.category === 'ALL')
+            }
           />
           <span className="font-body1-heading">서비스 안내 알림</span>
         </div>
@@ -88,7 +95,13 @@ export default function NotificationSettings() {
                     enabled: checked,
                   })
                 }
-                disabled={!serviceEnabled}
+                disabled={
+                  !serviceEnabled ||
+                  isSettingsLoading ||
+                  (updateNotificationSettingMutation.isPending &&
+                    updateNotificationSettingMutation.variables.category ===
+                      category)
+                }
               />
               <span>{SERVICE_SUB_ITEMS[category].label}</span>
               <p className="font-caption-normal text-text-sub2 flex items-center gap-1">
@@ -106,6 +119,9 @@ export default function NotificationSettings() {
           <Toggle
             checked={marketingConsent ?? false}
             onCheckedChange={() => toggleMarketingConsentMutation.mutate()}
+            disabled={
+              isMarketingLoading || toggleMarketingConsentMutation.isPending
+            }
           />
           <span className="font-body1-heading">이벤트 혜택 알림</span>
         </div>
