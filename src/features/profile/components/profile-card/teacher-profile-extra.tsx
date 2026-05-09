@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { Button, Dialog } from '@/shared/components/ui';
+import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
@@ -25,80 +22,31 @@ export default function TeacherProfileExtra({
   teacherId,
 }: TeacherProfileExtraProps) {
   const router = useRouter();
-
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const role = useMemberStore((state) => state.member?.role);
-
-  const handleShareProfile = () => {
-    navigator.clipboard.writeText(
-      `${window.location.origin}/profile/teacher/${teacherId}`
-    );
-    setIsShareDialogOpen(true);
-  };
 
   return (
     <>
-      <div className="flex justify-between">
-        <div className="flex flex-col items-center">
-          <Image
-            src="/profile/ic_studynote.svg"
-            width={24}
-            height={24}
-            alt="누적 수업노트"
-          />
-          <span className="text-text-sub2 font-label-normal mt-1">
-            누적 수업노트
-          </span>
-          <span className="font-headline2-heading text-key-color-primary">
+      <div className="divide-gray-3 flex divide-x">
+        <div className="flex flex-1 flex-col items-center">
+          <span className="font-headline2-heading">
             {teacherNoteCount.toLocaleString()}개
           </span>
-        </div>
-        <div className="flex flex-col items-center">
-          <Image
-            src="/profile/ic_person.svg"
-            width={24}
-            height={24}
-            alt="누적 학생"
-          />
           <span className="text-text-sub2 font-label-normal mt-1">
-            누적 학생
-          </span>
-          <span className="font-headline2-heading text-key-color-primary">
-            {studentCount.toLocaleString()}명
+            수업노트
           </span>
         </div>
-        <div className="flex flex-col items-center">
-          <Image
-            src="/profile/ic_review.svg"
-            width={24}
-            height={24}
-            alt="누적 후기"
-          />
-          <span className="text-text-sub2 font-label-normal mt-1">
-            누적 후기
-          </span>
-          <span className="font-headline2-heading text-key-color-primary">
+        <div className="flex flex-1 flex-col items-center">
+          <span className="font-headline2-heading">
             {reviewCount.toLocaleString()}개
           </span>
+          <span className="text-text-sub2 font-label-normal mt-1">후기</span>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        {role !== 'ROLE_TEACHER' && (
-          <Button
-            onClick={() => {
-              router.push(PUBLIC.INQUIRY.CREATE(teacherId));
-            }}
-          >
-            수업 상담하기
-          </Button>
-        )}
-        <Button
-          onClick={handleShareProfile}
-          variant="secondary"
-        >
-          프로필 공유하기
-        </Button>
+        <div className="flex flex-1 flex-col items-center">
+          <span className="font-headline2-heading">
+            {studentCount.toLocaleString()}명
+          </span>
+          <span className="text-text-sub2 font-label-normal mt-1">학생</span>
+        </div>
       </div>
 
       <div>
@@ -106,27 +54,15 @@ export default function TeacherProfileExtra({
         <p className="break-words whitespace-pre-wrap">{description}</p>
       </div>
 
-      {/* 공유하기 다이얼로그 */}
-      <Dialog
-        isOpen={isShareDialogOpen}
-        onOpenChange={setIsShareDialogOpen}
-      >
-        <Dialog.Content className="max-w-120">
-          <Dialog.Body className="mb-8 text-center">
-            <Dialog.Title>링크가 복사되었습니다.</Dialog.Title>
-          </Dialog.Body>
-          <Dialog.Footer className="flex justify-center">
-            <Dialog.Close asChild>
-              <Button
-                size="xsmall"
-                className="w-30"
-              >
-                확인
-              </Button>
-            </Dialog.Close>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog>
+      {role !== 'ROLE_TEACHER' && (
+        <Button
+          onClick={() => {
+            router.push(PUBLIC.INQUIRY.CREATE(teacherId));
+          }}
+        >
+          수업 상담하기
+        </Button>
+      )}
     </>
   );
 }
