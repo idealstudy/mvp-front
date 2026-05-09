@@ -6,11 +6,11 @@ import CareerSection from '@/features/profile/components/teacher/career-section'
 import DescriptionSection from '@/features/profile/components/teacher/description-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import TeachingNoteSection from '@/features/profile/components/teacher/teaching-note-section';
-import { useProfileCareers } from '@/features/profile/hooks/use-profile-careers';
-import { useProfileDescription } from '@/features/profile/hooks/use-profile-description';
-import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
-import { useProfileStudyRooms } from '@/features/profile/hooks/use-profile-study-rooms';
-import { useProfileTeachingNotes } from '@/features/profile/hooks/use-profile-teaching-notes';
+import { useTeacherProfileCareers } from '@/features/profile/hooks/teacher/use-profile-careers';
+import { useTeacherProfileDescription } from '@/features/profile/hooks/teacher/use-profile-description';
+import { useTeacherProfileReport } from '@/features/profile/hooks/teacher/use-profile-report';
+import { useTeacherProfileStudyRooms } from '@/features/profile/hooks/teacher/use-profile-study-rooms';
+import { useTeacherProfileTeachingNotes } from '@/features/profile/hooks/teacher/use-profile-teaching-notes';
 import {
   hasMeaningfulEditorContent,
   parseEditorContent,
@@ -23,7 +23,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isDescriptionLoading,
     isError: isDescriptionError,
     refetch: refetchDescription,
-  } = useProfileDescription(teacherId);
+  } = useTeacherProfileDescription(teacherId);
 
   const hasMeaningfulDescription = useMemo(
     () =>
@@ -39,7 +39,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isReportLoading,
     isError: isReportError,
     refetch: refetchReport,
-  } = useProfileReport(teacherId);
+  } = useTeacherProfileReport(teacherId);
 
   // 경력
   const {
@@ -47,7 +47,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isCareersLoading,
     isError: isCareersError,
     refetch: refetchCareers,
-  } = useProfileCareers(teacherId);
+  } = useTeacherProfileCareers(teacherId);
 
   // 수업 노트
   const {
@@ -55,7 +55,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isTeachingnotesLoading,
     isError: isTeachingnotesError,
     refetch: refetchTeachingnotes,
-  } = useProfileTeachingNotes(teacherId);
+  } = useTeacherProfileTeachingNotes(teacherId);
 
   // 스터디룸
   const {
@@ -63,7 +63,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isStudyRoomsLoading,
     isError: isStudyRoomsError,
     refetch: refetchStudyRooms,
-  } = useProfileStudyRooms(teacherId);
+  } = useTeacherProfileStudyRooms(teacherId);
 
   return (
     <>

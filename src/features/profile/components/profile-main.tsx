@@ -7,7 +7,7 @@ import { UserBasicInfo } from '@/entities/member/types';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
 import StudentSections from '@/features/profile/components/student-sections';
 import TeacherSections from '@/features/profile/components/teacher-sections';
-import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
+import { useTeacherProfileReport } from '@/features/profile/hooks/teacher/use-profile-report';
 import { ColumnLayout } from '@/layout';
 import { trackDedu101ProfileEnter } from '@/shared/lib/analytics';
 
@@ -20,7 +20,7 @@ export default function ProfileMain({
   memberId: number;
   role: Role;
 }) {
-  const teacherReportQuery = useProfileReport(memberId, {
+  const teacherReportQuery = useTeacherProfileReport(memberId, {
     enabled: role === 'ROLE_TEACHER',
   });
 
