@@ -17,7 +17,6 @@ import {
 } from '@/entities/teacher/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
-import { CommonResponse } from '@/types';
 
 import { dto, payload, query } from './teacher.dto';
 
@@ -46,9 +45,7 @@ const transformBasicInfoToFrontend = (
   });
 
 const getBasicInfo = async (): Promise<FrontendTeacherBasicInfo> => {
-  const response = await api.private.get<CommonResponse<TeacherBasicInfoDTO>>(
-    '/teacher/me/basic-info'
-  );
+  const response = await api.private.get('/teacher/me/basic-info');
 
   const basicInfoDto = unwrapEnvelope(response, dto.basicInfo);
 
@@ -272,9 +269,7 @@ const transformCareersToFrontend = (dtos: TeacherCareerListDTO) => {
 };
 
 const getTeacherCareerList = async (): Promise<FrontendTeacherCareerList> => {
-  const response = await api.private.get<CommonResponse<TeacherCareerListDTO>>(
-    '/teacher/me/careers'
-  );
+  const response = await api.private.get('/teacher/me/careers');
 
   const dtos = unwrapEnvelope(response, dto.teacherCareerList);
   return transformCareersToFrontend(dtos);
@@ -302,7 +297,7 @@ const deleteTeacherCareer = async (careerId: number): Promise<void> => {
  * [Read] 공개 프로필 - 선생님 기본 정보 조회
  * ────────────────────────────────────────────────────*/
 const getProfileBasicInfo = async (teacherId: number) => {
-  const response = await api.public.get<CommonResponse<TeacherBasicInfoDTO>>(
+  const response = await api.public.get(
     `/public/teachers/${teacherId}/basic-info`
   );
 
@@ -314,7 +309,7 @@ const getProfileBasicInfo = async (teacherId: number) => {
  * [Read] 공개 프로필 - 선생님 경력 목록 조회
  * ────────────────────────────────────────────────────*/
 const getProfileCareers = async (teacherId: number) => {
-  const response = await api.public.get<CommonResponse<TeacherCareerListDTO>>(
+  const response = await api.public.get(
     `/public/teachers/${teacherId}/careers`
   );
   const dtos = unwrapEnvelope(response, dto.teacherCareerList);
