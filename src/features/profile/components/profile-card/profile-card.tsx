@@ -63,7 +63,9 @@ export default function ProfileCard({
 
           {action && action}
         </div>
-        <p>{basicInfo.email}</p>
+        {basicInfo.role === 'ROLE_TEACHER' && basicInfo.isEmailPublic && (
+          <p>{basicInfo.email}</p>
+        )}
       </div>
 
       <Image
