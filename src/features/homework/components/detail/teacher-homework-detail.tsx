@@ -78,6 +78,7 @@ export const TeacherHomeworkDetail = ({
                 homeworkId={homeworkId}
                 studyRoomId={studyRoomId}
                 hasFeedback={!!student.feedback}
+                studentMemberId={student.studentId}
               />
 
               {/* 해당 학생의 피드백 */}
