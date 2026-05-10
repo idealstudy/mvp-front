@@ -23,10 +23,18 @@ const getColumnList = async (params: {
 };
 
 /* ─────────────────────────────────────────────────────
- * [READ] 칼럼 상세 조회 (공개)
+ * [READ] 칼럼 상세 조회 - SEO용 (비인증, liked 미포함)
  * ────────────────────────────────────────────────────*/
 const getColumnDetail = async (id: number) => {
   const response = await api.public.get(`/public/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.detail);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [READ] 칼럼 상세 조회 - 렌더링용 (인증, liked 포함)
+ * ────────────────────────────────────────────────────*/
+const getColumnDetailWithAuth = async (id: number) => {
+  const response = await api.private.get(`/public/column-articles/${id}`);
   return unwrapEnvelope(response, dto.detail);
 };
 
@@ -126,11 +134,20 @@ const approveColumn = async (id: number) => {
 };
 
 /* ─────────────────────────────────────────────────────
+ * [PATCH] 칼럼 좋아요 토글 (본인 글 제외)
+ * ────────────────────────────────────────────────────*/
+const toggleColumnLike = async (id: number) => {
+  const response = await api.private.patch(`/common/column-articles/${id}`);
+  return unwrapEnvelope(response, dto.likeToggle);
+};
+
+/* ─────────────────────────────────────────────────────
  * 내보내기
  * ────────────────────────────────────────────────────*/
 export const repository = {
   getColumnList,
   getColumnDetail,
+  getColumnDetailWithAuth,
   createColumn,
   updateColumn,
   deleteColumn,
@@ -139,4 +156,5 @@ export const repository = {
   getAdminColumnList,
   getAdminColumnDetail,
   approveColumn,
+  toggleColumnLike,
 };

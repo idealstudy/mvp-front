@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import DeleteColumnDialog from '@/features/community/column/components/delete-column-dialog';
@@ -11,10 +12,11 @@ import {
 } from '@/features/community/column/hooks/use-admin-column';
 import { useDeleteColumn } from '@/features/community/column/hooks/use-column-form';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
-import { Button } from '@/shared/components/ui';
-import { PRIVATE } from '@/shared/constants';
+import { Button, StatusBadge } from '@/shared/components/ui';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { getRelativeTimeString } from '@/shared/lib';
 import { classifyColumnError, handleApiError } from '@/shared/lib/errors';
+import { ExternalLink } from 'lucide-react';
 
 export default function AdminColumnDetailView({
   id,
@@ -71,11 +73,28 @@ export default function AdminColumnDetailView({
   return (
     <>
       <article>
-        {isPending && (
-          <div className="bg-gray-1 font-label-normal mb-6 rounded-lg py-3 text-center">
-            승인 대기 중인 글입니다.
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <StatusBadge
+              variant="default"
+              label="콘텐츠 검토"
+            />
+            <StatusBadge
+              variant={isPending ? 'warning' : 'success'}
+              label={isPending ? '승인 대기' : '게시 중'}
+            />
           </div>
-        )}
+          {!isPending && (
+            <Link
+              href={PUBLIC.COMMUNITY.COLUMN.DETAIL(id)}
+              className="text-gray-7 hover:text-gray-10 flex items-center gap-1 hover:underline"
+            >
+              게시글 바로가기
+              <ExternalLink size={14} />
+            </Link>
+          )}
+        </div>
+
         <div className="mb-6 flex items-start justify-between gap-4">
           <h1 className="font-title-heading">{data.title}</h1>
           <div className="flex shrink-0 items-center gap-2">
@@ -100,6 +119,7 @@ export default function AdminColumnDetailView({
           <span>{data.authorName ?? data.authorNickname ?? '알 수 없음'}</span>
           <span>{getRelativeTimeString(data.regDate)}</span>
           <span>조회 {data.viewCount}</span>
+          <span>좋아요 {data.likeCount}</span>
         </div>
         <div className="mb-6 flex flex-wrap gap-2">
           {data.tags.map((tag) => (

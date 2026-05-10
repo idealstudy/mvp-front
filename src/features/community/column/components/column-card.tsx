@@ -5,7 +5,7 @@ import { ColumnListItem } from '@/entities/column';
 import { PUBLIC } from '@/shared/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Eye } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 
 export default function ColumnCard({ column }: { column: ColumnListItem }) {
   return (
@@ -25,15 +25,30 @@ export default function ColumnCard({ column }: { column: ColumnListItem }) {
             className="rounded-t-xl object-cover"
           />
         )}
-        <div className="bg-gray-12/40 absolute top-4 right-4 flex items-center gap-1 rounded-lg px-2.5 py-1.5">
-          <Eye
-            width={16}
-            color="var(--color-gray-white)"
-            aria-label="조회수"
-          />
-          <span className="font-label-normal text-gray-white">
-            {column.viewCount}
-          </span>
+        <div className="bg-gray-12/40 absolute top-4 right-4 flex gap-2 rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1">
+            <Eye
+              width={16}
+              color="var(--color-gray-white)"
+              aria-label="조회수"
+            />
+            <span className="font-label-normal text-gray-white">
+              {column.viewCount}
+            </span>
+          </div>
+
+          {column.likeCount > 0 && (
+            <div className="flex items-center gap-1">
+              <Heart
+                width={16}
+                color="var(--color-gray-white)"
+                aria-label="좋아요"
+              />
+              <span className="font-label-normal text-gray-white">
+                {column.likeCount}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

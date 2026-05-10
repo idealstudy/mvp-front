@@ -9,6 +9,7 @@ import { repository } from '@/entities/column';
 import ColumnDetailView from '@/features/community/column/components/column-detail-view';
 import { generateColumnDetailMetadata } from '@/features/community/column/metadata';
 import BackLink from '@/features/dashboard/studynote/components/back-link';
+import { isAxiosError } from 'axios';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,7 +31,8 @@ export async function generateMetadata({
     const origin = await getRequestOrigin();
     const columnDetail = await getDetail(Number(id));
     return generateColumnDetailMetadata(columnDetail, origin);
-  } catch {
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 404) notFound();
     return { title: SITE_CONFIG.name };
   }
 }
@@ -47,24 +49,17 @@ export default async function ColumnDetailPage({
 
   if (isNaN(columnId)) notFound();
 
-  try {
-    const data = isPrivate ? undefined : await getDetail(columnId);
-
-    return (
-      <div className="mx-auto max-w-[1440px] pt-8 pb-20 lg:px-20">
-        <BackLink />
-        <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
-          <ColumnDetailView
-            id={columnId}
-            initialData={data}
-            isPrivate={isPrivate}
-          />
-        </div>
+  return (
+    <div className="mx-auto max-w-[1440px] pt-8 pb-20 lg:px-20">
+      <BackLink />
+      <div className="border-line-line1 mt-4 h-fit w-full rounded-xl border bg-white px-8 py-10">
+        <ColumnDetailView
+          id={columnId}
+          isPrivate={isPrivate}
+        />
       </div>
-    );
-  } catch {
-    notFound();
-  }
+    </div>
+  );
 }
 
 const getRequestOrigin = async () => {
