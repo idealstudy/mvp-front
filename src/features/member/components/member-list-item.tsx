@@ -8,6 +8,7 @@ import { ConsultationDialogs } from '@/features/member/components/consultation-d
 import MembersDropdown from '@/features/member/components/members-dropdown';
 import { StudyNoteMember } from '@/features/study-notes/model';
 import { EditIcon } from '@/shared/components/icons';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 
 type Props = {
@@ -51,7 +52,10 @@ export const MemberListItem = ({
       {/* Left: avatar + info */}
       <div className="flex min-w-0 items-center gap-3">
         <Image
-          src={member.avatarSrc ?? '/character/img_profile_student01.png'}
+          src={getProfileImageSrc(
+            member.avatarSrc,
+            DEFAULT_PROFILE_IMAGE.STUDENT
+          )}
           alt={`${member.name} 프로필`}
           width={36}
           height={36}

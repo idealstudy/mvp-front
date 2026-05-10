@@ -5,13 +5,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { ConfirmDialog } from '@/shared/components/dialog';
 import {
   TextViewer,
   hasMeaningfulEditorContent,
   parseEditorContent,
 } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
-import { PRIVATE } from '@/shared/constants';
+import { DEFAULT_PROFILE_IMAGE, PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn, getRelativeTimeString } from '@/shared/lib';
 import { trackDedu101StudyroomInfoView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
@@ -38,6 +39,7 @@ export const StudyroomPreviewIntroTab = ({
   const { data, isPending, isError } = usePreviewMainInfo(studyRoomId);
   const [showPendingSkeleton, setShowPendingSkeleton] = useState(false);
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const introSectionRef = useRef<HTMLElement | null>(null);
   const curriculumSectionRef = useRef<HTMLElement | null>(null);
   const reviewSectionRef = useRef<HTMLElement | null>(null);
@@ -191,189 +193,213 @@ export const StudyroomPreviewIntroTab = ({
   const classStyle = `${data.modalityKorean} · ${data.classFormKorean} 수업`;
 
   return (
-    <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-8">
-      <section className="flex w-full flex-col gap-12">
-        {/* 스터디룸 소개 */}
-        <article
-          data-track-section="intro"
-          ref={introSectionRef}
-          className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
-        >
-          {/* 수정하기 버튼 */}
-          {isMyStudyRoom && (
-            <button
-              type="button"
-              className={cn(
-                'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
-                'hover:border-orange-7 hover:text-orange-7 transition'
-              )}
-              onClick={moveToStudyRoomEditPage}
-              onMouseEnter={() => setIsEditButtonHovered(true)}
-              onMouseLeave={() => setIsEditButtonHovered(false)}
-            >
-              <Image
-                src={'/study-room-preview/ic-pencil.png'}
-                alt="modify"
-                width={24}
-                height={24}
-                className="transition"
-                style={{
-                  filter: isEditButtonHovered
-                    ? 'invert(45%) sepia(64%) saturate(1738%) hue-rotate(352deg) brightness(99%) contrast(97%)'
-                    : 'none',
-                }}
-              />
-              수정하기
-            </button>
-          )}
-          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
-            스터디룸 소개
-          </p>
-          <p className="font-body2-normal text-gray-scale-gray-95 break-keep">
-            {data.description || '선생님이 작성한 소개글이 아직 없어요.'}
-          </p>
-        </article>
-
-        {/* 스터디룸 특징 */}
-        {(hasCharacteristic || isMyStudyRoom) && (
-          <article className="bg-system-background-alt flex flex-col rounded-xl">
+    <>
+      <div className="border-line-line1 rounded-tr-xl rounded-b-xl border bg-white p-8">
+        <section className="flex w-full flex-col gap-12">
+          {/* 스터디룸 소개 */}
+          <article
+            data-track-section="intro"
+            ref={introSectionRef}
+            className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
+          >
+            {/* 수정하기 버튼 */}
+            {isMyStudyRoom && (
+              <button
+                type="button"
+                className={cn(
+                  'group text-gray-12 border-gray-5 font-label-normal flex h-8.5 w-[107px] cursor-pointer items-center justify-center gap-1 self-end rounded-md border px-2.5 py-1.5 whitespace-nowrap',
+                  'hover:border-orange-7 hover:text-orange-7 transition'
+                )}
+                onClick={moveToStudyRoomEditPage}
+                onMouseEnter={() => setIsEditButtonHovered(true)}
+                onMouseLeave={() => setIsEditButtonHovered(false)}
+              >
+                <Image
+                  src={'/study-room-preview/ic-pencil.png'}
+                  alt="modify"
+                  width={24}
+                  height={24}
+                  className="transition"
+                  style={{
+                    filter: isEditButtonHovered
+                      ? 'invert(45%) sepia(64%) saturate(1738%) hue-rotate(352deg) brightness(99%) contrast(97%)'
+                      : 'none',
+                  }}
+                />
+                수정하기
+              </button>
+            )}
             <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
-              스터디룸 특징
+              스터디룸 소개
+            </p>
+            <p className="font-body2-normal text-gray-scale-gray-95 break-keep">
+              {data.description || '선생님이 작성한 소개글이 아직 없어요.'}
+            </p>
+          </article>
+
+          {/* 스터디룸 특징 */}
+          {(hasCharacteristic || isMyStudyRoom) && (
+            <article className="bg-system-background-alt flex flex-col rounded-xl">
+              <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
+                스터디룸 특징
+              </p>
+
+              {hasCharacteristic ? (
+                <TextViewer
+                  value={parsedContent}
+                  onFileDownloadBlocked={() => setIsLoginModalOpen(true)}
+                  blockFileDownload={!member}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <p className="font-label-normal text-gray-7">
+                    아직 작성된 스터디룸 특징이 없어요.
+                  </p>
+                  <button
+                    className={cn(
+                      'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
+                      'hover:bg-orange-7/10 transition'
+                    )}
+                    onClick={moveToStudyRoomEditPage}
+                  >
+                    작성하러 가기
+                  </button>
+                </div>
+              )}
+            </article>
+          )}
+
+          {/* 스터디룸 운영 방식 */}
+          <article
+            data-track-section="curriculum"
+            ref={curriculumSectionRef}
+            className="bg-system-background-alt flex flex-col gap-1 rounded-xl"
+          >
+            <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
+              스터디룸 운영 방식
+            </p>
+            <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col gap-4">
+              <InfoItem
+                icon="/study-room-preview/ic-books.png"
+                alt="subject"
+                label="과목"
+                value={data.subjectTypeKorean}
+              />
+
+              <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
+
+              <InfoItem
+                icon="/study-room-preview/ic-person.png"
+                alt="target"
+                label="수업 대상"
+                value={targetText}
+              />
+
+              <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
+
+              <InfoItem
+                icon="/study-room-preview/ic-book.png"
+                alt="class-type"
+                label="수업 방식"
+                value={classStyle}
+              />
+            </div>
+          </article>
+
+          {/* 스터디룸 후기 */}
+          <article
+            data-track-section="review"
+            ref={reviewSectionRef}
+            className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
+          >
+            <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
+              스터디룸 후기
             </p>
 
-            {hasCharacteristic ? (
-              <TextViewer value={parsedContent} />
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p className="font-label-normal text-gray-7">
-                  아직 작성된 스터디룸 특징이 없어요.
-                </p>
-                <button
-                  className={cn(
-                    'font-body2-normal border-orange-7 text-orange-7 flex h-8.5 w-[107px] cursor-pointer items-center justify-center rounded-md border',
-                    'hover:bg-orange-7/10 transition'
-                  )}
-                  onClick={moveToStudyRoomEditPage}
-                >
-                  작성하러 가기
-                </button>
-              </div>
-            )}
-          </article>
-        )}
+            {hasReviews ? (
+              <>
+                <div className="desktop:flex-row desktop:items-center desktop:justify-between flex flex-col gap-3">
+                  <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+                    {REVIEW_TAGS.map((tag) => (
+                      <div
+                        key={tag}
+                        className="font-label-heading bg-orange-2 text-orange-7 rounded-xl px-4 py-2"
+                      >
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="font-label-normal text-orange-7">
+                    {reviews.length}개의 후기
+                  </p>
+                </div>
 
-        {/* 스터디룸 운영 방식 */}
-        <article
-          data-track-section="curriculum"
-          ref={curriculumSectionRef}
-          className="bg-system-background-alt flex flex-col gap-1 rounded-xl"
-        >
-          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
-            스터디룸 운영 방식
-          </p>
-          <div className="tablet:flex-row tablet:items-stretch tablet:gap-5 flex flex-col gap-4">
-            <InfoItem
-              icon="/study-room-preview/ic-books.png"
-              alt="subject"
-              label="과목"
-              value={data.subjectTypeKorean}
-            />
-
-            <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
-
-            <InfoItem
-              icon="/study-room-preview/ic-person.png"
-              alt="target"
-              label="수업 대상"
-              value={targetText}
-            />
-
-            <div className="tablet:block bg-gray-3 hidden w-px self-stretch" />
-
-            <InfoItem
-              icon="/study-room-preview/ic-book.png"
-              alt="class-type"
-              label="수업 방식"
-              value={classStyle}
-            />
-          </div>
-        </article>
-
-        {/* 스터디룸 후기 */}
-        <article
-          data-track-section="review"
-          ref={reviewSectionRef}
-          className="bg-system-background-alt flex flex-col gap-4 rounded-xl"
-        >
-          <p className="font-body1-heading tablet:font-headline1-heading text-text-main mb-4">
-            스터디룸 후기
-          </p>
-
-          {hasReviews ? (
-            <>
-              <div className="desktop:flex-row desktop:items-center desktop:justify-between flex flex-col gap-3">
-                <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
-                  {REVIEW_TAGS.map((tag) => (
+                <div className="flex flex-col gap-3 pr-2">
+                  {reviews.map((review) => (
                     <div
-                      key={tag}
-                      className="font-label-heading bg-orange-2 text-orange-7 rounded-xl px-4 py-2"
+                      key={review.id}
+                      className="border-gray-3 bg-system-background-alt flex flex-col gap-3 rounded-lg border p-4"
                     >
-                      {tag}
+                      <div className="flex items-start gap-3">
+                        <Image
+                          src={DEFAULT_PROFILE_IMAGE.STUDENT}
+                          alt="student"
+                          width={36}
+                          height={36}
+                          className="border-gray-12 h-9 w-9 rounded-full border object-cover p-0.5"
+                        />
+                        <div className="flex flex-1 flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <p className="font-body2-normal text-text-main">
+                              {review.srcMemberName}
+                            </p>
+                            <p className="font-caption-normal text-gray-7">
+                              {getRelativeTimeString(review.regDate)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-caption-normal text-orange-7">
+                              학생
+                            </p>
+                            <p className="font-caption-normal text-gray-12">
+                              {review.startDate}부터 수업 중
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="font-label-normal text-text-sub1 break-keep">
+                        {review.content}
+                      </p>
                     </div>
                   ))}
                 </div>
-                <p className="font-label-normal text-orange-7">
-                  {reviews.length}개의 후기
-                </p>
-              </div>
+              </>
+            ) : (
+              <p className="font-label-normal text-gray-7">
+                아직 작성된 후기가 없습니다.
+              </p>
+            )}
+          </article>
+        </section>
+      </div>
 
-              <div className="flex flex-col gap-3 pr-2">
-                {reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="border-gray-3 bg-system-background-alt flex flex-col gap-3 rounded-lg border p-4"
-                  >
-                    <div className="flex items-start gap-3">
-                      <Image
-                        src="/character/img_profile_student01.png"
-                        alt="student"
-                        width={36}
-                        height={36}
-                        className="border-gray-12 h-9 w-9 rounded-full border object-cover p-0.5"
-                      />
-                      <div className="flex flex-1 flex-col gap-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-body2-normal text-text-main">
-                            {review.srcMemberName}
-                          </p>
-                          <p className="font-caption-normal text-gray-7">
-                            {getRelativeTimeString(review.regDate)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-caption-normal text-orange-7">
-                            학생
-                          </p>
-                          <p className="font-caption-normal text-gray-12">
-                            {review.startDate}부터 수업 중
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="font-label-normal text-text-sub1 break-keep">
-                      {review.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className="font-label-normal text-gray-7">
-              아직 작성된 후기가 없습니다.
-            </p>
-          )}
-        </article>
-      </section>
-    </div>
+      <ConfirmDialog
+        variant="confirm-cancel"
+        open={isLoginModalOpen}
+        dispatch={(action) => {
+          if (action.type === 'CLOSE') setIsLoginModalOpen(false);
+        }}
+        emphasis="title-strong"
+        onConfirm={() => {
+          const from = encodeURIComponent(window.location.pathname);
+          router.replace(`${PUBLIC.CORE.LOGIN}?from=${from}`);
+        }}
+        onCancel={() => setIsLoginModalOpen(false)}
+        title="로그인이 필요해요"
+        description="파일을 다운로드하려면 로그인이 필요해요."
+        confirmText="로그인하기"
+        cancelText="취소"
+      />
+    </>
   );
 };

@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 공통 enum
  * ────────────────────────────────────────────────────*/
@@ -65,6 +71,7 @@ const HomeworkListItemBaseSchema = z.object({
 const HomeworkDetailSchema = z.object({
   id: z.number().int(),
   teacherName: z.string(),
+  teacherProfileImageUrl: NullableProfileImageUrlSchema,
   title: z.string(),
   content: z.string(),
   resolvedContent: OptionalResolvedEditorContentSchema,
@@ -100,6 +107,7 @@ const TeacherHomeworkListItemSchema = HomeworkListItemBaseSchema.extend({
 const HomeworkStudentItemSchema = z.object({
   id: z.number().int(),
   studentName: z.string(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   studentId: z.number().int(),
   status: HomeworkSubmitStatusSchema,
@@ -122,6 +130,7 @@ const StudentHomeworkListItemSchema = HomeworkListItemBaseSchema.extend({
 const MyHomeworkStudentSchema = z.object({
   id: z.number().int(),
   studentName: z.string(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   status: HomeworkSubmitStatusSchema,
   submission: OptionalHomeworkSubmissionSchema,
@@ -134,6 +143,7 @@ const ParentHomeworkStudentSchema = MyHomeworkStudentSchema.extend({
 
 const OtherHomeworkStudentSchema = z.object({
   studentName: z.string(),
+  studentProfileImageUrl: NullableProfileImageUrlSchema,
   readAt: z.string().nullable(),
   status: HomeworkSubmitStatusSchema,
   modifiedSubmissionAt: z.string().nullable(),

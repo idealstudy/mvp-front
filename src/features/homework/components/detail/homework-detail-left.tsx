@@ -278,11 +278,9 @@ export const HomeworkDetailLeft = ({
                   {assignmentTargets.map((student) => (
                     <li
                       key={student.id}
-                      className="flex justify-between"
+                      className="flex items-center justify-between gap-3"
                     >
-                      <span className="justify-self-center text-center">
-                        {student.name}
-                      </span>
+                      <span className="min-w-0 truncate">{student.name}</span>
                       {student.readAt ? (
                         <Check
                           className="justify-self-center"

@@ -1,11 +1,18 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 선생님 기본 정보 DTO
  * ────────────────────────────────────────────────────*/
 const BasicInfoDtoSchema = z.object({
   name: z.string(),
-  email: z.string(),
+  email: z.string().nullable(),
+  profileImageUrl: NullableProfileImageUrlSchema,
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string().nullable(),
 });
