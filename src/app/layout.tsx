@@ -22,6 +22,9 @@ export default function RootLayout({
 }>) {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
 
+  const shouldLoadGtm =
+    Boolean(gtmId) && process.env.NEXT_PUBLIC_ENABLE_GTM === 'true';
+
   return (
     <html
       lang="ko"
@@ -30,7 +33,8 @@ export default function RootLayout({
     >
       <body className="bg-[#F9F9F9] antialiased">
         {/* GTM Head 스니펫 */}
-        {gtmId && (
+        {/* 배포환경일때만 작동되게 */}
+        {shouldLoadGtm && (
           <>
             <Script
               id="gtm-init"
@@ -57,7 +61,7 @@ export default function RootLayout({
           </>
         )}
         {/* GTM Body 스니펫 (noscript) */}
-        {gtmId && (
+        {shouldLoadGtm && (
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
