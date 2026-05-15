@@ -176,6 +176,8 @@ const DashboardHeader = () => {
             alt="대시보드 캐릭터"
             width={220}
             height={220}
+            priority
+            fetchPriority="high"
             sizes="(min-width: 1200px) 220px, (min-width: 768px) 200px, 100px"
             className={cn(
               'h-25 w-25 object-contain',
