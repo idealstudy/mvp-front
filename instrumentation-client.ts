@@ -2,8 +2,10 @@ import { AuthError } from '@/shared/lib';
 import * as Sentry from '@sentry/nextjs';
 import axios from 'axios';
 
+const shouldEnableSentry = process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true';
+
 Sentry.init({
-  enabled: process.env.NODE_ENV !== 'development',
+  enabled: shouldEnableSentry,
   dsn: process.env.NEXT_PUBLIC_GLITCHTIP_DSN,
   environment: process.env.NEXT_PUBLIC_ENV,
   tracesSampleRate: 0.01,
