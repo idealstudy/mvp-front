@@ -150,6 +150,7 @@ export const StudyroomPreviewSidebar = ({
     <>
       <StudyroomPreviewSidebarHeader
         studyRoomName={data.name}
+        teacherName={data.teacherName}
         thumbnailUrl={data.thumbnailUrl}
         onThumbnailClick={isMyStudyRoom ? handleThumbnailClick : undefined}
         onThumbnailDelete={isMyStudyRoom ? handleThumbnailDelete : undefined}
@@ -192,7 +193,9 @@ export const StudyroomPreviewSidebar = ({
           variant="secondary"
           disabled={loading}
         >
-          {isMyStudyRoom ? `프로필로 이동하기` : `선생님 프로필 바로가기`}
+          {isMyStudyRoom
+            ? `프로필로 이동하기`
+            : `${data.teacherName} 선생님 프로필`}
         </Button>
       </div>
 

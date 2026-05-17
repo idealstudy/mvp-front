@@ -10,6 +10,8 @@ import { useTeacherProfile } from '@/features/inquiry/hooks/use-teacher-profile'
 import { ConfirmDialog } from '@/shared/components/dialog';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui';
+import { ProfileAvatar } from '@/shared/components/ui/profile-avatar';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 import { classifyInquiryError, handleApiError } from '@/shared/lib/errors';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -60,7 +62,15 @@ export default function InquiryAnswerView({
           <div className="flex flex-row items-center justify-between">
             {/* 프로필 */}
             <div className="flex flex-row items-center gap-3">
-              <div className="bg-gray-scale-gray-10 h-10 w-10 rounded-full" />
+              <ProfileAvatar
+                src={teacherProfile?.profileImageUrl ?? null}
+                fallbackSrc={DEFAULT_PROFILE_IMAGE.TEACHER}
+                alt="선생님 프로필"
+                size={40}
+                memberId={inquiry.targetTeacherId}
+                role="ROLE_TEACHER"
+                className="h-10 w-10"
+              />
               <span className="font-body2-heading">
                 {teacherProfile?.name ? `${teacherProfile.name} 선생님` : null}
               </span>

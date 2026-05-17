@@ -46,6 +46,7 @@ export const BaseHeader = ({
   const [showMenu, setShowMenu] = useState(false);
   const router = useRouter();
   const teacherId = useMemberStore((s) => s.member?.id);
+  const role = useMemberStore((s) => s.member?.role);
   const pathname = usePathname();
   const isPreviewPage = pathname.includes('study-room-preview');
 
@@ -86,7 +87,7 @@ export const BaseHeader = ({
         )}
         onClick={handleImageClick}
       >
-        {!isPreviewPage ? (
+        {!isPreviewPage && role === 'ROLE_TEACHER' && (
           <button
             type="button"
             className={cn(
@@ -105,7 +106,7 @@ export const BaseHeader = ({
             />
             프리뷰
           </button>
-        ) : null}
+        )}
 
         <Image
           src={thumbnailUrl || '/studyroom/profile.svg'}
