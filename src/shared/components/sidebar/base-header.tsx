@@ -72,7 +72,7 @@ export const BaseHeader = ({
           </p>
           {rightSlot}
         </div>
-        {teacherName && (
+        {!isPreviewPage && teacherName && (
           <p className={teacherClassName}>
             {teacherName}
             {teacherSuffix ? ` ${teacherSuffix}` : ''}

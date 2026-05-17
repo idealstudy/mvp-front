@@ -4,14 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { useTeacherProfile } from '@/features/study-room-preview/hooks/use-teacher-profile';
 import { useUpdateEnrollmentStatus } from '@/features/study-room-preview/hooks/use-update-enrollment-status';
 import { useUpdateThumbnail } from '@/features/study-room-preview/hooks/use-update-thumbnail';
 import { StudyStats } from '@/features/study-rooms/components/sidebar/status';
 import { MiniSpinner } from '@/shared/components/loading';
 import { SidebarButton } from '@/shared/components/sidebar';
-import { Button } from '@/shared/components/ui';
+import { ProfileAvatar } from '@/shared/components/ui';
 import { StudyroomStatusToggle } from '@/shared/components/ui';
-import { PUBLIC } from '@/shared/constants';
+import { DEFAULT_PROFILE_IMAGE, PUBLIC } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 import {
@@ -40,19 +41,22 @@ export const StudyroomPreviewSidebar = ({
 
   const member = useMemberStore((s) => s.member);
 
+  const isMyStudyRoom =
+    member?.role === 'ROLE_TEACHER' && member.id === teacherId;
+
   const { data, isPending, isError } = usePreviewSideInfo(
     teacherId,
     studyRoomId
   );
   const { data: mainData } = usePreviewMainInfo(studyRoomId);
+  const { data: teacherProfile } = useTeacherProfile(teacherId, {
+    enabled: !isMyStudyRoom,
+  });
 
   const { mutate: updateThumbnail, isPending: isUploadingThumbnail } =
     useUpdateThumbnail(teacherId, studyRoomId);
   const { mutate: updateEnrollmentStatus } =
     useUpdateEnrollmentStatus(studyRoomId);
-
-  const isMyStudyRoom =
-    member?.role === 'ROLE_TEACHER' && member.id === teacherId;
 
   // 파일 input ref (썸네일)
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,13 +87,6 @@ export const StudyroomPreviewSidebar = ({
 
     setLoading(true);
     router.push(`/study-rooms/${studyRoomId}/note`);
-  };
-
-  const moveToProfile = () => {
-    if (loading) return;
-
-    setLoading(true);
-    router.push(PUBLIC.PROFILE.TEACHER(teacherId));
   };
 
   const handleBtnClick = () => {
@@ -170,6 +167,21 @@ export const StudyroomPreviewSidebar = ({
         numberOfQuestion={data.numberOfQuestions}
       />
 
+      {!isMyStudyRoom && (
+        <div className="flex flex-row items-center gap-3">
+          <ProfileAvatar
+            src={teacherProfile?.profileImageUrl}
+            fallbackSrc={DEFAULT_PROFILE_IMAGE.TEACHER}
+            alt="선생님 프로필"
+            size={40}
+            memberId={teacherId}
+            role="ROLE_TEACHER"
+            className="h-10 w-10"
+          />
+          <span className="font-body2-normal">{data.teacherName} 선생님</span>
+        </div>
+      )}
+
       {/* 운영 상태 토글 - 본인 스터디룸만 노출 */}
       {isMyStudyRoom && (
         <StudyroomStatusToggle
@@ -188,15 +200,6 @@ export const StudyroomPreviewSidebar = ({
             disabled={loading}
           />
         )}
-        <Button
-          onClick={moveToProfile}
-          variant="secondary"
-          disabled={loading}
-        >
-          {isMyStudyRoom
-            ? `프로필로 이동하기`
-            : `${data.teacherName} 선생님 프로필`}
-        </Button>
       </div>
 
       {data.otherStudyRooms.length ? (
