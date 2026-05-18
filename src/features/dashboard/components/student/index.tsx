@@ -12,7 +12,7 @@ import StudentTabSection from '../section/student-tab-section';
 import { ConfirmParentRequestDialog } from './confirm-dialog';
 import StudentOnboarding from './student-onboarding';
 
-export const DashboardStudent = () => {
+const DashboardStudent = () => {
   const memberEmail = useMemberStore((s) => s.member?.email);
   const [isParentRequestDialogOpen, setIsParentRequestDialogOpen] =
     useState(false);

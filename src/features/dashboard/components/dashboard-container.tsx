@@ -2,13 +2,15 @@
 
 import React from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { useInviteTokenHandler } from '@/features/invite/hooks';
 import { trackPageView } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
 
-import DashboardParent from './parent';
-import { DashboardStudent } from './student';
-import DashboardTeacher from './teacher';
+const DashboardTeacher = dynamic(() => import('./teacher'));
+const DashboardStudent = dynamic(() => import('./student'));
+const DashboardParent = dynamic(() => import('./parent'));
 
 export const DashboardContainer = () => {
   const { isProcessing: isInviteProcessing } = useInviteTokenHandler();
