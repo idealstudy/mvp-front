@@ -18,11 +18,13 @@ import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import { LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
 
+const STUDY_ROOM_SKELETON_COUNT = 3;
+
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
   // const { data, isLoading, isError } = useDashboardQuery();
 
-  const { role } = useRole();
+  const { role, isLoading: isRoleLoading } = useRole();
   const { logout } = useAuth();
 
   const handleLogout = () => {
@@ -33,21 +35,47 @@ export const DashboardSidebar = () => {
   /* ─────────────────────────────────────────────────────
    * 역할에 따라 다른 쿼리 사용
    * ────────────────────────────────────────────────────*/
-  const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
+  const {
+    data: teacherStudyRoomList,
+    isPending: isTeacherStudyRoomListPending,
+  } = useTeacherStudyRoomsQuery({
     enabled: role === 'ROLE_TEACHER',
   });
 
-  const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
+  const {
+    data: studentStudyRoomList,
+    isPending: isStudentStudyRoomListPending,
+  } = useStudentStudyRoomsQuery({
     enabled: role === 'ROLE_STUDENT',
   });
 
-  // 역할에 따라 적절한 리스트 선택
-  const studyRoomList =
-    role === 'ROLE_TEACHER'
-      ? teacherStudyRoomList
-      : role === 'ROLE_STUDENT'
-        ? studentStudyRoomList
-        : undefined;
+  const getStudyRoomList = () => {
+    switch (role) {
+      case 'ROLE_TEACHER':
+        return teacherStudyRoomList;
+      case 'ROLE_STUDENT':
+        return studentStudyRoomList;
+      default:
+        return undefined;
+    }
+  };
+
+  const getIsStudyRoomListPending = () => {
+    switch (role) {
+      case 'ROLE_TEACHER':
+        return isTeacherStudyRoomListPending;
+      case 'ROLE_STUDENT':
+        return isStudentStudyRoomListPending;
+      default:
+        return false;
+    }
+  };
+
+  const studyRoomList = getStudyRoomList();
+  const isStudyRoomListPending = getIsStudyRoomListPending();
+  const shouldShowStudyRoomHeader = role !== 'ROLE_PARENT';
+  const shouldShowStudyRoomNavigation =
+    isRoleLoading || role === 'ROLE_TEACHER' || role === 'ROLE_STUDENT';
 
   return (
     <Sidebar>
@@ -61,7 +89,7 @@ export const DashboardSidebar = () => {
       </Sidebar.Item>
 
       {/* 부모에겐 보여주지 않기 */}
-      {role !== 'ROLE_PARENT' && (
+      {shouldShowStudyRoomHeader && (
         <Sidebar.Header>
           <div className="flex items-center gap-2">
             <Sidebar.SectionIcon />
@@ -80,19 +108,32 @@ export const DashboardSidebar = () => {
         </Sidebar.Header>
       )}
 
-      <Sidebar.ScrollArea>
-        <Sidebar.List>
-          {studyRoomList?.map((item) => (
-            <Sidebar.ListItem
-              key={item.id}
-              item={{
-                id: item.id,
-                text: item.name,
-              }}
-            />
-          ))}
-        </Sidebar.List>
-      </Sidebar.ScrollArea>
+      {shouldShowStudyRoomNavigation && (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <Sidebar.List>
+            {isStudyRoomListPending
+              ? Array.from({ length: STUDY_ROOM_SKELETON_COUNT }).map(
+                  (_, index) => (
+                    <li key={index}>
+                      <div className="flex min-h-[58px] items-center gap-2 rounded-lg px-5">
+                        <div className="bg-gray-3 h-5 w-5 shrink-0 animate-pulse rounded" />
+                        <div className="bg-gray-3 h-4 w-32 animate-pulse rounded" />
+                      </div>
+                    </li>
+                  )
+                )
+              : studyRoomList?.map((item) => (
+                  <Sidebar.ListItem
+                    key={item.id}
+                    item={{
+                      id: item.id,
+                      text: item.name,
+                    }}
+                  />
+                ))}
+          </Sidebar.List>
+        </div>
+      )}
 
       {role === 'ROLE_ADMIN' && (
         <>
