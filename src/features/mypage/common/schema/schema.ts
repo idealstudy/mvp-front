@@ -4,6 +4,7 @@ export const BasicInfoFormSchema = z.object({
   name: z.string().trim().min(1, '이름을 입력해주세요.').max(30),
   profileImg: z.string().optional().nullable(),
   isProfilePublic: z.boolean(),
+  isEmailPublic: z.boolean().optional(),
   simpleIntroduction: z
     .string()
     .trim()

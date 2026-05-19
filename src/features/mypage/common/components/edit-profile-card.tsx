@@ -74,6 +74,8 @@ export default function EditProfileCard({
     defaultValues: {
       name: basicInfo.name,
       isProfilePublic: basicInfo.isProfilePublic,
+      isEmailPublic:
+        basicInfo.role === 'ROLE_TEACHER' ? basicInfo.isEmailPublic : undefined,
       simpleIntroduction:
         basicInfo.role === 'ROLE_TEACHER'
           ? basicInfo.simpleIntroduction
@@ -124,6 +126,7 @@ export default function EditProfileCard({
       await updateTeacherBasicInfoMutation.mutateAsync({
         name: data.name,
         isProfilePublic: data.isProfilePublic,
+        isEmailPublic: data.isEmailPublic ?? basicInfo.isEmailPublic,
         simpleIntroduction: data.simpleIntroduction ?? '',
       });
       return;
@@ -222,6 +225,34 @@ export default function EditProfileCard({
             )}
           />
         </Form.Item>
+
+        {basicInfo.role === 'ROLE_TEACHER' && (
+          <Form.Item error={!!errors.isEmailPublic}>
+            <Form.Label>
+              이메일 공개 범위
+              <RequiredMark />
+            </Form.Label>
+
+            <Controller
+              name="isEmailPublic"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value ? 'public' : 'private'}
+                  onValueChange={(v) => field.onChange(v === 'public')}
+                >
+                  <Select.Trigger />
+
+                  <Select.Content>
+                    <Select.Option value="public">공개</Select.Option>
+                    <Select.Option value="private">비공개</Select.Option>
+                  </Select.Content>
+                </Select>
+              )}
+            />
+          </Form.Item>
+        )}
+
         {basicInfo.role === 'ROLE_TEACHER' && (
           <Form.Item error={!!errors.simpleIntroduction}>
             <Form.Label>간단 소개</Form.Label>

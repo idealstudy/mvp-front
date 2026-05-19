@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { IoIosArrowUp } from 'react-icons/io';
 
 import { cn } from '@/shared/lib';
+import { ArrowUp } from 'lucide-react';
 
 const SHOW_OFFSET = 240;
 
@@ -61,7 +61,7 @@ export const ScrollToTopButton = () => {
           : 'pointer-events-none translate-y-2 opacity-0'
       )}
     >
-      <IoIosArrowUp className="tablet:h-6 tablet:w-6 h-5 w-5" />
+      <ArrowUp className="tablet:h-6 tablet:w-6 h-5 w-5" />
     </button>
   );
 };

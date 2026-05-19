@@ -39,6 +39,7 @@ const transformBasicInfoToFrontend = (
     email: basicInfoDto.email,
     profileImageUrl: basicInfoDto.profileImageUrl,
     isProfilePublic: basicInfoDto.isProfilePublic,
+    isEmailPublic: basicInfoDto.isEmailPublic,
     simpleIntroduction: basicInfoDto.simpleIntroduction,
     role: 'ROLE_TEACHER' as const,
     profilePublicKorean: getProfilePublicKorean(basicInfoDto.isProfilePublic),
