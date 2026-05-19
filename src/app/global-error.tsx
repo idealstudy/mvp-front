@@ -2,8 +2,6 @@
 
 import { useEffect } from 'react';
 
-import * as Sentry from '@sentry/nextjs';
-
 // Sentry 경고 제거와 최상위 렌더링 에러 수집
 
 interface GlobalErrorProps {
@@ -11,9 +9,20 @@ interface GlobalErrorProps {
   reset: () => void;
 }
 
+const shouldEnableSentry = process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true';
+
+const captureGlobalError = async (error: GlobalErrorProps['error']) => {
+  if (!shouldEnableSentry) return;
+
+  try {
+    const Sentry = await import('@sentry/nextjs');
+    Sentry.captureException(error);
+  } catch {}
+};
+
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    Sentry.captureException(error);
+    void captureGlobalError(error);
   }, [error]);
 
   return (

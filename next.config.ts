@@ -28,8 +28,9 @@ const nextConfig: NextConfig = {
     return config;
   },
 };
+const shouldEnableSentry = process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true';
 
-export default withSentryConfig(nextConfig, {
+const sentryOptions = {
   silent: true,
   telemetry: false,
   widenClientFileUpload: true,
@@ -37,4 +38,8 @@ export default withSentryConfig(nextConfig, {
   org: 'dedu',
   project: 'dedu',
   sentryUrl: 'https://app.glitchtip.com',
-});
+};
+
+export default shouldEnableSentry
+  ? withSentryConfig(nextConfig, sentryOptions)
+  : nextConfig;
