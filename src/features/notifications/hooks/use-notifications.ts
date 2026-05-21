@@ -5,13 +5,14 @@ const ONE_MINUTE = 60 * 1000;
 
 // 전체 알림 목록 조회
 // TODO SSE 전환 예정
-export const useNotifications = () =>
+export const useNotifications = (options?: { enabled?: boolean }) =>
   useQuery({
     queryKey: notificationKeys.list(),
     queryFn: repository.notification.getList,
     staleTime: ONE_MINUTE,
     refetchInterval: ONE_MINUTE,
     refetchOnWindowFocus: true,
+    enabled: options?.enabled ?? true,
   });
 
 // 미확인 알림 조회

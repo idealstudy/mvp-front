@@ -34,7 +34,9 @@ export function NotificationPopover() {
   const [isOpen, setIsOpen] = useState(false);
 
   const session = useMemberStore((s) => s.member);
-  const { data, isLoading, error, refetch } = useNotifications();
+  const { data, isLoading, error } = useNotifications({
+    enabled: isOpen,
+  });
   const { data: unread, refetch: refetchUnread } = useUnreadNotifications();
   const markAsRead = useMarkAsRead();
   const deleteNotifications = useDeleteNotifications();
@@ -49,10 +51,9 @@ export function NotificationPopover() {
 
   useEffect(() => {
     if (isOpen) {
-      refetch();
       refetchUnread();
     }
-  }, [isOpen, refetch, refetchUnread]);
+  }, [isOpen, refetchUnread]);
 
   // 개별 읽음 처리
   const handleNotificationClick = (notification: NotificationItem) => {
