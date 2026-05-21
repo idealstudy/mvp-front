@@ -9,10 +9,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
 import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
-import {
-  useStudentStudyRoomsQuery,
-  useTeacherStudyRoomsQuery,
-} from '@/features/study-rooms';
+import { createStudentStudyRoomApi } from '@/features/study-rooms/api/room.api.student';
+import { createTeacherStudyRoomApi } from '@/features/study-rooms/api/room.api.teacher';
+import { createStudentStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.student';
+import { createTeacherStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.teacher';
 import type {
   StudentStudyRoom,
   StudyRoom,
@@ -51,6 +51,13 @@ import {
   trackGnbProfileClick,
 } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
+
+const studentStudyRoomApi = createStudentStudyRoomApi();
+const teacherStudyRoomApi = createTeacherStudyRoomApi();
+const { useStudentStudyRoomsQuery } =
+  createStudentStudyRoomHooks(studentStudyRoomApi);
+const { useTeacherStudyRoomsQuery } =
+  createTeacherStudyRoomHooks(teacherStudyRoomApi);
 
 export const Header = () => {
   const session = useMemberStore((s) => s.member);

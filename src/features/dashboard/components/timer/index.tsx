@@ -13,13 +13,13 @@ import {
   useStudyNoteTimerStart,
   useStudyNoteTimerTempSave,
 } from '@/features/dashboard/hooks';
+import { initialTextEditorValue } from '@/shared/components/editor/model/initial-state';
+import type { TextEditorValue } from '@/shared/components/editor/types';
 import {
   hasMeaningfulEditorContent,
-  initialTextEditorValue,
   parseEditorContent,
   prepareContentForSave,
-} from '@/shared/components/editor';
-import type { TextEditorValue } from '@/shared/components/editor';
+} from '@/shared/components/editor/utils';
 import { showBottomToast } from '@/shared/components/ui';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { PRIVATE } from '@/shared/constants';

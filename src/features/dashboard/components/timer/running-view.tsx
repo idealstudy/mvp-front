@@ -1,5 +1,5 @@
-import { TextEditor } from '@/shared/components/editor';
-import type { TextEditorValue } from '@/shared/components/editor';
+import type { TextEditorValue } from '@/shared/components/editor/types';
+import { TextEditor } from '@/shared/components/editor/ui/text-editor';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronDown, ChevronUp, Pause, Play, X } from 'lucide-react';
 
