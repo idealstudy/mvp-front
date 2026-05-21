@@ -18,7 +18,7 @@ import {
 } from '@/shared/components/editor';
 import { Button } from '@/shared/components/ui';
 import { getRelativeTimeString } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { useReadCommentList, useUpdateComment } from '../hooks/use-comment';
 

@@ -29,7 +29,7 @@ import {
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { TimerModal } from '../timer';

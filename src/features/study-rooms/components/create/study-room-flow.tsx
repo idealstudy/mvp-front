@@ -48,7 +48,7 @@ import { classifyPreviewError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { useUpdateStudyRoom } from '../sidebar/services/query';
 

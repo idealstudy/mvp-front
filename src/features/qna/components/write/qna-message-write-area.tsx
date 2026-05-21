@@ -12,7 +12,7 @@ import { useRole } from '@/shared/hooks/use-role';
 import { trackReplyCreateClick } from '@/shared/lib/analytics';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { QnAMessageForm } from '../../schema/create';
 import { useWriteQnAMessageMutation } from '../../services/query';

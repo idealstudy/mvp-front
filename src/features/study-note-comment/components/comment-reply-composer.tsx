@@ -1,7 +1,7 @@
 'use client';
 
 import { parseEditorContent } from '@/shared/components/editor';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { CommentComposer } from './comment-composer';
 
