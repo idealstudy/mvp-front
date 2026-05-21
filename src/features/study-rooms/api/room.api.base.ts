@@ -1,4 +1,5 @@
-import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
+import type { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model/room.create.schema';
 import type {
   MemberInvitation,
   SearchInvitationPayload,
@@ -7,10 +8,9 @@ import type {
   StudyRoom,
   StudyRoomClient,
   StudyRoomDetail,
-  StudyRoomSubmitValues,
-} from '@/features/study-rooms/model';
+} from '@/features/study-rooms/model/types';
 import { api } from '@/shared/api';
-import { Pageable, PaginationData } from '@/types/http';
+import type { Pageable, PaginationData } from '@/types/http';
 
 type GroupListResponse = PaginationData<StudyNoteGroup>;
 type GroupApiArgs = { studyRoomId: number; pageable: Pageable };

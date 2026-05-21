@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { trackPageView } from '@/shared/lib/analytics';
 
 type Props = {

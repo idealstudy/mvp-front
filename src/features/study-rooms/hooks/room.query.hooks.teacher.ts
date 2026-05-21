@@ -1,12 +1,12 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { teacherKeys } from '@/entities/teacher';
+import type { TeacherStudyRoomRequests } from '@/features/study-rooms/api/room.api.base';
 import {
   InvitationQueryKey,
   StudyRoomsQueryKey,
-  TeacherStudyRoomRequests,
-  createTeacherStudyRoomQueryOptions,
-} from '@/features/study-rooms/api';
-import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
+} from '@/features/study-rooms/api/room.query.keys';
+import { createTeacherStudyRoomQueryOptions } from '@/features/study-rooms/api/room.query.options.teacher';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model/room.create.schema';
 import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

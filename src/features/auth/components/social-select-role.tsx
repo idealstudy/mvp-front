@@ -8,7 +8,7 @@ import { ProfileForm } from '@/features/auth/components/profile-form';
 import { SocialRegisterForm } from '@/features/auth/schemas/social-register';
 import { useUpdateProfile } from '@/features/auth/services/query';
 import { useAcceptInvitation } from '@/features/invite/hooks';
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { Form } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import {

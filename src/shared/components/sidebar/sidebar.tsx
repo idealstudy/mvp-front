@@ -68,6 +68,7 @@ const SidebarRoot = ({ children }: { children: ReactNode }) => {
 type SidebarItemProps = {
   href: string;
   children: ReactNode;
+  prefetch?: boolean;
   className?: string;
   isActive?: boolean;
   matchPath?: string;
@@ -75,6 +76,7 @@ type SidebarItemProps = {
 
 const SidebarItem = ({
   href,
+  prefetch,
   children,
   className,
   isActive: propIsActive,
@@ -90,6 +92,7 @@ const SidebarItem = ({
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       className={cn(
         'flex min-h-[58px] items-center gap-2 rounded-lg px-5 font-bold',
         isActive
@@ -185,6 +188,7 @@ const SidebarListItem = ({ item }: { item: BaseSidebarItem }) => {
     <li>
       <Sidebar.Item
         href={detailHref}
+        prefetch={false}
         isActive={isActive}
         className="h-12 items-center justify-start gap-[2px]"
       >

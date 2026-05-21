@@ -1,24 +1,31 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import {
-  useStudentStudyRoomsQuery,
-  useTeacherStudyRoomsQuery,
-} from '@/features/study-rooms';
-import {
-  FindingIcon,
-  HomeIcon,
-  ListIcon,
-  NotepadIcon,
-  PlusIcon,
-} from '@/shared/components/icons';
-import { Sidebar } from '@/shared/components/sidebar';
+import { createStudentStudyRoomApi } from '@/features/study-rooms/api/room.api.student';
+import { createTeacherStudyRoomApi } from '@/features/study-rooms/api/room.api.teacher';
+import { createStudentStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.student';
+import { createTeacherStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.teacher';
+import { ListIcon, NotepadIcon } from '@/shared/components/icons';
+import { Sidebar } from '@/shared/components/sidebar/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
-import { LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
+import {
+  Compass,
+  House,
+  LogOut,
+  Plus,
+  ShieldUserIcon,
+  User2Icon,
+} from 'lucide-react';
 
 const STUDY_ROOM_SKELETON_COUNT = 3;
+const studentStudyRoomApi = createStudentStudyRoomApi();
+const teacherStudyRoomApi = createTeacherStudyRoomApi();
+const { useStudentStudyRoomsQuery } =
+  createStudentStudyRoomHooks(studentStudyRoomApi);
+const { useTeacherStudyRoomsQuery } =
+  createTeacherStudyRoomHooks(teacherStudyRoomApi);
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
@@ -84,7 +91,7 @@ export const DashboardSidebar = () => {
         href={PRIVATE.DASHBOARD.INDEX}
         matchPath={PRIVATE.DASHBOARD.INDEX}
       >
-        <HomeIcon />
+        <House className="shrink-0" />
         <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
 
@@ -99,9 +106,10 @@ export const DashboardSidebar = () => {
           {role === 'ROLE_TEACHER' && (
             <Sidebar.Item
               href={PRIVATE.ROOM.CREATE}
+              prefetch={false}
               className="h-9 w-9 justify-center bg-transparent px-0"
             >
-              <PlusIcon />
+              <Plus />
               <span className="sr-only">스터디룸 생성</span>
             </Sidebar.Item>
           )}
@@ -165,7 +173,7 @@ export const DashboardSidebar = () => {
         href={PUBLIC.CORE.LIST.STUDY_ROOMS}
         matchPath={PUBLIC.CORE.LIST.BASE}
       >
-        <FindingIcon className="shrink-0" />
+        <Compass className="shrink-0" />
         <Sidebar.Text>탐색하기</Sidebar.Text>
       </Sidebar.Item>
 

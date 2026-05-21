@@ -20,6 +20,7 @@ export const QnASectionListItem = ({
     <Link
       key={question.id}
       href={PRIVATE.QUESTIONS.DETAIL(question.studyRoomId, question.id)}
+      prefetch={false}
       className={cn(
         'bg-gray-white hover:bg-gray-1 flex w-full flex-col gap-2 rounded-lg p-3'
       )}

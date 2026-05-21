@@ -44,6 +44,7 @@ export default function QuestionList({ studyRoomId, data, isPending }: Props) {
               key={question.id}
               className="font-body2-normal hover:bg-gray-scale-gray-1 desktop:max-w-[740px] flex min-h-[66px] w-full flex-row items-center justify-between gap-4 bg-white px-4 py-3 hover:rounded-[12px]"
               href={`/study-rooms/${studyRoomId}/qna/${question.id}`}
+              prefetch={false}
               onClick={() => handleQuestionClick(question.id)}
             >
               <div className="font-label-normal flex min-w-0 flex-1 flex-row items-center gap-[10px]">

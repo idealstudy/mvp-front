@@ -47,6 +47,7 @@ const NoteSectionContent = ({
         {isTeacher && hasStudyRoom && (
           <Link
             href={PRIVATE.NOTE.CREATE(lastStudyRoomId!)}
+            prefetch={false}
             className="bg-gray-1 text-gray-7 border-gray-3 flex w-full items-center justify-center gap-1 rounded-lg border-1 px-8 py-3"
           >
             <AddNoteIcon
@@ -62,6 +63,7 @@ const NoteSectionContent = ({
           <Link
             key={note.id}
             href={PRIVATE.NOTE.DETAIL(note.studyRoomId, note.id)}
+            prefetch={false}
             className="bg-orange-1 border-orange-3 flex w-full cursor-pointer flex-col items-start gap-1 rounded-lg border px-7 py-7 text-left"
             onClick={() =>
               trackDashboardNoteClick(note.studyRoomId, note.id, member?.role)

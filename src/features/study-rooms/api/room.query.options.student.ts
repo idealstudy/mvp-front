@@ -1,7 +1,5 @@
-import {
-  StudentStudyRoomRequests,
-  StudyRoomsQueryKey,
-} from '@/features/study-rooms/api';
+import { StudentStudyRoomRequests } from '@/features/study-rooms/api/room.api.base';
+import { StudyRoomsQueryKey } from '@/features/study-rooms/api/room.query.keys';
 import { BaseQueryOptions, queryConfig } from '@/shared/lib/query';
 import { queryOptions } from '@tanstack/react-query';
 

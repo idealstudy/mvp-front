@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import { getCurrentMemberOptions, repository } from '@/entities/member';
 import { LoginBody } from '@/features/auth/types';
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { api } from '@/shared/api';
 import { trackAuthLoginSuccess } from '@/shared/lib/analytics';
 import { useMemberStore } from '@/store';
