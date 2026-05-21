@@ -129,6 +129,7 @@ export const Header = () => {
             <div className="ml-5 flex gap-2">
               <Link
                 href={PUBLIC.CORE.LIST.STUDY_ROOMS}
+                prefetch={false}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
                   pathname.startsWith(PUBLIC.CORE.LIST.BASE)
@@ -140,6 +141,7 @@ export const Header = () => {
               </Link>
               <Link
                 href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                prefetch={false}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
                   pathname.startsWith(PUBLIC.COMMUNITY.BASE)
@@ -239,6 +241,7 @@ export const Header = () => {
                   {/* 게시판 */}
                   <PopoverLink
                     href={PUBLIC.COMMUNITY.COLUMN.LIST}
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                   >
                     <span>게시판</span>
@@ -286,6 +289,7 @@ export const Header = () => {
                   </div>
                   <PopoverLink
                     href={PUBLIC.CORE.LIST.STUDY_ROOMS}
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                   >
                     <FindingIcon />

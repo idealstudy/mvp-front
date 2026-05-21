@@ -171,6 +171,7 @@ export const DashboardSidebar = () => {
 
       <Sidebar.Item
         href={PUBLIC.CORE.LIST.STUDY_ROOMS}
+        prefetch={false}
         matchPath={PUBLIC.CORE.LIST.BASE}
       >
         <Compass className="shrink-0" />
@@ -179,6 +180,7 @@ export const DashboardSidebar = () => {
 
       <Sidebar.Item
         href={PUBLIC.COMMUNITY.COLUMN.LIST}
+        prefetch={false}
         matchPath={PUBLIC.COMMUNITY.BASE}
       >
         <NotepadIcon className="shrink-0" />

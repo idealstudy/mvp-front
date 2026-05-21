@@ -45,6 +45,7 @@ const QnASection = ({ className }: Props) => {
       className={className}
       isMore={true}
       isMoreHref="/dashboard/qna"
+      isMorePrefetch={false}
       onMoreClick={() => trackDashboardQnaMoreClick(member?.role)}
     >
       {isPending ? (
