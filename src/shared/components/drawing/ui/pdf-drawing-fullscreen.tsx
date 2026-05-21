@@ -138,7 +138,12 @@ export function PdfDrawingFullscreen({
     allStrokesRef.current = {};
   };
 
-  const handlePdfRemove = () => {
+  const handlePdfRemove = async () => {
+    for (let p = 1; p <= totalPages; p++) {
+      await savePageStrokes(documentId, p, []);
+    }
+    allStrokesRef.current = {};
+    setStrokes([]);
     setUploadedPdf(null);
     setCurrentPage(1);
     setTotalPages(5);
