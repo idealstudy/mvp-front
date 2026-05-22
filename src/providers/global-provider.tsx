@@ -1,13 +1,12 @@
 import { ReactNode } from 'react';
 
-import {
-  AnalyticsProvider,
-  InterceptorProvider,
-  QueryProvider,
-  SessionProvider,
-  ToastProvider,
-} from '@/providers';
 import { checkCookie } from '@/shared/lib';
+
+import { AnalyticsProvider } from './analytics-provider';
+import { InterceptorProvider } from './interceptor-provider';
+import { LazyToastProvider } from './lazy-toast-provider';
+import { QueryProvider } from './query-provider';
+import { SessionProvider } from './session';
 
 interface Props {
   children: ReactNode;
@@ -20,7 +19,7 @@ export const GlobalProvider = async ({ children }: Props) => {
       <QueryProvider>
         <SessionProvider initialHasSession={hasSession}>
           <AnalyticsProvider />
-          <ToastProvider />
+          <LazyToastProvider />
           {children}
         </SessionProvider>
       </QueryProvider>
