@@ -26,6 +26,7 @@ import { useImageUpload } from '@/shared/components/editor';
 import { ImageCropper } from '@/shared/components/image-crop';
 import {
   Button,
+  Checkbox,
   Form,
   Input,
   RequiredMark,
@@ -74,6 +75,8 @@ export default function EditProfileCard({
     defaultValues: {
       name: basicInfo.name,
       isProfilePublic: basicInfo.isProfilePublic,
+      isEmailPublic:
+        basicInfo.role === 'ROLE_TEACHER' ? basicInfo.isEmailPublic : undefined,
       simpleIntroduction:
         basicInfo.role === 'ROLE_TEACHER'
           ? basicInfo.simpleIntroduction
@@ -124,6 +127,7 @@ export default function EditProfileCard({
       await updateTeacherBasicInfoMutation.mutateAsync({
         name: data.name,
         isProfilePublic: data.isProfilePublic,
+        isEmailPublic: data.isEmailPublic ?? false,
         simpleIntroduction: data.simpleIntroduction ?? '',
       });
       return;
@@ -222,6 +226,7 @@ export default function EditProfileCard({
             )}
           />
         </Form.Item>
+
         {basicInfo.role === 'ROLE_TEACHER' && (
           <Form.Item error={!!errors.simpleIntroduction}>
             <Form.Label>간단 소개</Form.Label>
@@ -257,6 +262,23 @@ export default function EditProfileCard({
             )}
           </Form.Item>
         )}
+
+        {basicInfo.role === 'ROLE_TEACHER' && (
+          <Controller
+            name="isEmailPublic"
+            control={control}
+            render={({ field }) => (
+              <Checkbox.Label className="self-end">
+                <Checkbox
+                  checked={field.value ?? false}
+                  onCheckedChange={field.onChange}
+                />
+                이메일 공개
+              </Checkbox.Label>
+            )}
+          />
+        )}
+
         <div className="flex justify-end gap-2">
           <Button
             type="button"

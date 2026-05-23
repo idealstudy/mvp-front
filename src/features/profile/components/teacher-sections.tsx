@@ -4,15 +4,13 @@ import SectionContainer from '@/features/profile/components/section-container';
 import ActivitySummarySection from '@/features/profile/components/teacher/activity-summary-section';
 import CareerSection from '@/features/profile/components/teacher/career-section';
 import DescriptionSection from '@/features/profile/components/teacher/description-section';
-import ReviewSection from '@/features/profile/components/teacher/review-section';
 import StudyroomSection from '@/features/profile/components/teacher/studyroom-section';
 import TeachingNoteSection from '@/features/profile/components/teacher/teaching-note-section';
-import { useProfileCareers } from '@/features/profile/hooks/use-profile-careers';
-import { useProfileDescription } from '@/features/profile/hooks/use-profile-description';
-import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
-import { useProfileReviews } from '@/features/profile/hooks/use-profile-reviews';
-import { useProfileStudyRooms } from '@/features/profile/hooks/use-profile-study-rooms';
-import { useProfileTeachingNotes } from '@/features/profile/hooks/use-profile-teaching-notes';
+import { useTeacherProfileCareers } from '@/features/profile/hooks/teacher/use-profile-careers';
+import { useTeacherProfileDescription } from '@/features/profile/hooks/teacher/use-profile-description';
+import { useTeacherProfileReport } from '@/features/profile/hooks/teacher/use-profile-report';
+import { useTeacherProfileStudyRooms } from '@/features/profile/hooks/teacher/use-profile-study-rooms';
+import { useTeacherProfileTeachingNotes } from '@/features/profile/hooks/teacher/use-profile-teaching-notes';
 import {
   hasMeaningfulEditorContent,
   parseEditorContent,
@@ -25,7 +23,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isDescriptionLoading,
     isError: isDescriptionError,
     refetch: refetchDescription,
-  } = useProfileDescription(teacherId);
+  } = useTeacherProfileDescription(teacherId);
 
   const hasMeaningfulDescription = useMemo(
     () =>
@@ -41,15 +39,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isReportLoading,
     isError: isReportError,
     refetch: refetchReport,
-  } = useProfileReport(teacherId);
-
-  // 리뷰
-  const {
-    data: reviews,
-    isLoading: isReviewsLoading,
-    isError: isReviewsError,
-    refetch: refetchReviews,
-  } = useProfileReviews(teacherId);
+  } = useTeacherProfileReport(teacherId);
 
   // 경력
   const {
@@ -57,7 +47,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isCareersLoading,
     isError: isCareersError,
     refetch: refetchCareers,
-  } = useProfileCareers(teacherId);
+  } = useTeacherProfileCareers(teacherId);
 
   // 수업 노트
   const {
@@ -65,7 +55,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isTeachingnotesLoading,
     isError: isTeachingnotesError,
     refetch: refetchTeachingnotes,
-  } = useProfileTeachingNotes(teacherId);
+  } = useTeacherProfileTeachingNotes(teacherId);
 
   // 스터디룸
   const {
@@ -73,7 +63,7 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
     isLoading: isStudyRoomsLoading,
     isError: isStudyRoomsError,
     refetch: refetchStudyRooms,
-  } = useProfileStudyRooms(teacherId);
+  } = useTeacherProfileStudyRooms(teacherId);
 
   return (
     <>
@@ -99,21 +89,6 @@ export default function TeacherSections({ teacherId }: { teacherId: number }) {
         onRetry={refetchReport}
       >
         {report && <ActivitySummarySection summary={report} />}
-      </SectionContainer>
-
-      <SectionContainer
-        title="후기"
-        isLoading={isReviewsLoading}
-        isError={isReviewsError}
-        onRetry={refetchReviews}
-      >
-        {reviews && reviews.content.length > 0 ? (
-          <ReviewSection reviews={reviews} />
-        ) : (
-          <p className="text-text-sub2 my-4 text-center">
-            작성된 후기가 없습니다.
-          </p>
-        )}
       </SectionContainer>
 
       <SectionContainer

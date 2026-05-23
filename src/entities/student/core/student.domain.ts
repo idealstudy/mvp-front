@@ -121,6 +121,8 @@ const StudentProfileStudyRoomListItemDomainSchema = z.object({
   studentCount: z.number(),
   qnaCount: z.number(),
   state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+  enrollmentStatus: z.string(),
+  thumbnailUrl: z.string().nullable(),
 });
 
 const StudentProfileStudyRoomListDomainSchema = z.array(

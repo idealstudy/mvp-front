@@ -13,7 +13,7 @@ const BasicInfoDtoSchema = z.object({
   name: z.string(),
   email: z.string(),
   profileImageUrl: NullableProfileImageUrlSchema,
-  isProfilePublic: z.boolean(),
+  isProfilePublic: z.boolean().nullable(),
   learningGoal: z.string().nullable(),
 });
 
@@ -126,6 +126,8 @@ const StudentProfileStudyRoomListDtoSchema = z.array(
     studentCount: z.number(),
     qnaCount: z.number(),
     state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+    enrollmentStatus: z.string(),
+    thumbnailUrl: z.string().nullable(),
   })
 );
 

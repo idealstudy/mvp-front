@@ -3,10 +3,11 @@
 import { useEffect } from 'react';
 
 import { Role } from '@/entities/member';
-import { FrontendTeacherBasicInfo } from '@/entities/teacher';
+import { UserBasicInfo } from '@/entities/member/types';
 import ProfileCard from '@/features/profile/components/profile-card/profile-card';
+import StudentSections from '@/features/profile/components/student-sections';
 import TeacherSections from '@/features/profile/components/teacher-sections';
-import { useProfileReport } from '@/features/profile/hooks/use-profile-report';
+import { useTeacherProfileReport } from '@/features/profile/hooks/teacher/use-profile-report';
 import { ColumnLayout } from '@/layout';
 import { trackDedu101ProfileEnter } from '@/shared/lib/analytics';
 
@@ -15,11 +16,11 @@ export default function ProfileMain({
   memberId,
   role,
 }: {
-  basicInfo?: FrontendTeacherBasicInfo;
+  basicInfo?: UserBasicInfo;
   memberId: number;
   role: Role;
 }) {
-  const teacherReportQuery = useProfileReport(memberId, {
+  const teacherReportQuery = useTeacherProfileReport(memberId, {
     enabled: role === 'ROLE_TEACHER',
   });
 
@@ -39,12 +40,9 @@ export default function ProfileMain({
     case 'ROLE_TEACHER':
       sections = <TeacherSections teacherId={memberId} />;
       break;
-    // case 'ROLE_STUDENT':
-    //   sections = <StudentSections />;
-    //   break;
-    // case 'ROLE_PARENT':
-    //   sections = <ParentSections />;
-    //   break;
+    case 'ROLE_STUDENT':
+      sections = <StudentSections studentId={memberId} />;
+      break;
     default:
       sections = <div>잘못된 접근입니다.</div>;
   }
