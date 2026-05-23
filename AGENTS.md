@@ -109,6 +109,12 @@ Workflows (orchestrate multiple skills in sequence):
 | ------------------------- | ----------------------------------- |
 | New domain CRUD requested | `.ai/workflows/crud_requested.yaml` |
 
+Reference example (complete CRUD output for a real-like domain):
+
+| Example                        | File                              |
+| ------------------------------ | --------------------------------- |
+| notice 도메인 CRUD 전체 산출물 | `.ai/examples/crud-notice.md`     |
+
 Run the layer violation check after any generation:
 
 ```bash

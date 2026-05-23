@@ -215,7 +215,7 @@ echo ""
 
 # ── 6. TypeScript 타입 검사 ──────────────────────────────────────────────────
 echo "6. TypeScript 타입 검사..."
-if yarn tsc --noEmit 2>&1; then
+if npm run check-types 2>&1; then
   echo "   ✅ 통과"
 else
   ERRORS=$((ERRORS + 1))
@@ -225,7 +225,7 @@ echo ""
 
 # ── 7. ESLint 검사 ─────────────────────────────────────────────────────────
 echo "7. ESLint 검사..."
-if yarn lint 2>&1; then
+if npm run lint 2>&1; then
   echo "   ✅ 통과"
 else
   ERRORS=$((ERRORS + 1))
@@ -234,15 +234,23 @@ fi
 echo ""
 
 # ── git 기반 신규/수정 파일 목록 ──────────────────────────────────────────────
-# 커밋되지 않은 변경 파일 + 신규 untracked 파일만 대상으로 한다.
-# 기존 파일은 자동으로 제외되므로 레거시 목록 불필요.
+# CI($CI 환경 변수가 설정된 경우): PR 브랜치 vs 베이스 브랜치 비교
+# 로컬: 커밋되지 않은 변경 파일 + 신규 untracked 파일
 GIT_CHANGED_FILES=()
-while IFS= read -r f; do
-  [ -f "$f" ] && GIT_CHANGED_FILES+=("$f")
-done < <({
-  git diff --name-only HEAD 2>/dev/null
-  git ls-files --others --exclude-standard 2>/dev/null
-} | sort -u)
+if [ -n "$CI" ]; then
+  BASE="${GITHUB_BASE_REF:-develop}"
+  git fetch origin "$BASE" --depth=1 2>/dev/null || true
+  while IFS= read -r f; do
+    [ -f "$f" ] && GIT_CHANGED_FILES+=("$f")
+  done < <(git diff --name-only "origin/$BASE"...HEAD 2>/dev/null | sort -u)
+else
+  while IFS= read -r f; do
+    [ -f "$f" ] && GIT_CHANGED_FILES+=("$f")
+  done < <({
+    git diff --name-only HEAD 2>/dev/null
+    git ls-files --others --exclude-standard 2>/dev/null
+  } | sort -u)
+fi
 
 # ── 8. mutation hook invalidateQueries 누락 검사 ──────────────────────────────
 echo "8. mutation hook invalidateQueries 누락 검사 (신규/수정 파일 기준)..."
