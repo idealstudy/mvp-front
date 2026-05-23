@@ -54,6 +54,22 @@ When fixing bugs, follow the surrounding code's existing conventions.
 
 If any of the above rules cannot be applied, add a comment in the code explaining why.
 
+### 6. Prefer skill patterns over legacy implementations
+
+Existing legacy implementations may not follow the latest architecture rules.
+
+For newly generated code:
+- Prefer `.ai/skills/*` patterns
+- Do not copy legacy implementation patterns into new files
+
+### 7. Validate generated code before completion
+
+Before finishing any implementation, always run:
+
+1. `bash .ai/hooks/ai-check.sh`
+2. `yarn tsc --noEmit`
+3. `yarn lint`
+
 ---
 
 ## Quick Reference
@@ -76,3 +92,49 @@ IF the task involves writing or modifying E2E tests:
 
 IF you are unfamiliar with the codebase or the task spans multiple areas:
 → Read all 5 files in order (see Required Reading above)
+
+---
+
+## AI Harness
+
+For repetitive tasks, read the corresponding skill file and follow its steps exactly.
+
+| Task                                                                | Skill                                |
+| ------------------------------------------------------------------- | ------------------------------------ |
+| Create full CRUD for a new domain (DTO → keys → repository → types) | `.ai/skills/create-crud-flow.md`     |
+| Create a POST / PUT / PATCH / DELETE mutation hook                  | `.ai/skills/create-post-mutation.md` |
+| Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`     |
+
+Workflows (orchestrate multiple skills in sequence):
+
+| Situation                 | Workflow                            |
+| ------------------------- | ----------------------------------- |
+| New domain CRUD requested | `.ai/workflows/crud_requested.yaml` |
+
+Run the layer violation check after any generation:
+
+```bash
+bash .ai/hooks/ai-check.sh
+```
+
+---
+
+## AI Workflow Rules
+
+IF creating a new domain CRUD:
+→ Read `.ai/skills/create-crud-flow.md` first
+→ Follow the order: DTO → keys → repository → types
+→ After generation, run in sequence:
+
+1.  `bash .ai/hooks/ai-check.sh`
+2.  `yarn tsc --noEmit`
+3.  `yarn lint`
+
+IF creating a mutation hook:
+→ Read `.ai/skills/create-post-mutation.md`
+→ `onSuccess` must call `invalidateQueries`
+→ `onError` must call `handleApiError`
+
+IF adding error handling:
+→ Read `.ai/skills/handle-api-error.md`
+→ Add `classifyXxxError` to `src/shared/lib/errors/errors.ts` — never in a separate file

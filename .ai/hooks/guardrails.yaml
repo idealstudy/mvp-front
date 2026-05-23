@@ -1,0 +1,229 @@
+# guardrails.yaml
+# AI agent가 코드를 생성하거나 수정할 때 위반을 감지하는 규칙 목록.
+# 각 rule은 pre_write(생성 전) 또는 post_write(생성 후) 이벤트에 적용된다.
+
+name: layer-violation-guardrails
+version: 1.0.0
+description: |
+  FSD 아키텍처 레이어 위반 및 프로젝트 코딩 규칙 위반을 감지한다.
+  위반 감지 시 해당 파일 생성/수정을 차단하고 해결 안내를 출력한다.
+
+# ── 레이어 위반 ────────────────────────────────────────────────────────────────
+
+rules:
+  - id: no_api_in_features
+    name: features에서 API 클라이언트 직접 사용 금지
+    event: pre_write
+    path_pattern:
+      - 'src/features/**/*.ts'
+      - 'src/features/**/*.tsx'
+    check:
+      forbidden_imports:
+        - "from '@/shared/api'"
+        - 'api.private'
+        - 'api.public'
+      forbidden_patterns:
+        - "api\\.private\\."
+        - "api\\.public\\."
+    severity: error
+    message: |
+      [LAYER VIOLATION] features에서 API 클라이언트를 직접 사용할 수 없습니다.
+
+      해결:
+        1. API 호출을 entities/{domain}/infrastructure/{domain}.repository.ts 로 이동
+        2. features에서는 repository 함수를 import해서 사용
+
+      참조: docs/architecture.md Rule 1
+
+  - id: no_deprecated_api_client
+    name: 폐기된 BFF 클라이언트 사용 금지
+    event: pre_write
+    path_pattern:
+      - 'src/**/*.ts'
+      - 'src/**/*.tsx'
+    check:
+      forbidden_patterns:
+        - "api\\.bff\\.client"
+        - "api\\.bff\\.server"
+    severity: error
+    message: |
+      [DEPRECATED] api.bff.client / api.bff.server는 폐기된 클라이언트입니다.
+
+      해결: api.private (인증 필요) 또는 api.public (인증 불필요) 를 사용하세요.
+
+      참조: docs/architecture.md — API Clients
+
+  - id: no_dto_type_in_types_index
+    name: types/index.ts에서 DTO 타입 직접 export 금지
+    event: pre_write
+    path_pattern:
+      - 'src/entities/*/types/index.ts'
+    check:
+      forbidden_patterns:
+        - 'export.*DTO'
+        - 'export.*DtoSchema'
+        - "export.*Dto\\b"
+    severity: error
+    message: |
+      [LAYER VIOLATION] types/index.ts에서 DTO 타입을 직접 export하면 안 됩니다.
+
+      해결: z.infer<typeof dto.xxx> 형태로 변환된 타입만 export하세요.
+
+      예시:
+        // ❌ 금지
+        export type { InquiryDetailDtoSchema } from '../infrastructure/inquiry.dto';
+
+        // ✅ 허용
+        export type Inquiry = z.infer<typeof dto.detail>;
+
+      참조: docs/entities.md Rule 1
+
+  - id: no_infrastructure_import_in_domain
+    name: domain.ts에서 infrastructure import 금지
+    event: pre_write
+    path_pattern:
+      - 'src/entities/*/core/*.domain.ts'
+      - 'src/entities/*/core/*.domain.schema.ts'
+    check:
+      forbidden_patterns:
+        - 'from.*infrastructure'
+        - "from.*\\.dto"
+        - "from.*\\.repository"
+    severity: error
+    message: |
+      [LAYER VIOLATION] domain.ts는 infrastructure를 import할 수 없습니다.
+
+      의존 방향: infrastructure → core (역방향 금지)
+
+      해결: domain.ts는 순수 Zod 스키마만 정의하세요.
+      변환 로직은 infrastructure/repository.ts 에 작성하세요.
+
+      참조: docs/entities.md Rule 2
+
+  - id: query_key_no_hardcoded_array
+    name: queryKey 배열 리터럴 하드코딩 금지
+    event: pre_write
+    path_pattern:
+      - 'src/features/**/*.ts'
+      - 'src/features/**/*.tsx'
+      - 'src/entities/**/*.ts'
+    check:
+      forbidden_patterns:
+        # useQuery/useInfiniteQuery에서 배열 리터럴 직접 사용
+        - "queryKey:\\s*\\['[a-z]"
+        - "queryKey:\\s*\\[\"[a-z]"
+    severity: error
+    message: |
+      [RULE VIOLATION] queryKey를 배열 리터럴로 직접 작성할 수 없습니다.
+
+      해결: entities/{domain}/infrastructure/{domain}.keys.ts 의 키 팩토리를 사용하세요.
+
+      예시:
+        // ❌ 금지
+        useQuery({ queryKey: ['inquiry', 'list'] })
+
+        // ✅ 허용
+        useQuery({ queryKey: inquiryKeys.list({ page, size }) })
+
+      참조: docs/entities.md — TanStack Query Keys
+
+  - id: mutation_requires_invalidate_queries
+    name: mutation hook에 invalidateQueries 누락 감지
+    event: post_write
+    path_pattern:
+      - 'src/features/**/use-create-*.ts'
+      - 'src/features/**/use-update-*.ts'
+      - 'src/features/**/use-delete-*.ts'
+    check:
+      required_patterns:
+        - 'invalidateQueries'
+    severity: warning
+    message: |
+      [MISSING] mutation hook에 invalidateQueries가 없습니다.
+
+      onSuccess에서 관련 쿼리를 무효화하지 않으면 캐시가 stale 상태로 남습니다.
+
+      예시:
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: {domain}Keys.all });
+        },
+
+      참조: .ai/skills/create-post-mutation.md
+
+  - id: mutation_requires_handle_api_error
+    name: mutation hook 또는 호출부에 handleApiError 누락 감지
+    event: post_write
+    path_pattern:
+      - 'src/features/**/use-create-*.ts'
+      - 'src/features/**/use-update-*.ts'
+      - 'src/features/**/use-delete-*.ts'
+    check:
+      required_patterns:
+        - 'handleApiError'
+    severity: warning
+    message: |
+      [CHECK] mutation hook에 handleApiError가 없습니다.
+
+      폼 없는 액션(토글, 삭제 등): 훅 내부 onError에 handleApiError를 작성하세요.
+      폼 있는 mutation(작성/수정): setError 접근을 위해 컴포넌트의 mutate(data, { onError }) 에 작성하세요.
+        → 이 경우 훅에 handleApiError가 없는 것이 정상입니다.
+
+      참조: .ai/skills/create-post-mutation.md — onError 처리 위치 선택
+            .ai/skills/handle-api-error.md
+
+  - id: payload_parse_before_api_call
+    name: repository에서 payload 검증 누락 감지
+    event: post_write
+    path_pattern:
+      - 'src/entities/*/infrastructure/*.repository.ts'
+    check:
+      # POST / PUT / PATCH 함수 내에 .parse( 호출이 있어야 함
+      context_required:
+        method_pattern: "api\\.private\\.(post|put|patch)"
+        near_pattern: "\\.parse\\("
+        within_lines: 5
+    severity: warning
+    message: |
+      [MISSING] repository 함수에서 API 호출 전 payload 검증이 누락되었습니다.
+
+      예시:
+        const create{Domain} = async (params: {Domain}Payload) => {
+          const validated = payload.create.parse(params);  // ← 필수
+          const response = await api.private.post('/...', validated);
+          return unwrapEnvelope(response, dto.item);
+        };
+
+# ── 수정 제한 경로 ──────────────────────────────────────────────────────────────
+
+restricted_paths:
+  - path: 'src/shared/api/http/'
+    reason: 'HTTP 클라이언트 설정 — 임의 수정 금지'
+    on_attempt:
+      severity: error
+      message: |
+        [RESTRICTED] src/shared/api/http/ 는 직접 수정할 수 없습니다.
+        HTTP 클라이언트 동작 변경이 필요하면 팀에 먼저 공유하세요.
+
+  - path: 'src/shared/lib/api-utils.ts'
+    reason: 'unwrapEnvelope 구현 — 임의 수정 금지'
+    on_attempt:
+      severity: error
+      message: |
+        [RESTRICTED] api-utils.ts는 직접 수정할 수 없습니다.
+        unwrapEnvelope 동작 변경이 필요하면 팀에 먼저 공유하세요.
+
+  - path: 'src/shared/components/'
+    reason: '공유 컴포넌트 — 변경이 다른 feature에 영향을 줄 수 있음'
+    on_attempt:
+      severity: warning
+      message: |
+        [CAUTION] shared/components 수정은 다른 feature에 영향을 줄 수 있습니다.
+        수정 범위와 영향을 먼저 확인하세요.
+
+# ── 자동 실행 스크립트 ──────────────────────────────────────────────────────────
+# 아래 규칙들은 ai-check.sh 스크립트로 CI / pre-commit에서 실행 가능하다.
+# 사용법: bash .ai/hooks/ai-check.sh
+
+scripts:
+  ai_check:
+    path: '.ai/hooks/ai-check.sh'
