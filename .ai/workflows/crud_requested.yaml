@@ -10,15 +10,15 @@ description: |
 # ── Trigger ──────────────────────────────────────────────────────────────────
 trigger:
   keywords:
-    - "CRUD 만들어"
-    - "CRUD 추가"
-    - "entities 만들어"
-    - "repository 만들어"
+    - 'CRUD 만들어'
+    - 'CRUD 추가'
+    - 'entities 만들어'
+    - 'repository 만들어'
   required_input:
-    - domain         # 단수 소문자 (예: quiz)
-    - endpoints      # HTTP method + path 목록
-    - request_body   # 요청 필드 정의
-    - response_item  # 응답 단건 필드 정의
+    - domain # 단수 소문자 (예: quiz)
+    - endpoints # HTTP method + path 목록
+    - request_body # 요청 필드 정의
+    - response_item # 응답 단건 필드 정의
 
 # ── Retrieval — 실행 전 읽어야 하는 문서 ─────────────────────────────────────
 retrieval:
@@ -46,7 +46,7 @@ steps:
     action: run_skill
     skill: create-crud-flow
     phase: step_2_dto
-    output_file: "src/entities/{domain}/infrastructure/{domain}.dto.ts"
+    output_file: 'src/entities/{domain}/infrastructure/{domain}.dto.ts'
     guardrails:
       - dto와 payload를 반드시 분리 export
       - DTO 타입을 features에서 직접 import 금지
@@ -56,7 +56,7 @@ steps:
     action: run_skill
     skill: create-crud-flow
     phase: step_3_keys
-    output_file: "src/entities/{domain}/infrastructure/{domain}.keys.ts"
+    output_file: 'src/entities/{domain}/infrastructure/{domain}.keys.ts'
     guardrails:
       - queryKey 배열 리터럴 하드코딩 금지
       - all prefix 필수
@@ -66,7 +66,7 @@ steps:
     action: run_skill
     skill: create-crud-flow
     phase: step_4_repository
-    output_file: "src/entities/{domain}/infrastructure/{domain}.repository.ts"
+    output_file: 'src/entities/{domain}/infrastructure/{domain}.repository.ts'
     guardrails:
       - api.private / api.public 만 사용 (api.bff.* 금지)
       - features import 절대 금지
@@ -78,7 +78,7 @@ steps:
     action: run_skill
     skill: create-crud-flow
     phase: step_5_types
-    output_file: "src/entities/{domain}/types/index.ts"
+    output_file: 'src/entities/{domain}/types/index.ts'
     guardrails:
       - DTO 타입 직접 export 금지
       - z.infer<typeof dto.xxx> 형태만 허용
@@ -86,18 +86,18 @@ steps:
   - id: typecheck_entities
     description: entities 생성 후 타입 오류 확인
     action: run_command
-    command: yarn tsc --noEmit
+    command: npm run check-types
     on_failure:
       action: fix_and_retry
       max_attempts: 2
-      hint: "타입 오류 메시지를 읽고 DTO / repository / types 파일을 수정한다"
+      hint: '타입 오류 메시지를 읽고 DTO / repository / types 파일을 수정한다'
 
   - id: generate_classify_error
     description: classify 에러 함수를 errors.ts에 추가
     action: run_skill
     skill: handle-api-error
     phase: step_1_classify
-    target_file: "src/shared/lib/errors/errors.ts"
+    target_file: 'src/shared/lib/errors/errors.ts'
     guardrails:
       - 별도 파일 생성 금지 — errors.ts에만 추가
       - FIELD / CONTEXT / AUTH / UNKNOWN 모두 포함
@@ -106,7 +106,7 @@ steps:
     description: create / update / delete mutation hook 생성
     action: run_skill
     skill: create-post-mutation
-    output_dir: "src/features/{feature}/hooks/"
+    output_dir: 'src/features/{feature}/hooks/'
     guardrails:
       - hook 파일은 features/ 에만 위치
       - onSuccess에 invalidateQueries 필수
@@ -115,7 +115,7 @@ steps:
   - id: typecheck_final
     description: 전체 타입 검사
     action: run_command
-    command: yarn tsc --noEmit
+    command: npm run check-types
     on_failure:
       action: fix_and_retry
       max_attempts: 2
@@ -123,7 +123,7 @@ steps:
   - id: lint
     description: 린트 자동 수정
     action: run_command
-    command: yarn lint --fix
+    command: npm run lint:fix
 
   - id: validate_guardrails
     description: 레이어 위반 정적 검사
@@ -131,7 +131,7 @@ steps:
     script: .ai/hooks/ai-check.sh
     on_failure:
       action: report_violation
-      message: "레이어 위반 감지. 아래 항목을 수정하고 다시 실행하세요."
+      message: '레이어 위반 감지. 아래 항목을 수정하고 다시 실행하세요.'
 
 # ── Retry 정책 ────────────────────────────────────────────────────────────────
 retry:
@@ -144,9 +144,9 @@ retry:
 
 # ── Restricted Paths — 이 워크플로우에서 수정 금지 ────────────────────────────
 restricted_paths:
-  - src/shared/api/http/         # HTTP 클라이언트 설정
-  - src/shared/lib/api-utils.ts  # unwrapEnvelope 구현
-  - src/shared/api/index.ts      # api export
+  - src/shared/api/http/ # HTTP 클라이언트 설정
+  - src/shared/lib/api-utils.ts # unwrapEnvelope 구현
+  - src/shared/api/index.ts # api export
 
 # ── 완료 조건 ─────────────────────────────────────────────────────────────────
 done_when:
@@ -156,6 +156,6 @@ done_when:
   - types/index.ts 갱신됨
   - classify{Domain}Error가 errors.ts에 추가됨
   - mutation hook 파일 생성됨
-  - yarn tsc --noEmit 통과
-  - yarn lint 통과
+  - npm run check-types 통과
+  - npm run lint 통과
   - 레이어 위반 없음

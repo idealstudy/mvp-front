@@ -300,8 +300,8 @@ export function classify{Domain}Error(code?: string): ApiErrorType {
 [ ] types/index.ts에 DTO 타입 직접 export 없음 (z.infer<> 사용)
 [ ] domain.ts가 infrastructure를 import하지 않음 (변환 필요 시)
 [ ] errors.ts에 classify{Domain}Error 추가됨
-[ ] yarn tsc --noEmit 통과
-[ ] yarn lint 통과
+[ ] npm run check-types 통과
+[ ] npm run lint 통과
 ```
 
 ---

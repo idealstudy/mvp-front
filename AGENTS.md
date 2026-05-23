@@ -57,6 +57,7 @@ If any of the above rules cannot be applied, add a comment in the code explainin
 Existing legacy implementations may not follow the latest architecture rules.
 
 For newly generated code:
+
 - Prefer `.ai/skills/*` patterns
 - Do not copy legacy implementation patterns into new files
 
@@ -67,6 +68,21 @@ Before finishing any implementation, always run:
 ```bash
 bash .ai/hooks/ai-check.sh
 ```
+
+If the check fails, read `.ai/tmp/diagnostics.json`, fix all `severity: "error"` items, and re-run until passed.
+
+### 8. Do not access secrets or environment files
+
+AI agents must not read, print, create, or modify `.env`, `.env.*`, tokens, credentials, or secret values.
+
+When a task requires credentials:
+
+- Use existing environment variable names only
+- Do not hardcode secret values
+- If verification requires unavailable secrets, report the limitation and use mock or fixture-based validation where possible
+- Do not read or modify `.env.local`
+- Use `.env.example` to understand which environment variables exist
+- Modify `.env.example` only when explicitly requested
 
 ---
 
@@ -111,9 +127,9 @@ Workflows (orchestrate multiple skills in sequence):
 
 Reference example (complete CRUD output for a real-like domain):
 
-| Example                        | File                              |
-| ------------------------------ | --------------------------------- |
-| notice 도메인 CRUD 전체 산출물 | `.ai/examples/crud-notice.md`     |
+| Example                        | File                          |
+| ------------------------------ | ----------------------------- |
+| notice 도메인 CRUD 전체 산출물 | `.ai/examples/crud-notice.md` |
 
 Run the layer violation check after any generation:
 
@@ -128,11 +144,7 @@ bash .ai/hooks/ai-check.sh
 IF creating a new domain CRUD:
 → Read `.ai/skills/create-crud-flow.md` first
 → Follow the order: DTO → keys → repository → types
-→ After generation, run in sequence:
-
-1.  `bash .ai/hooks/ai-check.sh`
-2.  `yarn tsc --noEmit`
-3.  `yarn lint`
+→ After generation, run `bash .ai/hooks/ai-check.sh`
 
 IF creating a mutation hook:
 → Read `.ai/skills/create-post-mutation.md`
@@ -142,3 +154,18 @@ IF creating a mutation hook:
 IF adding error handling:
 → Read `.ai/skills/handle-api-error.md`
 → Add `classifyXxxError` to `src/shared/lib/errors/errors.ts` — never in a separate file
+
+IF the guardrail check fails:
+→ Read console output for a human-readable summary
+→ Read `.ai/tmp/diagnostics.json` for machine-readable violation details
+→ Find `severity: "error"` items — only these cause exit 1
+→ Fix each violation using `ruleId` + `file` + `line` as the target
+→ Read `docs[]` links in the failing diagnostic before modifying
+→ Apply **minimal patch only** — do not refactor surrounding code
+→ Re-run `bash .ai/hooks/ai-check.sh` to verify
+
+Notes:
+
+- `warning` / `info` items do NOT cause failure — fix is optional
+- Prefer reading `.ai/examples/crud-notice.md` or skill files before rewriting
+- See `docs/ai-diagnostics.md` for full schema reference

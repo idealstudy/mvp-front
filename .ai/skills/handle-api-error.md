@@ -139,7 +139,7 @@ import { handleApiError } from '@/shared/lib/errors/error-handler';
 [ ] handleApiError가 onError 내에서 호출됨
 [ ] onError에서 5xx / 401 / 네트워크 에러를 수동으로 처리하지 않음
 [ ] toast.error() 등 중복 토스트 호출 없음
-[ ] yarn tsc --noEmit 통과
+[ ] npm run check-types 통과
 ```
 
 ---

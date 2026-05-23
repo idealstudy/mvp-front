@@ -13,6 +13,9 @@ description: |
 
 rules:
   - id: no_api_in_features
+    check_id: GR001
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: features에서 API 클라이언트 직접 사용 금지
     event: pre_write
     path_pattern:
@@ -37,6 +40,9 @@ rules:
       참조: docs/architecture.md Rule 1
 
   - id: no_deprecated_api_client
+    check_id: GR006
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: 폐기된 BFF 클라이언트 사용 금지
     event: pre_write
     path_pattern:
@@ -55,6 +61,9 @@ rules:
       참조: docs/architecture.md — API Clients
 
   - id: no_dto_type_in_types_index
+    check_id: GR007
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: types/index.ts에서 DTO 타입 직접 export 금지
     event: pre_write
     path_pattern:
@@ -80,6 +89,9 @@ rules:
       참조: docs/entities.md Rule 1
 
   - id: no_infrastructure_import_in_domain
+    check_id: GR008
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: domain.ts에서 infrastructure import 금지
     event: pre_write
     path_pattern:
@@ -102,6 +114,9 @@ rules:
       참조: docs/entities.md Rule 2
 
   - id: query_key_no_hardcoded_array
+    check_id: GR002
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: queryKey 배열 리터럴 하드코딩 금지
     event: pre_write
     path_pattern:
@@ -129,6 +144,9 @@ rules:
       참조: docs/entities.md — TanStack Query Keys
 
   - id: mutation_requires_invalidate_queries
+    check_id: GR003
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: mutation hook에 invalidateQueries 누락 감지
     event: post_write
     path_pattern:
@@ -152,6 +170,9 @@ rules:
       참조: .ai/skills/create-post-mutation.md
 
   - id: mutation_requires_handle_api_error
+    check_id: GR004
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: mutation hook 또는 호출부에 handleApiError 누락 감지
     event: post_write
     path_pattern:
@@ -173,6 +194,9 @@ rules:
             .ai/skills/handle-api-error.md
 
   - id: payload_parse_before_api_call
+    check_id: GR005
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
     name: repository에서 payload 검증 누락 감지
     event: post_write
     path_pattern:
@@ -193,6 +217,30 @@ rules:
           const response = await api.private.post('/...', validated);
           return unwrapEnvelope(response, dto.item);
         };
+
+  - id: typescript_error
+    check_id: GR009
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
+    name: TypeScript 타입 오류 금지
+    event: post_write
+    command: npm run check-types
+    severity: error
+    message: |
+      [TYPESCRIPT] 타입 오류가 있습니다.
+      npm run check-types 출력을 확인하고 타입 오류를 수정하세요.
+
+  - id: eslint_error
+    check_id: GR010
+    implemented: true
+    runner: .ai/hooks/ai-check.sh
+    name: ESLint 규칙 위반 금지
+    event: post_write
+    command: npm run lint
+    severity: error
+    message: |
+      [ESLINT] ESLint 규칙 위반이 있습니다.
+      npm run lint 출력을 확인하고 규칙 위반을 수정하세요.
 
 # ── 수정 제한 경로 ──────────────────────────────────────────────────────────────
 
