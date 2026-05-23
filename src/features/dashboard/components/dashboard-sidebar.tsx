@@ -8,6 +8,7 @@ import { createTeacherStudyRoomHooks } from '@/features/study-rooms/hooks/room.q
 import { ListIcon, NotepadIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
+import { useMediaQuery } from '@/shared/hooks';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
 import {
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 const STUDY_ROOM_SKELETON_COUNT = 3;
+const DESKTOP_MEDIA_QUERY = '(min-width: 1200px)';
 const studentStudyRoomApi = createStudentStudyRoomApi();
 const teacherStudyRoomApi = createTeacherStudyRoomApi();
 const { useStudentStudyRoomsQuery } =
@@ -32,6 +34,7 @@ export const DashboardSidebar = () => {
   // const { data, isLoading, isError } = useDashboardQuery();
 
   const { role, isLoading: isRoleLoading } = useRole();
+  const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
   const { logout } = useAuth();
 
   const handleLogout = () => {
@@ -46,14 +49,14 @@ export const DashboardSidebar = () => {
     data: teacherStudyRoomList,
     isPending: isTeacherStudyRoomListPending,
   } = useTeacherStudyRoomsQuery({
-    enabled: role === 'ROLE_TEACHER',
+    enabled: isDesktop && role === 'ROLE_TEACHER',
   });
 
   const {
     data: studentStudyRoomList,
     isPending: isStudentStudyRoomListPending,
   } = useStudentStudyRoomsQuery({
-    enabled: role === 'ROLE_STUDENT',
+    enabled: isDesktop && role === 'ROLE_STUDENT',
   });
 
   const getStudyRoomList = () => {

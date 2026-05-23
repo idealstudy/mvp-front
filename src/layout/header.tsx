@@ -72,13 +72,13 @@ export const Header = () => {
     DEFAULT_PROFILE_IMAGE.HEADER
   );
 
-  // 역할에 따라 조건부로 API 호출
+  // 역할에 따라 조건부로 API 호출 + 모달이 열렸을 때만 호출
   const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
-    enabled: session?.role === 'ROLE_TEACHER',
+    enabled: isOpen && session?.role === 'ROLE_TEACHER',
   });
 
   const { data: studentStudyRoomList } = useStudentStudyRoomsQuery({
-    enabled: session?.role === 'ROLE_STUDENT',
+    enabled: isOpen && session?.role === 'ROLE_STUDENT',
   });
 
   // 역할에 따라 적절한 리스트 선택
@@ -115,7 +115,7 @@ export const Header = () => {
               alt="THE EDU 로고"
               width={79}
               height={22}
-              className="cursor-pointer"
+              className="h-[22px] w-[79px] shrink-0 cursor-pointer"
             />
           </Link>
           <Image
@@ -221,6 +221,7 @@ export const Header = () => {
                     alt="햄버거 메뉴 아이콘"
                     width={24}
                     height={24}
+                    className="h-6 w-6 shrink-0"
                   />
                 </button>
               </PopoverTrigger>
