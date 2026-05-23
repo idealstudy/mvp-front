@@ -55,7 +55,7 @@ const StudyroomSection = ({ className }: Props) => {
       {isPending ? (
         <div className="flex w-full flex-col items-center gap-8">
           <div className="tablet:h-[300px] tablet:w-[300px] bg-gray-3 h-[200px] w-[200px] animate-pulse rounded-2xl" />
-          <div className="bg-gray-3 h-8 w-40 animate-pulse rounded-lg" />
+          <div className="bg-gray-3 tablet:h-12 h-10 w-40 animate-pulse rounded-lg" />
         </div>
       ) : (
         <StudyroomSectionContent

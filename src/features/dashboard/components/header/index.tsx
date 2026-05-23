@@ -137,6 +137,9 @@ const DashboardHeader = () => {
       stats = [];
   }
 
+  const criticalTextFontClassName =
+    '[font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe_UI",sans-serif]';
+
   return (
     <div
       className={cn(
@@ -154,11 +157,15 @@ const DashboardHeader = () => {
         >
           <p
             className={cn(
+              criticalTextFontClassName,
               'font-body1-normal text-gray-black',
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className="font-bold">{member?.name}</span> {nameSuffix},
+            <span className={cn(criticalTextFontClassName, 'font-bold')}>
+              {member?.name}
+            </span>{' '}
+            {nameSuffix},
             <br />
             {greetingMessage}
           </p>
