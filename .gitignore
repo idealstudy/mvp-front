@@ -53,3 +53,5 @@ certificates
 
 # Claude
 CLAUDE.md
+.omc/
+.ai/tmp/
