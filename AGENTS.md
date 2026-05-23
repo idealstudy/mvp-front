@@ -18,8 +18,6 @@ All files are located in the `docs/` folder.
 | 4     | `docs/error-handling.md` | Error handling layers, ApiErrorType, usage examples       |
 | 5     | `docs/e2e.md`            | Playwright setup, rules, and key flows for E2E testing    |
 
-> ✅ These 5 files are the only docs that exist in `docs/`. Do not assume other documentation exists.
-
 ---
 
 ## Rules
@@ -66,9 +64,9 @@ For newly generated code:
 
 Before finishing any implementation, always run:
 
-1. `bash .ai/hooks/ai-check.sh`
-2. `yarn tsc --noEmit`
-3. `yarn lint`
+```bash
+bash .ai/hooks/ai-check.sh
+```
 
 ---
 

@@ -30,6 +30,22 @@ LEGACY_FEATURE_PATHS=(
   "src/features/study-rooms/model"
 )
 
+# ── Helper: 근접 줄 검사 ───────────────────────────────────────────────────────
+# grep_near FILE PATTERN NEAR_PATTERN [WITHIN=5]
+# PATTERN 매치 라인 기준 ±WITHIN 줄 내에 NEAR_PATTERN이 있으면 0 반환
+grep_near() {
+  local file="$1" pattern="$2" near_pattern="$3" within="${4:-5}"
+  while IFS= read -r match; do
+    local lineno="${match%%:*}"
+    local start=$((lineno - within)); [ $start -lt 1 ] && start=1
+    local end=$((lineno + within))
+    if sed -n "${start},${end}p" "$file" 2>/dev/null | grep -q "$near_pattern"; then
+      return 0
+    fi
+  done < <(grep -n "$pattern" "$file" 2>/dev/null)
+  return 1
+}
+
 # ── 1. 신규 features 코드에서 API 클라이언트 직접 사용 검사 ─────────────────────
 echo "1. features 레이어 API 직접 사용 검사 (레거시 경로 제외)..."
 
@@ -213,6 +229,99 @@ if yarn lint 2>&1; then
   echo "   ✅ 통과"
 else
   ERRORS=$((ERRORS + 1))
+fi
+
+echo ""
+
+# ── git 기반 신규/수정 파일 목록 ──────────────────────────────────────────────
+# 커밋되지 않은 변경 파일 + 신규 untracked 파일만 대상으로 한다.
+# 기존 파일은 자동으로 제외되므로 레거시 목록 불필요.
+GIT_CHANGED_FILES=()
+while IFS= read -r f; do
+  [ -f "$f" ] && GIT_CHANGED_FILES+=("$f")
+done < <({
+  git diff --name-only HEAD 2>/dev/null
+  git ls-files --others --exclude-standard 2>/dev/null
+} | sort -u)
+
+# ── 8. mutation hook invalidateQueries 누락 검사 ──────────────────────────────
+echo "8. mutation hook invalidateQueries 누락 검사 (신규/수정 파일 기준)..."
+
+MUTATION_FILES=()
+for f in "${GIT_CHANGED_FILES[@]}"; do
+  [[ "$f" =~ src/features/.*use-(create|update|delete)-.*\.ts$ ]] && MUTATION_FILES+=("$f")
+done
+
+if [ ${#MUTATION_FILES[@]} -eq 0 ]; then
+  echo "   ✅ 통과 (신규 mutation hook 없음)"
+else
+  INVALIDATE_MISSING=""
+  for f in "${MUTATION_FILES[@]}"; do
+    if ! grep_near "$f" "onSuccess" "invalidateQueries" 10; then
+      INVALIDATE_MISSING="$INVALIDATE_MISSING\n  $f"
+    fi
+  done
+
+  if [ -n "$INVALIDATE_MISSING" ]; then
+    echo "❌ [MISSING] onSuccess 내 invalidateQueries 누락:"
+    echo -e "$INVALIDATE_MISSING"
+    echo "   → onSuccess에서 관련 queryKey를 invalidate하세요"
+    echo "   → 참조: .ai/skills/create-post-mutation.md"
+    ERRORS=$((ERRORS + 1))
+  else
+    echo "   ✅ 통과"
+  fi
+fi
+
+echo ""
+
+# ── 9. mutation hook handleApiError 누락 검사 (WARNING) ───────────────────────
+echo "9. mutation hook handleApiError 누락 검사 (신규/수정 파일 기준, WARNING)..."
+
+if [ ${#MUTATION_FILES[@]} -eq 0 ]; then
+  echo "   ✅ 통과 (신규 mutation hook 없음)"
+else
+  HANDLEAPI_MISSING=""
+  for f in "${MUTATION_FILES[@]}"; do
+    if ! grep -q "handleApiError" "$f" 2>/dev/null; then
+      HANDLEAPI_MISSING="$HANDLEAPI_MISSING\n  $f"
+    fi
+  done
+
+  if [ -n "$HANDLEAPI_MISSING" ]; then
+    echo "   ⚠️  [WARNING] handleApiError 미사용 파일:"
+    echo -e "$HANDLEAPI_MISSING"
+    echo "   → 폼 없는 액션: 훅 내부 onError에 handleApiError 추가"
+    echo "   → 폼 있는 mutation: 컴포넌트의 mutate(data, { onError })에서 처리 (정상)"
+    echo "   → 참조: .ai/skills/create-post-mutation.md — onError 처리 위치 선택"
+  else
+    echo "   ✅ 통과"
+  fi
+fi
+
+echo ""
+
+# ── 10. repository payload .parse() 누락 검사 ─────────────────────────────────
+echo "10. repository payload .parse() 누락 검사 (신규/수정 파일 기준)..."
+
+PARSE_MISSING=""
+for f in "${GIT_CHANGED_FILES[@]}"; do
+  [[ "$f" =~ src/entities/.*/infrastructure/.*\.repository\.ts$ ]] || continue
+  if grep -q "api\.\(private\|public\)\.\(post\|put\|patch\)" "$f" 2>/dev/null; then
+    if ! grep_near "$f" "api\.\(private\|public\)\.\(post\|put\|patch\)" "\.parse(" 5; then
+      PARSE_MISSING="$PARSE_MISSING\n  $f"
+    fi
+  fi
+done
+
+if [ -n "$PARSE_MISSING" ]; then
+  echo "❌ [MISSING] API 호출 근처에 payload .parse() 누락:"
+  echo -e "$PARSE_MISSING"
+  echo "   → api.private.post/put/patch 호출 5줄 내에 payload.xxx.parse() 를 추가하세요"
+  echo "   → 참조: .ai/skills/create-post-mutation.md"
+  ERRORS=$((ERRORS + 1))
+else
+  echo "   ✅ 통과 (신규 repository 없음 또는 모두 통과)"
 fi
 
 echo ""
