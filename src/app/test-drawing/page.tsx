@@ -1,98 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense } from 'react';
 
-import { DrawingExtension } from '@/shared/components/editor/model/drawing-extension';
-import { createNotionExtensions } from '@/shared/components/editor/model/extensions';
-import { TextEditorValue } from '@/shared/components/editor/types';
-import { cn } from '@/shared/lib';
+import { useSearchParams } from 'next/navigation';
+
+import { DrawingPanel } from '@/shared/components/drawing';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { EditorContent, useEditor } from '@tiptap/react';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-const INITIAL_VALUE: TextEditorValue = {
-  type: 'doc',
-  content: [
-    {
-      type: 'paragraph',
-      content: [
-        { type: 'text', text: '아래 블록을 클릭하면 드로잉 모달이 열립니다.' },
-      ],
-    },
-    {
-      type: 'drawing',
-      attrs: { documentId: 'test-blank-001', pdfUrl: null },
-    },
-    {
-      type: 'paragraph',
-      content: [
-        {
-          type: 'text',
-          text: '에디터 안에서 텍스트도 함께 작성할 수 있습니다.',
-        },
-      ],
-    },
-  ],
-};
-
-function DrawingEditor() {
-  const [value, setValue] = useState<TextEditorValue>(INITIAL_VALUE);
-
-  const editor = useEditor({
-    extensions: [
-      ...createNotionExtensions({ enableSlashCommand: true }),
-      DrawingExtension,
-    ],
-    content: value,
-    editable: true,
-    onUpdate: ({ editor: e }) => setValue(e.getJSON()),
-    editorProps: {
-      attributes: {
-        class: cn(
-          'outline-none w-full px-4 py-3 prose prose-sm sm:prose-base max-w-none'
-        ),
-        style: 'min-height: 300px;',
-      },
-    },
-    immediatelyRender: false,
-  });
+function TestPageContent() {
+  const searchParams = useSearchParams();
+  const singlePanel = searchParams.get('panels') === '1';
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 에디터 */}
-      <div className="relative flex w-full flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-colors focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-400/20">
-        {/* 미니 툴바 */}
-        {editor && (
-          <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-2">
-            <button
-              onClick={() =>
-                editor
-                  .chain()
-                  .focus()
-                  .setDrawing({ documentId: `blank-${Date.now()}` })
-                  .run()
-              }
-              className="flex items-center gap-1.5 rounded-md border border-gray-200 px-2.5 py-1 text-xs text-gray-600 hover:bg-gray-50"
-            >
-              <PencilIcon />빈 캔버스 삽입
-            </button>
-          </div>
-        )}
-        <EditorContent editor={editor} />
-      </div>
+    <div className="min-h-screen bg-gray-50 px-4 py-10">
+      <div className="mx-auto max-w-2xl space-y-8">
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">
+            DrawingPanel 테스트
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            패널 내부를 스크롤하면 캔버스가 자동 확장됩니다.
+            {singlePanel
+              ? ' (단일 패널 모드: ?panels=1)'
+              : ' (다중 패널 — 단일 패널 검증: ?panels=1)'}
+          </p>
+        </div>
 
-      {/* JSON 상태 */}
-      <details className="rounded-lg border border-gray-200 text-xs">
-        <summary className="cursor-pointer px-3 py-2 text-gray-400 hover:bg-gray-50">
-          에디터 JSON 상태 보기
-        </summary>
-        <pre className="max-h-48 overflow-auto bg-gray-50 px-3 py-2 text-gray-700">
-          {JSON.stringify(value, null, 2)}
-        </pre>
-      </details>
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold text-gray-600">
+            기본 (제출하기 버튼)
+          </h2>
+          <DrawingPanel
+            documentId="test-panel-001"
+            panelHeight={400}
+            expandRatio={0.3}
+            actionButton={
+              <button
+                onClick={() => alert('제출!')}
+                className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
+              >
+                제출하기
+              </button>
+            }
+          />
+        </section>
+
+        {!singlePanel && (
+          <>
+            <section className="space-y-2">
+              <h2 className="text-sm font-semibold text-gray-600">
+                커스텀 버튼 (저장하기)
+              </h2>
+              <DrawingPanel
+                documentId="test-panel-002"
+                panelHeight={300}
+                expandRatio={0.3}
+                actionButton={
+                  <button
+                    onClick={() => alert('저장!')}
+                    className="rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100"
+                  >
+                    저장하기
+                  </button>
+                }
+              />
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-sm font-semibold text-gray-600">
+                액션 버튼 없음
+              </h2>
+              <DrawingPanel
+                documentId="test-panel-003"
+                panelHeight={300}
+                expandRatio={0.3}
+              />
+            </section>
+          </>
+        )}
+
+        <div className="h-40" />
+      </div>
     </div>
   );
 }
@@ -100,35 +92,15 @@ function DrawingEditor() {
 export default function TestDrawingPage() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-50 px-4 py-10">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-gray-800">Drawing 테스트</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              필기 블록을 클릭하면 전체화면 드로잉 모달이 열립니다.
-            </p>
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center text-gray-500">
+            로딩 중…
           </div>
-          <DrawingEditor />
-        </div>
-      </div>
+        }
+      >
+        <TestPageContent />
+      </Suspense>
     </QueryClientProvider>
-  );
-}
-
-function PencilIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-    </svg>
   );
 }

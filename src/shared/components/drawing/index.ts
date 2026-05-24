@@ -1,4 +1,5 @@
 export { DrawingCanvas } from './ui/drawing-canvas';
+export { DrawingPanel } from './ui/drawing-panel';
 export { DrawingToolbar } from './ui/drawing-toolbar';
 export { PdfDrawingFullscreen } from './ui/pdf-drawing-fullscreen';
 export { PdfDrawingOverlay } from './ui/pdf-drawing-overlay';

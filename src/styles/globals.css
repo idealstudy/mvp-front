@@ -352,3 +352,17 @@ body {
 .toast-fade-exit {
   animation: toast-fade-out 0.15s ease forwards;
 }
+
+/* 전역 텍스트 선택 차단 (Apple Pencil palm rejection) */
+html,
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}

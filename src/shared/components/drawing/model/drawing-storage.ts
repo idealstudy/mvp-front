@@ -52,6 +52,26 @@ export async function loadPageStrokes(
   return data?.strokes ?? [];
 }
 
+export async function saveCanvasHeight(
+  documentId: string,
+  height: number
+): Promise<void> {
+  const db = await getDb();
+  await db.put(
+    STORE_NAME,
+    { height, updatedAt: new Date().toISOString() },
+    `${documentId}:canvas-meta`
+  );
+}
+
+export async function loadCanvasHeight(
+  documentId: string
+): Promise<number | null> {
+  const db = await getDb();
+  const data = await db.get(STORE_NAME, `${documentId}:canvas-meta`);
+  return (data as { height: number } | undefined)?.height ?? null;
+}
+
 export async function clearDocumentStrokes(documentId: string): Promise<void> {
   const db = await getDb();
   const tx = db.transaction(STORE_NAME, 'readwrite');

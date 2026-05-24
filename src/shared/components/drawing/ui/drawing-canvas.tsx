@@ -30,24 +30,43 @@ export function DrawingCanvas({
 }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { handlePointerDown, handlePointerMove, handlePointerUp } =
-    useDrawingCanvas({
-      canvasRef,
-      strokes,
-      tool,
-      color,
-      size,
-      pageSize,
-      onStrokeAdd,
-      onStrokeErase,
-    });
+  const {
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handlePointerCancel,
+    handlePointerLeave,
+  } = useDrawingCanvas({
+    canvasRef,
+    strokes,
+    tool,
+    color,
+    size,
+    pageSize,
+    onStrokeAdd,
+    onStrokeErase,
+  });
 
   const cursorClass =
-    tool === 'eraser'
-      ? 'cursor-cell'
-      : tool === 'highlighter'
-        ? 'cursor-crosshair'
+    tool === 'select'
+      ? 'cursor-default'
+      : tool === 'eraser'
+        ? 'cursor-cell'
         : 'cursor-crosshair';
+
+  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
+      e.preventDefault();
+    }
+    handlePointerDown(e.nativeEvent);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'pen' && (e.buttons & 1) === 1) {
+      e.preventDefault();
+    }
+    handlePointerMove(e.nativeEvent);
+  };
 
   return (
     <canvas
@@ -55,11 +74,16 @@ export function DrawingCanvas({
       width={pageSize.width}
       height={pageSize.height}
       className={cn('absolute inset-0 touch-none', cursorClass, className)}
-      style={{ width: pageSize.width, height: pageSize.height }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
+      style={{
+        width: pageSize.width,
+        height: pageSize.height,
+        touchAction: 'none',
+      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={(e) => handlePointerUp(e.nativeEvent)}
+      onPointerCancel={(e) => handlePointerCancel(e.nativeEvent)}
+      onPointerLeave={(e) => handlePointerLeave(e.nativeEvent)}
     />
   );
 }
