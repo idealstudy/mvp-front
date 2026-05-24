@@ -366,3 +366,16 @@ textarea,
   -webkit-user-select: text;
   user-select: text;
 }
+
+/* 필기 영역: iOS 텍스트 선택·공유 메뉴(왼쪽 위) 방지 */
+[data-drawing-surface] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+[data-drawing-surface] * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

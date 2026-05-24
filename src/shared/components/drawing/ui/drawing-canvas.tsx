@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { cn } from '@/shared/lib';
 
@@ -17,6 +17,10 @@ type DrawingCanvasProps = {
   onStrokeErase: (ids: string[]) => void;
   className?: string;
 };
+
+function isStylusTouch(touch: Touch): boolean {
+  return (touch as Touch & { touchType?: string }).touchType === 'stylus';
+}
 
 export function DrawingCanvas({
   strokes,
@@ -47,6 +51,25 @@ export function DrawingCanvas({
     onStrokeErase,
   });
 
+  /**
+   * iPadOS Scribble가 pointer 이벤트를 삼키는 WebKit 버그 우회.
+   * @see https://mikepk.com/2020/10/iOS-safari-scribble-bug/
+   */
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch && isStylusTouch(touch)) {
+        e.preventDefault();
+      }
+    };
+
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    return () => canvas.removeEventListener('touchmove', onTouchMove);
+  }, []);
+
   const cursorClass =
     tool === 'select'
       ? 'cursor-default'
@@ -57,12 +80,13 @@ export function DrawingCanvas({
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
       e.preventDefault();
+      window.getSelection()?.removeAllRanges();
     }
     handlePointerDown(e.nativeEvent);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (e.pointerType === 'pen' && (e.buttons & 1) === 1) {
+    if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
       e.preventDefault();
     }
     handlePointerMove(e.nativeEvent);
@@ -71,6 +95,7 @@ export function DrawingCanvas({
   return (
     <canvas
       ref={canvasRef}
+      data-drawing-surface
       width={pageSize.width}
       height={pageSize.height}
       className={cn('absolute inset-0 touch-none', cursorClass, className)}
@@ -84,6 +109,7 @@ export function DrawingCanvas({
       onPointerUp={(e) => handlePointerUp(e.nativeEvent)}
       onPointerCancel={(e) => handlePointerCancel(e.nativeEvent)}
       onPointerLeave={(e) => handlePointerLeave(e.nativeEvent)}
+      onContextMenu={(e) => e.preventDefault()}
     />
   );
 }

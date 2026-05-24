@@ -2,32 +2,61 @@
 
 import { useEffect } from 'react';
 
+function clearDocumentSelection() {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+  sel.removeAllRanges();
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  return Boolean(target.closest('input, textarea, [contenteditable="true"]'));
+}
+
 /**
- * input/textarea/contenteditable 외부에서 발생하는 텍스트 선택을 즉시 제거합니다.
- * 손바닥이 펜보다 먼저 닿는 경우에도 selectionchange 시점에 반응하므로 타이밍 문제가 없습니다.
+ * Apple Pencil 필기 시 페이지 텍스트가 선택되면 iPad 왼쪽 위에
+ * "공유" UI가 뜨고 pointer 이벤트가 끊길 수 있습니다.
+ * selectionchange뿐 아니라 pointerdown·selectstart에서 막습니다.
  */
 export function PenSelectGuard() {
   useEffect(() => {
     const onSelectionChange = () => {
-      const sel = window.getSelection();
-      if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+      if (isEditableTarget(document.activeElement)) return;
+      clearDocumentSelection();
+    };
 
-      const range = sel.getRangeAt(0);
-      const node = range.commonAncestorContainer;
-      const el =
-        node.nodeType === Node.TEXT_NODE
-          ? node.parentElement
-          : (node as Element);
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+      if (isEditableTarget(e.target)) return;
+      clearDocumentSelection();
+    };
 
-      // input / textarea / contenteditable 안이면 선택 허용
-      if (el?.closest('input, textarea, [contenteditable]')) return;
-
-      sel.removeAllRanges();
+    const onSelectStart = (e: Event) => {
+      if (isEditableTarget(e.target)) return;
+      if (
+        e.target instanceof Element &&
+        e.target.closest('[data-drawing-surface]')
+      ) {
+        e.preventDefault();
+      }
     };
 
     document.addEventListener('selectionchange', onSelectionChange);
+    document.addEventListener('pointerdown', onPointerDown, {
+      capture: true,
+    });
+    document.addEventListener('selectstart', onSelectStart, {
+      capture: true,
+    });
+
     return () => {
       document.removeEventListener('selectionchange', onSelectionChange);
+      document.removeEventListener('pointerdown', onPointerDown, {
+        capture: true,
+      });
+      document.removeEventListener('selectstart', onSelectStart, {
+        capture: true,
+      });
     };
   }, []);
 

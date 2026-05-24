@@ -234,7 +234,13 @@ export function DrawingPanel({
         return;
       }
       const touch = e.touches[0];
-      if (touch && isFingerTouch(touch)) e.preventDefault();
+      if (!touch) return;
+      // Scribble가 Pencil pointerdown/up을 삼키는 WebKit 버그 우회
+      if (!isFingerTouch(touch)) {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
     };
 
     el.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -308,26 +314,27 @@ export function DrawingPanel({
       {/* ── 스크롤 캔버스 영역 — 포인터 hit area = panelHeight ── */}
       <div
         ref={scrollContainerRef}
+        data-drawing-surface
         className={cn(
           'overflow-y-scroll overscroll-y-contain bg-white',
           scrollCursorClass
         )}
-        style={{ height: panelHeight, touchAction: 'pan-y' }}
+        style={{ height: panelHeight, touchAction: 'none' }}
       >
         {/* 캔버스 래퍼 — 내부 높이가 커지면 스크롤 생김 */}
         <div
           ref={canvasWrapperRef}
+          data-drawing-surface
           className="relative overflow-hidden"
           style={{ height: canvasHeight }}
         >
           {/* 빈 상태 안내 */}
           {strokes.length === 0 && (
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <div
+              className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2"
+              aria-hidden
+            >
               <EmptyPencilIcon />
-              <p className="text-sm font-bold text-gray-700">풀이 적어봐요</p>
-              <p className="text-xs text-gray-400">
-                여기에 자유롭게 그림이나 식을 작성해보세요.
-              </p>
             </div>
           )}
 

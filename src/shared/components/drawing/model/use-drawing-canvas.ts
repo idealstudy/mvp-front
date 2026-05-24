@@ -5,8 +5,6 @@ import { getStroke } from 'perfect-freehand';
 import type { DrawingTool, PageSize, Point, Stroke } from '../types';
 
 const ERASER_RADIUS = 12;
-/** iOS: 동일 접촉의 중복 pointerdown (ms) */
-const POINTER_DOWN_DEDUPE_MS = 45;
 
 function getSvgPathFromStroke(points: number[][]): string {
   if (points.length < 2) return '';
@@ -43,6 +41,12 @@ function isPrimaryButtonDown(e: PointerEvent): boolean {
   return (e.buttons & 1) === 1;
 }
 
+/** iPad: Scribble 활성 시에도 펜이 눌린 상태인지 */
+function isPenContact(e: PointerEvent): boolean {
+  if (e.pointerType !== 'pen') return isPrimaryButtonDown(e);
+  return e.pressure > 0 || isPrimaryButtonDown(e);
+}
+
 function ensureMinPoints(
   points: Point[],
   pageSize: PageSize,
@@ -56,7 +60,14 @@ function ensureMinPoints(
 
   if (points.length === 1) {
     const p = points[0]!;
-    return [p, { x: p.x + offsetX, y: p.y + offsetY, pressure: p.pressure }];
+    return [
+      p,
+      {
+        x: p.x + offsetX * 0.15,
+        y: p.y + offsetY * 0.15,
+        pressure: p.pressure ?? 0.5,
+      },
+    ];
   }
 
   const first = points[0]!;
@@ -68,8 +79,8 @@ function ensureMinPoints(
   return [
     first,
     {
-      x: first.x + offsetX,
-      y: first.y + offsetY,
+      x: first.x + offsetX * 0.15,
+      y: first.y + offsetY * 0.15,
       pressure: last.pressure ?? first.pressure,
     },
   ];
@@ -97,15 +108,12 @@ export function renderStrokes(
       simulatePressure: true,
     });
 
-    const path2d = new Path2D(getSvgPathFromStroke(outlinePoints));
+    const pathData = getSvgPathFromStroke(outlinePoints);
+    if (!pathData) continue;
 
-    if (stroke.tool === 'highlighter') {
-      ctx.globalAlpha = 0.4;
-    } else {
-      ctx.globalAlpha = 1;
-    }
     ctx.fillStyle = stroke.color;
-    ctx.fill(path2d);
+    ctx.globalAlpha = stroke.tool === 'highlighter' ? 0.4 : 1;
+    ctx.fill(new Path2D(pathData));
   }
 
   ctx.globalAlpha = 1;
@@ -136,14 +144,8 @@ export function useDrawingCanvas({
   const currentPointsRef = useRef<Point[]>([]);
   const strokeIdRef = useRef('');
   const activePointerIdRef = useRef<number | null>(null);
-  const strokeDownTimeRef = useRef(0);
 
   const strokesRef = useRef(strokes);
-
-  // persistStroke 직후·setState 반영 전 렌더가 ref를 덮어쓰지 않도록 props와 분리 동기화
-  useEffect(() => {
-    strokesRef.current = strokes;
-  }, [strokes]);
 
   const onStrokeAddRef = useRef(onStrokeAdd);
   onStrokeAddRef.current = onStrokeAdd;
@@ -222,9 +224,8 @@ export function useDrawingCanvas({
         tool: toolRef.current,
       };
 
-      const nextStrokes = [...strokesRef.current, stroke];
-      strokesRef.current = nextStrokes;
-      paintStrokes(nextStrokes);
+      strokesRef.current = [...strokesRef.current, stroke];
+      paintStrokes(strokesRef.current);
       onStrokeAddRef.current(stroke);
     },
     [paintStrokes, pageSize]
@@ -268,7 +269,6 @@ export function useDrawingCanvas({
       activePointerIdRef.current = e.pointerId;
       isDrawingRef.current = true;
       strokeIdRef.current = crypto.randomUUID();
-      strokeDownTimeRef.current = e.timeStamp;
 
       const { x, y } = getNormalizedCoords(e);
       currentPointsRef.current = [{ x, y, pressure: e.pressure }];
@@ -280,8 +280,9 @@ export function useDrawingCanvas({
   const finishStroke = useCallback(
     (e: PointerEvent) => {
       if (!isDrawingRef.current) return;
+      if (activePointerIdRef.current !== e.pointerId) return;
 
-      const pointerId = activePointerIdRef.current ?? e.pointerId;
+      const pointerId = activePointerIdRef.current;
       releaseCapture(pointerId);
 
       const { x, y } = getNormalizedCoords(e);
@@ -300,8 +301,9 @@ export function useDrawingCanvas({
     const last = currentPointsRef.current.at(-1);
     if (last) {
       saveCurrentStroke({ x: last.x, y: last.y, pressure: last.pressure });
+    } else {
+      resetDrawingState();
     }
-    resetDrawingState();
   }, [releaseCapture, resetDrawingState, saveCurrentStroke]);
 
   useEffect(() => {
@@ -322,6 +324,14 @@ export function useDrawingCanvas({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || canvas.width === 0) return;
+    if (isDrawingRef.current) return;
+
+    if (strokes.length === 0 && strokesRef.current.length > 0) {
+      paintStrokes(strokesRef.current);
+      return;
+    }
+
+    strokesRef.current = strokes;
     paintStrokes(strokes);
   }, [strokes, paintStrokes, canvasRef]);
 
@@ -364,14 +374,13 @@ export function useDrawingCanvas({
         return;
       }
 
-      if (isDrawingRef.current && activePointerIdRef.current === e.pointerId) {
-        if (e.timeStamp - strokeDownTimeRef.current < POINTER_DOWN_DEDUPE_MS) {
-          return;
-        }
+      if (e.pointerType === 'mouse' && !isPrimaryButtonDown(e)) return;
+
+      if (isDrawingRef.current) {
         finishStrokeAtLastPoint();
       }
 
-      beginStroke(e);
+      if (!beginStroke(e)) return;
       renderLiveStroke();
     },
     [
@@ -391,14 +400,13 @@ export function useDrawingCanvas({
       const { x, y } = getNormalizedCoords(e);
 
       if (toolRef.current === 'eraser') {
-        if (!isPrimaryButtonDown(e)) return;
+        if (!isPenContact(e)) return;
         eraseAtPoint(x, y);
         return;
       }
 
       if (toolRef.current === 'select') return;
-
-      if (!isPrimaryButtonDown(e)) return;
+      if (!isPenContact(e)) return;
 
       if (!isDrawingRef.current) return;
       if (activePointerIdRef.current !== e.pointerId) return;
@@ -420,12 +428,37 @@ export function useDrawingCanvas({
       }
       if (!isDrawingRef.current) return;
       if (activePointerIdRef.current !== e.pointerId) return;
-      if (e.timeStamp < strokeDownTimeRef.current) return;
 
       finishStroke(e);
     },
     [finishStroke, resetDrawingState]
   );
+
+  const handlePointerUpRef = useRef(handlePointerUp);
+  handlePointerUpRef.current = handlePointerUp;
+
+  useEffect(() => {
+    const onWindowPointerEnd = (e: PointerEvent) => {
+      if (!isDrawingRef.current) return;
+      if (!isDrawablePointer(e)) return;
+      if (activePointerIdRef.current !== e.pointerId) return;
+      if (toolRef.current === 'eraser') return;
+      handlePointerUpRef.current(e);
+    };
+
+    window.addEventListener('pointerup', onWindowPointerEnd, { capture: true });
+    window.addEventListener('pointercancel', onWindowPointerEnd, {
+      capture: true,
+    });
+    return () => {
+      window.removeEventListener('pointerup', onWindowPointerEnd, {
+        capture: true,
+      });
+      window.removeEventListener('pointercancel', onWindowPointerEnd, {
+        capture: true,
+      });
+    };
+  }, []);
 
   const handlePointerCancel = useCallback(
     (e: PointerEvent) => {
