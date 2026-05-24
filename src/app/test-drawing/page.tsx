@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
-import { DrawingPanel } from '@/shared/components/drawing';
+import { DrawingPanel } from '@/shared/components/drawing/ui/drawing-panel';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
