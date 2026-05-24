@@ -287,6 +287,11 @@ export function DrawingPanel({
   );
 
   const handleClearAll = useCallback(async () => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    strokesForSaveRef.current = [];
     clearStrokes();
     await savePageStrokes(documentId, 1, []);
     setShowClearConfirm(false);

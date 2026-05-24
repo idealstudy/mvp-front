@@ -326,9 +326,21 @@ export function useDrawingCanvas({
     if (!canvas || canvas.width === 0) return;
     if (isDrawingRef.current) return;
 
-    if (strokes.length === 0 && strokesRef.current.length > 0) {
-      paintStrokes(strokesRef.current);
-      return;
+    // persist 직후 React state만 늦을 때 — 전체 지우기(strokes=[])는 제외
+    if (strokes.length < strokesRef.current.length) {
+      const isPrefix =
+        strokes.length > 0 &&
+        strokes.every((s, i) => s.id === strokesRef.current[i]?.id);
+      const pendingId = strokesRef.current[strokes.length]?.id;
+      const awaitingProps =
+        isPrefix &&
+        pendingId !== undefined &&
+        !strokes.some((s) => s.id === pendingId);
+
+      if (awaitingProps) {
+        paintStrokes(strokesRef.current);
+        return;
+      }
     }
 
     strokesRef.current = strokes;
