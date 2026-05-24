@@ -113,11 +113,13 @@ IF you are unfamiliar with the codebase or the task spans multiple areas:
 
 For repetitive tasks, read the corresponding skill file and follow its steps exactly.
 
-| Task                                                                | Skill                                |
-| ------------------------------------------------------------------- | ------------------------------------ |
-| Create full CRUD for a new domain (DTO → keys → repository → types) | `.ai/skills/create-crud-flow.md`     |
-| Create a POST / PUT / PATCH / DELETE mutation hook                  | `.ai/skills/create-post-mutation.md` |
-| Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`     |
+| Task                                                                | Skill                                   |
+| ------------------------------------------------------------------- | --------------------------------------- |
+| Create full CRUD for a new domain (DTO → keys → repository → types) | `.ai/skills/create-crud-flow.md`        |
+| Create a POST / PUT / PATCH / DELETE mutation hook                  | `.ai/skills/create-post-mutation.md`    |
+| Create a form + mutation flow (RHF + useMutation, error handling)   | `.ai/skills/create-form-mutation.md`    |
+| Create a GET query hook (useQuery, queryKey, repository, enabled)   | `.ai/skills/create-query-hook.md`       |
+| Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`        |
 
 Workflows (orchestrate multiple skills in sequence):
 
@@ -146,10 +148,19 @@ IF creating a new domain CRUD:
 → Follow the order: DTO → keys → repository → types
 → After generation, run `bash .ai/hooks/ai-check.sh`
 
+IF creating a query hook:
+→ Read `.ai/skills/create-query-hook.md` first
+→ `queryKey` must use key factory — no array literals
+→ `queryFn` must call repository — no direct `api.private` / `api.public`
+→ Add `enabled` when id or condition may be absent
+
 IF creating a mutation hook:
 → Read `.ai/skills/create-post-mutation.md`
 → `onSuccess` must call `invalidateQueries`
-→ `onError` must call `handleApiError`
+→ Error handling location depends on usage:
+   - form mutation: no hook `onError`; handle in component `mutate(data, { onError })`
+     → Read `.ai/skills/create-form-mutation.md`
+   - non-form mutation: hook `onError` must call `handleApiError`
 
 IF adding error handling:
 → Read `.ai/skills/handle-api-error.md`

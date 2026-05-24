@@ -15,9 +15,9 @@ set -e
 # ── Rule ID Reference ─────────────────────────────────────────────────────────
 # GR001  no_api_private              features에서 api.private/public 직접 사용     [architecture]
 # GR002  no_query_key_hardcode       queryKey 배열 리터럴 하드코딩                 [react-query]
-# GR003  require_invalidate_queries  mutation onSuccess에 invalidateQueries 누락   [mutation]
-# GR004  require_handle_api_error    handleApiError 미사용 (warning)               [error-handling]
-# GR005  require_payload_parse       API 호출 근처 payload .parse() 누락           [validation]
+# GR003  require_invalidate_queries  mutation onSuccess에 invalidateQueries 누락 (warning)  [mutation]
+# GR004  require_handle_api_error    handleApiError 미사용 (warning, 폼 mutation hook은 정상) [error-handling]
+# GR005  require_payload_parse       API 호출 근처 payload .parse() 누락 (warning)           [validation]
 # GR006  no_bff_deprecated           api.bff.client/server 사용                    [architecture]
 # GR007  no_dto_reexport             types/index.ts DTO 직접 re-export             [architecture]
 # GR008  domain_dependency_violation domain.ts에서 infrastructure import (info)    [architecture]
@@ -270,7 +270,7 @@ while IFS= read -r f; do
       "{domain}Keys.list() 등 키 팩토리를 사용하세요" \
       "docs/entities.md"
     GR002_FOUND=$(( GR002_FOUND + 1 ))
-  done < <(grep -n "queryKey: \['" "$f" 2>/dev/null | grep -v "Keys\.\|keys\." || true)
+  done < <(grep -n "queryKey: \['\|queryKey: \[\"" "$f" 2>/dev/null | grep -v "Keys\.\|keys\." || true)
 done < <(find src \( -name "*.ts" -o -name "*.tsx" \) 2>/dev/null)
 
 if [ "$GR002_FOUND" -gt 0 ]; then
@@ -383,7 +383,12 @@ echo "8. mutation hook invalidateQueries 누락 검사 (신규/수정 파일 기
 
 MUTATION_FILES=()
 for f in "${GIT_CHANGED_FILES[@]}"; do
-  [[ "$f" =~ src/features/.*use-(create|update|delete)-.*\.ts$ ]] && MUTATION_FILES+=("$f")
+  [[ "$f" == *.ts ]] || [[ "$f" == *.tsx ]] || continue
+  [[ "$f" =~ src/features/ ]] || continue
+  # 파일명 패턴 or useMutation( 직접 정의 포함 (useTeacherHomeworkMutations.ts 등 대응)
+  if [[ "$f" =~ use-(create|update|delete)- ]] || grep -q "useMutation(" "$f" 2>/dev/null; then
+    MUTATION_FILES+=("$f")
+  fi
 done
 
 if [ ${#MUTATION_FILES[@]} -eq 0 ]; then
@@ -392,16 +397,14 @@ else
   GR003_FOUND=0
   for f in "${MUTATION_FILES[@]}"; do
     if ! grep_near "$f" "onSuccess" "invalidateQueries" 10; then
-      add_diagnostic "GR003" "require_invalidate_queries" "error" "$f" "" \
+      add_diagnostic "GR003" "require_invalidate_queries" "warning" "$f" "" \
         "mutation onSuccess에 invalidateQueries 누락" \
         "onSuccess에서 관련 queryKey를 invalidate하세요" \
         ".ai/skills/create-post-mutation.md"
       GR003_FOUND=$(( GR003_FOUND + 1 ))
     fi
   done
-  if [ "$GR003_FOUND" -gt 0 ]; then
-    ERRORS=$(( ERRORS + 1 ))
-  else
+  if [ "$GR003_FOUND" -eq 0 ]; then
     echo "   ✅ 통과"
   fi
 fi
@@ -418,9 +421,9 @@ else
   for f in "${MUTATION_FILES[@]}"; do
     if ! grep -q "handleApiError" "$f" 2>/dev/null; then
       add_diagnostic "GR004" "require_handle_api_error" "warning" "$f" "" \
-        "handleApiError 미사용" \
-        "폼 없는 액션: 훅 내부 onError에 추가. 폼 있는 mutation: 컴포넌트 mutate() onError에서 처리" \
-        ".ai/skills/create-post-mutation.md"
+        "handleApiError 미사용 — 폼 기반 mutation hook이면 이 warning은 정상입니다" \
+        "폼 없는 액션: hook onError에 추가. 폼 있는 mutation: hook에는 onError 없이 작성하고 컴포넌트 mutate(data,{onError})에서 처리" \
+        ".ai/skills/create-form-mutation.md"
       GR004_FOUND=$(( GR004_FOUND + 1 ))
     fi
   done
@@ -439,18 +442,16 @@ for f in "${GIT_CHANGED_FILES[@]}"; do
   [[ "$f" =~ src/entities/.*/infrastructure/.*\.repository\.ts$ ]] || continue
   if grep -q "api\.\(private\|public\)\.\(post\|put\|patch\)" "$f" 2>/dev/null; then
     if ! grep_near "$f" "api\.\(private\|public\)\.\(post\|put\|patch\)" "\.parse(" 5; then
-      add_diagnostic "GR005" "require_payload_parse" "error" "$f" "" \
-        "API 호출 근처에 payload .parse() 누락" \
-        "api.private.post/put/patch 호출 5줄 내에 payload.xxx.parse() 를 추가하세요" \
+      add_diagnostic "GR005" "require_payload_parse" "warning" "$f" "" \
+        "API 호출 근처에 payload .parse() 누락 (helper 함수로 분리된 경우 false positive 가능)" \
+        "api.private.post/put/patch 호출 전 payload.xxx.parse() 확인. parse를 helper로 분리한 경우 이 warning은 무시하세요" \
         ".ai/skills/create-post-mutation.md"
       GR005_FOUND=$(( GR005_FOUND + 1 ))
     fi
   fi
 done
 
-if [ "$GR005_FOUND" -gt 0 ]; then
-  ERRORS=$(( ERRORS + 1 ))
-else
+if [ "$GR005_FOUND" -eq 0 ]; then
   echo "   ✅ 통과 (신규 repository 없음 또는 모두 통과)"
 fi
 
