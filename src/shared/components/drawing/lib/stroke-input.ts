@@ -1,4 +1,4 @@
-import { densifyLargeGaps } from './densify-stroke-points';
+/** PF 입력 — coalesced 샘플만 누적 (보간은 렌더 단계) */
 
 /** PF 예시·캔버스 공통 — coalesced + 획 시작 rect 고정 */
 
@@ -84,21 +84,14 @@ export function appendCoalescedPoints(
   return next;
 }
 
-/** coalesced가 비어 있는 iPad 등 — move마다 간격 보간 후 저장 */
+/** coalesced 수집만 — 보간은 렌더 시 densifyLargeGaps(곡선·직선)에서 일괄 처리 */
 export function appendPointerInput(
   existing: StrokePoint[],
   e: PointerEvent,
   rect: DOMRectReadOnly,
-  options: { normalized: boolean; pageWidth: number; pageHeight: number },
-  maxGapPx = 4
+  options: { normalized: boolean; pageWidth: number; pageHeight: number }
 ): StrokePoint[] {
-  const next = appendCoalescedPoints(existing, e, rect, options);
-  return densifyLargeGaps(
-    next,
-    options.pageWidth,
-    options.pageHeight,
-    maxGapPx
-  );
+  return appendCoalescedPoints(existing, e, rect, options);
 }
 
 export function mergePointLists(...groups: StrokePoint[][]): StrokePoint[] {

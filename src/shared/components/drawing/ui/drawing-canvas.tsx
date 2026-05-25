@@ -36,23 +36,18 @@ export function DrawingCanvas({
 }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const {
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-    handlePointerCancel,
-    handlePointerLeave,
-  } = useDrawingCanvas({
-    canvasRef,
-    strokes,
-    tool,
-    color,
-    size,
-    pageSize,
-    onStrokeAdd,
-    onStrokeErase,
-    capturePointerSession,
-  });
+  const { handlePointerUp, handlePointerCancel, handlePointerLeave } =
+    useDrawingCanvas({
+      canvasRef,
+      strokes,
+      tool,
+      color,
+      size,
+      pageSize,
+      onStrokeAdd,
+      onStrokeErase,
+      capturePointerSession,
+    });
 
   /**
    * iPadOS Scribble가 pointer 이벤트를 삼키는 WebKit 버그 우회.
@@ -80,21 +75,6 @@ export function DrawingCanvas({
         ? 'cursor-cell'
         : 'cursor-crosshair';
 
-  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
-      e.preventDefault();
-      window.getSelection()?.removeAllRanges();
-    }
-    handlePointerDown(e.nativeEvent);
-  };
-
-  const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
-      e.preventDefault();
-    }
-    handlePointerMove(e.nativeEvent);
-  };
-
   return (
     <canvas
       ref={canvasRef}
@@ -107,8 +87,6 @@ export function DrawingCanvas({
         height: pageSize.height,
         touchAction: 'none',
       }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
       onPointerUp={(e) => handlePointerUp(e.nativeEvent)}
       onPointerCancel={(e) => handlePointerCancel(e.nativeEvent)}
       onPointerLeave={(e) => handlePointerLeave(e.nativeEvent)}

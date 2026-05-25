@@ -12,6 +12,7 @@ import {
   capturePointerEvent,
   flushStrokeCapture,
 } from '../lib/pointer-session-capture';
+import { renderPenPolyline } from '../lib/render-pen-polyline';
 import { appendPointerInput } from '../lib/stroke-input';
 import type { DrawingTool, PageSize, Point, Stroke } from '../types';
 
@@ -70,6 +71,47 @@ function fillStrokeDot(
   ctx.fill();
 }
 
+function renderSingleStroke(
+  ctx: CanvasRenderingContext2D,
+  stroke: Stroke,
+  canvasWidth: number,
+  canvasHeight: number,
+  isComplete: boolean
+) {
+  if (stroke.tool === 'pen') {
+    renderPenPolyline(ctx, stroke, canvasWidth, canvasHeight);
+    return;
+  }
+
+  const sampled = densifyLargeGaps(stroke.points, canvasWidth, canvasHeight);
+  const pixelPoints = sampled.map((p) => [
+    p.x * canvasWidth,
+    p.y * canvasHeight,
+    p.pressure ?? 0.5,
+  ]);
+
+  if (pixelPoints.length === 0) return;
+
+  const outlinePoints = getStroke(
+    pixelPoints,
+    getStrokeRenderOptions(stroke, isComplete)
+  );
+
+  const pathData = getSvgPathFromStroke(outlinePoints);
+  if (!pathData) {
+    fillStrokeDot(ctx, pixelPoints, stroke);
+    return;
+  }
+
+  ctx.fillStyle = stroke.color;
+  ctx.globalAlpha = stroke.tool === 'highlighter' ? 0.4 : 1;
+  ctx.fill(new Path2D(pathData));
+}
+
+function strokesSignature(strokes: Stroke[]) {
+  return strokes.map((s) => `${s.id}:${s.points.length}`).join('|');
+}
+
 export function renderStrokes(
   ctx: CanvasRenderingContext2D,
   strokes: Stroke[],
@@ -79,30 +121,13 @@ export function renderStrokes(
   ctx.clearRect(0, 0, width, height);
 
   for (const stroke of strokes) {
-    const sampled = densifyLargeGaps(stroke.points, width, height);
-    const pixelPoints = sampled.map((p) => [
-      p.x * width,
-      p.y * height,
-      p.pressure ?? 0.5,
-    ]);
+    if (liveStrokeId && stroke.id === liveStrokeId) continue;
+    renderSingleStroke(ctx, stroke, width, height, true);
+  }
 
-    if (pixelPoints.length === 0) continue;
-
-    const isComplete = !liveStrokeId || stroke.id !== liveStrokeId;
-    const outlinePoints = getStroke(
-      pixelPoints,
-      getStrokeRenderOptions(stroke, isComplete)
-    );
-
-    const pathData = getSvgPathFromStroke(outlinePoints);
-    if (!pathData) {
-      fillStrokeDot(ctx, pixelPoints, stroke);
-      continue;
-    }
-
-    ctx.fillStyle = stroke.color;
-    ctx.globalAlpha = stroke.tool === 'highlighter' ? 0.4 : 1;
-    ctx.fill(new Path2D(pathData));
+  if (liveStrokeId) {
+    const live = strokes.find((s) => s.id === liveStrokeId);
+    if (live) renderSingleStroke(ctx, live, width, height, false);
   }
 
   ctx.globalAlpha = 1;
@@ -147,6 +172,12 @@ export function useDrawingCanvas({
   });
 
   const strokesRef = useRef(strokes);
+  const committedLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const committedCacheRef = useRef({
+    signature: '',
+    width: 0,
+    height: 0,
+  });
 
   const onStrokeAddRef = useRef(onStrokeAdd);
   onStrokeAddRef.current = onStrokeAdd;
@@ -173,14 +204,69 @@ export function useDrawingCanvas({
     [canvasRef]
   );
 
+  const rebuildCommittedLayer = useCallback(
+    (savedStrokes: Stroke[], width: number, height: number) => {
+      let layer = committedLayerRef.current;
+      if (!layer) {
+        layer = document.createElement('canvas');
+        committedLayerRef.current = layer;
+      }
+      if (layer.width !== width) layer.width = width;
+      if (layer.height !== height) layer.height = height;
+
+      const layerCtx = layer.getContext('2d');
+      if (!layerCtx) return;
+
+      layerCtx.clearRect(0, 0, width, height);
+      for (const stroke of savedStrokes) {
+        renderSingleStroke(layerCtx, stroke, width, height, true);
+      }
+      layerCtx.globalAlpha = 1;
+
+      committedCacheRef.current = {
+        signature: strokesSignature(savedStrokes),
+        width,
+        height,
+      };
+    },
+    []
+  );
+
   const paintStrokes = useCallback(
     (strokeList: Stroke[], liveStrokeId?: string | null) => {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
-      if (!ctx) return;
-      renderStrokes(ctx, strokeList, liveStrokeId);
+      if (!ctx || !canvas) return;
+
+      const { width, height } = canvas;
+
+      if (!liveStrokeId) {
+        renderStrokes(ctx, strokeList);
+        rebuildCommittedLayer(strokeList, width, height);
+        return;
+      }
+
+      const savedStrokes = strokesRef.current;
+      const cache = committedCacheRef.current;
+      if (
+        cache.signature !== strokesSignature(savedStrokes) ||
+        cache.width !== width ||
+        cache.height !== height
+      ) {
+        rebuildCommittedLayer(savedStrokes, width, height);
+      }
+
+      ctx.clearRect(0, 0, width, height);
+      const layer = committedLayerRef.current;
+      if (layer) ctx.drawImage(layer, 0, 0);
+
+      const liveStroke = strokeList.find((s) => s.id === liveStrokeId);
+      if (liveStroke) {
+        renderSingleStroke(ctx, liveStroke, width, height, false);
+      }
+      ctx.globalAlpha = 1;
     },
-    [canvasRef]
+    [canvasRef, rebuildCommittedLayer]
   );
 
   const renderLiveStroke = useCallback(() => {
@@ -362,7 +448,10 @@ export function useDrawingCanvas({
       canvas.height = pageSize.height;
       needsRedraw = true;
     }
-    if (needsRedraw) paintStrokes(strokesRef.current);
+    if (needsRedraw) {
+      committedCacheRef.current = { signature: '', width: 0, height: 0 };
+      paintStrokes(strokesRef.current);
+    }
   }, [pageSize, canvasRef, paintStrokes]);
 
   useEffect(() => {
@@ -474,32 +563,59 @@ export function useDrawingCanvas({
     [getNormalizedCoords, eraseAtPoint, appendFromEvent, renderLiveStroke]
   );
 
+  const handlePointerDownRef = useRef(handlePointerDown);
+  handlePointerDownRef.current = handlePointerDown;
+
+  const handlePointerMoveRef = useRef(handlePointerMove);
+  handlePointerMoveRef.current = handlePointerMove;
+
   const appendFromEventRef = useRef(appendFromEvent);
   appendFromEventRef.current = appendFromEvent;
 
   const renderLiveStrokeRef = useRef(renderLiveStroke);
   renderLiveStrokeRef.current = renderLiveStroke;
 
+  /** React 합성 이벤트 대신 캡처 단계 네이티브 — 펜 down/move 인식 지연 완화 */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const onPenMove = (e: PointerEvent) => {
-      if (e.pointerType !== 'pen') return;
-      if (!isDrawingRef.current) return;
-      if (activePointerIdRef.current !== e.pointerId) return;
-      const t = toolRef.current;
-      if (t === 'eraser' || t === 'select') return;
-
-      if (capturePointerSessionRef.current) {
-        capturePointerEvent(e, 'native:pointermove');
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType === 'pen' || e.pointerType === 'mouse') {
+        e.preventDefault();
+        window.getSelection()?.removeAllRanges();
       }
-      appendFromEventRef.current(e);
-      renderLiveStrokeRef.current();
+      handlePointerDownRef.current(e);
     };
 
-    canvas.addEventListener('pointermove', onPenMove);
-    return () => canvas.removeEventListener('pointermove', onPenMove);
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'pen') {
+        if (!isDrawingRef.current) return;
+        if (activePointerIdRef.current !== e.pointerId) return;
+        const t = toolRef.current;
+        if (t === 'eraser' || t === 'select') return;
+
+        if (capturePointerSessionRef.current) {
+          capturePointerEvent(e, 'native:pointermove');
+        }
+        appendFromEventRef.current(e);
+        renderLiveStrokeRef.current();
+        return;
+      }
+
+      if (e.pointerType === 'mouse') {
+        handlePointerMoveRef.current(e);
+      }
+    };
+
+    canvas.addEventListener('pointerdown', onPointerDown, { capture: true });
+    canvas.addEventListener('pointermove', onPointerMove);
+    return () => {
+      canvas.removeEventListener('pointerdown', onPointerDown, {
+        capture: true,
+      });
+      canvas.removeEventListener('pointermove', onPointerMove);
+    };
   }, [canvasRef, pageSize.width, pageSize.height]);
 
   const handlePointerUp = useCallback(
