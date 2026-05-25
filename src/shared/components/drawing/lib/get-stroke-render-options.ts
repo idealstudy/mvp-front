@@ -7,22 +7,29 @@ export function getStrokeRenderOptions(
   isComplete = true
 ): StrokeOptions {
   const size = stroke.tool === 'highlighter' ? stroke.size * 3 : stroke.size;
-  const isPen = stroke.tool === 'pen';
+
+  /**
+   * 펜: 필기 중·완성 후 동일한 PF 변형 — 매 프레임 완성 획과 같은 smoothing/streamline 적용.
+   * (라이브만 0 / 완성만 0.5 분기는 필기 후 획이 당겨지거나, 라이브만 각져 보임)
+   */
+  if (stroke.tool === 'pen') {
+    return {
+      size,
+      thinning: 0.5,
+      smoothing: 0.5,
+      streamline: 0.5,
+      simulatePressure: true,
+      start: { cap: true, taper: 0 },
+      end: { cap: true, taper: 0 },
+      last: true,
+    };
+  }
+
   return {
     size,
-    thinning: stroke.tool === 'highlighter' ? 0 : 0.5,
-    /** 필기 중(live) 펜: smoothing/streamline 0 — 빠른 획 시작이 당겨지지 않음 */
-    smoothing:
-      stroke.tool === 'highlighter'
-        ? isComplete
-          ? 0.5
-          : 0
-        : isPen && !isComplete
-          ? 0
-          : 0.5,
-    streamline:
-      stroke.tool === 'highlighter' ? 0.5 : isPen && !isComplete ? 0 : 0.5,
-    /** HEAD와 동일 — 펜은 clamped pressure + simulatePressure */
+    thinning: 0,
+    smoothing: isComplete ? 0.5 : 0,
+    streamline: 0.5,
     simulatePressure: true,
     start: { cap: true, taper: 0 },
     end: { cap: true, taper: 0 },
