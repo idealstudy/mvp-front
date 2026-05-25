@@ -21,9 +21,26 @@ const CORE = {
 /* ─────────────────────────────────────────────────────
  * DASHBOARD
  * ────────────────────────────────────────────────────*/
+type DashboardRole = 'ROLE_TEACHER' | 'ROLE_STUDENT' | 'ROLE_PARENT';
+
 const DASHBOARD = {
   INDEX: '/dashboard',
+  TEACHER: '/dashboard/teacher',
+  STUDENT: '/dashboard/student',
+  PARENT: '/dashboard/parent',
   INQUIRY: '/dashboard/inquiry',
+
+  /** 사용자 역할에 맞는 실제 대시보드 경로를 반환합니다. */
+  byRole: (role: DashboardRole): string => {
+    switch (role) {
+      case 'ROLE_TEACHER':
+        return '/dashboard/teacher';
+      case 'ROLE_STUDENT':
+        return '/dashboard/student';
+      case 'ROLE_PARENT':
+        return '/dashboard/parent';
+    }
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────

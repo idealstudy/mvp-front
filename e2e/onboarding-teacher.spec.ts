@@ -104,7 +104,7 @@ test.describe('강사 온보딩', () => {
     }) => {
       await mockTeacherOnboardingGet(page, 'CREATE_STUDY_ROOM');
 
-      await page.goto(PRIVATE.DASHBOARD.INDEX);
+      await page.goto(PRIVATE.DASHBOARD.TEACHER);
       await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
@@ -137,7 +137,7 @@ test.describe('강사 온보딩', () => {
     }) => {
       await mockTeacherOnboardingGet(page, 'INVITE_STUDENT');
 
-      await page.goto(PRIVATE.DASHBOARD.INDEX);
+      await page.goto(PRIVATE.DASHBOARD.TEACHER);
       await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
@@ -170,7 +170,7 @@ test.describe('강사 온보딩', () => {
     }) => {
       await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
 
-      await page.goto(PRIVATE.DASHBOARD.INDEX);
+      await page.goto(PRIVATE.DASHBOARD.TEACHER);
       await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
@@ -195,7 +195,7 @@ test.describe('강사 온보딩', () => {
 
       await setTeacher(page);
 
-      await page.goto(PRIVATE.DASHBOARD.INDEX);
+      await page.goto(PRIVATE.DASHBOARD.TEACHER);
       await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
@@ -208,7 +208,7 @@ test.describe('강사 온보딩', () => {
 
       await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
 
-      await page.goto('/dashboard');
+      await page.goto(PRIVATE.DASHBOARD.TEACHER);
       await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인

@@ -97,7 +97,7 @@ test.describe('학생 온보딩', () => {
   }) => {
     await mockAllEmpty(page);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
@@ -113,7 +113,7 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, []);
     await mockStudentHomework(page, []);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
@@ -135,7 +135,7 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, []);
     await mockStudentHomework(page, []);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
@@ -159,7 +159,7 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, [QNA]);
     await mockStudentHomework(page, [HOMEWORK]);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('student-onboarding')).not.toBeVisible();

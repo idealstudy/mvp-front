@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
+import { PRIVATE } from '@/shared/constants';
 import { fetchMemberRole } from '@/shared/lib/server';
 
 // import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
@@ -60,11 +61,11 @@ export default async function HomePage({
 
   switch (session.role) {
     case 'ROLE_TEACHER':
-      redirect('/dashboard/teacher');
+      redirect(PRIVATE.DASHBOARD.TEACHER);
     case 'ROLE_STUDENT':
-      redirect('/dashboard/student');
+      redirect(PRIVATE.DASHBOARD.STUDENT);
     case 'ROLE_PARENT':
-      redirect('/dashboard/parent');
+      redirect(PRIVATE.DASHBOARD.PARENT);
     default:
       return null;
   }
