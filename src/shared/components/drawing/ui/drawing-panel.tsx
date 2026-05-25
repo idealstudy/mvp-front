@@ -50,6 +50,8 @@ type DrawingPanelProps = {
   expandRatio?: number;
   /** 하단 바 우측에 렌더링될 커스텀 버튼 */
   actionButton?: React.ReactNode;
+  /** 개발: 획 완료 시 pointer 로그를 서버로 전송 */
+  capturePointerSession?: boolean;
 };
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
@@ -60,11 +62,13 @@ export function DrawingPanel({
   initialCanvasHeight,
   expandRatio = DEFAULT_EXPAND_RATIO,
   actionButton,
+  capturePointerSession,
 }: DrawingPanelProps) {
   const defaultCanvasHeight =
     initialCanvasHeight ?? Math.round(panelHeight * 1.5);
 
   const [tool, setTool] = useState<DrawingTool>('pen');
+
   const [color, setColor] = useState<string>(PANEL_COLORS[0]);
   const [size] = useState(4);
   const [canvasHeight, setCanvasHeight] = useState(defaultCanvasHeight);
@@ -324,7 +328,11 @@ export function DrawingPanel({
           'overflow-y-scroll overscroll-y-contain bg-white',
           scrollCursorClass
         )}
-        style={{ height: panelHeight, touchAction: 'none' }}
+        style={{
+          height: panelHeight,
+          touchAction: 'none',
+          overscrollBehavior: 'none',
+        }}
       >
         {/* 캔버스 래퍼 — 내부 높이가 커지면 스크롤 생김 */}
         <div
@@ -353,6 +361,7 @@ export function DrawingPanel({
               pageSize={pageSize}
               onStrokeAdd={handleStrokeAdd}
               onStrokeErase={handleStrokeErase}
+              capturePointerSession={capturePointerSession}
             />
           )}
 

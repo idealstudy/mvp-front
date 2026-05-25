@@ -15,6 +15,7 @@ type DrawingCanvasProps = {
   pageSize: PageSize;
   onStrokeAdd: (stroke: Stroke) => void;
   onStrokeErase: (ids: string[]) => void;
+  capturePointerSession?: boolean;
   className?: string;
 };
 
@@ -30,6 +31,7 @@ export function DrawingCanvas({
   pageSize,
   onStrokeAdd,
   onStrokeErase,
+  capturePointerSession,
   className,
 }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,6 +51,7 @@ export function DrawingCanvas({
     pageSize,
     onStrokeAdd,
     onStrokeErase,
+    capturePointerSession,
   });
 
   /**

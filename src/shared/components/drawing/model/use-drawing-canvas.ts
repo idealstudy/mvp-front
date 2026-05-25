@@ -1,7 +1,18 @@
 import { type RefObject, useCallback, useEffect, useRef } from 'react';
 
+import { createId } from '@/shared/lib/create-id';
 import { getStroke } from 'perfect-freehand';
 
+import { densifyLargeGaps } from '../lib/densify-stroke-points';
+import { ensureMinPoints } from '../lib/ensure-stroke-points';
+import { getStrokeRenderOptions } from '../lib/get-stroke-render-options';
+import {
+  beginCaptureStroke,
+  capturePhase,
+  capturePointerEvent,
+  flushStrokeCapture,
+} from '../lib/pointer-session-capture';
+import { appendPointerInput } from '../lib/stroke-input';
 import type { DrawingTool, PageSize, Point, Stroke } from '../types';
 
 const ERASER_RADIUS = 12;
@@ -25,14 +36,6 @@ function getSvgPathFromStroke(points: number[][]): string {
   return d.join(' ');
 }
 
-function getCoalescedPointerEvents(e: PointerEvent): PointerEvent[] {
-  if (typeof e.getCoalescedEvents === 'function') {
-    const coalesced = e.getCoalescedEvents();
-    if (coalesced.length > 0) return coalesced;
-  }
-  return [e];
-}
-
 function isDrawablePointer(e: PointerEvent): boolean {
   return e.pointerType === 'pen' || e.pointerType === 'mouse';
 }
@@ -47,69 +50,55 @@ function isPenContact(e: PointerEvent): boolean {
   return e.pressure > 0 || isPrimaryButtonDown(e);
 }
 
-function ensureMinPoints(
-  points: Point[],
-  pageSize: PageSize,
-  strokeSize: number
-): Point[] {
-  if (points.length === 0) return points;
+function strokePressure(e: PointerEvent): number {
+  return e.pressure > 0 ? e.pressure : 0.5;
+}
 
-  const minPx = Math.max(strokeSize * 2, 8);
-  const offsetX = minPx / pageSize.width;
-  const offsetY = minPx / pageSize.height;
-
-  if (points.length === 1) {
-    const p = points[0]!;
-    return [
-      p,
-      {
-        x: p.x + offsetX * 0.15,
-        y: p.y + offsetY * 0.15,
-        pressure: p.pressure ?? 0.5,
-      },
-    ];
-  }
-
-  const first = points[0]!;
-  const last = points[points.length - 1]!;
-  const dx = (last.x - first.x) * pageSize.width;
-  const dy = (last.y - first.y) * pageSize.height;
-  if (Math.hypot(dx, dy) >= minPx) return points;
-
-  return [
-    first,
-    {
-      x: first.x + offsetX * 0.15,
-      y: first.y + offsetY * 0.15,
-      pressure: last.pressure ?? first.pressure,
-    },
-  ];
+function fillStrokeDot(
+  ctx: CanvasRenderingContext2D,
+  pixelPoints: number[][],
+  stroke: Stroke
+) {
+  const first = pixelPoints[0];
+  if (!first) return;
+  const radius =
+    (stroke.tool === 'highlighter' ? stroke.size * 3 : stroke.size) / 2;
+  ctx.beginPath();
+  ctx.arc(first[0] ?? 0, first[1] ?? 0, radius, 0, Math.PI * 2);
+  ctx.fillStyle = stroke.color;
+  ctx.globalAlpha = stroke.tool === 'highlighter' ? 0.4 : 1;
+  ctx.fill();
 }
 
 export function renderStrokes(
   ctx: CanvasRenderingContext2D,
-  strokes: Stroke[]
+  strokes: Stroke[],
+  liveStrokeId?: string | null
 ) {
   const { width, height } = ctx.canvas;
   ctx.clearRect(0, 0, width, height);
 
   for (const stroke of strokes) {
-    const pixelPoints = stroke.points.map((p) => [
+    const sampled = densifyLargeGaps(stroke.points, width, height);
+    const pixelPoints = sampled.map((p) => [
       p.x * width,
       p.y * height,
       p.pressure ?? 0.5,
     ]);
 
-    const outlinePoints = getStroke(pixelPoints, {
-      size: stroke.tool === 'highlighter' ? stroke.size * 3 : stroke.size,
-      thinning: stroke.tool === 'highlighter' ? 0 : 0.5,
-      smoothing: 0.5,
-      streamline: stroke.tool === 'highlighter' ? 0.5 : 0.5,
-      simulatePressure: true,
-    });
+    if (pixelPoints.length === 0) continue;
+
+    const isComplete = !liveStrokeId || stroke.id !== liveStrokeId;
+    const outlinePoints = getStroke(
+      pixelPoints,
+      getStrokeRenderOptions(stroke, isComplete)
+    );
 
     const pathData = getSvgPathFromStroke(outlinePoints);
-    if (!pathData) continue;
+    if (!pathData) {
+      fillStrokeDot(ctx, pixelPoints, stroke);
+      continue;
+    }
 
     ctx.fillStyle = stroke.color;
     ctx.globalAlpha = stroke.tool === 'highlighter' ? 0.4 : 1;
@@ -128,6 +117,8 @@ type UseDrawingCanvasOptions = {
   pageSize: PageSize;
   onStrokeAdd: (stroke: Stroke) => void;
   onStrokeErase: (ids: string[]) => void;
+  /** true면 획 완료 시 /api/drawing-session-ingest 로 전송 */
+  capturePointerSession?: boolean;
 };
 
 export function useDrawingCanvas({
@@ -139,11 +130,21 @@ export function useDrawingCanvas({
   pageSize,
   onStrokeAdd,
   onStrokeErase,
+  capturePointerSession = false,
 }: UseDrawingCanvasOptions) {
+  const capturePointerSessionRef = useRef(capturePointerSession);
+  capturePointerSessionRef.current = capturePointerSession;
   const isDrawingRef = useRef(false);
   const currentPointsRef = useRef<Point[]>([]);
   const strokeIdRef = useRef('');
   const activePointerIdRef = useRef<number | null>(null);
+  /** 획 시작 시 rect 고정 — 빠른 획 좌표·앞부분 샘플 일관 */
+  const strokeRectRef = useRef<DOMRectReadOnly | null>(null);
+  const sampleOptsRef = useRef({
+    normalized: true as const,
+    pageWidth: pageSize.width,
+    pageHeight: pageSize.height,
+  });
 
   const strokesRef = useRef(strokes);
 
@@ -161,9 +162,9 @@ export function useDrawingCanvas({
 
   const getNormalizedCoords = useCallback(
     (e: PointerEvent) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return { x: 0, y: 0 };
-      const rect = canvas.getBoundingClientRect();
+      const rect =
+        strokeRectRef.current ?? canvasRef.current?.getBoundingClientRect();
+      if (!rect || rect.width === 0) return { x: 0, y: 0 };
       return {
         x: (e.clientX - rect.left) / rect.width,
         y: (e.clientY - rect.top) / rect.height,
@@ -173,11 +174,11 @@ export function useDrawingCanvas({
   );
 
   const paintStrokes = useCallback(
-    (strokeList: Stroke[]) => {
+    (strokeList: Stroke[], liveStrokeId?: string | null) => {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!ctx) return;
-      renderStrokes(ctx, strokeList);
+      renderStrokes(ctx, strokeList, liveStrokeId);
     },
     [canvasRef]
   );
@@ -193,7 +194,7 @@ export function useDrawingCanvas({
       size: sizeRef.current,
       tool: toolRef.current,
     };
-    paintStrokes([...strokesRef.current, liveStroke]);
+    paintStrokes([...strokesRef.current, liveStroke], strokeIdRef.current);
   }, [paintStrokes]);
 
   const releaseCapture = useCallback(
@@ -227,8 +228,19 @@ export function useDrawingCanvas({
       strokesRef.current = [...strokesRef.current, stroke];
       paintStrokes(strokesRef.current);
       onStrokeAddRef.current(stroke);
+
+      if (capturePointerSessionRef.current) {
+        const canvas = canvasRef.current;
+        flushStrokeCapture({
+          strokeId: stroke.id,
+          tool: stroke.tool,
+          pointCount: stroke.points.length,
+          canvasWidth: canvas?.width ?? pageSize.width,
+          canvasHeight: canvas?.height ?? pageSize.height,
+        });
+      }
     },
-    [paintStrokes, pageSize]
+    [paintStrokes, pageSize, canvasRef]
   );
 
   const saveCurrentStroke = useCallback(
@@ -253,6 +265,18 @@ export function useDrawingCanvas({
     isDrawingRef.current = false;
     activePointerIdRef.current = null;
     currentPointsRef.current = [];
+    strokeRectRef.current = null;
+  }, []);
+
+  const appendFromEvent = useCallback((e: PointerEvent) => {
+    const rect = strokeRectRef.current;
+    if (!rect) return;
+    currentPointsRef.current = appendPointerInput(
+      currentPointsRef.current,
+      e,
+      rect,
+      sampleOptsRef.current
+    );
   }, []);
 
   const beginStroke = useCallback(
@@ -260,21 +284,39 @@ export function useDrawingCanvas({
       const canvas = canvasRef.current;
       if (!canvas) return false;
 
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return false;
+
       try {
         canvas.setPointerCapture(e.pointerId);
       } catch {
         /* ignore */
       }
 
+      strokeRectRef.current = rect;
+      sampleOptsRef.current = {
+        normalized: true,
+        pageWidth: pageSize.width,
+        pageHeight: pageSize.height,
+      };
+      strokeIdRef.current = createId();
+      if (capturePointerSessionRef.current) {
+        beginCaptureStroke();
+        capturePointerEvent(e, 'pointerdown');
+      }
+
+      let points = appendPointerInput([], e, rect, sampleOptsRef.current);
+      if (points.length === 0) {
+        const { x, y } = getNormalizedCoords(e);
+        points = [{ x, y, pressure: strokePressure(e) }];
+      }
+
+      currentPointsRef.current = points;
       activePointerIdRef.current = e.pointerId;
       isDrawingRef.current = true;
-      strokeIdRef.current = crypto.randomUUID();
-
-      const { x, y } = getNormalizedCoords(e);
-      currentPointsRef.current = [{ x, y, pressure: e.pressure }];
       return true;
     },
-    [canvasRef, getNormalizedCoords]
+    [canvasRef, pageSize.width, pageSize.height, getNormalizedCoords]
   );
 
   const finishStroke = useCallback(
@@ -284,26 +326,28 @@ export function useDrawingCanvas({
 
       const pointerId = activePointerIdRef.current;
       releaseCapture(pointerId);
-
-      const { x, y } = getNormalizedCoords(e);
-      saveCurrentStroke({ x, y, pressure: e.pressure });
+      if (capturePointerSessionRef.current) {
+        capturePointerEvent(e, 'pointerup');
+      }
+      appendFromEvent(e);
+      saveCurrentStroke();
       resetDrawingState();
     },
-    [releaseCapture, resetDrawingState, getNormalizedCoords, saveCurrentStroke]
+    [releaseCapture, appendFromEvent, resetDrawingState, saveCurrentStroke]
   );
 
+  /** 다른 pointerId가 down될 때만 호출 — 획을 분리 저장 */
   const finishStrokeAtLastPoint = useCallback(() => {
     if (!isDrawingRef.current) return;
 
     const pointerId = activePointerIdRef.current;
     if (pointerId !== null) releaseCapture(pointerId);
 
-    const last = currentPointsRef.current.at(-1);
-    if (last) {
-      saveCurrentStroke({ x: last.x, y: last.y, pressure: last.pressure });
-    } else {
-      resetDrawingState();
+    if (capturePointerSessionRef.current) {
+      capturePhase('finishAtLastPoint');
     }
+    saveCurrentStroke();
+    resetDrawingState();
   }, [releaseCapture, resetDrawingState, saveCurrentStroke]);
 
   useEffect(() => {
@@ -326,7 +370,6 @@ export function useDrawingCanvas({
     if (!canvas || canvas.width === 0) return;
     if (isDrawingRef.current) return;
 
-    // persist 직후 React state만 늦을 때 — 전체 지우기(strokes=[])는 제외
     if (strokes.length < strokesRef.current.length) {
       const isPrefix =
         strokes.length > 0 &&
@@ -346,17 +389,6 @@ export function useDrawingCanvas({
     strokesRef.current = strokes;
     paintStrokes(strokes);
   }, [strokes, paintStrokes, canvasRef]);
-
-  const appendPoint = useCallback(
-    (e: PointerEvent) => {
-      const { x, y } = getNormalizedCoords(e);
-      const points = currentPointsRef.current;
-      const last = points[points.length - 1];
-      if (last && last.x === x && last.y === y) return;
-      currentPointsRef.current = [...points, { x, y, pressure: e.pressure }];
-    },
-    [getNormalizedCoords]
-  );
 
   const eraseAtPoint = useCallback(
     (x: number, y: number) => {
@@ -388,6 +420,15 @@ export function useDrawingCanvas({
 
       if (e.pointerType === 'mouse' && !isPrimaryButtonDown(e)) return;
 
+      // iOS: 동일 접촉 중복 down 무시 — 한 획이 둘로 쪼개지거나 이어지지 않게
+      if (isDrawingRef.current && activePointerIdRef.current === e.pointerId) {
+        if (capturePointerSessionRef.current) {
+          capturePhase('dedupe:pointerdown');
+        }
+        return;
+      }
+
+      // 다른 pointer(멀티터치 등)만 이전 획 저장 후 새 획
       if (isDrawingRef.current) {
         finishStrokeAtLastPoint();
       }
@@ -418,18 +459,48 @@ export function useDrawingCanvas({
       }
 
       if (toolRef.current === 'select') return;
-      if (!isPenContact(e)) return;
 
       if (!isDrawingRef.current) return;
       if (activePointerIdRef.current !== e.pointerId) return;
 
-      for (const ev of getCoalescedPointerEvents(e)) {
-        appendPoint(ev);
-      }
+      // 펜은 네이티브 pointermove에서 coalesced 수집 (iPad)
+      if (e.pointerType === 'pen') return;
+
+      if (!isPenContact(e)) return;
+
+      appendFromEvent(e);
       renderLiveStroke();
     },
-    [getNormalizedCoords, eraseAtPoint, appendPoint, renderLiveStroke]
+    [getNormalizedCoords, eraseAtPoint, appendFromEvent, renderLiveStroke]
   );
+
+  const appendFromEventRef = useRef(appendFromEvent);
+  appendFromEventRef.current = appendFromEvent;
+
+  const renderLiveStrokeRef = useRef(renderLiveStroke);
+  renderLiveStrokeRef.current = renderLiveStroke;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onPenMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'pen') return;
+      if (!isDrawingRef.current) return;
+      if (activePointerIdRef.current !== e.pointerId) return;
+      const t = toolRef.current;
+      if (t === 'eraser' || t === 'select') return;
+
+      if (capturePointerSessionRef.current) {
+        capturePointerEvent(e, 'native:pointermove');
+      }
+      appendFromEventRef.current(e);
+      renderLiveStrokeRef.current();
+    };
+
+    canvas.addEventListener('pointermove', onPenMove);
+    return () => canvas.removeEventListener('pointermove', onPenMove);
+  }, [canvasRef, pageSize.width, pageSize.height]);
 
   const handlePointerUp = useCallback(
     (e: PointerEvent) => {
@@ -480,6 +551,9 @@ export function useDrawingCanvas({
         activePointerIdRef.current === e.pointerId &&
         toolRef.current !== 'eraser'
       ) {
+        if (capturePointerSessionRef.current) {
+          capturePointerEvent(e, 'handler:pointercancel');
+        }
         finishStroke(e);
         return;
       }
