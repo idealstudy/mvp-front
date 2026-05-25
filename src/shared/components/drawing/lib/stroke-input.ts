@@ -1,6 +1,4 @@
-/** PF 입력 — coalesced 샘플만 누적 (보간은 렌더 단계) */
-
-/** PF 예시·캔버스 공통 — coalesced + 획 시작 rect 고정 */
+/** PF 입력 — coalesced + 획 시작 rect 고정 (밀도 보정은 렌더 시 densifyLargeGaps) */
 
 export type StrokePoint = {
   x: number;
@@ -32,7 +30,6 @@ function pointFromEvent(
 ): StrokePoint {
   const x = (e.clientX - rect.left) / rect.width;
   const y = (e.clientY - rect.top) / rect.height;
-  /** tldraw/PF 입력: pressure 0이면 thinning으로 시작이 사라짐 */
   const pressure = e.pressure > 0 ? e.pressure : 0.5;
   if (toNormalized) {
     return { x, y, pressure };
@@ -84,7 +81,7 @@ export function appendCoalescedPoints(
   return next;
 }
 
-/** coalesced 수집만 — 보간은 렌더 시 densifyLargeGaps(곡선·직선)에서 일괄 처리 */
+/** coalesced만 누적 — 곡선 보간은 렌더 단계에서 일괄(Catmull), WYSIWYG 유지 */
 export function appendPointerInput(
   existing: StrokePoint[],
   e: PointerEvent,

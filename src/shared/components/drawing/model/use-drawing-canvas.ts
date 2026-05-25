@@ -12,10 +12,10 @@ import {
   capturePointerEvent,
   flushStrokeCapture,
 } from '../lib/pointer-session-capture';
-import { renderPenPolyline } from '../lib/render-pen-polyline';
 import { appendPointerInput } from '../lib/stroke-input';
 import type { DrawingTool, PageSize, Point, Stroke } from '../types';
 
+/** 컴파일 오류 시 /test-drawing 전체 500 — 동일 스코프 `const canvas` 중복 선언 금지. docs/drawing-internal-server-error.md */
 const ERASER_RADIUS = 12;
 
 function getSvgPathFromStroke(points: number[][]): string {
@@ -75,14 +75,8 @@ function renderSingleStroke(
   ctx: CanvasRenderingContext2D,
   stroke: Stroke,
   canvasWidth: number,
-  canvasHeight: number,
-  isComplete: boolean
+  canvasHeight: number
 ) {
-  if (stroke.tool === 'pen') {
-    renderPenPolyline(ctx, stroke, canvasWidth, canvasHeight);
-    return;
-  }
-
   const sampled = densifyLargeGaps(stroke.points, canvasWidth, canvasHeight);
   const pixelPoints = sampled.map((p) => [
     p.x * canvasWidth,
@@ -92,10 +86,7 @@ function renderSingleStroke(
 
   if (pixelPoints.length === 0) return;
 
-  const outlinePoints = getStroke(
-    pixelPoints,
-    getStrokeRenderOptions(stroke, isComplete)
-  );
+  const outlinePoints = getStroke(pixelPoints, getStrokeRenderOptions(stroke));
 
   const pathData = getSvgPathFromStroke(outlinePoints);
   if (!pathData) {
@@ -122,12 +113,12 @@ export function renderStrokes(
 
   for (const stroke of strokes) {
     if (liveStrokeId && stroke.id === liveStrokeId) continue;
-    renderSingleStroke(ctx, stroke, width, height, true);
+    renderSingleStroke(ctx, stroke, width, height);
   }
 
   if (liveStrokeId) {
     const live = strokes.find((s) => s.id === liveStrokeId);
-    if (live) renderSingleStroke(ctx, live, width, height, false);
+    if (live) renderSingleStroke(ctx, live, width, height);
   }
 
   ctx.globalAlpha = 1;
@@ -219,7 +210,7 @@ export function useDrawingCanvas({
 
       layerCtx.clearRect(0, 0, width, height);
       for (const stroke of savedStrokes) {
-        renderSingleStroke(layerCtx, stroke, width, height, true);
+        renderSingleStroke(layerCtx, stroke, width, height);
       }
       layerCtx.globalAlpha = 1;
 
@@ -262,7 +253,7 @@ export function useDrawingCanvas({
 
       const liveStroke = strokeList.find((s) => s.id === liveStrokeId);
       if (liveStroke) {
-        renderSingleStroke(ctx, liveStroke, width, height, false);
+        renderSingleStroke(ctx, liveStroke, width, height);
       }
       ctx.globalAlpha = 1;
     },
