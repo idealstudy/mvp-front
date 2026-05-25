@@ -68,12 +68,7 @@ export function DrawingCanvas({
     return () => canvas.removeEventListener('touchmove', onTouchMove);
   }, []);
 
-  const cursorClass =
-    tool === 'select'
-      ? 'cursor-default'
-      : tool === 'eraser'
-        ? 'cursor-cell'
-        : 'cursor-crosshair';
+  const cursorClass = tool === 'eraser' ? 'cursor-cell' : 'cursor-crosshair';
 
   return (
     <canvas

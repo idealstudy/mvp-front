@@ -3,7 +3,6 @@ export { DrawingPanel } from './ui/drawing-panel';
 export { DrawingToolbar } from './ui/drawing-toolbar';
 export { exportPdf } from './utils/export-pdf';
 export { useStrokes } from './model/use-strokes';
-export { useDrawingAutoSave } from './model/use-drawing-auto-save';
 export type { DrawingTool, PageSize, Point, Stroke } from './types';
 
 // PDF UI는 react-pdf(DOM) 의존 — SSR 번들 제외를 위해 서브패스로 import

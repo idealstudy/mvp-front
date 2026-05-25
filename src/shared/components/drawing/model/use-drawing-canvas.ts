@@ -163,6 +163,8 @@ export function useDrawingCanvas({
   });
 
   const strokesRef = useRef(strokes);
+  /** persistStroke 직후 React props 동기화 전까지만 캐시 유지용 */
+  const localPendingStrokeIdRef = useRef<string | null>(null);
   const committedLayerRef = useRef<HTMLCanvasElement | null>(null);
   const committedCacheRef = useRef({
     signature: '',
@@ -302,6 +304,7 @@ export function useDrawingCanvas({
         tool: toolRef.current,
       };
 
+      localPendingStrokeIdRef.current = stroke.id;
       strokesRef.current = [...strokesRef.current, stroke];
       paintStrokes(strokesRef.current);
       onStrokeAddRef.current(stroke);
@@ -451,46 +454,51 @@ export function useDrawingCanvas({
     if (isDrawingRef.current) return;
 
     if (strokes.length < strokesRef.current.length) {
-      const isPrefix =
+      const pendingId = strokesRef.current[strokes.length]?.id;
+      const awaitingLocalAdd =
+        pendingId !== undefined &&
+        pendingId === localPendingStrokeIdRef.current &&
         strokes.length > 0 &&
         strokes.every((s, i) => s.id === strokesRef.current[i]?.id);
-      const pendingId = strokesRef.current[strokes.length]?.id;
-      const awaitingProps =
-        isPrefix &&
-        pendingId !== undefined &&
-        !strokes.some((s) => s.id === pendingId);
 
-      if (awaitingProps) {
+      if (awaitingLocalAdd) {
         paintStrokes(strokesRef.current);
         return;
       }
     }
 
+    localPendingStrokeIdRef.current = null;
     strokesRef.current = strokes;
     paintStrokes(strokes);
   }, [strokes, paintStrokes, canvasRef]);
 
   const eraseAtPoint = useCallback(
     (x: number, y: number) => {
-      const toErase = strokesRef.current
-        .filter((s) =>
-          s.points.some((p) => {
-            const dx = (p.x - x) * pageSize.width;
-            const dy = (p.y - y) * pageSize.height;
-            return Math.sqrt(dx * dx + dy * dy) < ERASER_RADIUS;
-          })
-        )
-        .map((s) => s.id);
-      if (toErase.length > 0) onStrokeErase(toErase);
+      const toEraseIds: string[] = [];
+      for (const s of strokesRef.current) {
+        const hit = s.points.some((p) => {
+          const dx = (p.x - x) * pageSize.width;
+          const dy = (p.y - y) * pageSize.height;
+          return dx * dx + dy * dy < ERASER_RADIUS * ERASER_RADIUS;
+        });
+        if (hit) toEraseIds.push(s.id);
+      }
+      if (toEraseIds.length === 0) return;
+
+      const toEraseSet = new Set(toEraseIds);
+      strokesRef.current = strokesRef.current.filter(
+        (s) => !toEraseSet.has(s.id)
+      );
+      localPendingStrokeIdRef.current = null;
+      paintStrokes(strokesRef.current);
+      onStrokeErase(toEraseIds);
     },
-    [pageSize.width, pageSize.height, onStrokeErase]
+    [pageSize.width, pageSize.height, onStrokeErase, paintStrokes]
   );
 
   const handlePointerDown = useCallback(
     (e: PointerEvent) => {
       if (!isDrawablePointer(e)) return;
-      if (toolRef.current === 'select') return;
-
       const { x, y } = getNormalizedCoords(e);
 
       if (toolRef.current === 'eraser') {
@@ -538,8 +546,6 @@ export function useDrawingCanvas({
         return;
       }
 
-      if (toolRef.current === 'select') return;
-
       if (!isDrawingRef.current) return;
       if (activePointerIdRef.current !== e.pointerId) return;
 
@@ -559,6 +565,12 @@ export function useDrawingCanvas({
 
   const handlePointerMoveRef = useRef(handlePointerMove);
   handlePointerMoveRef.current = handlePointerMove;
+
+  const eraseAtPointRef = useRef(eraseAtPoint);
+  eraseAtPointRef.current = eraseAtPoint;
+
+  const getNormalizedCoordsRef = useRef(getNormalizedCoords);
+  getNormalizedCoordsRef.current = getNormalizedCoords;
 
   const appendFromEventRef = useRef(appendFromEvent);
   appendFromEventRef.current = appendFromEvent;
@@ -581,11 +593,15 @@ export function useDrawingCanvas({
 
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === 'pen') {
+        if (toolRef.current === 'eraser') {
+          if (!isPenContact(e)) return;
+          const { x, y } = getNormalizedCoordsRef.current(e);
+          eraseAtPointRef.current(x, y);
+          return;
+        }
+
         if (!isDrawingRef.current) return;
         if (activePointerIdRef.current !== e.pointerId) return;
-        const t = toolRef.current;
-        if (t === 'eraser' || t === 'select') return;
-
         if (capturePointerSessionRef.current) {
           capturePointerEvent(e, 'native:pointermove');
         }

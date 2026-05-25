@@ -13,7 +13,7 @@ export type Stroke = {
   tool: DrawingTool;
 };
 
-export type DrawingTool = 'pen' | 'highlighter' | 'eraser' | 'select';
+export type DrawingTool = 'pen' | 'highlighter' | 'eraser';
 
 export type DrawingState = {
   tool: DrawingTool;

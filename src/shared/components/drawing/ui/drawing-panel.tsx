@@ -273,6 +273,10 @@ export function DrawingPanel({
     [documentId]
   );
 
+  const scheduleSaveCurrent = useCallback(() => {
+    scheduleSave((prev) => prev);
+  }, [scheduleSave]);
+
   const handleStrokeAdd = useCallback(
     (stroke: Stroke) => {
       userDrewBeforeLoadRef.current = true;
@@ -290,16 +294,28 @@ export function DrawingPanel({
     [eraseStrokes, scheduleSave]
   );
 
-  const handleClearAll = useCallback(async () => {
+  const handleClearAll = useCallback(() => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
     strokesForSaveRef.current = [];
     clearStrokes();
-    await savePageStrokes(documentId, 1, []);
     setShowClearConfirm(false);
+    void savePageStrokes(documentId, 1, []).catch(() => {
+      /* silent */
+    });
   }, [clearStrokes, documentId]);
+
+  const handleUndo = useCallback(() => {
+    undo();
+    scheduleSaveCurrent();
+  }, [undo, scheduleSaveCurrent]);
+
+  const handleRedo = useCallback(() => {
+    redo();
+    scheduleSaveCurrent();
+  }, [redo, scheduleSaveCurrent]);
 
   const handleToolChange = useCallback((next: DrawingTool) => {
     setTool(next);
@@ -312,11 +328,7 @@ export function DrawingPanel({
   );
 
   const scrollCursorClass =
-    tool === 'select'
-      ? 'cursor-default'
-      : tool === 'eraser'
-        ? 'cursor-cell'
-        : 'cursor-crosshair';
+    tool === 'eraser' ? 'cursor-cell' : 'cursor-crosshair';
 
   return (
     <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 select-none">
@@ -398,13 +410,6 @@ export function DrawingPanel({
           >
             <PanelEraserIcon active={tool === 'eraser'} />
           </PanelToolBtn>
-          <PanelToolBtn
-            active={tool === 'select'}
-            onClick={() => handleToolChange('select')}
-            label="선택"
-          >
-            <PanelSelectIcon active={tool === 'select'} />
-          </PanelToolBtn>
         </div>
 
         {/* 색상 팔레트 */}
@@ -441,7 +446,7 @@ export function DrawingPanel({
         {/* Undo / Redo */}
         <div className="flex items-center gap-0.5">
           <button
-            onClick={undo}
+            onClick={handleUndo}
             disabled={!canUndo}
             className="flex size-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
             title="실행 취소"
@@ -449,7 +454,7 @@ export function DrawingPanel({
             <UndoIcon />
           </button>
           <button
-            onClick={redo}
+            onClick={handleRedo}
             disabled={!canRedo}
             className="flex size-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
             title="다시 실행"
@@ -577,24 +582,6 @@ function PanelEraserIcon({ active }: { active: boolean }) {
       <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" />
       <path d="M22 21H7" />
       <path d="m5 11 9 9" />
-    </svg>
-  );
-}
-
-function PanelSelectIcon({ active }: { active: boolean }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 4l7 18 3-7 7-3z" />
-      <path d="M14 14l4 4" />
     </svg>
   );
 }
