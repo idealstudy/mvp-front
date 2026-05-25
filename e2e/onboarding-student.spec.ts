@@ -98,7 +98,6 @@ test.describe('학생 온보딩', () => {
     await mockAllEmpty(page);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(page.getByText('선생님으로부터 초대를 받아')).toBeVisible();
@@ -114,7 +113,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentHomework(page, []);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(
@@ -136,7 +134,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentHomework(page, []);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForLoadState('networkidle');
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(
@@ -160,7 +157,6 @@ test.describe('학생 온보딩', () => {
     await mockStudentHomework(page, [HOMEWORK]);
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
-    await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('student-onboarding')).not.toBeVisible();
   });

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { dto } from '../infrastructure';
+import { dto } from '../infrastructure/onboarding.dto';
 
 export const TeacherOnboardingStepTypes = dto.teacherStepType._def.values;
 

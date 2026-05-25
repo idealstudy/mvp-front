@@ -1,8 +1,8 @@
 import {
-  TeacherOnboardingDTO,
-  TeacherOnboardingStepType,
+  type TeacherOnboardingDTO,
+  type TeacherOnboardingStepType,
   TeacherOnboardingStepTypes,
-} from '@/entities/onboarding';
+} from '@/entities/onboarding/types';
 import { PRIVATE } from '@/shared/constants';
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
@@ -105,7 +105,6 @@ test.describe('강사 온보딩', () => {
       await mockTeacherOnboardingGet(page, 'CREATE_STUDY_ROOM');
 
       await page.goto(PRIVATE.DASHBOARD.TEACHER);
-      await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
       await page.waitForSelector('[data-testid="teacher-onboarding"]');
@@ -138,7 +137,6 @@ test.describe('강사 온보딩', () => {
       await mockTeacherOnboardingGet(page, 'INVITE_STUDENT');
 
       await page.goto(PRIVATE.DASHBOARD.TEACHER);
-      await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
       await page.waitForSelector('[data-testid="teacher-onboarding"]');
@@ -171,7 +169,6 @@ test.describe('강사 온보딩', () => {
       await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
 
       await page.goto(PRIVATE.DASHBOARD.TEACHER);
-      await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
       await page.waitForSelector('[data-testid="teacher-onboarding"]');
@@ -196,7 +193,6 @@ test.describe('강사 온보딩', () => {
       await setTeacher(page);
 
       await page.goto(PRIVATE.DASHBOARD.TEACHER);
-      await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
       await expect(page.getByTestId('teacher-onboarding')).not.toBeVisible();
@@ -209,7 +205,6 @@ test.describe('강사 온보딩', () => {
       await mockTeacherOnboardingGet(page, 'CREATE_CLASS_NOTE');
 
       await page.goto(PRIVATE.DASHBOARD.TEACHER);
-      await page.waitForLoadState('networkidle');
 
       // 온보딩 컴포넌트 표시 확인
       await page.waitForSelector('[data-testid="teacher-onboarding"]');
@@ -281,7 +276,6 @@ test.describe('강사 온보딩', () => {
       });
 
       await page.goto(PRIVATE.ROOM.CREATE);
-      await page.waitForLoadState('networkidle', { timeout: 50000 });
 
       // Step 1: 이름과 설명 입력
       await page
@@ -382,7 +376,6 @@ test.describe('강사 온보딩', () => {
       await setTeacher(page);
 
       await page.goto(PRIVATE.NOTE.CREATE(1));
-      await page.waitForLoadState('networkidle');
 
       // 제목 입력
       await page
@@ -483,7 +476,6 @@ test.describe('강사 온보딩', () => {
       await setTeacher(page);
 
       await page.goto(PRIVATE.HOMEWORK.CREATE(1));
-      await page.waitForLoadState('networkidle');
 
       // 제목 입력
       await page
@@ -600,7 +592,6 @@ test.describe('강사 온보딩', () => {
       await setTeacher(page);
 
       await page.goto(PRIVATE.HOMEWORK.DETAIL(1, 1));
-      await page.waitForLoadState('networkidle');
 
       // 케밥 메뉴 클릭 → "피드백 하기" 클릭
       await page.getByAltText('study-notes').click();
