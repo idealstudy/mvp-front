@@ -120,6 +120,7 @@ For repetitive tasks, read the corresponding skill file and follow its steps exa
 | Create a form + mutation flow (RHF + useMutation, error handling)   | `.ai/skills/create-form-mutation.md`    |
 | Create a GET query hook (useQuery, queryKey, repository, enabled)   | `.ai/skills/create-query-hook.md`       |
 | Add error handling to a mutation `onError`                          | `.ai/skills/handle-api-error.md`        |
+| Create a modal (open state, confirm/cancel, ESC/backdrop, loading)  | `.ai/skills/create-modal.md`            |
 
 Workflows (orchestrate multiple skills in sequence):
 
