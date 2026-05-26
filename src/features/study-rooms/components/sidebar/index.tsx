@@ -30,6 +30,7 @@ import { Info } from 'lucide-react';
 import { useInvitationQuery } from '../../hooks/use-invitation-query';
 import { useToggleInvitation } from '../../hooks/use-toggle-invitation';
 import { StudyRoomDetail } from '../../model';
+import { ReviewFormModal } from '../review-form-modal';
 import { StudyRoomClassLinks } from './class-links';
 import { StudyroomSidebarHeader } from './header';
 import { InfoTooltipToast } from './info-tooltip';
@@ -58,6 +59,7 @@ export const StudyroomSidebar = ({
   const [deleteNoticeMsg, setDeleteNoticeMsg] =
     useState('수업노트 그룹이 삭제되었습니다.');
   const [isInfoToastOpen, setIsInfoToastOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { role } = useRole();
@@ -266,6 +268,23 @@ export const StudyroomSidebar = ({
             </div>
           </div>
         )}
+        {/* 후기 작성 버튼 - 학생/학부모만 노출 */}
+        {!canManage && studyRoomDetail?.teacherId && (
+          <>
+            <SidebarButton
+              onClick={() => setIsReviewModalOpen(true)}
+              btnName="후기 작성하기"
+            />
+            <ReviewFormModal
+              mode="create"
+              studyRoomId={studyRoomId}
+              dstMemberId={studyRoomDetail.teacherId}
+              isOpen={isReviewModalOpen}
+              onClose={() => setIsReviewModalOpen(false)}
+            />
+          </>
+        )}
+
         {/* 수업 링크 */}
         <StudyRoomClassLinks
           studyRoomId={studyRoomId}

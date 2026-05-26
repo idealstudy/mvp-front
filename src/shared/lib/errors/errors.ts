@@ -197,3 +197,27 @@ export function classifyWithdrawError(code?: string): ApiErrorType {
       return 'UNKNOWN';
   }
 }
+
+// review 관련 에러
+export function classifyReviewError(code?: string): ApiErrorType {
+  switch (code) {
+    // FIELD (입력값 수정으로 해결 가능)
+    case 'EXCEED_MAX_IMAGE':
+    case 'REQUIRED_DST_MEMBER_ID':
+    case 'DISABLED_WRITE_DATE':
+    case 'CLOSED_UPDATE_DATE':
+      return 'FIELD';
+
+    // CONTEXT (리소스 소멸 / 페이지 무효)
+    case 'STUDENT_NOT_IN_STUDY_ROOM':
+      return 'CONTEXT';
+
+    // AUTH (권한 없음)
+    case 'UNSUPPORTED_ROLE':
+    case 'NOT_YOURS':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
