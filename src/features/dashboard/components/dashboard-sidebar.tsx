@@ -1,10 +1,8 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { createStudentStudyRoomApi } from '@/features/study-rooms/api/room.api.student';
-import { createTeacherStudyRoomApi } from '@/features/study-rooms/api/room.api.teacher';
-import { createStudentStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.student';
-import { createTeacherStudyRoomHooks } from '@/features/study-rooms/hooks/room.query.hooks.teacher';
+import { useStudentDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
+import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { ListIcon, NotepadIcon } from '@/shared/components/icons';
 import { Sidebar } from '@/shared/components/sidebar/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
@@ -22,12 +20,6 @@ import {
 
 const STUDY_ROOM_SKELETON_COUNT = 3;
 const DESKTOP_MEDIA_QUERY = '(min-width: 1200px)';
-const studentStudyRoomApi = createStudentStudyRoomApi();
-const teacherStudyRoomApi = createTeacherStudyRoomApi();
-const { useStudentStudyRoomsQuery } =
-  createStudentStudyRoomHooks(studentStudyRoomApi);
-const { useTeacherStudyRoomsQuery } =
-  createTeacherStudyRoomHooks(teacherStudyRoomApi);
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] 역할별 대시보드 쿼리 데이터를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 진행해야 합니다.
@@ -47,14 +39,14 @@ export const DashboardSidebar = () => {
   const {
     data: teacherStudyRoomList,
     isPending: isTeacherStudyRoomListPending,
-  } = useTeacherStudyRoomsQuery({
+  } = useTeacherDashboardStudyRoomListQuery({
     enabled: isDesktop && role === 'ROLE_TEACHER',
   });
 
   const {
     data: studentStudyRoomList,
     isPending: isStudentStudyRoomListPending,
-  } = useStudentStudyRoomsQuery({
+  } = useStudentDashboardStudyRoomListQuery({
     enabled: isDesktop && role === 'ROLE_STUDENT',
   });
 

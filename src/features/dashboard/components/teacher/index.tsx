@@ -1,5 +1,6 @@
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 
+import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
 import TeacherDashboardHeader from '../header/teacher-header';
 import TeacherQnASection from '../section/teacher-qna-section';
 import TeacherStudyroomSection from '../section/teacher-studyroom-section';
@@ -12,6 +13,8 @@ const DashboardTeacher = ({
   initialMemberName: string;
 }) => {
   const { data: teacherOnboarding, isPending } = useTeacherOnboardingQuery();
+  const { data: studyRooms = [], isPending: studyRoomsPending } =
+    useTeacherDashboardStudyRoomListQuery();
 
   const shouldShowOnboarding =
     !isPending && teacherOnboarding?.isCompleted === false;
@@ -23,8 +26,11 @@ const DashboardTeacher = ({
         {shouldShowOnboarding && <TeacherOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
           <TeacherQnASection />
-          <TeacherStudyroomSection />
-          <TeacherTabSection />
+          <TeacherStudyroomSection
+            studyRooms={studyRooms}
+            isPending={studyRoomsPending}
+          />
+          <TeacherTabSection studyRooms={studyRooms} />
         </div>
       </main>
     </div>

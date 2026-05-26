@@ -4,23 +4,24 @@ import { useCallback } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useTeacherDashboardStudyRoomListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { PRIVATE } from '@/shared/constants';
 import { trackDashboardStudyroomClick } from '@/shared/lib/analytics';
 
 import StudyroomSectionContent from '../section-content/studyroom-section-content';
 import DashboardSection from './single-section';
 
-type TeacherStudyroomSectionProps = {
+interface TeacherStudyroomSectionProps {
+  studyRooms: { id: number; name: string }[];
+  isPending: boolean;
   className?: string;
-};
+}
 
 const TeacherStudyroomSection = ({
+  studyRooms,
+  isPending,
   className,
 }: TeacherStudyroomSectionProps) => {
   const router = useRouter();
-  const { data: studyRooms = [], isPending } =
-    useTeacherDashboardStudyRoomListQuery();
 
   const handleStudyRoomClick = useCallback(
     (studyRoomId: number) => {

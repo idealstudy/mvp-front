@@ -6,7 +6,6 @@ import {
   useTeacherDashboardHomeworkListQuery,
   useTeacherDashboardMemberListQuery,
   useTeacherDashboardNoteListQuery,
-  useTeacherDashboardStudyRoomListQuery,
 } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
@@ -166,11 +165,15 @@ const TeacherHomeworkTabContent = ({
 // - selectedId가 null(전체)이면 모든 탭에서 전체 데이터를 조회합니다.
 
 const TEACHER_TABS = ['수업노트', '멤버', '과제'];
-
-const TeacherTabSection = ({ className }: { className?: string }) => {
+interface TeacherTabSectionProps {
+  studyRooms: { id: number; name: string }[];
+  className?: string;
+}
+const TeacherTabSection = ({
+  studyRooms,
+  className,
+}: TeacherTabSectionProps) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  const { data: studyRooms = [] } = useTeacherDashboardStudyRoomListQuery();
 
   const content = [
     <TeacherNoteTabContent
