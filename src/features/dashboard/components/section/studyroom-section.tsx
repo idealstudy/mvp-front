@@ -6,10 +6,8 @@ import { useAuth } from '@/features/auth/hooks/use-auth';
 import { PRIVATE } from '@/shared/constants';
 import { trackDashboardStudyroomClick } from '@/shared/lib/analytics';
 
-import {
-  useStudentDashboardStudyRoomListQuery,
-  useTeacherDashboardStudyRoomListQuery,
-} from '../../hooks/use-dashboard-query';
+import { useStudentDashboardStudyRoomListQuery } from '../../hooks/use-student-dashboard-query';
+import { useTeacherDashboardStudyRoomListQuery } from '../../hooks/use-teacher-dashboard-query';
 import StudyroomSectionContent from '../section-content/studyroom-section-content';
 import DashboardSection from './single-section';
 

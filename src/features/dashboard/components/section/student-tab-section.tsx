@@ -8,7 +8,7 @@ import {
   useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
   useStudentDashboardStudyRoomListQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+} from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { useStudentNoteList } from '@/features/student-study-note/hooks';
 import { AddNoteIcon } from '@/shared/components/icons';
 import { Pagination } from '@/shared/components/ui';

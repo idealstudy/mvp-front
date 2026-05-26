@@ -1,8 +1,8 @@
 import { useTeacherOnboardingQuery } from '@/features/dashboard/hooks/use-onboarding-query';
 
-import DashboardHeader from '../header';
-import QnASection from '../section/qna-section';
-import StudyroomSection from '../section/studyroom-section';
+import TeacherDashboardHeader from '../header/teacher-header';
+import TeacherQnASection from '../section/teacher-qna-section';
+import TeacherStudyroomSection from '../section/teacher-studyroom-section';
 import TeacherTabSection from '../section/teacher-tab-section';
 import TeacherOnboarding from './teacher-onboarding';
 
@@ -14,12 +14,12 @@ const DashboardTeacher = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <DashboardHeader />
+      <TeacherDashboardHeader />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         {shouldShowOnboarding && <TeacherOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
-          <QnASection />
-          <StudyroomSection />
+          <TeacherQnASection />
+          <TeacherStudyroomSection />
           <TeacherTabSection />
         </div>
       </main>

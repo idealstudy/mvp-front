@@ -5,7 +5,7 @@ import { useMemberStore } from '@/store';
 
 import { useReceivedConnectionList } from '../../connect/hooks/use-connection';
 import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
-import DashboardHeader from '../header';
+import StudentDashboardHeader from '../header/student-header';
 import CalendarSection from '../section/calendar-section';
 import QnASection from '../section/qna-section';
 import StudentTabSection from '../section/student-tab-section';
@@ -50,7 +50,7 @@ const DashboardStudent = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <DashboardHeader />
+      <StudentDashboardHeader />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         {!studentStepsCompleted && <StudentOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">

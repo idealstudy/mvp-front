@@ -6,7 +6,7 @@ import {
   useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
   useStudentDashboardQnaListQuery,
-} from './use-dashboard-query';
+} from './use-student-dashboard-query';
 
 interface UseStudentOnboardingStatusProps {
   rooms: StudentStudyRoom[] | undefined;

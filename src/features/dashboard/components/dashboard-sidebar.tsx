@@ -30,8 +30,7 @@ const { useTeacherStudyRoomsQuery } =
   createTeacherStudyRoomHooks(teacherStudyRoomApi);
 
 export const DashboardSidebar = () => {
-  // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
-  // const { data, isLoading, isError } = useDashboardQuery();
+  // [CRITICAL TODO: API 구현 누락] 역할별 대시보드 쿼리 데이터를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 진행해야 합니다.
 
   const { role, isLoading: isRoleLoading } = useRole();
   const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);

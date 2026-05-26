@@ -18,7 +18,7 @@ export const createTeacherStudyRoomHooks = (
 ) => {
   const qo = createTeacherStudyRoomQueryOptions(api, base);
 
-  // 스터디룸 목록 조회 (강사용 - 임시: 추후 위의 useDashboardQuery 필요 예상)
+  // 스터디룸 목록 조회 (강사용)
   const useTeacherStudyRoomsQuery = (options?: { enabled?: boolean }) =>
     useQuery({
       ...qo.teacherList(),

@@ -7,7 +7,7 @@ import {
   useTeacherDashboardMemberListQuery,
   useTeacherDashboardNoteListQuery,
   useTeacherDashboardStudyRoomListQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+} from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 
 import HomeworkSectionContent from '../section-content/homework-section-content';
 import NoteSectionContent from '../section-content/note-section-content';
