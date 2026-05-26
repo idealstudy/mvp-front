@@ -4,12 +4,16 @@ import Image from 'next/image';
 
 import { useStudentDashboardReportQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { cn } from '@/shared/lib';
-import { useMemberStore } from '@/store';
 
 import { HeaderReport, type HeaderStat } from './report';
 
-const StudentDashboardHeader = () => {
-  const memberName = useMemberStore((s) => s.member?.name);
+const StudentDashboardHeader = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
+  const memberName = initialMemberName.trim();
+  const hasMemberName = memberName.length > 0;
   const { data: studentReport, isPending } = useStudentDashboardReportQuery();
 
   const stats: HeaderStat[] = [
@@ -59,10 +63,16 @@ const StudentDashboardHeader = () => {
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className={cn(criticalTextFontClassName, 'font-bold')}>
-              {memberName}
-            </span>{' '}
-            님,
+            {hasMemberName ? (
+              <>
+                <span className={cn(criticalTextFontClassName, 'font-bold')}>
+                  {memberName}
+                </span>{' '}
+                님,
+              </>
+            ) : (
+              '학생님,'
+            )}
             <br />
             학습기록이 차곡차곡 쌓이고 있어요
           </p>

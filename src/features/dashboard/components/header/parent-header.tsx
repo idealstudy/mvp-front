@@ -4,12 +4,16 @@ import Image from 'next/image';
 
 import { useParentDashboardReportQuery } from '@/features/dashboard/hooks/use-parent-dashboard-query';
 import { cn } from '@/shared/lib';
-import { useMemberStore } from '@/store';
 
 import { HeaderReport, type HeaderStat } from './report';
 
-const ParentDashboardHeader = () => {
-  const memberName = useMemberStore((s) => s.member?.name);
+const ParentDashboardHeader = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
+  const memberName = initialMemberName.trim();
+  const hasMemberName = memberName.length > 0;
   const { data: parentReport, isPending } = useParentDashboardReportQuery();
 
   const stats: HeaderStat[] = [
@@ -55,10 +59,16 @@ const ParentDashboardHeader = () => {
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className={cn(criticalTextFontClassName, 'font-bold')}>
-              {memberName}
-            </span>{' '}
-            학부모님,
+            {hasMemberName ? (
+              <>
+                <span className={cn(criticalTextFontClassName, 'font-bold')}>
+                  {memberName}
+                </span>{' '}
+                학부모님,
+              </>
+            ) : (
+              '학부모님,'
+            )}
             <br />
             학습 여정을 함께 확인해보세요
           </p>

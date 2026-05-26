@@ -17,7 +17,11 @@ import { ParentLinkSection } from '../section/parent-link-section';
 import { StudyNewsSection } from '../section/parent-study-news-section';
 import { StudyRoomPreviewSection } from '../section/parent-studyroom-preview-section';
 
-const DashboardParent = () => {
+const DashboardParent = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
   const { data: connectedStudentData, isPending: connectedStudentIsPending } =
     useParentDashboardConnectedStudentQuery();
 
@@ -139,7 +143,7 @@ const DashboardParent = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <ParentDashboardHeader />
+      <ParentDashboardHeader initialMemberName={initialMemberName} />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         <ParentLinkSection connectedStudents={connectedStudentData ?? []} />
         <div className="tablet:gap-25 flex w-full flex-col gap-8">

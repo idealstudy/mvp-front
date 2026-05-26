@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { serverEnv } from '@/shared/constants/api';
 
 export type SessionStatus =
-  | { status: 'authenticated'; role: string }
+  | { status: 'authenticated'; role: string; name: string }
   | { status: 'stale' }
   | { status: 'guest' };
 
@@ -35,8 +35,14 @@ export async function fetchMemberRole(): Promise<SessionStatus> {
     if (res.status === 401 || res.status === 403) return { status: 'stale' };
 
     if (res.ok && res.status !== 204) {
-      const role: string | undefined = (await res.json())?.data?.role;
-      if (role) return { status: 'authenticated', role };
+      const data = (await res.json())?.data;
+
+      if (data?.role)
+        return {
+          status: 'authenticated',
+          role: data.role,
+          name: data.name ?? '',
+        };
     }
   } catch {
     // 네트워크 오류 등 → guest 처리

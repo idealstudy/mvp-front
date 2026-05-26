@@ -3,10 +3,14 @@
 import { DashboardRoleShell } from './dashboard-role-shell';
 import DashboardTeacher from './teacher';
 
-export const DashboardTeacherContainer = () => {
+export const DashboardTeacherContainer = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
   return (
     <DashboardRoleShell role="ROLE_TEACHER">
-      <DashboardTeacher />
+      <DashboardTeacher initialMemberName={initialMemberName} />
     </DashboardRoleShell>
   );
 };

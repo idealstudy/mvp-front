@@ -4,15 +4,19 @@ import Image from 'next/image';
 
 import { useTeacherDashboardReportQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { cn } from '@/shared/lib/utils';
-import { useMemberStore } from '@/store';
 
 import { HeaderReport, type HeaderStat } from './report';
 
 const criticalTextFontClassName =
   '[font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe_UI",sans-serif]';
 
-const TeacherDashboardHeader = () => {
-  const memberName = useMemberStore((state) => state.member?.name);
+const TeacherDashboardHeader = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
+  const memberName = initialMemberName.trim();
+  const hasMemberName = memberName.length > 0;
   const { data: teacherReport, isPending } = useTeacherDashboardReportQuery();
 
   const stats: HeaderStat[] = [
@@ -51,10 +55,16 @@ const TeacherDashboardHeader = () => {
               'tablet:font-headline1-normal desktop:font-title-normal'
             )}
           >
-            <span className={cn(criticalTextFontClassName, 'font-bold')}>
-              {memberName}
-            </span>{' '}
-            선생님,
+            {hasMemberName ? (
+              <>
+                <span className={cn(criticalTextFontClassName, 'font-bold')}>
+                  {memberName}
+                </span>{' '}
+                선생님,
+              </>
+            ) : (
+              '선생님,'
+            )}
             <br />
             오늘은 어떤 수업을 진행하세요?
           </p>

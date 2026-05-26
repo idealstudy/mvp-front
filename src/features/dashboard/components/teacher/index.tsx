@@ -6,7 +6,11 @@ import TeacherStudyroomSection from '../section/teacher-studyroom-section';
 import TeacherTabSection from '../section/teacher-tab-section';
 import TeacherOnboarding from './teacher-onboarding';
 
-const DashboardTeacher = () => {
+const DashboardTeacher = ({
+  initialMemberName,
+}: {
+  initialMemberName: string;
+}) => {
   const { data: teacherOnboarding, isPending } = useTeacherOnboardingQuery();
 
   const shouldShowOnboarding =
@@ -14,7 +18,7 @@ const DashboardTeacher = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <TeacherDashboardHeader />
+      <TeacherDashboardHeader initialMemberName={initialMemberName} />
       <main className="tablet:gap-12 desktop:gap-20 bg-gray-white tablet:py-12 desktop:pb-25 tablet:px-20 relative flex w-full flex-col gap-8 px-4.5 py-8">
         {shouldShowOnboarding && <TeacherOnboarding />}
         <div className="tablet:gap-25 flex w-full flex-col gap-8">
