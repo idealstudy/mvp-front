@@ -10,6 +10,8 @@ type TeacherQnASectionProps = {
   className?: string;
 };
 
+const QNA_CONTENT_MIN_HEIGHT = 'min-h-[264px]';
+
 const TeacherQnASection = ({ className }: TeacherQnASectionProps) => {
   const { data, isPending } = useTeacherDashboardQnaListQuery({
     page: 0,
@@ -27,18 +29,20 @@ const TeacherQnASection = ({ className }: TeacherQnASectionProps) => {
       isMorePrefetch={false}
       onMoreClick={() => trackDashboardQnaMoreClick('ROLE_TEACHER')}
     >
-      {isPending ? (
-        <div className="flex w-full flex-col gap-1">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-gray-3 h-12 w-full animate-pulse rounded-lg"
-            />
-          ))}
-        </div>
-      ) : (
-        <QnASectionContent questions={data?.content ?? []} />
-      )}
+      <div className={QNA_CONTENT_MIN_HEIGHT}>
+        {isPending ? (
+          <div className="flex w-full flex-col gap-1">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-3 h-[84px] w-full animate-pulse rounded-lg"
+              />
+            ))}
+          </div>
+        ) : (
+          <QnASectionContent questions={data?.content ?? []} />
+        )}
+      </div>
     </DashboardSection>
   );
 };
