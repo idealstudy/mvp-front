@@ -5,6 +5,7 @@ const CORE = {
   INDEX: '/',
   LOGIN: '/login',
   SIGNUP: '/register',
+  OPEN_CHALLENGE: '/open-challenge',
   LIST: {
     BASE: '/list',
     TEACHERS: '/list/teachers',

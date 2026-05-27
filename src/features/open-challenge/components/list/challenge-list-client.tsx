@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { Pagination } from '@/shared/components/ui';
 import { Inbox } from 'lucide-react';
 
 import { ChallengeCard, type ChallengeCardData } from './challenge-card';
@@ -17,7 +18,7 @@ type ChallengeListClientProps = {
   streak: { streakDays: number; todayCompleted: boolean };
 };
 
-const INITIAL_VISIBLE_COUNT = 3;
+const PAGE_SIZE = 3;
 
 export const ChallengeListClient = ({
   challenges,
@@ -25,16 +26,28 @@ export const ChallengeListClient = ({
 }: ChallengeListClientProps) => {
   const [selectedSubject, setSelectedSubject] = useState<SubjectFilter>('ALL');
   const [selectedSort, setSelectedSort] = useState<SortOption>('latest');
-  const [showAll, setShowAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredChallenges = challenges.filter(
     (challenge) =>
       selectedSubject === 'ALL' || challenge.subject === selectedSubject
   );
 
-  const visibleChallenges = showAll
-    ? filteredChallenges
-    : filteredChallenges.slice(0, INITIAL_VISIBLE_COUNT);
+  const totalPages = Math.ceil(filteredChallenges.length / PAGE_SIZE);
+  const visibleChallenges = filteredChallenges.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  const handleSubjectChange = (subject: SubjectFilter) => {
+    setSelectedSubject(subject);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (sort: SortOption) => {
+    setSelectedSort(sort);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,8 +68,8 @@ export const ChallengeListClient = ({
       <SubjectFilterBar
         subject={selectedSubject}
         sort={selectedSort}
-        onSubjectChange={setSelectedSubject}
-        onSortChange={setSelectedSort}
+        onSubjectChange={handleSubjectChange}
+        onSortChange={handleSortChange}
       />
 
       {visibleChallenges.length > 0 ? (
@@ -81,13 +94,13 @@ export const ChallengeListClient = ({
         </div>
       )}
 
-      {filteredChallenges.length > INITIAL_VISIBLE_COUNT && (
-        <button
-          onClick={() => setShowAll((previousShowAll) => !previousShowAll)}
-          className="border-line-line1 text-text-main hover:bg-gray-1 w-full cursor-pointer rounded-xl border bg-white py-4 text-sm font-semibold"
-        >
-          {showAll ? '접기' : '더 많은 챌린지 보기'}
-        </button>
+      {filteredChallenges.length > PAGE_SIZE && (
+        <Pagination
+          page={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          className="justify-center pt-2"
+        />
       )}
     </div>
   );

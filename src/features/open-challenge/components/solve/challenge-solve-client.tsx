@@ -2,32 +2,20 @@
 
 import { useState } from 'react';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/shared/components/ui';
 import {
-  AlertTriangle,
-  Eraser,
-  MoreHorizontal,
-  MousePointer2,
-  Pencil,
-  Trash2,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+  TextEditor,
+  type TextEditorValue,
+  initialTextEditorValue,
+} from '@/shared/components/editor';
+import { BackButton, Button } from '@/shared/components/ui';
+import { AlertTriangle, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 
 import { type ChallengeDetailMock } from '../../mock/challenge-detail';
 import { AiCoachPanel } from './ai-coach-panel';
 import { ChoiceList } from './choice-list';
-
-type DrawTool = '펜' | '지우개' | '선택';
-
-const DRAW_TOOLS: DrawTool[] = ['펜', '지우개', '선택'];
-const DRAW_TOOL_ICONS: Record<DrawTool, LucideIcon> = {
-  펜: Pencil,
-  지우개: Eraser,
-  선택: MousePointer2,
-};
-const COLOR_OPTIONS = ['#000000', '#ff4805', '#3b82f6', '#22c55e', '#9ca3af'];
 
 type ChallengeSolveClientProps = {
   challengeId: string;
@@ -42,16 +30,14 @@ export const ChallengeSolveClient = ({
 }: ChallengeSolveClientProps) => {
   const router = useRouter();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [activeTool, setActiveTool] = useState<DrawTool>('펜');
-  const [activeColor, setActiveColor] = useState('#000000');
+  const [solutionContent, setSolutionContent] = useState<TextEditorValue>(
+    initialTextEditorValue
+  );
+  const [isQuestionOpen, setIsQuestionOpen] = useState(true);
 
   const handleSubmit = () => {
     if (!selectedAnswer) return;
     router.push(`/open-challenge/${challengeId}/result`);
-  };
-
-  const handleClearCanvas = () => {
-    // TODO: 캔버스 초기화 로직
   };
 
   return (
@@ -64,33 +50,79 @@ export const ChallengeSolveClient = ({
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* 상단 바 */}
         <div className="border-line-line1 flex items-center justify-between border-b px-4 py-3 sm:px-6">
-          <div className="text-gray-8 flex min-w-0 items-center gap-2 text-sm">
-            <span className="hidden sm:inline">{challenge.subject}</span>
-            <span className="hidden sm:inline">›</span>
-            <span className="text-text-main truncate font-semibold">
-              {challenge.topic}
-            </span>
+          <div className="flex min-w-0 items-center gap-3">
+            <BackButton className="shrink-0" />
+            <div className="text-gray-8 flex min-w-0 items-center gap-2 text-sm">
+              <span className="hidden sm:inline">{challenge.subject}</span>
+              <span className="hidden sm:inline">›</span>
+              <span className="text-text-main truncate font-semibold">
+                {challenge.topic}
+              </span>
+            </div>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <button className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm">
               <AlertTriangle size={14} />
               <span className="hidden sm:inline">문제 신고</span>
             </button>
-            <button className="text-gray-8 hover:text-text-main cursor-pointer">
-              <MoreHorizontal size={18} />
-            </button>
           </div>
         </div>
 
-        {/* 문제 + 선택지 + 캔버스 */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
-          <div className="border-line-line1 mb-5 rounded-xl border bg-white px-6 py-6 sm:px-8">
-            <p className="font-body1-heading text-text-main text-lg">
-              <span className="text-orange-7 mr-2">
-                {challenge.questionNumber}.
-              </span>
-              {challenge.questionText}
-            </p>
+        {/* 문제 + 선택지 + 풀이 에디터 */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8">
+          <div className="border-line-line1 mb-5 overflow-hidden rounded-xl border bg-white">
+            <button
+              type="button"
+              onClick={() =>
+                setIsQuestionOpen(
+                  (previousIsQuestionOpen) => !previousIsQuestionOpen
+                )
+              }
+              className="hover:bg-gray-1 flex w-full cursor-pointer items-center justify-between gap-3 px-5 py-4 text-left sm:px-6"
+              aria-expanded={isQuestionOpen}
+            >
+              <div className="min-w-0">
+                <p className="text-gray-8 text-xs font-semibold">
+                  문제 {challenge.questionNumber}
+                </p>
+                <p className="text-text-main mt-1 truncate text-base font-bold">
+                  {challenge.topic}
+                </p>
+              </div>
+              {isQuestionOpen ? (
+                <ChevronUp
+                  size={20}
+                  className="text-gray-7 shrink-0"
+                />
+              ) : (
+                <ChevronDown
+                  size={20}
+                  className="text-gray-7 shrink-0"
+                />
+              )}
+            </button>
+
+            {isQuestionOpen && (
+              <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
+                <p className="font-body1-heading text-text-main text-lg leading-relaxed whitespace-pre-line">
+                  <span className="text-orange-7 mr-2">
+                    {challenge.questionNumber}.
+                  </span>
+                  {challenge.questionText}
+                </p>
+                {challenge.questionImageUrl && (
+                  <div className="border-line-line2 bg-gray-1 mt-5 overflow-hidden rounded-lg border p-3">
+                    <Image
+                      src={challenge.questionImageUrl}
+                      alt={`${challenge.topic} 문제 이미지`}
+                      width={760}
+                      height={420}
+                      className="max-h-[420px] w-full object-contain"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="mb-5">
@@ -101,71 +133,30 @@ export const ChallengeSolveClient = ({
             />
           </div>
 
-          <div className="border-line-line2 flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-white">
-            <Pencil
-              size={32}
-              className="text-gray-5"
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Pencil
+                size={18}
+                className="text-orange-7"
+              />
+              <p className="font-body1-heading text-text-main">풀이 공간</p>
+            </div>
+            <TextEditor
+              value={solutionContent}
+              onChange={setSolutionContent}
+              placeholder="식, 풀이 과정, 떠오른 단서를 자유롭게 적어보세요."
+              minHeight="420px"
+              maxHeight="none"
+              ariaLabel="오픈 챌린지 풀이 입력"
             />
-            <p className="font-body2-heading text-gray-8">풀이 적어봐요</p>
-            <p className="text-gray-6 text-sm">
-              여기에 자유롭게 그림이나 식을 작성해보세요.
-            </p>
           </div>
         </div>
 
-        {/* 하단 툴바 */}
-        <div className="border-line-line1 flex flex-wrap items-center gap-3 border-t bg-white px-4 py-3 sm:gap-4 sm:px-6">
-          <div className="flex gap-1">
-            {DRAW_TOOLS.map((tool) => {
-              const Icon = DRAW_TOOL_ICONS[tool];
-              return (
-                <button
-                  key={tool}
-                  onClick={() => setActiveTool(tool)}
-                  className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-lg px-3 py-2 text-xs transition-colors ${
-                    activeTool === tool
-                      ? 'bg-orange-1 text-orange-7 font-semibold'
-                      : 'text-gray-8 hover:bg-gray-1'
-                  }`}
-                >
-                  <Icon size={16} />
-                  {tool}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="bg-line-line1 mx-1 h-6 w-px" />
-
-          <div className="flex items-center gap-2">
-            {COLOR_OPTIONS.map((colorValue) => (
-              <button
-                key={colorValue}
-                onClick={() => setActiveColor(colorValue)}
-                style={{ backgroundColor: colorValue }}
-                className={`h-6 w-6 cursor-pointer rounded-full transition-transform hover:scale-110 ${
-                  activeColor === colorValue
-                    ? 'ring-gray-7 ring-2 ring-offset-1'
-                    : ''
-                }`}
-              />
-            ))}
-          </div>
-
-          <div className="bg-line-line1 mx-1 h-6 w-px" />
-
-          <button
-            onClick={handleClearCanvas}
-            className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm"
-          >
-            <Trash2 size={14} />
-            <span className="hidden sm:inline">전체 지우기</span>
-          </button>
-
+        {/* 하단 제출 바 */}
+        <div className="border-line-line1 flex items-center justify-end border-t bg-white px-4 py-3 sm:px-6">
           <Button
             onClick={handleSubmit}
             disabled={!selectedAnswer}
-            className="ml-auto"
           >
             제출하기
           </Button>

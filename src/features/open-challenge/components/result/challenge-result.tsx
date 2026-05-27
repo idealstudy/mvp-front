@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import { BackButton } from '@/shared/components/ui';
 import { Bookmark, Bot, MoreHorizontal } from 'lucide-react';
 
 import { AiFeedbackForm } from './ai-feedback-form';
@@ -37,12 +36,7 @@ export const ChallengeResult = ({
   return (
     <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <Link
-          href="/open-challenge"
-          className="text-gray-8 hover:text-text-main flex items-center gap-1 text-sm"
-        >
-          ← 오픈 챌린지
-        </Link>
+        <BackButton />
         <div className="flex items-center gap-3">
           <button className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm">
             <Bookmark size={15} />

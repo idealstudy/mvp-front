@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { Flame, User } from 'lucide-react';
 
@@ -64,11 +63,13 @@ export const ChallengeCard = ({
   );
 
   return (
-    <div
+    <Link
+      href={`/open-challenge/${challenge.id}`}
       className={cn(
-        'flex flex-col overflow-hidden rounded-xl border',
+        'group focus-visible:ring-key-color-primary flex min-h-full overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:outline-none',
         config.borderClass
       )}
+      aria-label={`${challenge.title} 도전하기`}
     >
       <div
         className={cn(
@@ -125,15 +126,11 @@ export const ChallengeCard = ({
               {challenge.participantCount.toLocaleString()}명 도전 중
             </span>
           </div>
-          <Button
-            variant="secondary"
-            size="xsmall"
-            asChild
-          >
-            <Link href={`/open-challenge/${challenge.id}`}>도전하기</Link>
-          </Button>
+          <span className="text-orange-7 group-hover:text-orange-8 text-sm font-semibold transition-colors">
+            도전하기
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
