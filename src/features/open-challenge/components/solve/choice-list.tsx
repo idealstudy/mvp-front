@@ -22,7 +22,7 @@ export const ChoiceList = ({
             key={idx}
             onClick={() => onSelect(choice)}
             className={cn(
-              'flex items-center justify-center gap-3 rounded-xl border-2 px-4 py-5 text-sm font-medium transition-colors',
+              'flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 px-4 py-5 text-sm font-medium transition-colors',
               isSelected
                 ? 'border-blue-500 bg-blue-50 text-blue-700'
                 : 'border-line-line1 text-text-main hover:border-line-line2 hover:bg-gray-1 bg-white'

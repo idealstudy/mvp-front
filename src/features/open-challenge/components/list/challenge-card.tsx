@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { Button } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
+import { Flame, User } from 'lucide-react';
 
 export type ChallengeSubject = 'MATH' | 'KOREAN' | 'ENGLISH' | 'SCIENCE';
 
@@ -69,7 +70,6 @@ export const ChallengeCard = ({
         config.borderClass
       )}
     >
-      {/* 미리보기 영역 */}
       <div
         className={cn(
           'relative flex min-h-[200px] items-center justify-center p-6',
@@ -101,11 +101,11 @@ export const ChallengeCard = ({
         )}
       </div>
 
-      {/* 카드 본문 */}
       <div className="flex flex-1 flex-col gap-3 bg-white p-5">
         <div>
-          <p className="text-orange-7 text-sm font-semibold">
-            🔥 통과율 {challenge.passRate}% — 10명 중 {correctCountOutOf10}명만
+          <p className="text-orange-7 flex items-center gap-1 text-sm font-semibold">
+            <Flame size={14} />
+            통과율 {challenge.passRate}% — 10명 중 {correctCountOutOf10}명만
             맞혔어요
           </p>
           <h3 className="text-text-main mt-1 text-base font-bold">
@@ -120,8 +120,9 @@ export const ChallengeCard = ({
               통과율 {challenge.passRate}%
             </span>
             <span className="text-gray-4">|</span>
-            <span className="text-gray-8">
-              👤 {challenge.participantCount.toLocaleString()}명 도전 중
+            <span className="text-gray-8 flex items-center gap-1">
+              <User size={13} />
+              {challenge.participantCount.toLocaleString()}명 도전 중
             </span>
           </div>
           <Button

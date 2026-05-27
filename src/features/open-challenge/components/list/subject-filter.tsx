@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 
 export type SubjectFilter = 'ALL' | 'MATH' | 'KOREAN' | 'ENGLISH' | 'SCIENCE';
@@ -39,7 +40,7 @@ export const SubjectFilterBar = ({
             key={subjectOption.value}
             onClick={() => onSubjectChange(subjectOption.value)}
             className={cn(
-              'rounded-full px-5 py-2 text-sm font-semibold transition-colors',
+              'cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition-colors',
               subject === subjectOption.value
                 ? 'bg-orange-7 text-white'
                 : 'border-line-line2 text-text-main hover:bg-gray-1 border bg-white'
@@ -50,20 +51,26 @@ export const SubjectFilterBar = ({
         ))}
       </div>
 
-      <select
+      <Select
         value={sort}
-        onChange={(event) => onSortChange(event.target.value as SortOption)}
-        className="border-line-line2 cursor-pointer rounded-lg border bg-white px-4 py-2 text-sm outline-none"
+        onValueChange={(value) => onSortChange(value as SortOption)}
       >
-        {SORT_OPTIONS.map((sortOption) => (
-          <option
-            key={sortOption.value}
-            value={sortOption.value}
-          >
-            {sortOption.label}
-          </option>
-        ))}
-      </select>
+        <Select.Trigger
+          className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
+          placeholder="최신순"
+        />
+        <Select.Content>
+          {SORT_OPTIONS.map((sortOption) => (
+            <Select.Option
+              key={sortOption.value}
+              value={sortOption.value}
+              className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+            >
+              {sortOption.label}
+            </Select.Option>
+          ))}
+        </Select.Content>
+      </Select>
     </div>
   );
 };

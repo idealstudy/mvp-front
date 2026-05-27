@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/shared/lib';
+import { Check, Flame } from 'lucide-react';
 
 type StreakBannerProps = {
   streakDays: number;
@@ -14,10 +15,13 @@ export const StreakBanner = ({
   todayCompleted,
 }: StreakBannerProps) => {
   return (
-    <div className="border-line-line1 flex items-center gap-8 rounded-xl border bg-white px-6 py-5">
+    <div className="border-line-line1 flex flex-col gap-4 rounded-xl border bg-white px-6 py-5 sm:flex-row sm:items-center sm:gap-8">
       <div className="flex shrink-0 items-center gap-4">
-        <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full text-2xl">
-          🔥
+        <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
+          <Flame
+            size={28}
+            className="text-orange-7"
+          />
         </div>
         <div>
           <p className="text-orange-7 font-body1-heading">
@@ -29,7 +33,7 @@ export const StreakBanner = ({
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center gap-5">
+      <div className="flex flex-1 items-center justify-center gap-3 sm:gap-5">
         {Array.from({ length: TOTAL_DAYS }, (_, i) => {
           const day = i + 1;
           const isCompleted =
@@ -43,14 +47,14 @@ export const StreakBanner = ({
             >
               <div
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors',
+                  'flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors sm:h-10 sm:w-10',
                   isCompleted && 'bg-orange-7 text-white',
                   isCurrent &&
                     'border-orange-7 text-orange-7 border-2 bg-white',
                   !isCompleted && !isCurrent && 'bg-gray-1 text-gray-6'
                 )}
               >
-                {isCompleted ? '✓' : ''}
+                {isCompleted && <Check size={16} />}
               </div>
               <span className="text-gray-8 text-xs">{day}일차</span>
             </div>

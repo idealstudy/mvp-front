@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
+import { Bookmark, Bot, MoreHorizontal } from 'lucide-react';
+
 import { AiFeedbackForm } from './ai-feedback-form';
 import { NextChallengeCard } from './next-challenge-card';
 import { ResultStats } from './result-stats';
-import { type SolutionItem } from './solution-list';
-import { SolutionList } from './solution-list';
+import { type SolutionItem, SolutionList } from './solution-list';
 
 const MOCK_TOTAL_SOLUTION_COUNT = 36;
 const MOCK_AI_COMMENT =
@@ -43,14 +44,17 @@ export const ChallengeResult = ({
           ← 오픈 챌린지
         </Link>
         <div className="flex items-center gap-3">
-          <button className="text-gray-8 hover:text-text-main flex items-center gap-1 text-sm">
-            🔖 북마크
+          <button className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm">
+            <Bookmark size={15} />
+            북마크
           </button>
-          <button className="text-gray-8 hover:text-text-main">⋯</button>
+          <button className="text-gray-8 hover:text-text-main cursor-pointer">
+            <MoreHorizontal size={18} />
+          </button>
         </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           <ResultStats
             isCorrect={result.isCorrect}
@@ -64,11 +68,14 @@ export const ChallengeResult = ({
           />
         </div>
 
-        <aside className="flex w-[340px] shrink-0 flex-col gap-4">
+        <aside className="flex w-full flex-col gap-4 lg:w-[340px] lg:shrink-0">
           <div className="border-line-line1 flex flex-col gap-3 rounded-xl border bg-white p-5">
             <div className="flex items-start gap-3">
-              <div className="bg-gray-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl">
-                🤖
+              <div className="bg-gray-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+                <Bot
+                  size={24}
+                  className="text-gray-7"
+                />
               </div>
               <div>
                 <p className="text-text-main text-sm font-semibold">

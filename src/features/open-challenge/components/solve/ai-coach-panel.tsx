@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { cn } from '@/shared/lib';
+import { Bot, Send } from 'lucide-react';
 
 type MessageRole = 'ai' | 'user';
 
@@ -106,8 +107,11 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
   if (!isLoggedIn) {
     return (
       <div className="border-line-line1 flex h-full flex-col items-center justify-center gap-4 rounded-xl border bg-white p-8 text-center">
-        <div className="bg-gray-1 flex h-16 w-16 items-center justify-center rounded-full text-3xl">
-          🤖
+        <div className="bg-gray-1 flex h-16 w-16 items-center justify-center rounded-full">
+          <Bot
+            size={32}
+            className="text-gray-7"
+          />
         </div>
         <div>
           <p className="font-body1-heading text-text-main">AI 코치</p>
@@ -129,13 +133,11 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
 
   return (
     <div className="border-line-line1 flex h-full flex-col rounded-xl border bg-white">
-      {/* 헤더 */}
       <div className="border-line-line1 flex items-center gap-2 border-b px-4 py-3">
         <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
         <span className="font-body1-heading text-text-main">AI 코치</span>
       </div>
 
-      {/* 메시지 목록 */}
       <div
         ref={scrollAreaRef}
         className="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
@@ -149,8 +151,11 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
             )}
           >
             {message.role === 'ai' && (
-              <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm">
-                🤖
+              <div className="bg-gray-1 mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+                <Bot
+                  size={16}
+                  className="text-gray-7"
+                />
               </div>
             )}
             <div
@@ -180,20 +185,18 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
         ))}
       </div>
 
-      {/* 빠른 답장 */}
       <div className="flex gap-2 px-4 pb-2">
         {QUICK_REPLY_OPTIONS.map((replyOption) => (
           <button
             key={replyOption}
             onClick={() => handleQuickReply(replyOption)}
-            className="border-line-line2 hover:bg-gray-1 flex-1 rounded-full border px-2 py-1.5 text-xs"
+            className="border-line-line2 hover:bg-gray-1 flex-1 cursor-pointer rounded-full border px-2 py-1.5 text-xs"
           >
             {replyOption}
           </button>
         ))}
       </div>
 
-      {/* 입력창 */}
       <div className="border-line-line1 flex items-center gap-2 border-t px-4 py-3">
         <input
           value={inputMessage}
@@ -205,9 +208,9 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
         <button
           onClick={handleSendMessage}
           disabled={!inputMessage.trim()}
-          className="bg-orange-7 flex h-8 w-8 items-center justify-center rounded-full text-white disabled:opacity-40"
+          className="bg-orange-7 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
-          ›
+          <Send size={14} />
         </button>
       </div>
     </div>

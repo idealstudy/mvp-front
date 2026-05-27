@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { Inbox } from 'lucide-react';
+
 import { ChallengeCard, type ChallengeCardData } from './challenge-card';
 import { StreakBanner } from './streak-banner';
 import {
@@ -68,7 +70,10 @@ export const ChallengeListClient = ({
         </div>
       ) : (
         <div className="border-line-line1 flex flex-col items-center gap-2 rounded-xl border bg-white py-16 text-center">
-          <span className="text-3xl">📭</span>
+          <Inbox
+            size={36}
+            className="text-gray-6"
+          />
           <p className="font-body1-heading text-text-main">
             아직 등록된 문제가 없어요.
           </p>
@@ -79,7 +84,7 @@ export const ChallengeListClient = ({
       {filteredChallenges.length > INITIAL_VISIBLE_COUNT && (
         <button
           onClick={() => setShowAll((previousShowAll) => !previousShowAll)}
-          className="border-line-line1 text-text-main hover:bg-gray-1 w-full rounded-xl border bg-white py-4 text-sm font-semibold"
+          className="border-line-line1 text-text-main hover:bg-gray-1 w-full cursor-pointer rounded-xl border bg-white py-4 text-sm font-semibold"
         >
           {showAll ? '접기' : '더 많은 챌린지 보기'}
         </button>

@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 
+import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
+import { ThumbsUp, User } from 'lucide-react';
 
 export type SolutionItem = {
   id: string;
@@ -30,16 +32,29 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
         <h2 className="font-body1-heading text-text-main">
           다른 사람 풀이 {totalCount}개
         </h2>
-        <select
+        <Select
           value={sort}
-          onChange={(event) =>
-            setSort(event.target.value as 'recommend' | 'latest')
-          }
-          className="border-line-line2 cursor-pointer rounded-lg border bg-white px-3 py-1.5 text-sm outline-none"
+          onValueChange={(value) => setSort(value as 'recommend' | 'latest')}
         >
-          <option value="recommend">추천순</option>
-          <option value="latest">최신순</option>
-        </select>
+          <Select.Trigger
+            className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
+            placeholder="추천순"
+          />
+          <Select.Content>
+            <Select.Option
+              value="recommend"
+              className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+            >
+              추천순
+            </Select.Option>
+            <Select.Option
+              value="latest"
+              className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+            >
+              최신순
+            </Select.Option>
+          </Select.Content>
+        </Select>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -57,11 +72,14 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
               </span>
             )}
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="bg-gray-1 text-gray-7 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
-                  👤
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                  <User
+                    size={16}
+                    className="text-gray-7"
+                  />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-body2-heading text-text-main text-sm">
                     {solution.nickname}
                   </p>
@@ -72,8 +90,8 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
                 </div>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-1">
-                <button className="text-gray-6 hover:text-orange-7 transition-colors">
-                  👍
+                <button className="text-gray-6 hover:text-orange-7 cursor-pointer transition-colors">
+                  <ThumbsUp size={16} />
                 </button>
                 <span className="font-body2-heading text-text-main text-sm">
                   {solution.recommendCount}
@@ -87,10 +105,10 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
 
       {solutions.length > 3 && (
         <button
-          onClick={() => setExpanded((v) => !v)}
-          className="border-line-line1 text-text-main hover:bg-gray-1 w-full rounded-xl border bg-white py-4 text-sm font-semibold"
+          onClick={() => setExpanded((previousExpanded) => !previousExpanded)}
+          className="border-line-line1 text-text-main hover:bg-gray-1 w-full cursor-pointer rounded-xl border bg-white py-4 text-sm font-semibold"
         >
-          {expanded ? '접기' : `더 많은 풀이 보기`}
+          {expanded ? '접기' : '더 많은 풀이 보기'}
         </button>
       )}
     </div>

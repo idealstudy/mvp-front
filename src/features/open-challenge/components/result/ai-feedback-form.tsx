@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/shared/components/ui';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { cn } from '@/shared/lib';
+import { Heart, Star } from 'lucide-react';
 
 const RATING_LABELS = [
   '전혀 도움안됨',
@@ -33,7 +34,11 @@ export const AiFeedbackForm = () => {
   if (isSubmitted) {
     return (
       <div className="border-line-line1 flex flex-col items-center gap-3 rounded-xl border bg-white p-6 text-center">
-        <span className="text-3xl">🙏</span>
+        <Heart
+          size={32}
+          className="text-orange-7"
+          fill="currentColor"
+        />
         <p className="font-body1-heading text-text-main">피드백 감사해요!</p>
         <p className="text-gray-8 text-sm">
           디에듀 AI가 더 좋아질 수 있도록 잘 활용할게요.
@@ -52,11 +57,10 @@ export const AiFeedbackForm = () => {
           디에듀 AI는 도움이 되었나요?
         </h3>
         <p className="text-gray-8 mt-1 text-sm">
-          어분의 피드백으로 디에듀 AI가 더 좋은 학습 코치가 돼요.
+          여러분의 피드백으로 디에듀 AI가 더 좋은 학습 코치가 돼요.
         </p>
       </div>
 
-      {/* 별점 */}
       <div className="flex items-end justify-between">
         {RATING_LABELS.map((label, index) => {
           const score = index + 1;
@@ -68,12 +72,13 @@ export const AiFeedbackForm = () => {
             >
               <button
                 onClick={() => setRating(score)}
-                className={cn(
-                  'text-2xl transition-transform hover:scale-110',
-                  isSelected ? 'text-yellow-400' : 'text-gray-4'
-                )}
+                className="cursor-pointer transition-transform hover:scale-110"
               >
-                ★
+                <Star
+                  size={24}
+                  className={cn(isSelected ? 'text-yellow-400' : 'text-gray-4')}
+                  fill={isSelected ? 'currentColor' : 'none'}
+                />
               </button>
               <span className="text-gray-7 text-xs">{score}점</span>
               <span className="text-gray-6 text-center text-[10px] leading-tight">
@@ -84,7 +89,6 @@ export const AiFeedbackForm = () => {
         })}
       </div>
 
-      {/* 자유 의견 */}
       <div className="relative">
         <Textarea
           value={comment}
