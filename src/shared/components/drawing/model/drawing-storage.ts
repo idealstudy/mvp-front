@@ -71,16 +71,3 @@ export async function loadCanvasHeight(
   const data = await db.get(STORE_NAME, `${documentId}:canvas-meta`);
   return (data as { height: number } | undefined)?.height ?? null;
 }
-
-export async function clearDocumentStrokes(documentId: string): Promise<void> {
-  const db = await getDb();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
-  const keys = await tx.store.getAllKeys();
-  const prefix = `${documentId}:`;
-  await Promise.all(
-    keys
-      .filter((k) => String(k).startsWith(prefix))
-      .map((k) => tx.store.delete(k))
-  );
-  await tx.done;
-}

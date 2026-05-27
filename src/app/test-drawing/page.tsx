@@ -18,7 +18,9 @@ const queryClient = new QueryClient({
 function TestPageContent() {
   const searchParams = useSearchParams();
   const singlePanel = searchParams.get('panels') !== '0';
-  const capturePointerSession = searchParams.get('capture') !== '0';
+  const capturePointerSession =
+    process.env.NODE_ENV === 'development' &&
+    searchParams.get('capture') !== '0';
 
   useEffect(() => {
     if (!capturePointerSession) return;

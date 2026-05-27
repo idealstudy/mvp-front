@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { cn } from '@/shared/lib';
 
@@ -27,10 +34,19 @@ const PANEL_COLORS = [
 const DEFAULT_PANEL_HEIGHT = 400;
 const DEFAULT_EXPAND_RATIO = 0.3;
 const AUTO_SAVE_DELAY_MS = 700;
-/** 센티넬이 스크롤 뷰포트에 이 시간(ms) 이상 머물면 캔버스 확장 */
-const SENTINEL_DWELL_MS = 500;
+/** 두 손가락으로 하단에서 유지해야 하는 시간(ms) */
+const EXPAND_HOLD_MS = 2000;
+/** 확장 안내 바 높이(px) */
+const EXPAND_HINT_HEIGHT_PX = 56;
 /** IndexedDB에서 복원할 최대 캔버스 높이 — 비정상 값으로 흰 화면 방지 */
 const MAX_CANVAS_HEIGHT = 8000;
+
+type SaveStatus = 'idle' | 'saved' | 'error';
+type ScrollIndicatorState = {
+  visible: boolean;
+  top: number;
+  height: number;
+};
 
 // ─── 타입 ────────────────────────────────────────────────────────────────────
 
@@ -38,10 +54,7 @@ type DrawingPanelProps = {
   documentId: string;
   /** 패널 외부 가시 높이(px). 기본값 400 */
   panelHeight?: number;
-  /**
-   * 캔버스 초기 내부 높이(px). panelHeight보다 커야 내부 스크롤이 생깁니다.
-   * 기본값: panelHeight * 1.5
-   */
+  /** 획이 없을 때 캔버스 높이(px). 기본값: panelHeight와 동일 */
   initialCanvasHeight?: number;
   /**
    * 센티넬이 보일 때 캔버스를 늘리는 비율.
@@ -64,23 +77,34 @@ export function DrawingPanel({
   actionButton,
   capturePointerSession,
 }: DrawingPanelProps) {
-  const defaultCanvasHeight =
-    initialCanvasHeight ?? Math.round(panelHeight * 1.5);
+  const emptyCanvasHeight = initialCanvasHeight ?? panelHeight;
 
   const [tool, setTool] = useState<DrawingTool>('pen');
 
   const [color, setColor] = useState<string>(PANEL_COLORS[0]);
   const [size] = useState(4);
-  const [canvasHeight, setCanvasHeight] = useState(defaultCanvasHeight);
+  const [canvasHeight, setCanvasHeight] = useState(emptyCanvasHeight);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [scrollIndicator, setScrollIndicator] = useState<ScrollIndicatorState>({
+    visible: false,
+    top: 0,
+    height: 0,
+  });
 
-  // 스크롤 컨테이너 ref — IntersectionObserver root + 터치 스크롤 대상
+  const captureEnabled =
+    capturePointerSession === true && process.env.NODE_ENV === 'development';
+
+  // 스크롤 컨테이너 ref — 터치 스크롤 대상
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isExpandingRef = useRef(false);
+  const expandHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadGenerationRef = useRef(0);
+  const loadCompletedRef = useRef(false);
 
   const {
     strokes,
@@ -88,6 +112,7 @@ export function DrawingPanel({
     eraseStrokes,
     clearStrokes,
     setStrokes,
+    mapAllStrokes,
     undo,
     redo,
     canUndo,
@@ -102,8 +127,15 @@ export function DrawingPanel({
 
   // ── 초기 로드 ──────────────────────────────────────────────────────────────
 
+  const resetCanvasToComponentSize = useCallback(() => {
+    setCanvasHeight(emptyCanvasHeight);
+    void saveCanvasHeight(documentId, emptyCanvasHeight);
+  }, [documentId, emptyCanvasHeight]);
+
   useEffect(() => {
+    const generation = ++loadGenerationRef.current;
     userDrewBeforeLoadRef.current = false;
+    loadCompletedRef.current = false;
     let cancelled = false;
 
     async function load() {
@@ -111,28 +143,47 @@ export function DrawingPanel({
         loadPageStrokes(documentId, 1),
         loadCanvasHeight(documentId),
       ]);
-      if (cancelled) return;
+      if (cancelled || generation !== loadGenerationRef.current) return;
 
       if (!userDrewBeforeLoadRef.current) {
         setStrokes(savedStrokes);
       }
 
-      if (savedHeight !== null) {
+      if (savedStrokes.length === 0) {
+        setCanvasHeight(emptyCanvasHeight);
+        if (savedHeight !== null && savedHeight !== emptyCanvasHeight) {
+          void saveCanvasHeight(documentId, emptyCanvasHeight);
+        }
+      } else if (savedHeight !== null) {
         const clamped = Math.min(
-          Math.max(savedHeight, defaultCanvasHeight),
+          Math.max(savedHeight, emptyCanvasHeight),
           MAX_CANVAS_HEIGHT
         );
         setCanvasHeight(clamped);
       } else {
-        setCanvasHeight(defaultCanvasHeight);
+        setCanvasHeight(emptyCanvasHeight);
       }
+
+      loadCompletedRef.current = true;
     }
 
     load();
     return () => {
       cancelled = true;
     };
-  }, [documentId, setStrokes, defaultCanvasHeight]);
+  }, [documentId, setStrokes, emptyCanvasHeight]);
+
+  /** 지우개 등으로 획이 모두 사라지면 캔버스 높이를 컴포넌트 크기로 맞춤 */
+  useEffect(() => {
+    if (!loadCompletedRef.current || strokes.length > 0) return;
+    if (canvasHeight === emptyCanvasHeight) return;
+    resetCanvasToComponentSize();
+  }, [
+    strokes.length,
+    canvasHeight,
+    emptyCanvasHeight,
+    resetCanvasToComponentSize,
+  ]);
 
   // ── 캔버스 너비 측정 (스크롤 컨테이너 기준) ───────────────────────────────
 
@@ -151,69 +202,113 @@ export function DrawingPanel({
     return () => ro.disconnect();
   }, []);
 
-  // ── 센티넬 → 내부 스크롤 끝 도달 시 캔버스 자동 확장 ────────────────────
+  const showExpandHint = strokes.length > 0;
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    const root = scrollContainerRef.current;
-    if (!sentinel || !root) return;
+  useLayoutEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
 
-    let dwellTimer: ReturnType<typeof setTimeout> | null = null;
+    const MIN_THUMB_HEIGHT = 28;
+    /** 오른쪽 고정 트랙: inset-y-2(8px) × 2 와 동일해야 함 */
+    const TRACK_EDGE_PAD = 8;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-
-        if (!entry.isIntersecting) {
-          if (dwellTimer) {
-            clearTimeout(dwellTimer);
-            dwellTimer = null;
-          }
-          return;
-        }
-
-        if (dwellTimer || isExpandingRef.current) return;
-
-        dwellTimer = setTimeout(() => {
-          dwellTimer = null;
-          if (isExpandingRef.current) return;
-          isExpandingRef.current = true;
-          setCanvasHeight((prev) => {
-            const next = Math.round(prev + prev * expandRatio);
-            saveCanvasHeight(documentId, next);
-            return next;
-          });
-          setTimeout(() => {
-            isExpandingRef.current = false;
-          }, 600);
-        }, SENTINEL_DWELL_MS);
-      },
-      {
-        root,
-        threshold: 0.5,
+    const updateIndicator = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      if (scrollHeight <= clientHeight + 1) {
+        setScrollIndicator({ visible: false, top: 0, height: 0 });
+        return;
       }
-    );
 
-    observer.observe(sentinel);
-    return () => {
-      observer.disconnect();
-      if (dwellTimer) clearTimeout(dwellTimer);
+      const trackHeight = Math.max(0, clientHeight - TRACK_EDGE_PAD * 2);
+      const height = Math.max(
+        MIN_THUMB_HEIGHT,
+        trackHeight * (clientHeight / scrollHeight)
+      );
+      const maxScroll = Math.max(1, scrollHeight - clientHeight);
+      const maxTravel = Math.max(0, trackHeight - height);
+      const top = maxTravel * (scrollTop / maxScroll);
+      setScrollIndicator({ visible: true, top, height });
     };
-  }, [expandRatio, documentId]);
 
-  // ── 스크롤: 펜·한 손가락은 스크롤 안 함, 두 손가락으로만 스크롤 ─────────
+    const scheduleUpdate = () => {
+      requestAnimationFrame(() => updateIndicator());
+    };
+
+    scheduleUpdate();
+    el.addEventListener('scroll', scheduleUpdate, { passive: true });
+    const ro = new ResizeObserver(scheduleUpdate);
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener('scroll', scheduleUpdate);
+      ro.disconnect();
+    };
+  }, [canvasHeight, showExpandHint]);
+
+  const clearExpandHoldTimer = useCallback(() => {
+    if (!expandHoldTimerRef.current) return;
+    clearTimeout(expandHoldTimerRef.current);
+    expandHoldTimerRef.current = null;
+  }, []);
+
+  const expandCanvas = useCallback(() => {
+    if (isExpandingRef.current) return;
+    isExpandingRef.current = true;
+    setCanvasHeight((prev) => {
+      const next = Math.round(prev + prev * expandRatio);
+      const yScale = prev > 0 ? prev / next : 1;
+      mapAllStrokes((stroke) => ({
+        ...stroke,
+        points: stroke.points.map((point) => ({
+          ...point,
+          y: point.y * yScale,
+        })),
+      }));
+      void saveCanvasHeight(documentId, next);
+      return next;
+    });
+    setTimeout(() => {
+      isExpandingRef.current = false;
+    }, 600);
+  }, [documentId, expandRatio, mapAllStrokes]);
+
+  // ── 스크롤: 두 손가락으로만 (원래 동작). 데스크톱은 휠 ─────────────────
 
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
     let lastCenterY = 0;
+    let hasTwoFingerGesture = false;
 
     const getCenterY = (touches: TouchList) =>
       (touches[0]!.clientY + touches[1]!.clientY) / 2;
+    const atScrollBottom = () =>
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+    const isExpandHintVisible = () =>
+      el.scrollTop + el.clientHeight >= el.scrollHeight - EXPAND_HINT_HEIGHT_PX;
+    const hideExpandHint = () => {
+      const maxWithoutHint = Math.max(
+        0,
+        el.scrollHeight - el.clientHeight - EXPAND_HINT_HEIGHT_PX
+      );
+      if (el.scrollTop <= maxWithoutHint) return;
+      el.scrollTop = maxWithoutHint;
+    };
+    const tryStartExpandHold = () => {
+      if (!showExpandHint || isExpandingRef.current) return;
+      if (!hasTwoFingerGesture || !atScrollBottom()) return;
+      if (expandHoldTimerRef.current) return;
+      expandHoldTimerRef.current = setTimeout(() => {
+        expandHoldTimerRef.current = null;
+        if (!hasTwoFingerGesture || !atScrollBottom()) return;
+        expandCanvas();
+      }, EXPAND_HOLD_MS);
+    };
+    const cancelExpandHold = () => {
+      clearExpandHoldTimer();
+    };
 
-    /** Apple Pencil은 touchType 'stylus' — preventDefault 하면 pointerdown 누락 가능 */
     const isFingerTouch = (touch: Touch) => {
       const touchType = (touch as Touch & { touchType?: string }).touchType;
       return touchType !== 'stylus';
@@ -221,25 +316,36 @@ export function DrawingPanel({
 
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length >= 2) {
+        hasTwoFingerGesture = true;
         lastCenterY = getCenterY(e.touches);
+        tryStartExpandHold();
         e.preventDefault();
         return;
       }
+      hasTwoFingerGesture = false;
+      cancelExpandHold();
       const touch = e.touches[0];
       if (touch && isFingerTouch(touch)) e.preventDefault();
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length >= 2) {
+        hasTwoFingerGesture = true;
         const centerY = getCenterY(e.touches);
         el.scrollTop -= centerY - lastCenterY;
         lastCenterY = centerY;
+        if (!atScrollBottom()) {
+          cancelExpandHold();
+        } else {
+          tryStartExpandHold();
+        }
         e.preventDefault();
         return;
       }
+      hasTwoFingerGesture = false;
+      cancelExpandHold();
       const touch = e.touches[0];
       if (!touch) return;
-      // Scribble가 Pencil pointerdown/up을 삼키는 WebKit 버그 우회
       if (!isFingerTouch(touch)) {
         e.preventDefault();
         return;
@@ -247,30 +353,98 @@ export function DrawingPanel({
       e.preventDefault();
     };
 
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length >= 2) {
+        hasTwoFingerGesture = true;
+        lastCenterY = getCenterY(e.touches);
+        tryStartExpandHold();
+        return;
+      }
+      hasTwoFingerGesture = false;
+      cancelExpandHold();
+      if (showExpandHint && isExpandHintVisible()) {
+        hideExpandHint();
+      }
+    };
+
+    const onTouchCancel = () => {
+      hasTwoFingerGesture = false;
+      cancelExpandHold();
+      if (showExpandHint && isExpandHintVisible()) {
+        hideExpandHint();
+      }
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollHeight <= el.clientHeight) return;
+      const max = el.scrollHeight - el.clientHeight;
+      const next = Math.max(0, Math.min(max, el.scrollTop + e.deltaY));
+      if (next === el.scrollTop) return;
+      el.scrollTop = next;
+      e.preventDefault();
+    };
+
     el.addEventListener('touchstart', onTouchStart, { passive: false });
     el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: false });
+    el.addEventListener('touchcancel', onTouchCancel, { passive: false });
+    el.addEventListener('wheel', onWheel, { passive: false });
 
     return () => {
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchCancel);
+      el.removeEventListener('wheel', onWheel);
+      cancelExpandHold();
     };
-  }, []);
+  }, [clearExpandHoldTimer, expandCanvas, showExpandHint]);
 
   // ── 자동 저장 ──────────────────────────────────────────────────────────────
+
+  const persistStrokes = useCallback(
+    async (strokesToSave: Stroke[]) => {
+      await savePageStrokes(documentId, 1, strokesToSave);
+      setSaveStatus('saved');
+    },
+    [documentId]
+  );
+
+  const scheduleSaveRetry = useCallback(() => {
+    if (saveRetryTimerRef.current) clearTimeout(saveRetryTimerRef.current);
+    saveRetryTimerRef.current = setTimeout(async () => {
+      saveRetryTimerRef.current = null;
+      try {
+        await persistStrokes(strokesForSaveRef.current);
+      } catch {
+        setSaveStatus('error');
+      }
+    }, 2000);
+  }, [persistStrokes]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (saveRetryTimerRef.current) clearTimeout(saveRetryTimerRef.current);
+      clearExpandHoldTimer();
+    };
+  }, [clearExpandHoldTimer]);
 
   const scheduleSave = useCallback(
     (getNextStrokes: (prev: Stroke[]) => Stroke[]) => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
+        saveTimerRef.current = null;
+        const nextStrokes = getNextStrokes(strokesForSaveRef.current);
         try {
-          const nextStrokes = getNextStrokes(strokesForSaveRef.current);
-          await savePageStrokes(documentId, 1, nextStrokes);
+          await persistStrokes(nextStrokes);
         } catch {
-          /* silent */
+          setSaveStatus('error');
+          scheduleSaveRetry();
         }
       }, AUTO_SAVE_DELAY_MS);
     },
-    [documentId]
+    [persistStrokes, scheduleSaveRetry]
   );
 
   const scheduleSaveCurrent = useCallback(() => {
@@ -301,11 +475,18 @@ export function DrawingPanel({
     }
     strokesForSaveRef.current = [];
     clearStrokes();
+    resetCanvasToComponentSize();
     setShowClearConfirm(false);
-    void savePageStrokes(documentId, 1, []).catch(() => {
-      /* silent */
+    void persistStrokes([]).catch(() => {
+      setSaveStatus('error');
+      scheduleSaveRetry();
     });
-  }, [clearStrokes, documentId]);
+  }, [
+    clearStrokes,
+    persistStrokes,
+    scheduleSaveRetry,
+    resetCanvasToComponentSize,
+  ]);
 
   const handleUndo = useCallback(() => {
     undo();
@@ -331,69 +512,94 @@ export function DrawingPanel({
     tool === 'eraser' ? 'cursor-cell' : 'cursor-crosshair';
 
   return (
-    <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 select-none">
-      {/* ── 스크롤 캔버스 영역 — 포인터 hit area = panelHeight ── */}
+    <div className="relative isolate flex flex-col select-none">
+      {/*
+        스크롤바는 스크롤 콘텐츠 맨 아래에 두면 뷰포트에 안 보임.
+        왼쪽=스크롤, 오른쪽=고정 트랙(항상 패널 높이에 붙음).
+      */}
       <div
-        ref={scrollContainerRef}
-        data-drawing-surface
-        className={cn(
-          'overflow-y-scroll overscroll-y-contain bg-white',
-          scrollCursorClass
-        )}
-        style={{
-          height: panelHeight,
-          touchAction: 'none',
-          overscrollBehavior: 'none',
-        }}
+        className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white"
+        style={{ height: panelHeight }}
       >
-        {/* 캔버스 래퍼 — 내부 높이가 커지면 스크롤 생김 */}
         <div
-          ref={canvasWrapperRef}
+          ref={scrollContainerRef}
           data-drawing-surface
-          className="relative overflow-hidden"
-          style={{ height: canvasHeight }}
+          data-testid="drawing-scroll-container"
+          className={cn(
+            'drawing-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-scroll overscroll-y-contain',
+            scrollCursorClass
+          )}
+          style={{
+            height: '100%',
+            touchAction: 'none',
+            overscrollBehavior: 'none',
+          }}
         >
-          {/* 빈 상태 안내 */}
-          {strokes.length === 0 && (
+          <div
+            ref={canvasWrapperRef}
+            data-drawing-surface
+            className="relative overflow-hidden"
+            style={{ height: canvasHeight }}
+          >
+            {strokes.length === 0 && (
+              <div
+                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2"
+                aria-hidden
+              >
+                <EmptyPencilIcon />
+              </div>
+            )}
+
+            {canvasWidth > 0 && (
+              <DrawingCanvas
+                strokes={strokes}
+                tool={tool}
+                color={color}
+                size={size}
+                pageSize={pageSize}
+                onStrokeAdd={handleStrokeAdd}
+                onStrokeErase={handleStrokeErase}
+                capturePointerSession={captureEnabled}
+              />
+            )}
+          </div>
+
+          {showExpandHint && (
             <div
-              className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2"
-              aria-hidden
+              className="flex flex-col items-center justify-center gap-1 border-t-2 border-orange-400 bg-orange-50 px-3 text-center"
+              style={{ height: EXPAND_HINT_HEIGHT_PX }}
             >
-              <EmptyPencilIcon />
+              <span className="text-sm font-bold text-orange-800">
+                ↓ 하단에서 두 손가락으로 2초 유지하면 확장돼요
+              </span>
+              <span className="text-[10px] font-medium text-orange-700/80">
+                두 손가락을 놓으면 확장이 취소돼요
+              </span>
             </div>
           )}
+        </div>
 
-          {/* 드로잉 캔버스 */}
-          {canvasWidth > 0 && (
-            <DrawingCanvas
-              strokes={strokes}
-              tool={tool}
-              color={color}
-              size={size}
-              pageSize={pageSize}
-              onStrokeAdd={handleStrokeAdd}
-              onStrokeErase={handleStrokeErase}
-              capturePointerSession={capturePointerSession}
-            />
-          )}
-
-          {/* 자동 확장 센티넬 — 캔버스(흰색)와 구분되는 배경 */}
+        <div
+          className="pointer-events-none absolute top-0 right-0 bottom-0 z-[999] w-3"
+          aria-hidden
+          style={{ backgroundColor: 'transparent' }}
+        >
           <div
-            ref={sentinelRef}
-            className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 flex h-14 flex-col items-center justify-center gap-0.5 border-t-2 border-orange-400 bg-orange-50 shadow-[0_-4px_12px_rgba(249,115,22,0.12)]"
-          >
-            <span className="text-xs font-bold text-orange-800">
-              ↓ 여기까지 스크롤하면 캔버스가 확장돼요
-            </span>
-            <span className="text-[10px] font-medium text-orange-700/80">
-              두 손가락으로 스크롤 · 펜은 필기 전용
-            </span>
-          </div>
+            className="absolute right-0 left-0 rounded-full"
+            style={{
+              top: scrollIndicator.visible ? scrollIndicator.top : 0,
+              height: Math.max(
+                scrollIndicator.visible ? scrollIndicator.height : 56,
+                56
+              ),
+              backgroundColor: 'rgba(75, 85, 99, 0.82)',
+            }}
+          />
         </div>
       </div>
 
-      {/* ── 하단 툴바 ── */}
-      <div className="flex items-center gap-3 border-t border-gray-100 bg-white px-4 py-3">
+      {/* ── 하단 툴바 (점선 밖) ── */}
+      <div className="flex items-center gap-3 bg-white px-4 py-3">
         {/* 도구 버튼 그룹 */}
         <div className="flex items-center gap-1">
           <PanelToolBtn
@@ -462,6 +668,15 @@ export function DrawingPanel({
             <RedoIcon />
           </button>
         </div>
+
+        {saveStatus === 'error' && (
+          <span
+            className="text-[10px] font-medium text-red-500"
+            title="IndexedDB 저장 실패 — 2초 후 자동 재시도"
+          >
+            저장 실패
+          </span>
+        )}
 
         {actionButton}
       </div>
