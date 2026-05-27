@@ -17,7 +17,7 @@ All files are located in the `docs/` folder.
 | 3     | `docs/features.md`              | Features structure, notes on existing legacy code         |
 | 4     | `docs/error-handling.md`        | Error handling layers, ApiErrorType, usage examples       |
 | 5     | `docs/e2e.md`                   | Playwright setup, rules, and key flows for E2E testing    |
-| 6     | `docs/frontend-guidelines.md`   | Page structure, color tokens, naming, component reuse     |
+| 6     | `docs/ui-guidelines.md`         | UI coding rules: components, icons, tokens, a11y, responsive, loading patterns |
 
 ---
 
@@ -106,7 +106,7 @@ IF the task involves writing or modifying E2E tests:
 → Read `docs/e2e.md`
 
 IF you are writing new UI components or pages:
-→ Read `docs/frontend-guidelines.md`
+→ Read `docs/ui-guidelines.md`
 
 IF you are unfamiliar with the codebase or the task spans multiple areas:
 → Read all files in order (see Required Reading above)
