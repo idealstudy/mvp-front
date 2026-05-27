@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -11,7 +11,8 @@ import {
   initialTextEditorValue,
 } from '@/shared/components/editor';
 import { BackButton, Button } from '@/shared/components/ui';
-import { AlertTriangle, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { PUBLIC } from '@/shared/constants';
+import { ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 
 import { type ChallengeDetailMock } from '../../mock/challenge-detail';
 import { AiCoachPanel } from './ai-coach-panel';
@@ -34,10 +35,18 @@ export const ChallengeSolveClient = ({
     initialTextEditorValue
   );
   const [isQuestionOpen, setIsQuestionOpen] = useState(true);
+  const choiceSectionRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = () => {
-    if (!selectedAnswer) return;
-    router.push(`/open-challenge/${challengeId}/result`);
+    if (!selectedAnswer) {
+      choiceSectionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      choiceSectionRef.current?.focus();
+      return;
+    }
+    router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
   };
 
   return (
@@ -48,28 +57,20 @@ export const ChallengeSolveClient = ({
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* 상단 바 */}
-        <div className="border-line-line1 flex items-center justify-between border-b px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <BackButton className="shrink-0" />
-            <div className="text-gray-8 flex min-w-0 items-center gap-2 text-sm">
-              <span className="hidden sm:inline">{challenge.subject}</span>
-              <span className="hidden sm:inline">›</span>
-              <span className="text-text-main truncate font-semibold">
-                {challenge.topic}
-              </span>
-            </div>
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <button className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm">
-              <AlertTriangle size={14} />
-              <span className="hidden sm:inline">문제 신고</span>
-            </button>
-          </div>
-        </div>
-
         {/* 문제 + 선택지 + 풀이 에디터 */}
         <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-8">
+          <div className="mb-5">
+            <BackButton />
+          </div>
+
+          <div className="text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm">
+            <span>{challenge.subject}</span>
+            <span>›</span>
+            <span className="text-text-main truncate font-semibold">
+              {challenge.topic}
+            </span>
+          </div>
+
           <div className="border-line-line1 mb-5 overflow-hidden rounded-xl border bg-white">
             <button
               type="button"
@@ -125,15 +126,7 @@ export const ChallengeSolveClient = ({
             )}
           </div>
 
-          <div className="mb-5">
-            <ChoiceList
-              choices={challenge.choices}
-              selected={selectedAnswer}
-              onSelect={setSelectedAnswer}
-            />
-          </div>
-
-          <div className="flex flex-col gap-3">
+          <div className="mb-5 flex flex-col gap-3">
             <div className="flex items-center gap-2">
               <Pencil
                 size={18}
@@ -150,13 +143,25 @@ export const ChallengeSolveClient = ({
               ariaLabel="오픈 챌린지 풀이 입력"
             />
           </div>
+
+          <div
+            ref={choiceSectionRef}
+            tabIndex={-1}
+            className="flex scroll-mt-6 flex-col gap-3 outline-none"
+          >
+            <ChoiceList
+              choices={challenge.choices}
+              selected={selectedAnswer}
+              onSelect={setSelectedAnswer}
+            />
+          </div>
         </div>
 
         {/* 하단 제출 바 */}
-        <div className="border-line-line1 flex items-center justify-end border-t bg-white px-4 py-3 sm:px-6">
+        <div className="border-line-line1 flex items-center justify-end border-t bg-white px-4 py-2 sm:px-6">
           <Button
             onClick={handleSubmit}
-            disabled={!selectedAnswer}
+            className="h-9 px-5 text-sm"
           >
             제출하기
           </Button>

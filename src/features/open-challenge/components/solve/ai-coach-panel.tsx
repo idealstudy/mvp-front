@@ -7,56 +7,19 @@ import Link from 'next/link';
 import { cn } from '@/shared/lib';
 import { Bot, Send } from 'lucide-react';
 
-type MessageRole = 'ai' | 'user';
+import {
+  MOCK_AI_COACH_MESSAGES,
+  MOCK_AI_COACH_QUICK_REPLIES,
+} from '../../mock/ai-coach';
 
-type Message = {
+type AiCoachMessageRole = 'ai' | 'user';
+
+type AiCoachMessage = {
   id: string;
-  role: MessageRole;
-  badge?: string;
+  role: AiCoachMessageRole;
   content: string;
   timestamp: string;
 };
-
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: '1',
-    role: 'ai',
-    badge: '많이 헷갈리는 부분이에요',
-    content:
-      "분수의 나눗셈에서 '나누는 수의 역수를 곱한다'는 원리를 기억하고 있나요?\n이 문제도 이 원리를 적용하면 풀 수 있어요.",
-    timestamp: '오후 2:30',
-  },
-  {
-    id: '2',
-    role: 'user',
-    content: '네! 그런데 계산 과정이 헷갈려요.',
-    timestamp: '오후 2:31',
-  },
-  {
-    id: '3',
-    role: 'ai',
-    badge: '잘 찾았어요',
-    content:
-      '좋아요! 그럼 숫자를 대입해서\n차근차근 계산해볼까요?\n어떤 수를 곱해야 할지 먼저 생각해봐요.',
-    timestamp: '오후 2:31',
-  },
-  {
-    id: '4',
-    role: 'user',
-    content: '나누는 수의 역수니까...\n3/5의 역수는 5/3이요!',
-    timestamp: '오후 2:32',
-  },
-  {
-    id: '5',
-    role: 'ai',
-    badge: '정답에 가까워요!',
-    content:
-      '맞아요! 이제 처음 식에 5/3을 곱해서\n계산해보면 답을 구할 수 있어요.\n한 번 직접 풀어볼래요? 😊',
-    timestamp: '오후 2:32',
-  },
-];
-
-const QUICK_REPLY_OPTIONS = ['잘 모르겠어요', '더 쉽게요', '다음 힌트'];
 
 const MAX_COMMENT_LENGTH = 200;
 
@@ -65,7 +28,9 @@ type AiCoachPanelProps = {
 };
 
 export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
-  const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
+  const [messages, setMessages] = useState<AiCoachMessage[]>(
+    MOCK_AI_COACH_MESSAGES as AiCoachMessage[]
+  );
   const [inputMessage, setInputMessage] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -164,11 +129,6 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
                 message.role === 'user' && 'items-end'
               )}
             >
-              {message.badge && (
-                <span className="bg-orange-7 w-fit rounded-full px-3 py-0.5 text-xs text-white">
-                  {message.badge}
-                </span>
-              )}
               <div
                 className={cn(
                   'rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line',
@@ -186,7 +146,7 @@ export const AiCoachPanel = ({ isLoggedIn }: AiCoachPanelProps) => {
       </div>
 
       <div className="flex gap-2 px-4 pb-2">
-        {QUICK_REPLY_OPTIONS.map((replyOption) => (
+        {MOCK_AI_COACH_QUICK_REPLIES.map((replyOption) => (
           <button
             key={replyOption}
             onClick={() => handleQuickReply(replyOption)}

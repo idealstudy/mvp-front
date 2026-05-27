@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { Flame, User } from 'lucide-react';
 
@@ -64,9 +65,9 @@ export const ChallengeCard = ({
 
   return (
     <Link
-      href={`/open-challenge/${challenge.id}`}
+      href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}
       className={cn(
-        'group focus-visible:ring-key-color-primary flex min-h-full overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:outline-none',
+        'group focus-visible:ring-key-color-primary flex min-h-full flex-col overflow-hidden rounded-xl border transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:outline-none',
         config.borderClass
       )}
       aria-label={`${challenge.title} 도전하기`}
@@ -126,9 +127,6 @@ export const ChallengeCard = ({
               {challenge.participantCount.toLocaleString()}명 도전 중
             </span>
           </div>
-          <span className="text-orange-7 group-hover:text-orange-8 text-sm font-semibold transition-colors">
-            도전하기
-          </span>
         </div>
       </div>
     </Link>

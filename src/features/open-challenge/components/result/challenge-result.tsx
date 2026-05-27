@@ -1,5 +1,5 @@
 import { BackButton } from '@/shared/components/ui';
-import { Bookmark, Bot, MoreHorizontal } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 import { AiFeedbackForm } from './ai-feedback-form';
 import { NextChallengeCard } from './next-challenge-card';
@@ -35,17 +35,8 @@ export const ChallengeResult = ({
 }: ChallengeResultProps) => {
   return (
     <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6">
         <BackButton />
-        <div className="flex items-center gap-3">
-          <button className="text-gray-8 hover:text-text-main flex cursor-pointer items-center gap-1 text-sm">
-            <Bookmark size={15} />
-            북마크
-          </button>
-          <button className="text-gray-8 hover:text-text-main cursor-pointer">
-            <MoreHorizontal size={18} />
-          </button>
-        </div>
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">

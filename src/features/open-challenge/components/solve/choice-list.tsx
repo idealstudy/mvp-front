@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/shared/lib';
 
 type ChoiceListProps = {
@@ -14,15 +12,16 @@ export const ChoiceList = ({
   onSelect,
 }: ChoiceListProps) => {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {choices.map((choice, idx) => {
         const isSelected = selected === choice;
         return (
           <button
+            type="button"
             key={idx}
             onClick={() => onSelect(choice)}
             className={cn(
-              'flex cursor-pointer items-center justify-center gap-3 rounded-xl border-2 px-4 py-5 text-sm font-medium transition-colors',
+              'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 px-3 py-4 text-sm font-medium transition-colors md:flex-col md:py-5',
               isSelected
                 ? 'border-blue-500 bg-blue-50 text-blue-700'
                 : 'border-line-line1 text-text-main hover:border-line-line2 hover:bg-gray-1 bg-white'

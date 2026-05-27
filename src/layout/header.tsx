@@ -133,10 +133,10 @@ export const Header = () => {
                 게시판
               </Link>
               <Link
-                href={PUBLIC.CORE.OPEN_CHALLENGE}
+                href={PUBLIC.OPEN_CHALLENGE.LIST}
                 className={cn(
                   'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith(PUBLIC.CORE.OPEN_CHALLENGE)
+                  pathname.startsWith(PUBLIC.OPEN_CHALLENGE.LIST)
                     ? 'bg-gray-11'
                     : 'hover:bg-gray-11'
                 )}
@@ -247,7 +247,7 @@ export const Header = () => {
                   </PopoverLink>
 
                   <PopoverLink
-                    href={PUBLIC.CORE.OPEN_CHALLENGE}
+                    href={PUBLIC.OPEN_CHALLENGE.LIST}
                     onClick={() => setIsOpen(false)}
                   >
                     <span>오픈 챌린지</span>

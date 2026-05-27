@@ -137,8 +137,8 @@ export const DashboardSidebar = () => {
       </Sidebar.Item>
 
       <Sidebar.Item
-        href={PUBLIC.CORE.OPEN_CHALLENGE}
-        matchPath={PUBLIC.CORE.OPEN_CHALLENGE}
+        href={PUBLIC.OPEN_CHALLENGE.LIST}
+        matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
       >
         <Flame
           size={20}

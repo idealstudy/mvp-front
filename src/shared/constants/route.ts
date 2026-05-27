@@ -5,7 +5,6 @@ const CORE = {
   INDEX: '/',
   LOGIN: '/login',
   SIGNUP: '/register',
-  OPEN_CHALLENGE: '/open-challenge',
   LIST: {
     BASE: '/list',
     TEACHERS: '/list/teachers',
@@ -132,6 +131,15 @@ const INQUIRY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * OPEN CHALLENGE
+ * ────────────────────────────────────────────────────*/
+const OPEN_CHALLENGE = {
+  LIST: '/open-challenge',
+  DETAIL: (id: string) => `/open-challenge/${id}`,
+  RESULT: (id: string) => `/open-challenge/${id}/result`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
@@ -150,6 +158,7 @@ export const PUBLIC = {
   STUDY_ROOM_PREVIEW,
   COMMUNITY: PUBLIC_COMMUNITY,
   INQUIRY,
+  OPEN_CHALLENGE,
 } as const;
 
 /* ─────────────────────────────────────────────────────

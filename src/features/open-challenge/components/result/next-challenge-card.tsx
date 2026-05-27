@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { PUBLIC } from '@/shared/constants';
+
 type NextChallengeCardProps = {
   id: string;
   subject: string;
@@ -46,7 +48,7 @@ export const NextChallengeCard = ({
       </div>
 
       <Link
-        href={`/open-challenge/${id}`}
+        href={PUBLIC.OPEN_CHALLENGE.DETAIL(id)}
         className="bg-orange-7 block w-full rounded-lg py-3 text-center font-semibold text-white transition-opacity hover:opacity-90"
       >
         다음 문제 풀기 →
