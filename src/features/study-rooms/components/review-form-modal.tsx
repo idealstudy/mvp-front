@@ -12,6 +12,7 @@ import {
   prepareContentForSave,
 } from '@/shared/components/editor';
 import { Button, Dialog, Form, Input } from '@/shared/components/ui';
+import { PUBLIC } from '@/shared/constants/route';
 import { extractText } from '@/shared/lib';
 import { cn } from '@/shared/lib';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
@@ -94,7 +95,7 @@ export const ReviewFormModal = (props: ReviewFormModalProps) => {
       handleApiError(error, classifyReviewError, {
         onField: (msg) => setError('root', { message: msg }),
         onContext: () => onClose(),
-        onAuth: () => router.replace('/login'),
+        onAuth: () => router.replace(PUBLIC.CORE.LOGIN),
         onUnknown: () => {},
       });
     };
@@ -141,24 +142,25 @@ export const ReviewFormModal = (props: ReviewFormModalProps) => {
       }}
     >
       <Dialog.Content
-        onInteractOutside={(e) => {
-          if (isPending) e.preventDefault();
+        className="flex h-150 max-w-200 flex-col gap-6"
+        onInteractOutside={(event) => {
+          if (isPending) event.preventDefault();
         }}
-        onEscapeKeyDown={(e) => {
-          if (isPending) e.preventDefault();
+        onEscapeKeyDown={(event) => {
+          if (isPending) event.preventDefault();
         }}
       >
         <Dialog.Header>
           <Dialog.Title>{isEditMode ? '후기 수정' : '후기 작성'}</Dialog.Title>
         </Dialog.Header>
 
-        <Dialog.Body>
+        <Dialog.Body className="min-h-0 flex-1">
           <Form
             id="review-form"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <div className="flex gap-3">
+            <div className="tablet:flex-row flex flex-col gap-3">
               <Form.Item
                 error={!!errors.startDate}
                 className="flex-1"
@@ -234,9 +236,10 @@ export const ReviewFormModal = (props: ReviewFormModalProps) => {
           </Form>
         </Dialog.Body>
 
-        <Dialog.Footer>
+        <Dialog.Footer className="justify-end">
           <Button
             variant="outlined"
+            size="small"
             onClick={onClose}
             disabled={isPending}
           >
@@ -245,6 +248,7 @@ export const ReviewFormModal = (props: ReviewFormModalProps) => {
           <Button
             type="submit"
             form="review-form"
+            size="medium"
             disabled={
               isPending ||
               !isValid ||

@@ -25,11 +25,12 @@ export const DeleteReviewModal = ({
       }}
     >
       <Dialog.Content
-        onInteractOutside={(e) => {
-          if (isPending) e.preventDefault();
+        className="tablet:max-w-[420px] flex min-h-[220px] max-w-[300px] flex-col gap-6"
+        onInteractOutside={(event) => {
+          if (isPending) event.preventDefault();
         }}
-        onEscapeKeyDown={(e) => {
-          if (isPending) e.preventDefault();
+        onEscapeKeyDown={(event) => {
+          if (isPending) event.preventDefault();
         }}
       >
         <Dialog.Header>
@@ -39,15 +40,17 @@ export const DeleteReviewModal = ({
           </Dialog.Description>
         </Dialog.Header>
 
-        <Dialog.Footer>
+        <Dialog.Footer className="mt-auto justify-end">
           <Button
             variant="outlined"
+            size="small"
             onClick={onClose}
             disabled={isPending}
           >
             취소
           </Button>
           <Button
+            size="small"
             onClick={() => mutate(reviewId)}
             disabled={isPending}
           >
