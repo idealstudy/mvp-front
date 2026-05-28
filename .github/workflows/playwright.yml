@@ -15,8 +15,29 @@ jobs:
           node-version: lts/*
       - name: Install dependencies
         run: npm ci
+
+      # Playwright 버전 추출 (캐시 키로 사용)
+      - name: Get Playwright version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./node_modules/@playwright/test/package.json').version)")" >> $GITHUB_ENV
+
+      # 브라우저 캐싱
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
+
+      # 캐시 미스 시에만 다운로드 + 의존성 설치
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      # 캐시 히트 시 시스템 의존성만 설치 (브라우저 재다운로드 없음)
+      - name: Install Playwright system deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
       - name: Run Playwright tests
         run: npx playwright test
         env:
