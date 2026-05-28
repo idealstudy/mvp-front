@@ -1,5 +1,4 @@
 import { ShowErrorToast, getApiError } from '@/shared/lib';
-import * as Sentry from '@sentry/nextjs';
 
 import { ApiErrorType } from './errors';
 
@@ -18,6 +17,18 @@ interface ErrorActions {
  * @param classifier - 도메인별 에러 분류 함수 (classifyQnaError 등)
  * @param actions - 타입별로 실행할 콜백 함수들
  */
+
+const shouldEnableSentry = process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true';
+
+const captureGlobalError = async (error: unknown) => {
+  if (!shouldEnableSentry) return;
+
+  try {
+    const Sentry = await import('@sentry/nextjs');
+    Sentry.captureException(error);
+  } catch {}
+};
+
 export const handleApiError = (
   error: unknown,
   classifier: (code?: string) => ApiErrorType,
@@ -27,7 +38,7 @@ export const handleApiError = (
 
   // 1. API 에러 형식이 아닐 때
   if (!apiError) {
-    Sentry.captureException(error);
+    void captureGlobalError(error);
 
     ShowErrorToast(
       'UNKNOWN',
@@ -60,7 +71,7 @@ export const handleApiError = (
       break;
 
     default:
-      Sentry.captureException(error);
+      void captureGlobalError(error);
       actions.onUnknown?.(apiError.message);
       break;
   }

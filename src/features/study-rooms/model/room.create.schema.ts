@@ -1,5 +1,5 @@
 import { toPlainText } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 export const CreateStudyRoomSchema = z.object({

@@ -1,10 +1,7 @@
 'use client';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import {
-  useStudentDashboardQnaListQuery,
-  useTeacherDashboardQnaListQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+import { useStudentDashboardQnaListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { trackDashboardQnaMoreClick } from '@/shared/lib/analytics';
 
 import QnASectionContent from '../section-content/qna-section-content';
@@ -16,35 +13,22 @@ type Props = {
 
 const QnASection = ({ className }: Props) => {
   const { member } = useAuth();
-  const isTeacher = member?.role === 'ROLE_TEACHER';
-  const { data: teacherQnaData, isPending: isTeacherPending } =
-    useTeacherDashboardQnaListQuery({
-      page: 0,
-      size: 3,
-      sortKey: 'LATEST',
-      enabled: isTeacher,
-    });
-  const { data: studentQnaData, isPending: isStudentPending } =
-    useStudentDashboardQnaListQuery({
-      page: 0,
-      size: 3,
-      sortKey: 'LATEST',
-      enabled: !isTeacher,
-    });
+  const { data: studentQnaData, isPending } = useStudentDashboardQnaListQuery({
+    page: 0,
+    size: 3,
+    sortKey: 'LATEST',
+    enabled: member?.role === 'ROLE_STUDENT',
+  });
 
-  const questions =
-    (isTeacher ? teacherQnaData : studentQnaData)?.content ?? [];
-  const isPending = isTeacher ? isTeacherPending : isStudentPending;
+  const questions = studentQnaData?.content ?? [];
 
   return (
     <DashboardSection
-      title={isTeacher ? '답변이 필요한 질문' : '나의 질문'}
-      description={
-        isTeacher ? '아직 답변하지 않은 질문만 추렸어요.' : undefined
-      }
+      title="나의 질문"
       className={className}
       isMore={true}
       isMoreHref="/dashboard/qna"
+      isMorePrefetch={false}
       onMoreClick={() => trackDashboardQnaMoreClick(member?.role)}
     >
       {isPending ? (

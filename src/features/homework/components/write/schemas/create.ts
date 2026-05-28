@@ -1,6 +1,6 @@
 import { extractTextFromTiptapJSON } from '@/features/homework/hooks/use-homework-form-control';
 import { hasNonTextContent } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 export const HomeworkFeedbackFormSchema = z.object({

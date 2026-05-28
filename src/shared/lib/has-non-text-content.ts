@@ -1,4 +1,4 @@
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 const NON_TEXT_CONTENT_TYPES = [
   'image',

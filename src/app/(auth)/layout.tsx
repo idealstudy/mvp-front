@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import AuthBanner from '@/shared/components/auth/banner';
+import { PRIVATE } from '@/shared/constants';
 import { fetchMemberRole } from '@/shared/lib/server';
 
 export default async function AuthLayout({
@@ -12,7 +13,7 @@ export default async function AuthLayout({
 
   if (session.status === 'authenticated') {
     if (session.role === 'ROLE_MEMBER') redirect('/select-role');
-    else redirect('/dashboard');
+    else redirect(PRIVATE.DASHBOARD.INDEX);
   }
 
   return (

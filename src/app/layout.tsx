@@ -102,11 +102,6 @@ const pretendard = localFont({
       weight: '700',
       style: 'normal',
     },
-    {
-      path: '../assets/fonts/Pretendard-ExtraBold.subset.woff2',
-      weight: '800',
-      style: 'normal',
-    },
   ],
   display: 'swap',
   variable: '--font-pretendard',

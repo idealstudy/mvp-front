@@ -7,8 +7,7 @@ import Link from 'next/link';
 import {
   useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
-  useStudentDashboardStudyRoomListQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+} from '@/features/dashboard/hooks/use-student-dashboard-query';
 import { useStudentNoteList } from '@/features/student-study-note/hooks';
 import { AddNoteIcon } from '@/shared/components/icons';
 import { Pagination } from '@/shared/components/ui';
@@ -215,10 +214,16 @@ const StudentStudyNoteTabContent = () => {
 
 const STUDENT_TABS = ['수업노트', '학습노트', '과제'];
 
-const StudentTabSection = ({ className }: { className?: string }) => {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+interface StudentTabSectionProps {
+  studyRooms: { id: number; name: string }[];
+  className?: string;
+}
 
-  const { data: studyRooms = [] } = useStudentDashboardStudyRoomListQuery();
+const StudentTabSection = ({
+  studyRooms,
+  className,
+}: StudentTabSectionProps) => {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const content = [
     <StudentNoteTabContent

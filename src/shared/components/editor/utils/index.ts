@@ -4,7 +4,7 @@ import {
   SLASH_COMMAND_GROUPS,
   UPLOAD_ERROR_MESSAGES,
 } from '../constants';
-import { SlashCommandGroup, SlashCommandItem } from '../types';
+import type { SlashCommandGroup, SlashCommandItem } from '../types';
 
 // ============================================================================
 // File Validation

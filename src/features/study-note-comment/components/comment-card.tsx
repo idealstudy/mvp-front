@@ -16,7 +16,7 @@ import {
   handleApiError,
 } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { useDeleteComment } from '../hooks/use-comment';
 import { CommentAnswerCardContent } from './comment-answer-card-content';

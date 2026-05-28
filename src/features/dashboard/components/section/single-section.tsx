@@ -14,6 +14,7 @@ type Props = {
   isMore?: boolean;
   isMoreHref?: string;
   isMoreDescription?: string;
+  isMorePrefetch?: boolean;
   headerAction?: React.ReactNode;
   count?: number;
   onMoreClick?: () => void;
@@ -28,6 +29,7 @@ const DashboardSection = ({
   isMore = false,
   isMoreHref = '',
   isMoreDescription = '',
+  isMorePrefetch,
   headerAction,
   count,
   onMoreClick,
@@ -71,6 +73,7 @@ const DashboardSection = ({
         {isMore && (
           <Link
             href={isMoreHref}
+            prefetch={isMorePrefetch}
             className="text-gray-8 flex gap-1"
             onClick={onMoreClick}
           >

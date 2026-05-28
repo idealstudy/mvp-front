@@ -15,7 +15,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { QnACreateForm } from '../../schema/create';
 import { useWriteQnAMutation } from '../../services/query';

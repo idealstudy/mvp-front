@@ -1,4 +1,4 @@
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 export const studentStudyNoteSchema = z.object({

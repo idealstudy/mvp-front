@@ -1,4 +1,5 @@
-import { Page, expect } from '@playwright/test';
+import { PRIVATE } from '@/shared/constants';
+import { type Page, expect } from '@playwright/test';
 
 // 로그인
 export async function loginAsTeacher(page: Page) {
@@ -11,8 +12,8 @@ export async function loginAsTeacher(page: Page) {
     .fill(process.env.E2E_TEACHER_PASSWORD!);
   await page.getByTestId('login-submit-button').click();
 
-  await page.waitForURL('/dashboard');
-  await expect(page).toHaveURL('/dashboard');
+  await page.waitForURL(PRIVATE.DASHBOARD.TEACHER);
+  await expect(page).toHaveURL(PRIVATE.DASHBOARD.TEACHER);
 }
 
 export async function loginAsStudent(page: Page) {
@@ -25,6 +26,6 @@ export async function loginAsStudent(page: Page) {
     .fill(process.env.E2E_STUDENT_PASSWORD!);
   await page.getByTestId('login-submit-button').click();
 
-  await page.waitForURL('/dashboard');
-  await expect(page).toHaveURL('/dashboard');
+  await page.waitForURL(PRIVATE.DASHBOARD.STUDENT);
+  await expect(page).toHaveURL(PRIVATE.DASHBOARD.STUDENT);
 }

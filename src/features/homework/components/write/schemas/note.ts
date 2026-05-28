@@ -1,7 +1,7 @@
 import { CourseTargetStudentInfo } from '@/features/dashboard/studynote/write/type';
 import { extractTextFromTiptapJSON } from '@/features/homework/hooks/use-homework-form-control';
 import { hasNonTextContent } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 // 마감일 컨트롤

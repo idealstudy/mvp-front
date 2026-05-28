@@ -31,7 +31,7 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { Form } from '@/shared/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { BookOpen, Pencil, Tag } from 'lucide-react';

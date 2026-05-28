@@ -1,9 +1,9 @@
-import type { StudyRoomSubmitValues } from '@/features/study-rooms';
 import {
   TeacherStudyRoomRequests,
   createStudyRoomBaseApi,
-} from '@/features/study-rooms/api';
+} from '@/features/study-rooms/api/room.api.base';
 import { Invitee } from '@/features/study-rooms/hooks/useInvitationController';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model/room.create.schema';
 import type { CommonResponse, Pageable, PaginationData } from '@/types/http';
 
 import type {

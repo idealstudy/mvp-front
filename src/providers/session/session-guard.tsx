@@ -4,7 +4,7 @@ import { type ReactNode, useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { FullScreenLoader } from '@/shared/components/loading';
 import { PUBLIC } from '@/shared/constants/route';
 

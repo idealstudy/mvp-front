@@ -3,7 +3,6 @@
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 
-import { useStudentStudyRoomsQuery } from '@/features/study-rooms';
 import {
   ArrowDownIcon,
   ArrowRightIcon,
@@ -14,7 +13,6 @@ import {
 } from '@/shared/components/icons';
 import { cn } from '@/shared/lib';
 
-import { useOnboardingStatus } from '../../hooks/use-onboarding-status';
 import { OnboardingControlButton } from '../onboarding/onboarding-control-button';
 import { OnboardingStep } from '../onboarding/onboarding-step';
 import { OnboardingStepGroup } from '../onboarding/onboarding-step-group';
@@ -30,27 +28,19 @@ const ONBOARDING_STEPS = [
   icon: ComponentType<{ className?: string }>;
 }[];
 
-const StudentOnboarding = () => {
-  const { data: studentRooms } = useStudentStudyRoomsQuery();
-  const rooms = studentRooms;
-  const { hasRooms, hasNotes, hasAssignments, hasQuestions } =
-    useOnboardingStatus({ rooms });
+interface StudentOnboardingProps {
+  completionStatus: readonly [boolean, boolean, boolean, boolean];
+}
 
+const StudentOnboarding = ({ completionStatus }: StudentOnboardingProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
-
-  const completionStatus = [
-    hasRooms,
-    hasNotes,
-    hasAssignments,
-    hasQuestions,
-  ] as const;
 
   const getStepVariant = (index: number): 'completed' | 'incompleted' =>
     completionStatus[index] === true ? 'completed' : 'incompleted';
 
   // 선생님 초대 받기 완료 여부 - 타이틀 변경, 닫기 가능 여부 결정
-  const isInviteCompleted = hasRooms === true;
+  const isInviteCompleted = completionStatus[0] === true;
 
   if (!isVisible) return null;
 

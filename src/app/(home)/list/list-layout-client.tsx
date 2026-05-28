@@ -17,7 +17,7 @@ import {
   TeachersListSkeleton,
 } from '@/features/list/components/card-skeleton';
 import { SortKey } from '@/features/qna/types';
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { Select } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { trackDedu101ListScrollDepth } from '@/shared/lib/analytics';

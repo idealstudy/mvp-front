@@ -26,12 +26,12 @@ import {
   RequiredMark,
   Select,
 } from '@/shared/components/ui';
-import { PUBLIC } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { cn, extractText } from '@/shared/lib';
 import { classifyInquiryError, handleApiError } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 // 이미지 업로드 중 버튼 비활성화
 const hasUploadingNode = (node: JSONContent): boolean => {
@@ -96,7 +96,7 @@ export default function InquiryWriteArea({
       toast.error('선생님은 수업 문의를 남길 수 없습니다.', {
         toastId: 'teacher-inquiry-blocked',
       });
-      setTimeout(() => router.replace('/dashboard'), 1500);
+      setTimeout(() => router.replace(PRIVATE.DASHBOARD.TEACHER), 1500);
     }
   }, [member, router]);
 

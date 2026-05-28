@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useCoreCurrentMember } from '@/entities/member';
+import { PRIVATE } from '@/shared/constants';
 import { useMemberStore } from '@/store';
 
 // 로그인한 사용자 정보 조회
@@ -23,9 +24,11 @@ export const useCurrentMember = (initialHasSession: boolean) => {
         const from = params.get('from');
 
         if (token) {
-          router.replace(`/dashboard?token=${encodeURIComponent(token)}`);
+          router.replace(
+            `${PRIVATE.DASHBOARD.INDEX}?token=${encodeURIComponent(token)}`
+          );
         } else {
-          router.replace(from ?? '/dashboard');
+          router.replace(from ?? PRIVATE.DASHBOARD.INDEX);
         }
       }
     }

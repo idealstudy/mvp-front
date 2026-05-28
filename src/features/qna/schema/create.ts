@@ -1,5 +1,5 @@
 import { hasNonTextContent } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 const extractTextFromTiptapJSON = (doc: JSONContent): string => {

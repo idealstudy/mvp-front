@@ -1,14 +1,14 @@
 import {
+  InvitationAcceptResponse,
+  StudentStudyRoomRequests,
+  createStudyRoomBaseApi,
+} from '@/features/study-rooms/api/room.api.base';
+import type {
   StudentStudyRoom,
   StudyNoteGroup,
   StudyRoomClient,
   StudyRoomDetail,
-} from '@/features/study-rooms';
-import {
-  InvitationAcceptResponse,
-  StudentStudyRoomRequests,
-  createStudyRoomBaseApi,
-} from '@/features/study-rooms/api';
+} from '@/features/study-rooms/model/types';
 import type { CommonResponse, Pageable, PaginationData } from '@/types/http';
 
 export const createStudentStudyRoomApi = (

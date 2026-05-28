@@ -4,10 +4,8 @@ import { useState } from 'react';
 
 import Link from 'next/link';
 
-import {
-  useStudentDashboardQnaListQuery,
-  useTeacherDashboardQnaListQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+import { useStudentDashboardQnaListQuery } from '@/features/dashboard/hooks/use-student-dashboard-query';
+import { useTeacherDashboardQnaListQuery } from '@/features/dashboard/hooks/use-teacher-dashboard-query';
 import { Pagination } from '@/shared/components/ui';
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';

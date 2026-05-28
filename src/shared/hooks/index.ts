@@ -3,3 +3,4 @@ export { useInfiniteScroll } from './use-infinite-scroll';
 export { useCountdown } from './use-countdown';
 export { useCheckboxGroup } from './use-checkbox-group';
 export { useSubjectList } from './use-subject-list';
+export { useMediaQuery } from './use-media-query';
