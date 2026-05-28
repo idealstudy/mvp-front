@@ -5,6 +5,8 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['app.dev.the-edu.site', '*.dev.the-edu.site'],
   images: {
+    // 홈 고정 폭 이미지는 2x 후보가 기본 640/750px까지 커지지 않도록 보정한다.
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 324, 384, 400, 600, 648],
     remotePatterns: [
       {
         protocol: 'https',
