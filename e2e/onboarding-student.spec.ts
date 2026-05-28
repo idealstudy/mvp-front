@@ -54,7 +54,11 @@ async function setStudent(page: Page) {
 }
 
 async function mockStudentStudyRooms(page: Page, rooms: object[]) {
-  await mockGet(page, '**/api/v1/student/study-rooms', okBody(rooms));
+  await mockGet(
+    page,
+    '**/api/v1/student/dashboard/study-rooms**',
+    okBody(rooms)
+  );
 }
 
 async function mockStudentNotes(page: Page, notes: object[]) {
@@ -158,6 +162,9 @@ test.describe('학생 온보딩', () => {
 
     await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
-    await expect(page.getByTestId('student-onboarding')).not.toBeVisible();
+    await expect(page.getByText('수업노트 1')).toBeVisible();
+    await expect(page.getByText('질문 1')).toBeVisible();
+
+    await expect(page.getByTestId('student-onboarding')).toBeHidden();
   });
 });
