@@ -105,7 +105,10 @@ const TeacherReviewListItemDomainSchema = z.object({
   startDate: z.string(),
   endDate: z.string(),
   contentPreview: z.string(),
-  imageInfo: z.object({ imageUrls: z.string().array(), expiresAt: z.string() }),
+  imageInfo: z.object({
+    imageUrls: z.string().array(),
+    expiresAt: z.string().nullable(),
+  }),
   regDate: z.string(),
 });
 
