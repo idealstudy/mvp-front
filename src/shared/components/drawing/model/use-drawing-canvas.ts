@@ -348,6 +348,16 @@ export function useDrawingCanvas({
     strokeRectRef.current = null;
   }, []);
 
+  /** 두 손가락 제스처 시작 시 미완성 획을 버림 (저장하지 않음) */
+  const abortActiveStroke = useCallback(() => {
+    if (!isDrawingRef.current) return;
+    const pointerId = activePointerIdRef.current;
+    if (pointerId !== null) releaseCapture(pointerId);
+    currentPointsRef.current = [];
+    resetDrawingState();
+    paintStrokes(strokesRef.current);
+  }, [releaseCapture, resetDrawingState, paintStrokes]);
+
   const appendFromEvent = useCallback((e: PointerEvent) => {
     const rect = strokeRectRef.current;
     if (!rect) return;
@@ -705,5 +715,6 @@ export function useDrawingCanvas({
     handlePointerUp,
     handlePointerCancel,
     handlePointerLeave,
+    abortActiveStroke,
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 
 import { cn } from '@/shared/lib';
 
@@ -16,6 +16,8 @@ type DrawingCanvasProps = {
   onStrokeAdd: (stroke: Stroke) => void;
   onStrokeErase: (ids: string[]) => void;
   capturePointerSession?: boolean;
+  /** 두 손가락 제스처 시 미완성 획 취소 콜백 등록 */
+  abortDrawingRef?: RefObject<(() => void) | null>;
   className?: string;
 };
 
@@ -32,27 +34,40 @@ export function DrawingCanvas({
   onStrokeAdd,
   onStrokeErase,
   capturePointerSession,
+  abortDrawingRef,
   className,
 }: DrawingCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { handlePointerUp, handlePointerCancel, handlePointerLeave } =
-    useDrawingCanvas({
-      canvasRef,
-      strokes,
-      tool,
-      color,
-      size,
-      pageSize,
-      onStrokeAdd,
-      onStrokeErase,
-      capturePointerSession,
-    });
+  const {
+    handlePointerUp,
+    handlePointerCancel,
+    handlePointerLeave,
+    abortActiveStroke,
+  } = useDrawingCanvas({
+    canvasRef,
+    strokes,
+    tool,
+    color,
+    size,
+    pageSize,
+    onStrokeAdd,
+    onStrokeErase,
+    capturePointerSession,
+  });
 
   /**
    * iPadOS Scribble가 pointer 이벤트를 삼키는 WebKit 버그 우회.
    * @see https://mikepk.com/2020/10/iOS-safari-scribble-bug/
    */
+  useEffect(() => {
+    if (!abortDrawingRef) return;
+    abortDrawingRef.current = abortActiveStroke;
+    return () => {
+      abortDrawingRef.current = null;
+    };
+  }, [abortDrawingRef, abortActiveStroke]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;

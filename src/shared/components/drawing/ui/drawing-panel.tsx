@@ -35,11 +35,19 @@ const DEFAULT_PANEL_HEIGHT = 400;
 const DEFAULT_EXPAND_RATIO = 0.3;
 const AUTO_SAVE_DELAY_MS = 700;
 /** 두 손가락으로 하단에서 유지해야 하는 시간(ms) */
-const EXPAND_HOLD_MS = 2000;
+const EXPAND_HOLD_MS = 1000;
 /** 확장 안내 바 높이(px) */
-const EXPAND_HINT_HEIGHT_PX = 56;
+const EXPAND_HINT_HEIGHT_PX = 72;
+/** 스크롤 thumb 최소 높이(px) */
+const SCROLL_THUMB_MIN_HEIGHT_PX = 40;
+/** 스크롤 thumb·트랙 너비(px) */
+const SCROLL_THUMB_WIDTH_PX = 8;
+/** 콘텐츠와 thumb 겹침 방지 패딩(px) */
+const SCROLL_THUMB_GUTTER_PX = 12;
 /** IndexedDB에서 복원할 최대 캔버스 높이 — 비정상 값으로 흰 화면 방지 */
 const MAX_CANVAS_HEIGHT = 8000;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 2.5;
 
 type SaveStatus = 'idle' | 'saved' | 'error';
 type ScrollIndicatorState = {
@@ -85,8 +93,15 @@ export function DrawingPanel({
   const [size] = useState(4);
   const [canvasHeight, setCanvasHeight] = useState(emptyCanvasHeight);
   const [canvasWidth, setCanvasWidth] = useState(0);
+  const [zoom, setZoom] = useState(MIN_ZOOM);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [expandHoldProgress, setExpandHoldProgress] = useState(0);
+  const [isAtExpandScroll, setIsAtExpandScroll] = useState(false);
+  /** iPad: touchstart는 손가락마다 따로 올 수 있어 state로 즉시 UI 반영 */
+  const [fingerTouchCount, setFingerTouchCount] = useState(0);
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [showScrollCoach, setShowScrollCoach] = useState(false);
   const [scrollIndicator, setScrollIndicator] = useState<ScrollIndicatorState>({
     visible: false,
     top: 0,
@@ -103,6 +118,13 @@ export function DrawingPanel({
   const saveRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isExpandingRef = useRef(false);
   const expandHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const expandHoldProgressTimerRef = useRef<ReturnType<
+    typeof setInterval
+  > | null>(null);
+  const expandHoldStartAtRef = useRef<number | null>(null);
+  const fingerTouchCountRef = useRef(0);
+  const zoomRef = useRef(zoom);
+  const abortDrawingRef = useRef<(() => void) | null>(null);
   const loadGenerationRef = useRef(0);
   const loadCompletedRef = useRef(false);
 
@@ -136,6 +158,7 @@ export function DrawingPanel({
     const generation = ++loadGenerationRef.current;
     userDrewBeforeLoadRef.current = false;
     loadCompletedRef.current = false;
+    setShowScrollCoach(false);
     let cancelled = false;
 
     async function load() {
@@ -165,6 +188,14 @@ export function DrawingPanel({
       }
 
       loadCompletedRef.current = true;
+      requestAnimationFrame(() => {
+        const scrollEl = scrollContainerRef.current;
+        if (!scrollEl) return;
+        scrollEl.scrollTop = 0;
+        fingerTouchCountRef.current = 0;
+        setFingerTouchCount(0);
+        setIsAtExpandScroll(false);
+      });
     }
 
     load();
@@ -202,36 +233,111 @@ export function DrawingPanel({
     return () => ro.disconnect();
   }, []);
 
-  const showExpandHint = strokes.length > 0;
+  /** 필기 또는 이미 늘어난 캔버스면 하단 확장 슬롯 유지 */
+  const hasExpandSlot =
+    strokes.length > 0 || canvasHeight > emptyCanvasHeight + 1;
+
+  const getCanvasContentHeight = useCallback(
+    () => canvasHeight * zoom,
+    [canvasHeight, zoom]
+  );
+
+  const getScrollMetrics = useCallback(
+    (clientHeight: number) => {
+      const canvasH = getCanvasContentHeight();
+      const expandSlot = hasExpandSlot ? EXPAND_HINT_HEIGHT_PX : 0;
+      const totalH = canvasH + expandSlot;
+      const maxScrollCanvas = Math.max(0, canvasH - clientHeight);
+      const maxScrollFull = Math.max(0, totalH - clientHeight);
+      const scrollable = totalH > clientHeight + 1;
+      /** 스크롤 thumb·캔버스 스크롤 범위 (확장 슬롯 제외) */
+      const canvasScrollable = canvasH > clientHeight + 1;
+      return {
+        canvasH,
+        expandSlot,
+        totalH,
+        maxScrollCanvas,
+        maxScrollFull,
+        scrollable,
+        canvasScrollable,
+      };
+    },
+    [getCanvasContentHeight, hasExpandSlot]
+  );
+
+  const showExpandHint =
+    hasExpandSlot &&
+    isAtExpandScroll &&
+    (fingerTouchCount >= 2 || expandHoldProgress > 0);
+
+  fingerTouchCountRef.current = fingerTouchCount;
+
+  useEffect(() => {
+    if (!loadCompletedRef.current || !hasExpandSlot) {
+      setShowScrollCoach(false);
+      return;
+    }
+    setShowScrollCoach(
+      isScrollable && fingerTouchCount === 0 && !isAtExpandScroll
+    );
+  }, [hasExpandSlot, isScrollable, fingerTouchCount, isAtExpandScroll]);
+
+  useLayoutEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { maxScrollCanvas } = getScrollMetrics(el.clientHeight);
+    if (el.scrollTop > maxScrollCanvas) {
+      el.scrollTop = maxScrollCanvas;
+    }
+  }, [canvasHeight, zoom, hasExpandSlot, getScrollMetrics]);
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
-    const MIN_THUMB_HEIGHT = 28;
-    /** 오른쪽 고정 트랙: inset-y-2(8px) × 2 와 동일해야 함 */
     const TRACK_EDGE_PAD = 8;
 
     const updateIndicator = () => {
-      const { scrollTop, scrollHeight, clientHeight } = el;
-      if (scrollHeight <= clientHeight + 1) {
+      const viewHeight = el.clientHeight > 0 ? el.clientHeight : panelHeight;
+      const { scrollTop } = el;
+      const { canvasH, maxScrollCanvas, scrollable, canvasScrollable } =
+        getScrollMetrics(viewHeight);
+
+      setIsScrollable(scrollable);
+      setIsAtExpandScroll(
+        hasExpandSlot && scrollable && scrollTop + viewHeight >= canvasH + 1
+      );
+
+      if (!scrollable) {
         setScrollIndicator({ visible: false, top: 0, height: 0 });
         return;
       }
 
-      const trackHeight = Math.max(0, clientHeight - TRACK_EDGE_PAD * 2);
-      const height = Math.max(
-        MIN_THUMB_HEIGHT,
-        trackHeight * (clientHeight / scrollHeight)
-      );
-      const maxScroll = Math.max(1, scrollHeight - clientHeight);
-      const maxTravel = Math.max(0, trackHeight - height);
-      const top = maxTravel * (scrollTop / maxScroll);
-      setScrollIndicator({ visible: true, top, height });
+      const trackHeight = Math.max(0, viewHeight - TRACK_EDGE_PAD * 2);
+      const scrollTopCanvas = Math.min(scrollTop, maxScrollCanvas);
+
+      // thumb 크기·위치: 캔버스 높이만 기준 (확장 슬롯 제외)
+      const thumbHeight = canvasScrollable
+        ? Math.max(
+            SCROLL_THUMB_MIN_HEIGHT_PX,
+            trackHeight * (viewHeight / canvasH)
+          )
+        : SCROLL_THUMB_MIN_HEIGHT_PX;
+      const maxTravel = Math.max(0, trackHeight - thumbHeight);
+      const thumbTop =
+        canvasScrollable && maxScrollCanvas > 0
+          ? maxTravel * (scrollTopCanvas / maxScrollCanvas)
+          : maxTravel;
+
+      setScrollIndicator({
+        visible: true,
+        top: thumbTop,
+        height: thumbHeight,
+      });
     };
 
     const scheduleUpdate = () => {
-      requestAnimationFrame(() => updateIndicator());
+      requestAnimationFrame(updateIndicator);
     };
 
     scheduleUpdate();
@@ -243,17 +349,46 @@ export function DrawingPanel({
       el.removeEventListener('scroll', scheduleUpdate);
       ro.disconnect();
     };
-  }, [canvasHeight, showExpandHint]);
+  }, [
+    canvasHeight,
+    zoom,
+    hasExpandSlot,
+    getScrollMetrics,
+    panelHeight,
+    strokes.length,
+  ]);
 
   const clearExpandHoldTimer = useCallback(() => {
     if (!expandHoldTimerRef.current) return;
     clearTimeout(expandHoldTimerRef.current);
     expandHoldTimerRef.current = null;
+    if (expandHoldProgressTimerRef.current) {
+      clearInterval(expandHoldProgressTimerRef.current);
+      expandHoldProgressTimerRef.current = null;
+    }
+    expandHoldStartAtRef.current = null;
+    setExpandHoldProgress(0);
   }, []);
+
+  const syncFingerCount = useCallback((count: number) => {
+    fingerTouchCountRef.current = count;
+    setFingerTouchCount(count);
+  }, []);
+
+  const hideExpandHint = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { maxScrollCanvas } = getScrollMetrics(el.clientHeight);
+    if (el.scrollTop > maxScrollCanvas) {
+      el.scrollTop = maxScrollCanvas;
+    }
+    syncFingerCount(0);
+  }, [getScrollMetrics, syncFingerCount]);
 
   const expandCanvas = useCallback(() => {
     if (isExpandingRef.current) return;
     isExpandingRef.current = true;
+    syncFingerCount(0);
     setCanvasHeight((prev) => {
       const next = Math.round(prev + prev * expandRatio);
       const yScale = prev > 0 ? prev / next : 1;
@@ -270,43 +405,171 @@ export function DrawingPanel({
     setTimeout(() => {
       isExpandingRef.current = false;
     }, 600);
-  }, [documentId, expandRatio, mapAllStrokes]);
+  }, [documentId, expandRatio, mapAllStrokes, syncFingerCount]);
 
-  // ── 스크롤: 두 손가락으로만 (원래 동작). 데스크톱은 휠 ─────────────────
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  // ── 스크롤: iPad 두 손가락(touch) + 데스크톱 휠 ───────────────────────────
 
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
-    let lastCenterY = 0;
-    let hasTwoFingerGesture = false;
+    type TwoFingerMode = 'undetermined' | 'scroll' | 'pinch';
 
-    const getCenterY = (touches: TouchList) =>
-      (touches[0]!.clientY + touches[1]!.clientY) / 2;
-    const atScrollBottom = () =>
-      el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
-    const isExpandHintVisible = () =>
-      el.scrollTop + el.clientHeight >= el.scrollHeight - EXPAND_HINT_HEIGHT_PX;
-    const hideExpandHint = () => {
-      const maxWithoutHint = Math.max(
-        0,
-        el.scrollHeight - el.clientHeight - EXPAND_HINT_HEIGHT_PX
-      );
-      if (el.scrollTop <= maxWithoutHint) return;
-      el.scrollTop = maxWithoutHint;
+    const SCROLL_LOCK_PX = 8;
+    const PINCH_DISTANCE_PX = 28;
+    const PINCH_MAX_CENTER_DRIFT_PX = 14;
+
+    let lastCenterY = 0;
+    let startCenterY = 0;
+    let pinchStartDistance = 0;
+    let pinchStartZoom = MIN_ZOOM;
+    let gestureMode: TwoFingerMode = 'undetermined';
+
+    const metrics = () => getScrollMetrics(el.clientHeight);
+
+    const countFingerTouches = (touches: TouchList) => {
+      let n = 0;
+      for (let i = 0; i < touches.length; i++) {
+        const t = touches[i]!;
+        const touchType = (t as Touch & { touchType?: string }).touchType;
+        if (touchType !== 'stylus') n++;
+      }
+      return n;
     };
+
+    const getCenterY = (touches: TouchList) => {
+      let sum = 0;
+      let n = 0;
+      for (let i = 0; i < touches.length; i++) {
+        const t = touches[i]!;
+        const touchType = (t as Touch & { touchType?: string }).touchType;
+        if (touchType === 'stylus') continue;
+        sum += t.clientY;
+        n++;
+      }
+      return n > 0 ? sum / n : 0;
+    };
+
+    const getPinchDistance = (touches: TouchList) => {
+      const finger: Touch[] = [];
+      for (let i = 0; i < touches.length; i++) {
+        const t = touches[i]!;
+        const touchType = (t as Touch & { touchType?: string }).touchType;
+        if (touchType !== 'stylus') finger.push(t);
+      }
+      if (finger.length < 2) return 0;
+      const dx = finger[0]!.clientX - finger[1]!.clientX;
+      const dy = finger[0]!.clientY - finger[1]!.clientY;
+      return Math.hypot(dx, dy);
+    };
+
+    const clampZoom = (value: number) =>
+      Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+
+    const atExpandScroll = () => {
+      const { canvasH } = metrics();
+      return el.scrollTop + el.clientHeight >= canvasH + 1;
+    };
+
     const tryStartExpandHold = () => {
-      if (!showExpandHint || isExpandingRef.current) return;
-      if (!hasTwoFingerGesture || !atScrollBottom()) return;
+      if (isExpandingRef.current) return;
+      if (fingerTouchCountRef.current < 2) return;
+      if (!atExpandScroll()) return;
       if (expandHoldTimerRef.current) return;
+
+      expandHoldStartAtRef.current = Date.now();
+      setExpandHoldProgress(0);
+      expandHoldProgressTimerRef.current = setInterval(() => {
+        const startedAt = expandHoldStartAtRef.current;
+        if (!startedAt) return;
+        const elapsed = Date.now() - startedAt;
+        setExpandHoldProgress(Math.min(100, (elapsed / EXPAND_HOLD_MS) * 100));
+      }, 16);
+
       expandHoldTimerRef.current = setTimeout(() => {
         expandHoldTimerRef.current = null;
-        if (!hasTwoFingerGesture || !atScrollBottom()) return;
+        if (expandHoldProgressTimerRef.current) {
+          clearInterval(expandHoldProgressTimerRef.current);
+          expandHoldProgressTimerRef.current = null;
+        }
+        expandHoldStartAtRef.current = null;
+        setExpandHoldProgress(0);
+        if (fingerTouchCountRef.current < 2 || !atExpandScroll()) return;
         expandCanvas();
       }, EXPAND_HOLD_MS);
     };
-    const cancelExpandHold = () => {
-      clearExpandHoldTimer();
+
+    const cancelExpandHold = () => clearExpandHoldTimer();
+
+    const resetTwoFingerGesture = (touches: TouchList) => {
+      lastCenterY = getCenterY(touches);
+      startCenterY = lastCenterY;
+      pinchStartDistance = getPinchDistance(touches);
+      pinchStartZoom = zoomRef.current;
+      gestureMode = 'undetermined';
+    };
+
+    const enterTwoFinger = (touches: TouchList) => {
+      const count = countFingerTouches(touches);
+      if (count < 2) return false;
+      syncFingerCount(count);
+      abortDrawingRef.current?.();
+      resetTwoFingerGesture(touches);
+      setShowScrollCoach(false);
+      return true;
+    };
+
+    const applyTwoFingerScroll = (touches: TouchList) => {
+      const centerY = getCenterY(touches);
+      const dist = getPinchDistance(touches);
+      const verticalDelta = Math.abs(centerY - startCenterY);
+      const distanceDelta = Math.abs(dist - pinchStartDistance);
+
+      if (gestureMode === 'undetermined') {
+        if (verticalDelta >= SCROLL_LOCK_PX) {
+          gestureMode = 'scroll';
+        } else if (
+          distanceDelta >= PINCH_DISTANCE_PX &&
+          verticalDelta <= PINCH_MAX_CENTER_DRIFT_PX
+        ) {
+          gestureMode = 'pinch';
+          pinchStartDistance = dist;
+          pinchStartZoom = zoomRef.current;
+          cancelExpandHold();
+        }
+      }
+
+      if (gestureMode === 'pinch') {
+        const ratio = pinchStartDistance > 0 ? dist / pinchStartDistance : 1;
+        setZoom(clampZoom(pinchStartZoom * ratio));
+        lastCenterY = centerY;
+        return;
+      }
+
+      if (gestureMode !== 'scroll') {
+        lastCenterY = centerY;
+        return;
+      }
+
+      const deltaY = centerY - lastCenterY;
+      if (deltaY !== 0) {
+        const { maxScrollFull } = metrics();
+        el.scrollTop = Math.max(
+          0,
+          Math.min(maxScrollFull, el.scrollTop - deltaY)
+        );
+      }
+      lastCenterY = centerY;
+
+      if (atExpandScroll()) {
+        tryStartExpandHold();
+      } else {
+        cancelExpandHold();
+      }
     };
 
     const isFingerTouch = (touch: Touch) => {
@@ -315,35 +578,37 @@ export function DrawingPanel({
     };
 
     const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length >= 2) {
-        hasTwoFingerGesture = true;
-        lastCenterY = getCenterY(e.touches);
+      const fingerCount = countFingerTouches(e.touches);
+      if (fingerCount >= 2) {
+        enterTwoFinger(e.touches);
         tryStartExpandHold();
         e.preventDefault();
         return;
       }
-      hasTwoFingerGesture = false;
-      cancelExpandHold();
-      const touch = e.touches[0];
-      if (touch && isFingerTouch(touch)) e.preventDefault();
+      if (fingerCount === 1) {
+        cancelExpandHold();
+        const touch = e.touches[0];
+        if (touch && isFingerTouch(touch)) e.preventDefault();
+      }
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length >= 2) {
-        hasTwoFingerGesture = true;
-        const centerY = getCenterY(e.touches);
-        el.scrollTop -= centerY - lastCenterY;
-        lastCenterY = centerY;
-        if (!atScrollBottom()) {
-          cancelExpandHold();
+      const fingerCount = countFingerTouches(e.touches);
+      if (fingerCount >= 2) {
+        if (fingerTouchCountRef.current < 2) {
+          enterTwoFinger(e.touches);
         } else {
-          tryStartExpandHold();
+          syncFingerCount(fingerCount);
         }
+        applyTwoFingerScroll(e.touches);
         e.preventDefault();
         return;
       }
-      hasTwoFingerGesture = false;
-      cancelExpandHold();
+      if (fingerTouchCountRef.current >= 2) {
+        syncFingerCount(fingerCount);
+        cancelExpandHold();
+        hideExpandHint();
+      }
       const touch = e.touches[0];
       if (!touch) return;
       if (!isFingerTouch(touch)) {
@@ -354,31 +619,36 @@ export function DrawingPanel({
     };
 
     const onTouchEnd = (e: TouchEvent) => {
-      if (e.touches.length >= 2) {
-        hasTwoFingerGesture = true;
-        lastCenterY = getCenterY(e.touches);
+      const fingerCount = countFingerTouches(e.touches);
+      syncFingerCount(fingerCount);
+
+      if (fingerCount >= 2) {
+        resetTwoFingerGesture(e.touches);
         tryStartExpandHold();
         return;
       }
-      hasTwoFingerGesture = false;
+
+      gestureMode = 'undetermined';
       cancelExpandHold();
-      if (showExpandHint && isExpandHintVisible()) {
+      if (fingerCount === 0) {
         hideExpandHint();
       }
     };
 
     const onTouchCancel = () => {
-      hasTwoFingerGesture = false;
+      syncFingerCount(0);
+      gestureMode = 'undetermined';
       cancelExpandHold();
-      if (showExpandHint && isExpandHintVisible()) {
-        hideExpandHint();
-      }
+      hideExpandHint();
     };
 
     const onWheel = (e: WheelEvent) => {
-      if (el.scrollHeight <= el.clientHeight) return;
-      const max = el.scrollHeight - el.clientHeight;
-      const next = Math.max(0, Math.min(max, el.scrollTop + e.deltaY));
+      const { scrollable, maxScrollCanvas } = metrics();
+      if (!scrollable) return;
+      const next = Math.max(
+        0,
+        Math.min(maxScrollCanvas, el.scrollTop + e.deltaY)
+      );
       if (next === el.scrollTop) return;
       el.scrollTop = next;
       e.preventDefault();
@@ -398,7 +668,13 @@ export function DrawingPanel({
       el.removeEventListener('wheel', onWheel);
       cancelExpandHold();
     };
-  }, [clearExpandHoldTimer, expandCanvas, showExpandHint]);
+  }, [
+    clearExpandHoldTimer,
+    expandCanvas,
+    getScrollMetrics,
+    hideExpandHint,
+    syncFingerCount,
+  ]);
 
   // ── 자동 저장 ──────────────────────────────────────────────────────────────
 
@@ -521,6 +797,17 @@ export function DrawingPanel({
         className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white"
         style={{ height: panelHeight }}
       >
+        {showScrollCoach && (
+          <div
+            className="pointer-events-none absolute inset-x-3 bottom-3 z-20"
+            role="status"
+          >
+            <p className="rounded-lg bg-gray-900/80 px-3 py-2 text-center text-xs leading-snug text-white backdrop-blur-sm">
+              두 손가락으로 아래로 스크롤하세요
+            </p>
+          </div>
+        )}
+
         <div
           ref={scrollContainerRef}
           data-drawing-surface
@@ -530,72 +817,98 @@ export function DrawingPanel({
             scrollCursorClass
           )}
           style={{
-            height: '100%',
+            height: panelHeight,
             touchAction: 'none',
             overscrollBehavior: 'none',
+            paddingRight: scrollIndicator.visible
+              ? SCROLL_THUMB_GUTTER_PX
+              : undefined,
           }}
         >
           <div
             ref={canvasWrapperRef}
             data-drawing-surface
             className="relative overflow-hidden"
-            style={{ height: canvasHeight }}
+            style={{ width: canvasWidth * zoom, height: canvasHeight * zoom }}
           >
-            {strokes.length === 0 && (
-              <div
-                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2"
-                aria-hidden
-              >
-                <EmptyPencilIcon />
-              </div>
-            )}
+            <div
+              className="absolute top-0 left-0"
+              style={{
+                width: canvasWidth,
+                height: canvasHeight,
+                transform: `scale(${zoom})`,
+                transformOrigin: 'top left',
+              }}
+            >
+              {strokes.length === 0 && (
+                <div
+                  className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2"
+                  aria-hidden
+                >
+                  <EmptyPencilIcon />
+                </div>
+              )}
 
-            {canvasWidth > 0 && (
-              <DrawingCanvas
-                strokes={strokes}
-                tool={tool}
-                color={color}
-                size={size}
-                pageSize={pageSize}
-                onStrokeAdd={handleStrokeAdd}
-                onStrokeErase={handleStrokeErase}
-                capturePointerSession={captureEnabled}
-              />
-            )}
+              {canvasWidth > 0 && (
+                <DrawingCanvas
+                  strokes={strokes}
+                  tool={tool}
+                  color={color}
+                  size={size}
+                  pageSize={pageSize}
+                  onStrokeAdd={handleStrokeAdd}
+                  onStrokeErase={handleStrokeErase}
+                  capturePointerSession={captureEnabled}
+                  abortDrawingRef={abortDrawingRef}
+                />
+              )}
+            </div>
           </div>
 
-          {showExpandHint && (
+          {hasExpandSlot && (
             <div
-              className="flex flex-col items-center justify-center gap-1 border-t-2 border-orange-400 bg-orange-50 px-3 text-center"
+              className="shrink-0"
               style={{ height: EXPAND_HINT_HEIGHT_PX }}
+              aria-hidden={!showExpandHint}
             >
-              <span className="text-sm font-bold text-orange-800">
-                ↓ 하단에서 두 손가락으로 2초 유지하면 확장돼요
-              </span>
-              <span className="text-[10px] font-medium text-orange-700/80">
-                두 손가락을 놓으면 확장이 취소돼요
-              </span>
+              {showExpandHint && (
+                <div className="sticky bottom-0 z-20 flex h-full flex-col items-center justify-center gap-2.5 bg-gray-50 px-4 text-center">
+                  <p className="text-[13px] font-medium text-gray-800">
+                    1초간 유지 · 캔버스 확장
+                  </p>
+                  <div className="h-1 w-full max-w-[180px] overflow-hidden rounded-full bg-gray-200">
+                    <div
+                      className="h-full rounded-full bg-orange-500 transition-[width] duration-75 ease-linear"
+                      style={{ width: `${expandHoldProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div
-          className="pointer-events-none absolute top-0 right-0 bottom-0 z-[999] w-3"
-          aria-hidden
-          style={{ backgroundColor: 'transparent' }}
-        >
+        {scrollIndicator.visible && (
           <div
-            className="absolute right-0 left-0 rounded-full"
-            style={{
-              top: scrollIndicator.visible ? scrollIndicator.top : 0,
-              height: Math.max(
-                scrollIndicator.visible ? scrollIndicator.height : 56,
-                56
-              ),
-              backgroundColor: 'rgba(75, 85, 99, 0.82)',
-            }}
-          />
-        </div>
+            className="pointer-events-none absolute top-2 right-2 bottom-2 z-50"
+            data-testid="drawing-scroll-thumb"
+            style={{ width: SCROLL_THUMB_WIDTH_PX }}
+            aria-hidden
+          >
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{ backgroundColor: 'rgba(229, 231, 235, 0.95)' }}
+            />
+            <div
+              className="absolute right-0 left-0 rounded-full"
+              style={{
+                top: scrollIndicator.top,
+                height: scrollIndicator.height,
+                backgroundColor: 'rgba(107, 114, 128, 0.92)',
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* ── 하단 툴바 (점선 밖) ── */}
