@@ -9,6 +9,8 @@ import {
 } from '@/providers';
 import { checkCookie } from '@/shared/lib';
 
+import { PenSelectGuard } from './pen-select-guard';
+
 interface Props {
   children: ReactNode;
 }
@@ -19,6 +21,7 @@ export const GlobalProvider = async ({ children }: Props) => {
     <InterceptorProvider>
       <QueryProvider>
         <SessionProvider initialHasSession={hasSession}>
+          <PenSelectGuard />
           <AnalyticsProvider />
           <ToastProvider />
           {children}

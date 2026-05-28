@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   title: 'THE EDU',
   description:
     'THE EDU는 과외와 일정 관리를 하나의 플랫폼에서 제공합니다. 실시간 피드백, 스케줄 조정 기능을 경험해보세요.',
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      'naver-site-verification': process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
+    },
+  },
 };
 
 export default function RootLayout({
