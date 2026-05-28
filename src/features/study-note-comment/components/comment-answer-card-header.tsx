@@ -19,6 +19,7 @@ interface CommentAnswerCardHeaderProps {
   authorName: string;
   roleLabel: string;
   profileImageSrc: string;
+  authorId?: number;
   showReaction: boolean;
   canReply?: boolean;
   selectedEmojis: Record<string, number>;
@@ -40,6 +41,7 @@ export const CommentAnswerCardHeader = ({
   authorName,
   roleLabel,
   profileImageSrc,
+  authorId,
   // showReaction,
   canReply = true,
   // selectedEmojis,
@@ -63,6 +65,7 @@ export const CommentAnswerCardHeader = ({
         profileImageSrc={profileImageSrc}
         roleLabel={roleLabel}
         authorName={authorName}
+        authorId={authorId}
       />
       {!isEditing && !isDeleted && (
         <div className="flex items-center gap-1.5">

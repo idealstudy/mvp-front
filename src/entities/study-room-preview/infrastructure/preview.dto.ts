@@ -89,6 +89,7 @@ const PreviewOtherStudyRoomItemSchema = z.object({
 const StudyRoomPreviewSideDataSchema = z.object({
   id: z.number().int(),
   name: z.string(),
+  teacherName: z.string(),
   otherStudyRooms: z.array(PreviewOtherStudyRoomItemSchema),
   numberOfTeachingNotes: z.number().int(),
   numberOfStudents: z.number().int(),

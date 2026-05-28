@@ -21,6 +21,18 @@ export const studentKeys = {
     studyRoom: () => [...studentKeys.mypage.all(), 'studyRoom'] as const,
   },
 
+  // 프로필
+  profile: {
+    all: (studentId: number) =>
+      [...studentKeys.all, 'profile', studentId] as const,
+    basicInfo: (studentId: number) =>
+      [...studentKeys.all, 'profile', studentId, 'basicInfo'] as const,
+    report: (studentId: number) =>
+      [...studentKeys.all, 'profile', studentId, 'report'] as const,
+    studyRooms: (studentId: number) =>
+      [...studentKeys.all, 'profile', studentId, 'studyRooms'] as const,
+  },
+
   // 대시보드
   dashboard: {
     all: () => [...studentKeys.all, 'dashboard'] as const,

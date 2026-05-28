@@ -14,6 +14,7 @@ const BasicInfoDtoSchema = z.object({
   email: z.string().nullable(),
   profileImageUrl: NullableProfileImageUrlSchema,
   isProfilePublic: z.boolean(),
+  isEmailPublic: z.boolean(),
   simpleIntroduction: z.string().nullable(),
 });
 
@@ -251,6 +252,7 @@ const BasicInfoPayloadSchema = z.object({
   name: z.string(),
   isProfilePublic: z.boolean(),
   simpleIntroduction: z.string(),
+  isEmailPublic: z.boolean(),
 });
 
 /* ─────────────────────────────────────────────────────

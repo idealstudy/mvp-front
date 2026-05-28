@@ -169,6 +169,7 @@ export const CommentCard = ({
           authorName={authorName}
           roleLabel={roleLabel}
           profileImageSrc={profileImageSrc}
+          authorId={authorId}
           showReaction={showReaction}
           canReply={!showReplyArrow}
           isDeleted={isDeleted}

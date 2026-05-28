@@ -9,7 +9,6 @@ import {
 } from '@/entities/student/types';
 import { api } from '@/shared/api';
 import { unwrapEnvelope } from '@/shared/lib/api-utils';
-import { CommonResponse } from '@/types';
 
 import {
   DashboardHomeworkSortKey,
@@ -32,16 +31,16 @@ const transformBasicInfoToFrontend = (
     name: basicInfoDto.name,
     email: basicInfoDto.email,
     profileImageUrl: basicInfoDto.profileImageUrl,
-    isProfilePublic: basicInfoDto.isProfilePublic,
+    isProfilePublic: basicInfoDto.isProfilePublic ?? true,
     learningGoal: basicInfoDto.learningGoal,
     role: 'ROLE_STUDENT' as const,
-    profilePublicKorean: getProfilePublicKorean(basicInfoDto.isProfilePublic),
+    profilePublicKorean: getProfilePublicKorean(
+      basicInfoDto.isProfilePublic ?? true
+    ),
   });
 
 const getBasicInfo = async (): Promise<FrontendStudentBasicInfo> => {
-  const response = await api.private.get<CommonResponse<StudentBasicInfoDTO>>(
-    '/student/me/basic-info'
-  );
+  const response = await api.private.get('/student/me/basic-info');
 
   const basicInfoDto = unwrapEnvelope(response, dto.profile.basicInfo);
 
@@ -106,6 +105,35 @@ const getMypageStudentTeachingNoteList = async (
  * ────────────────────────────────────────────────────*/
 const getMypageStudentStudyRoomList = async () => {
   const response = await api.private.get(`/student/me/study-rooms`);
+  return unwrapEnvelope(response, dto.profile.studyRoomList);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 프로필 - 학생 기본 정보 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileBasicInfo = async (studentId: number) => {
+  const response = await api.public.get(
+    `/public/students/${studentId}/basic-info`
+  );
+  const basicInfoDto = unwrapEnvelope(response, dto.profile.basicInfo);
+  return transformBasicInfoToFrontend(basicInfoDto);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 프로필 - 학생 통계 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileReport = async (studentId: number) => {
+  const response = await api.public.get(`/public/students/${studentId}/report`);
+  return unwrapEnvelope(response, dto.profile.report);
+};
+
+/* ─────────────────────────────────────────────────────
+ * [Read] 프로필 - 학생 참여 스터디룸 조회
+ * ────────────────────────────────────────────────────*/
+const getProfileStudyRooms = async (studentId: number) => {
+  const response = await api.public.get(
+    `/public/students/${studentId}/study-rooms`
+  );
   return unwrapEnvelope(response, dto.profile.studyRoomList);
 };
 
@@ -204,6 +232,11 @@ export const repository = {
     getQnaList: getMypageStudentQnaList,
     getTeachingNoteList: getMypageStudentTeachingNoteList,
     getStudyRoomList: getMypageStudentStudyRoomList,
+  },
+  profile: {
+    getProfileBasicInfo,
+    getProfileReport,
+    getProfileStudyRooms,
   },
   dashboard: {
     getReport: getStudentDashboardReport,
