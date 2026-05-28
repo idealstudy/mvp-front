@@ -47,7 +47,7 @@ const SCROLL_THUMB_GUTTER_PX = 12;
 /** IndexedDB에서 복원할 최대 캔버스 높이 — 비정상 값으로 흰 화면 방지 */
 const MAX_CANVAS_HEIGHT = 8000;
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 2.5;
+const MAX_ZOOM = 4;
 
 type SaveStatus = 'idle' | 'saved' | 'error';
 type ScrollIndicatorState = {
@@ -114,6 +114,7 @@ export function DrawingPanel({
   // 스크롤 컨테이너 ref — 터치 스크롤 대상
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
+  const canvasScaledInnerRef = useRef<HTMLDivElement>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isExpandingRef = useRef(false);
@@ -124,6 +125,8 @@ export function DrawingPanel({
   const expandHoldStartAtRef = useRef<number | null>(null);
   const fingerTouchCountRef = useRef(0);
   const zoomRef = useRef(zoom);
+  const canvasSizeRef = useRef({ width: canvasWidth, height: canvasHeight });
+  canvasSizeRef.current = { width: canvasWidth, height: canvasHeight };
   const abortDrawingRef = useRef<(() => void) | null>(null);
   const loadGenerationRef = useRef(0);
   const loadCompletedRef = useRef(false);
@@ -294,6 +297,13 @@ export function DrawingPanel({
     if (el.scrollTop > maxScrollCanvas) {
       el.scrollTop = maxScrollCanvas;
     }
+    const maxLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+    if (el.scrollLeft > maxLeft) {
+      el.scrollLeft = maxLeft;
+    }
+    if (zoom <= MIN_ZOOM && el.scrollLeft > 0) {
+      el.scrollLeft = 0;
+    }
   }, [canvasHeight, zoom, hasExpandSlot, getScrollMetrics]);
 
   useLayoutEffect(() => {
@@ -305,8 +315,13 @@ export function DrawingPanel({
     const updateIndicator = () => {
       const viewHeight = el.clientHeight > 0 ? el.clientHeight : panelHeight;
       const { scrollTop } = el;
-      const { canvasH, maxScrollCanvas, scrollable, canvasScrollable } =
-        getScrollMetrics(viewHeight);
+      const z = zoomRef.current;
+      const canvasH = canvasHeight * z;
+      const expandSlot = hasExpandSlot ? EXPAND_HINT_HEIGHT_PX : 0;
+      const totalH = canvasH + expandSlot;
+      const maxScrollCanvas = Math.max(0, canvasH - viewHeight);
+      const scrollable = totalH > viewHeight + 1;
+      const canvasScrollable = canvasH > viewHeight + 1;
 
       setIsScrollable(scrollable);
       setIsAtExpandScroll(
@@ -411,9 +426,35 @@ export function DrawingPanel({
     }, 600);
   }, [documentId, expandRatio, setStrokes, syncFingerCount]);
 
+  /** 제스처 중 React 리렌더 없이 DOM만 갱신 → iPad 핀치처럼 부드럽게 */
+  const applyZoomVisual = useCallback((z: number) => {
+    zoomRef.current = z;
+    const { width: cw, height: ch } = canvasSizeRef.current;
+    const wrapper = canvasWrapperRef.current;
+    const scaled = canvasScaledInnerRef.current;
+    const scrollEl = scrollContainerRef.current;
+    if (wrapper && cw > 0) {
+      wrapper.style.width = `${cw * z}px`;
+      wrapper.style.height = `${ch * z}px`;
+    }
+    if (scaled) {
+      scaled.style.transform = `scale(${z})`;
+    }
+    if (scrollEl) {
+      const allowPanX = z > MIN_ZOOM;
+      scrollEl.classList.toggle('overflow-x-auto', allowPanX);
+      scrollEl.classList.toggle('overflow-x-hidden', !allowPanX);
+    }
+  }, []);
+
+  const commitZoomState = useCallback(() => {
+    setZoom((prev) => (prev === zoomRef.current ? prev : zoomRef.current));
+  }, []);
+
   useEffect(() => {
     zoomRef.current = zoom;
-  }, [zoom]);
+    applyZoomVisual(zoom);
+  }, [zoom, applyZoomVisual]);
 
   // ── 스크롤: iPad 두 손가락(touch) + 데스크톱 휠 ───────────────────────────
 
@@ -421,19 +462,23 @@ export function DrawingPanel({
     const el = scrollContainerRef.current;
     if (!el) return;
 
-    type TwoFingerMode = 'undetermined' | 'scroll' | 'pinch';
-
-    const SCROLL_LOCK_PX = 8;
-    const PINCH_DISTANCE_PX = 28;
-    const PINCH_MAX_CENTER_DRIFT_PX = 14;
-
-    let lastCenterY = 0;
-    let startCenterY = 0;
-    let pinchStartDistance = 0;
-    let pinchStartZoom = MIN_ZOOM;
-    let gestureMode: TwoFingerMode = 'undetermined';
+    let twoFingerActive = false;
+    let gestureStartZoom = MIN_ZOOM;
+    let gestureStartDist = 0;
+    /** 제스처 시작 시 손가락 중심 아래 캔버스 좌표(논리 px) */
+    let gestureWorldX = 0;
+    let gestureWorldY = 0;
+    let wheelCommitRaf = 0;
 
     const metrics = () => getScrollMetrics(el.clientHeight);
+
+    const scheduleWheelZoomCommit = () => {
+      cancelAnimationFrame(wheelCommitRaf);
+      wheelCommitRaf = requestAnimationFrame(() => {
+        wheelCommitRaf = 0;
+        commitZoomState();
+      });
+    };
 
     const countFingerTouches = (touches: TouchList) => {
       let n = 0;
@@ -456,6 +501,64 @@ export function DrawingPanel({
         n++;
       }
       return n > 0 ? sum / n : 0;
+    };
+
+    const getCenterX = (touches: TouchList) => {
+      let sum = 0;
+      let n = 0;
+      for (let i = 0; i < touches.length; i++) {
+        const t = touches[i]!;
+        const touchType = (t as Touch & { touchType?: string }).touchType;
+        if (touchType === 'stylus') continue;
+        sum += t.clientX;
+        n++;
+      }
+      return n > 0 ? sum / n : 0;
+    };
+
+    const isPinchCenterOnCanvas = (clientX: number, clientY: number) => {
+      const { width: cw, height: ch } = canvasSizeRef.current;
+      if (cw <= 0 || ch <= 0) return false;
+      const scrollRect = el.getBoundingClientRect();
+      const contentY = el.scrollTop + (clientY - scrollRect.top);
+      const localY = contentY / zoomRef.current;
+      return localY >= 0 && localY <= ch;
+    };
+
+    const applyZoomAtPoint = (
+      clientX: number,
+      clientY: number,
+      ratio: number,
+      commit = true
+    ) => {
+      if (Math.abs(ratio - 1) < 0.001) return;
+      if (!isPinchCenterOnCanvas(clientX, clientY)) return;
+
+      const oldZoom = zoomRef.current;
+      const newZoom = clampZoom(oldZoom * ratio);
+      if (newZoom === oldZoom) return;
+
+      const { width: cw, height: ch } = canvasSizeRef.current;
+      const scrollRect = el.getBoundingClientRect();
+      const focalX = clientX - scrollRect.left;
+      const focalY = clientY - scrollRect.top;
+      const contentX = el.scrollLeft + focalX;
+      const contentY = el.scrollTop + focalY;
+
+      const localX = Math.min(cw, Math.max(0, contentX / oldZoom));
+      const localY = Math.min(ch, Math.max(0, contentY / oldZoom));
+
+      const { maxScrollFull } = metrics();
+      const maxLeft = Math.max(0, cw * newZoom - el.clientWidth);
+
+      applyZoomVisual(newZoom);
+      el.scrollLeft = Math.max(0, Math.min(maxLeft, localX * newZoom - focalX));
+      el.scrollTop = Math.max(
+        0,
+        Math.min(maxScrollFull, localY * newZoom - focalY)
+      );
+
+      if (commit) scheduleWheelZoomCommit();
     };
 
     const getPinchDistance = (touches: TouchList) => {
@@ -509,12 +612,16 @@ export function DrawingPanel({
 
     const cancelExpandHold = () => clearExpandHoldTimer();
 
-    const resetTwoFingerGesture = (touches: TouchList) => {
-      lastCenterY = getCenterY(touches);
-      startCenterY = lastCenterY;
-      pinchStartDistance = getPinchDistance(touches);
-      pinchStartZoom = zoomRef.current;
-      gestureMode = 'undetermined';
+    const captureGestureBaseline = (touches: TouchList) => {
+      const centerX = getCenterX(touches);
+      const centerY = getCenterY(touches);
+      gestureStartZoom = zoomRef.current;
+      gestureStartDist = getPinchDistance(touches);
+      const scrollRect = el.getBoundingClientRect();
+      const focalX = centerX - scrollRect.left;
+      const focalY = centerY - scrollRect.top;
+      gestureWorldX = (el.scrollLeft + focalX) / gestureStartZoom;
+      gestureWorldY = (el.scrollTop + focalY) / gestureStartZoom;
     };
 
     const enterTwoFinger = (touches: TouchList) => {
@@ -522,54 +629,51 @@ export function DrawingPanel({
       if (count < 2) return false;
       syncFingerCount(count);
       abortDrawingRef.current?.();
-      resetTwoFingerGesture(touches);
+      twoFingerActive = true;
+      captureGestureBaseline(touches);
       setShowScrollCoach(false);
       return true;
     };
 
-    const applyTwoFingerScroll = (touches: TouchList) => {
+    /**
+     * 제스처 시작 기준 한 번에 스크롤·줌 계산 (Safari 페이지 핀치와 동일한 focal 고정).
+     * touchmove마다 setZoom 하지 않음.
+     */
+    const applyTwoFingerGesture = (touches: TouchList) => {
+      if (!twoFingerActive) return;
+
+      const centerX = getCenterX(touches);
       const centerY = getCenterY(touches);
       const dist = getPinchDistance(touches);
-      const verticalDelta = Math.abs(centerY - startCenterY);
-      const distanceDelta = Math.abs(dist - pinchStartDistance);
 
-      if (gestureMode === 'undetermined') {
-        if (verticalDelta >= SCROLL_LOCK_PX) {
-          gestureMode = 'scroll';
-        } else if (
-          distanceDelta >= PINCH_DISTANCE_PX &&
-          verticalDelta <= PINCH_MAX_CENTER_DRIFT_PX
-        ) {
-          gestureMode = 'pinch';
-          pinchStartDistance = dist;
-          pinchStartZoom = zoomRef.current;
-          cancelExpandHold();
-        }
+      let newZoom = gestureStartZoom;
+      if (
+        gestureStartDist > 0 &&
+        dist > 0 &&
+        isPinchCenterOnCanvas(centerX, centerY)
+      ) {
+        newZoom = clampZoom(gestureStartZoom * (dist / gestureStartDist));
+        cancelExpandHold();
       }
 
-      if (gestureMode === 'pinch') {
-        const ratio = pinchStartDistance > 0 ? dist / pinchStartDistance : 1;
-        setZoom(clampZoom(pinchStartZoom * ratio));
-        lastCenterY = centerY;
-        return;
-      }
+      const { width: cw } = canvasSizeRef.current;
+      const scrollRect = el.getBoundingClientRect();
+      const focalX = centerX - scrollRect.left;
+      const focalY = centerY - scrollRect.top;
+      const { maxScrollFull } = metrics();
+      const maxLeft = Math.max(0, cw * newZoom - el.clientWidth);
 
-      if (gestureMode !== 'scroll') {
-        lastCenterY = centerY;
-        return;
-      }
+      applyZoomVisual(newZoom);
+      el.scrollLeft = Math.max(
+        0,
+        Math.min(maxLeft, gestureWorldX * newZoom - focalX)
+      );
+      el.scrollTop = Math.max(
+        0,
+        Math.min(maxScrollFull, gestureWorldY * newZoom - focalY)
+      );
 
-      const deltaY = centerY - lastCenterY;
-      if (deltaY !== 0) {
-        const { maxScrollFull } = metrics();
-        el.scrollTop = Math.max(
-          0,
-          Math.min(maxScrollFull, el.scrollTop - deltaY)
-        );
-      }
-      lastCenterY = centerY;
-
-      if (atExpandScroll()) {
+      if (zoomRef.current <= MIN_ZOOM && atExpandScroll()) {
         tryStartExpandHold();
       } else {
         cancelExpandHold();
@@ -585,7 +689,7 @@ export function DrawingPanel({
       const fingerCount = countFingerTouches(e.touches);
       if (fingerCount >= 2) {
         enterTwoFinger(e.touches);
-        tryStartExpandHold();
+        if (zoomRef.current <= MIN_ZOOM) tryStartExpandHold();
         e.preventDefault();
         return;
       }
@@ -604,7 +708,7 @@ export function DrawingPanel({
         } else {
           syncFingerCount(fingerCount);
         }
-        applyTwoFingerScroll(e.touches);
+        applyTwoFingerGesture(e.touches);
         e.preventDefault();
         return;
       }
@@ -627,12 +731,13 @@ export function DrawingPanel({
       syncFingerCount(fingerCount);
 
       if (fingerCount >= 2) {
-        resetTwoFingerGesture(e.touches);
-        tryStartExpandHold();
+        captureGestureBaseline(e.touches);
+        if (zoomRef.current <= MIN_ZOOM) tryStartExpandHold();
         return;
       }
 
-      gestureMode = 'undetermined';
+      twoFingerActive = false;
+      commitZoomState();
       cancelExpandHold();
       if (fingerCount === 0) {
         hideExpandHint();
@@ -641,12 +746,20 @@ export function DrawingPanel({
 
     const onTouchCancel = () => {
       syncFingerCount(0);
-      gestureMode = 'undetermined';
+      twoFingerActive = false;
+      commitZoomState();
       cancelExpandHold();
       hideExpandHint();
     };
 
     const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const factor = Math.exp(-e.deltaY * 0.008);
+        applyZoomAtPoint(e.clientX, e.clientY, factor);
+        return;
+      }
+
       const { scrollable, maxScrollCanvas } = metrics();
       if (!scrollable) return;
       const next = Math.max(
@@ -665,6 +778,7 @@ export function DrawingPanel({
     el.addEventListener('wheel', onWheel, { passive: false });
 
     return () => {
+      cancelAnimationFrame(wheelCommitRaf);
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
@@ -673,11 +787,15 @@ export function DrawingPanel({
       cancelExpandHold();
     };
   }, [
+    applyZoomVisual,
     clearExpandHoldTimer,
+    commitZoomState,
     expandCanvas,
     getScrollMetrics,
     hideExpandHint,
     syncFingerCount,
+    canvasWidth,
+    canvasHeight,
   ]);
 
   // ── 자동 저장 ──────────────────────────────────────────────────────────────
@@ -817,7 +935,10 @@ export function DrawingPanel({
           data-drawing-surface
           data-testid="drawing-scroll-container"
           className={cn(
-            'drawing-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-scroll overscroll-y-contain',
+            'drawing-scroll-container relative min-h-0 min-w-0 flex-1 overscroll-y-contain',
+            zoom > MIN_ZOOM
+              ? 'overflow-x-auto overflow-y-scroll'
+              : 'overflow-x-hidden overflow-y-scroll',
             scrollCursorClass
           )}
           style={{
@@ -836,6 +957,7 @@ export function DrawingPanel({
             style={{ width: canvasWidth * zoom, height: canvasHeight * zoom }}
           >
             <div
+              ref={canvasScaledInnerRef}
               className="absolute top-0 left-0"
               style={{
                 width: canvasWidth,
