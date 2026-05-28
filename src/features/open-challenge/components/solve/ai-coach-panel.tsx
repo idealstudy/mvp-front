@@ -39,6 +39,7 @@ type AiCoachMessage = {
 
 const MAX_COMMENT_LENGTH = 200;
 const STORAGE_KEY = 'open-challenge-ai-coach-settings';
+const MOCK_AI_RESPONSE_DELAY_MS = 350;
 
 type AiCoachPanelProps = {
   isLoggedIn: boolean;
@@ -163,6 +164,7 @@ export const AiCoachPanel = ({
     setInputMessage('');
     setStatus('COACHING');
 
+    // TODO: AI 코치 대화 API가 준비되면 이 mock progression 응답을 서버 호출로 교체한다.
     window.setTimeout(() => {
       if (isStuckMessage(trimmedMessage)) {
         setMessages((previousMessages) => [
@@ -175,7 +177,7 @@ export const AiCoachPanel = ({
       }
 
       appendNextCoachMessage(progressIndex + 1);
-    }, 350);
+    }, MOCK_AI_RESPONSE_DELAY_MS);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

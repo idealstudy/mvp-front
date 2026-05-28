@@ -29,6 +29,8 @@ type ChallengeSolveClientProps = {
   isLoggedIn: boolean;
 };
 
+const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
+
 export const ChallengeSolveClient = ({
   challengeId,
   challenge,
@@ -76,7 +78,7 @@ export const ChallengeSolveClient = ({
       });
 
       window.sessionStorage.setItem(
-        `open-challenge-result:${challengeId}`,
+        `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`,
         JSON.stringify({ ...result, attemptId: attempt.attemptId })
       );
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));

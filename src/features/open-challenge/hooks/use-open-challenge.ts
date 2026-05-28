@@ -14,6 +14,8 @@ import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyOpenChallengeError } from '@/shared/lib/errors/errors';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+const ERROR_REDIRECT_DELAY_MS = 1500;
+
 export const useOpenChallengeListQuery = (params: ChallengeListParams = {}) =>
   useQuery({
     queryKey: openChallengeKeys.list(params),
@@ -62,8 +64,16 @@ export const useStartChallengeAttemptMutation = () => {
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {
-        onContext: () => router.replace(PUBLIC.OPEN_CHALLENGE.LIST),
-        onAuth: () => router.replace(PUBLIC.CORE.LOGIN),
+        onContext: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.OPEN_CHALLENGE.LIST),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
       });
     },
   });
@@ -89,8 +99,16 @@ export const useSubmitChallengeAnswerMutation = (challengeId: string) => {
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {
-        onContext: () => router.replace(PUBLIC.OPEN_CHALLENGE.LIST),
-        onAuth: () => router.replace(PUBLIC.CORE.LOGIN),
+        onContext: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.OPEN_CHALLENGE.LIST),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
       });
     },
   });
@@ -110,7 +128,11 @@ export const useCreateChallengeReviewMutation = () => {
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {
-        onAuth: () => router.replace(PUBLIC.CORE.LOGIN),
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
       });
     },
   });
@@ -128,7 +150,11 @@ export const useSubmitChallengeFeedbackMutation = () => {
     },
     onError: (error) => {
       handleApiError(error, classifyOpenChallengeError, {
-        onAuth: () => router.replace(PUBLIC.CORE.LOGIN),
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
       });
     },
   });

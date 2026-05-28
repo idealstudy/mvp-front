@@ -61,6 +61,52 @@ const DEFAULT_SETTINGS: AiCoachSettings = {
   skipped: false,
 };
 
+type OptionButtonProps = {
+  label: string;
+  description: string;
+  selected: boolean;
+  onClick: () => void;
+};
+
+const OptionButton = ({
+  label,
+  description,
+  selected,
+  onClick,
+}: OptionButtonProps) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors',
+        selected
+          ? 'border-orange-7 bg-orange-1'
+          : 'border-line-line2 hover:bg-gray-1 bg-white'
+      )}
+    >
+      <span
+        className={cn(
+          'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
+          selected
+            ? 'border-orange-7 bg-orange-7 text-white'
+            : 'border-line-line2 bg-white text-transparent'
+        )}
+      >
+        <Target size={12} />
+      </span>
+      <span className="min-w-0">
+        <span className="text-text-main block text-sm font-semibold">
+          {label}
+        </span>
+        <span className="text-gray-8 mt-1 block text-xs leading-relaxed">
+          {description}
+        </span>
+      </span>
+    </button>
+  );
+};
+
 export const AiCoachSettingsDialog = ({
   isOpen,
   initialSettings,
@@ -243,51 +289,5 @@ export const AiCoachSettingsDialog = ({
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
-  );
-};
-
-type OptionButtonProps = {
-  label: string;
-  description: string;
-  selected: boolean;
-  onClick: () => void;
-};
-
-const OptionButton = ({
-  label,
-  description,
-  selected,
-  onClick,
-}: OptionButtonProps) => {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors',
-        selected
-          ? 'border-orange-7 bg-orange-1'
-          : 'border-line-line2 hover:bg-gray-1 bg-white'
-      )}
-    >
-      <span
-        className={cn(
-          'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
-          selected
-            ? 'border-orange-7 bg-orange-7 text-white'
-            : 'border-line-line2 bg-white text-transparent'
-        )}
-      >
-        <Target size={12} />
-      </span>
-      <span className="min-w-0">
-        <span className="text-text-main block text-sm font-semibold">
-          {label}
-        </span>
-        <span className="text-gray-8 mt-1 block text-xs leading-relaxed">
-          {description}
-        </span>
-      </span>
-    </button>
   );
 };

@@ -35,13 +35,8 @@ export const ChallengeListClient = ({
   });
 
   const sourceChallenges = apiChallenges ?? challenges;
-  const filteredChallenges = sourceChallenges.filter(
-    (challenge) =>
-      selectedSubject === 'ALL' || challenge.subject === selectedSubject
-  );
-
-  const totalPages = Math.ceil(filteredChallenges.length / PAGE_SIZE);
-  const visibleChallenges = filteredChallenges.slice(
+  const totalPages = Math.ceil(sourceChallenges.length / PAGE_SIZE);
+  const visibleChallenges = sourceChallenges.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
@@ -101,7 +96,7 @@ export const ChallengeListClient = ({
         </div>
       )}
 
-      {filteredChallenges.length > PAGE_SIZE && (
+      {sourceChallenges.length > PAGE_SIZE && (
         <Pagination
           page={currentPage}
           totalPages={totalPages}

@@ -17,6 +17,7 @@ import { type SolutionItem, SolutionList } from './solution-list';
 const MOCK_TOTAL_SOLUTION_COUNT = 36;
 const MOCK_AI_COMMENT =
   '잘했어요! 기본 개념을 정확히 이해하고 계산도 깔끔하게 마무리했어요. 👏 이런 문제는 자신감 포인트예요!';
+const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 
 type ChallengeResultProps = {
   challengeId: string;
@@ -50,13 +51,14 @@ export const ChallengeResult = ({
   const { data: apiSolutions } = useChallengeReviewsQuery(challengeId);
   const { data: apiNextChallenge } = useNextChallengeQuery(challengeId);
 
+  // API 응답이 없거나 백엔드가 준비되지 않은 경우 기존 프로토타입 mock props로 화면을 유지한다.
   const activeResult = submittedResult ?? result;
   const activeSolutions = apiSolutions ?? solutions;
   const activeNextChallenge = apiNextChallenge ?? nextChallenge;
 
   useEffect(() => {
     const rawResult = window.sessionStorage.getItem(
-      `open-challenge-result:${challengeId}`
+      `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`
     );
     if (!rawResult) return;
     setSubmittedResult(JSON.parse(rawResult));
