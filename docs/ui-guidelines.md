@@ -176,14 +176,14 @@ import { Flame } from 'lucide-react';
 경로 문자열을 하드코딩하지 않고 `@/shared/constants/route`의 `PUBLIC` / `PRIVATE` 상수를 사용합니다.
 
 ```tsx
-import { PUBLIC, PRIVATE } from '@/shared/constants/route';
+import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 
 // Bad
-<Link href="/open-challenge">챌린지</Link>
+<Link href="/open-challenge">챌린지</Link>;
 router.push(`/study-rooms/${id}/note`);
 
 // Good
-<Link href={PUBLIC.CORE.OPEN_CHALLENGE}>챌린지</Link>
+<Link href={PUBLIC.CORE.OPEN_CHALLENGE}>챌린지</Link>;
 router.push(PRIVATE.NOTE.LIST(id));
 ```
 
@@ -216,7 +216,30 @@ onChange={(event) => setValue(event.target.value)}
 subjects.map((subject) => <Tab key={subject.value} />)
 ```
 
-## 12. 기본 반응형 대응
+## 12. 컴포넌트 파일 선언 순서
+
+새 컴포넌트 파일은 읽기 흐름을 일정하게 유지하기 위해 아래 순서로 작성합니다.
+
+1. 타입
+2. 상수
+3. 내부 helper 함수 / 내부 컴포넌트
+4. `export` 컴포넌트 함수
+
+```tsx
+type ExampleProps = {
+  title: string;
+};
+
+const MAX_TITLE_LENGTH = 40;
+
+const trimTitle = (title: string) => title.slice(0, MAX_TITLE_LENGTH);
+
+export const Example = ({ title }: ExampleProps) => {
+  return <p>{trimTitle(title)}</p>;
+};
+```
+
+## 13. 기본 반응형 대응
 
 레이아웃이 모바일에서 깨지지 않도록 최소한의 반응형을 적용합니다.
 
@@ -238,7 +261,7 @@ subjects.map((subject) => <Tab key={subject.value} />)
 </div>
 ```
 
-## 13. 기존 UI와 융화
+## 14. 기존 UI와 융화
 
 새로 만드는 컴포넌트는 프로젝트의 기존 디자인 톤과 맞춰야 합니다.
 
@@ -247,7 +270,7 @@ subjects.map((subject) => <Tab key={subject.value} />)
 - 배경: `bg-white` (카드), `bg-gray-1` (비활성/hover)
 - 새 패턴이 필요하면 `src/features/community` 또는 `src/features/study-notes` 등 기존 feature를 먼저 참고
 
-## 14. 로딩 · 빈 상태 패턴
+## 15. 로딩 · 빈 상태 패턴
 
 **로딩 상태**: `isPending` 또는 `isLoading`일 때 `Skeleton.Block`으로 대체합니다.
 

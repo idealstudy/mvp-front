@@ -40,6 +40,23 @@ hook은 반드시 `features/` 안에 위치한다. `entities/` 안에 두지 않
 | 폼 없는 액션 (토글, 상태 변경, 삭제) | 훅 내부 `useMutation.onError`          | `setError` 불필요                                       |
 | 폼 있는 mutation (작성/수정)         | 컴포넌트의 `mutate(data, { onError })` | `setError`가 `useForm` 인스턴스에 묶여 훅에서 접근 불가 |
 
+## onError 리다이렉트 지연
+
+`handleApiError`는 에러 토스트를 먼저 노출한다. `onContext`, `onAuth`에서 페이지를 이동해야 하는 경우에는 사용자가 토스트를 인지할 수 있도록 `setTimeout`으로 짧게 지연한 뒤 이동한다.
+
+```ts
+const ERROR_REDIRECT_DELAY_MS = 1500;
+
+handleApiError(error, classify{Domain}Error, {
+  onContext: () =>
+    setTimeout(() => router.replace('/{domain}s'), ERROR_REDIRECT_DELAY_MS),
+  onAuth: () =>
+    setTimeout(() => router.replace('/login'), ERROR_REDIRECT_DELAY_MS),
+});
+```
+
+폼 에러처럼 현재 화면에 머물러야 하는 `onField`는 지연 이동을 적용하지 않는다.
+
 ---
 
 ## POST — 리소스 생성
@@ -64,8 +81,8 @@ export const useCreate{Domain} = () => {
     onError: (error) => {
       handleApiError(error, classify{Domain}Error, {
         onField:   (msg) => { /* setError('root', { message: msg }) — 폼이 있으면 추가 */ },
-        onContext: ()    => router.replace('/{domain}s'),
-        onAuth:    ()    => router.replace('/login'),
+        onContext: ()    => setTimeout(() => router.replace('/{domain}s'), ERROR_REDIRECT_DELAY_MS),
+        onAuth:    ()    => setTimeout(() => router.replace('/login'), ERROR_REDIRECT_DELAY_MS),
         onUnknown: ()    => {},
       });
     },
@@ -95,8 +112,8 @@ mutate(data, {
   onError: (error) => {
     handleApiError(error, classify{Domain}Error, {
       onField:   (msg) => setError('root', { message: msg }),
-      onContext: ()    => router.replace('/{domain}s'),
-      onAuth:    ()    => router.replace('/login'),
+      onContext: ()    => setTimeout(() => router.replace('/{domain}s'), ERROR_REDIRECT_DELAY_MS),
+      onAuth:    ()    => setTimeout(() => router.replace('/login'), ERROR_REDIRECT_DELAY_MS),
     });
   },
 });
@@ -181,8 +198,8 @@ export const useDelete{Domain} = () => {
     },
     onError: (error) => {
       handleApiError(error, classify{Domain}Error, {
-        onContext: () => router.replace('/{domain}s'),
-        onAuth:    () => router.replace('/login'),
+        onContext: () => setTimeout(() => router.replace('/{domain}s'), ERROR_REDIRECT_DELAY_MS),
+        onAuth:    () => setTimeout(() => router.replace('/login'), ERROR_REDIRECT_DELAY_MS),
       });
     },
   });
@@ -217,6 +234,7 @@ onSuccess: () => {
 [ ] mutationFn 내에서 payload.xxx.parse() 또는 repository 함수 내부에서 검증
 [ ] onSuccess에 invalidateQueries 포함
 [ ] handleApiError 처리: 폼 없으면 훅 내부 onError, 폼 있으면 컴포넌트 mutate 호출부
+[ ] onContext/onAuth 리다이렉트는 에러 토스트 노출을 위해 setTimeout으로 지연
 [ ] classify{Domain}Error가 errors.ts에 존재함
 [ ] hook 파일이 features/ 에 위치함 (entities/ 아님)
 [ ] npm run check-types 통과
