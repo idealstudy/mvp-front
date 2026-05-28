@@ -11,6 +11,11 @@ export type Stroke = {
   color: string;
   size: number;
   tool: DrawingTool;
+  /**
+   * y(0~1)가 기준으로 삼는 캔버스 높이(px).
+   * 렌더 시 `y * layoutHeight`로 쓰며, 확장으로 늘어난 canvasHeight와 무관하게 픽셀 위치·길이를 유지한다.
+   */
+  layoutHeight?: number;
 };
 
 export type DrawingTool = 'pen' | 'highlighter' | 'eraser';

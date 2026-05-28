@@ -134,7 +134,6 @@ export function DrawingPanel({
     eraseStrokes,
     clearStrokes,
     setStrokes,
-    mapAllStrokes,
     undo,
     redo,
     canUndo,
@@ -168,23 +167,29 @@ export function DrawingPanel({
       ]);
       if (cancelled || generation !== loadGenerationRef.current) return;
 
-      if (!userDrewBeforeLoadRef.current) {
-        setStrokes(savedStrokes);
-      }
-
+      let loadedCanvasHeight = emptyCanvasHeight;
       if (savedStrokes.length === 0) {
         setCanvasHeight(emptyCanvasHeight);
         if (savedHeight !== null && savedHeight !== emptyCanvasHeight) {
           void saveCanvasHeight(documentId, emptyCanvasHeight);
         }
       } else if (savedHeight !== null) {
-        const clamped = Math.min(
+        loadedCanvasHeight = Math.min(
           Math.max(savedHeight, emptyCanvasHeight),
           MAX_CANVAS_HEIGHT
         );
-        setCanvasHeight(clamped);
+        setCanvasHeight(loadedCanvasHeight);
       } else {
         setCanvasHeight(emptyCanvasHeight);
+      }
+
+      if (!userDrewBeforeLoadRef.current) {
+        setStrokes(
+          savedStrokes.map((stroke) => ({
+            ...stroke,
+            layoutHeight: stroke.layoutHeight ?? loadedCanvasHeight,
+          }))
+        );
       }
 
       loadCompletedRef.current = true;
@@ -391,21 +396,20 @@ export function DrawingPanel({
     syncFingerCount(0);
     setCanvasHeight((prev) => {
       const next = Math.round(prev + prev * expandRatio);
-      const yScale = prev > 0 ? prev / next : 1;
-      mapAllStrokes((stroke) => ({
+      const frozenStrokes = strokesForSaveRef.current.map((stroke) => ({
         ...stroke,
-        points: stroke.points.map((point) => ({
-          ...point,
-          y: point.y * yScale,
-        })),
+        layoutHeight: stroke.layoutHeight ?? prev,
       }));
+      strokesForSaveRef.current = frozenStrokes;
+      setStrokes(frozenStrokes);
       void saveCanvasHeight(documentId, next);
+      void savePageStrokes(documentId, 1, frozenStrokes);
       return next;
     });
     setTimeout(() => {
       isExpandingRef.current = false;
     }, 600);
-  }, [documentId, expandRatio, mapAllStrokes, syncFingerCount]);
+  }, [documentId, expandRatio, setStrokes, syncFingerCount]);
 
   useEffect(() => {
     zoomRef.current = zoom;

@@ -71,16 +71,28 @@ function fillStrokeDot(
   ctx.fill();
 }
 
+function getStrokeLayoutSize(
+  stroke: Stroke,
+  canvasWidth: number,
+  canvasHeight: number
+) {
+  return {
+    width: canvasWidth,
+    height: stroke.layoutHeight ?? canvasHeight,
+  };
+}
+
 function renderSingleStroke(
   ctx: CanvasRenderingContext2D,
   stroke: Stroke,
   canvasWidth: number,
   canvasHeight: number
 ) {
-  const sampled = densifyLargeGaps(stroke.points, canvasWidth, canvasHeight);
+  const layout = getStrokeLayoutSize(stroke, canvasWidth, canvasHeight);
+  const sampled = densifyLargeGaps(stroke.points, layout.width, layout.height);
   const pixelPoints = sampled.map((p) => [
-    p.x * canvasWidth,
-    p.y * canvasHeight,
+    p.x * layout.width,
+    p.y * layout.height,
     p.pressure ?? 0.5,
   ]);
 
@@ -272,9 +284,10 @@ export function useDrawingCanvas({
       color: colorRef.current,
       size: sizeRef.current,
       tool: toolRef.current,
+      layoutHeight: pageSize.height,
     };
     paintStrokes([...strokesRef.current, liveStroke], strokeIdRef.current);
-  }, [paintStrokes]);
+  }, [paintStrokes, pageSize.height]);
 
   const releaseCapture = useCallback(
     (pointerId: number) => {
@@ -302,6 +315,7 @@ export function useDrawingCanvas({
         color: colorRef.current,
         size: sizeRef.current,
         tool: toolRef.current,
+        layoutHeight: pageSize.height,
       };
 
       localPendingStrokeIdRef.current = stroke.id;
@@ -486,9 +500,10 @@ export function useDrawingCanvas({
     (x: number, y: number) => {
       const toEraseIds: string[] = [];
       for (const s of strokesRef.current) {
+        const layoutH = s.layoutHeight ?? pageSize.height;
         const hit = s.points.some((p) => {
           const dx = (p.x - x) * pageSize.width;
-          const dy = (p.y - y) * pageSize.height;
+          const dy = (p.y - y) * layoutH;
           return dx * dx + dy * dy < ERASER_RADIUS * ERASER_RADIUS;
         });
         if (hit) toEraseIds.push(s.id);
