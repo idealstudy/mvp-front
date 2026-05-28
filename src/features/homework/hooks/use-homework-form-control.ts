@@ -1,4 +1,4 @@
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 export const extractTextFromTiptapJSON = (doc: JSONContent): string => {
   if (!doc || !doc.content) return '';

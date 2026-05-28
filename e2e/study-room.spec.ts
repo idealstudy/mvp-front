@@ -95,7 +95,7 @@ test.describe.serial('스터디룸 CRUD', () => {
     ).toBeVisible();
     await page.getByTestId('studyroom-delete-success-button').click();
 
-    await page.waitForURL(PRIVATE.DASHBOARD.INDEX);
-    await expect(page).toHaveURL(PRIVATE.DASHBOARD.INDEX);
+    await page.waitForURL(PRIVATE.DASHBOARD.TEACHER);
+    await expect(page).toHaveURL(PRIVATE.DASHBOARD.TEACHER);
   });
 });

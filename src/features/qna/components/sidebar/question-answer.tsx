@@ -22,7 +22,7 @@ import { useRole } from '@/shared/hooks/use-role';
 import { classifyQnaError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import {
   useDeleteQnAMessageMutation,

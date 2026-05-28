@@ -1,15 +1,13 @@
 import { useMemo } from 'react';
 
-import type { StudentStudyRoom } from '@/features/study-rooms';
-
 import {
   useStudentDashboardHomeworkListQuery,
   useStudentDashboardNoteListQuery,
   useStudentDashboardQnaListQuery,
-} from './use-dashboard-query';
+} from './use-student-dashboard-query';
 
 interface UseStudentOnboardingStatusProps {
-  rooms: StudentStudyRoom[] | undefined;
+  rooms: { id: number }[] | undefined;
 }
 
 /**
@@ -21,7 +19,7 @@ interface UseStudentOnboardingStatusProps {
 export const useOnboardingStatus = ({
   rooms,
 }: UseStudentOnboardingStatusProps) => {
-  const hasRooms = rooms && rooms.length > 0;
+  const hasRooms = (rooms?.length ?? 0) > 0;
   const firstRoomId = rooms?.[0]?.id;
 
   const { data: noteList } = useStudentDashboardNoteListQuery({

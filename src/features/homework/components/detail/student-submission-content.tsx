@@ -18,7 +18,7 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import {
   useRemoveStudentHomework,

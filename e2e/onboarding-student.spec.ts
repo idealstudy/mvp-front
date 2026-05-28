@@ -54,7 +54,11 @@ async function setStudent(page: Page) {
 }
 
 async function mockStudentStudyRooms(page: Page, rooms: object[]) {
-  await mockGet(page, '**/api/v1/student/study-rooms', okBody(rooms));
+  await mockGet(
+    page,
+    '**/api/v1/student/dashboard/study-rooms**',
+    okBody(rooms)
+  );
 }
 
 async function mockStudentNotes(page: Page, notes: object[]) {
@@ -97,8 +101,7 @@ test.describe('학생 온보딩', () => {
   }) => {
     await mockAllEmpty(page);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
-    await page.waitForLoadState('networkidle');
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(page.getByText('선생님으로부터 초대를 받아')).toBeVisible();
@@ -113,8 +116,7 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, []);
     await mockStudentHomework(page, []);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
-    await page.waitForLoadState('networkidle');
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(
@@ -135,8 +137,7 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, []);
     await mockStudentHomework(page, []);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
-    await page.waitForLoadState('networkidle');
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
     await page.waitForSelector('[data-testid="student-onboarding"]');
 
     await expect(
@@ -159,9 +160,11 @@ test.describe('학생 온보딩', () => {
     await mockStudentQnA(page, [QNA]);
     await mockStudentHomework(page, [HOMEWORK]);
 
-    await page.goto(PRIVATE.DASHBOARD.INDEX);
-    await page.waitForLoadState('networkidle');
+    await page.goto(PRIVATE.DASHBOARD.STUDENT);
 
-    await expect(page.getByTestId('student-onboarding')).not.toBeVisible();
+    await expect(page.getByText('수업노트 1')).toBeVisible();
+    await expect(page.getByText('질문 1')).toBeVisible();
+
+    await expect(page.getByTestId('student-onboarding')).toBeHidden();
   });
 });

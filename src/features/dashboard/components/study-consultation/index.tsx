@@ -12,7 +12,7 @@ import {
 import {
   useParentDashboardConnectedStudentQuery,
   useParentDashboardStudyConsultationQuery,
-} from '../../hooks/use-dashboard-query';
+} from '../../hooks/use-parent-dashboard-query';
 import { MoreContentsHeader } from '../more-contents-header';
 import { ConsultationList } from './study-consultation-list';
 

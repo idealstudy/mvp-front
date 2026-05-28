@@ -1,4 +1,4 @@
-import { Editor, JSONContent } from '@tiptap/react';
+import type { Editor, JSONContent } from '@tiptap/react';
 
 // ============================================================================
 // Editor Core Types

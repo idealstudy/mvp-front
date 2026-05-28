@@ -22,7 +22,7 @@ import {
   handleApiError,
 } from '@/shared/lib/errors';
 import { useMemberStore } from '@/store';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { useCreateComment } from '../hooks/use-comment';
 import { CommentCardHeader } from './comment-card-header';

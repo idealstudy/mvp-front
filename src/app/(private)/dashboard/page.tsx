@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-import { DashboardContainer } from '@/features/dashboard/components/dashboard-container';
+import { PRIVATE } from '@/shared/constants';
+import { fetchMemberRole } from '@/shared/lib/server';
 
 // import { EmptyConnectionDialog } from '@/features/dashboard/connect/components/empty-connection-dialog';
 
@@ -54,10 +55,18 @@ export default async function HomePage({
     if (decoded.startsWith('/')) redirect(decoded);
   }
 
-  return (
-    <>
-      <DashboardContainer />
-      {/* <EmptyConnectionDialog /> */}
-    </>
-  );
+  const session = await fetchMemberRole();
+
+  if (session.status !== 'authenticated') return null;
+
+  switch (session.role) {
+    case 'ROLE_TEACHER':
+      redirect(PRIVATE.DASHBOARD.TEACHER);
+    case 'ROLE_STUDENT':
+      redirect(PRIVATE.DASHBOARD.STUDENT);
+    case 'ROLE_PARENT':
+      redirect(PRIVATE.DASHBOARD.PARENT);
+    default:
+      return null;
+  }
 }

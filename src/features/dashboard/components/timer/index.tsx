@@ -13,14 +13,13 @@ import {
   useStudyNoteTimerStart,
   useStudyNoteTimerTempSave,
 } from '@/features/dashboard/hooks';
+import { initialTextEditorValue } from '@/shared/components/editor/model/initial-state';
+import type { TextEditorValue } from '@/shared/components/editor/types';
 import {
   hasMeaningfulEditorContent,
-  initialTextEditorValue,
   parseEditorContent,
   prepareContentForSave,
-} from '@/shared/components/editor';
-import type { TextEditorValue } from '@/shared/components/editor';
-import { showBottomToast } from '@/shared/components/ui';
+} from '@/shared/components/editor/utils';
 import { Dialog } from '@/shared/components/ui/dialog';
 import { PRIVATE } from '@/shared/constants';
 import { useSubjectList } from '@/shared/hooks';
@@ -210,7 +209,11 @@ export const TimerModal = ({ isOpen, onClose }: TimerModalProps) => {
       {
         onSuccess: () => {
           setSavedNoteContent(noteContent);
-          showBottomToast('학습노트가 저장되었어요');
+          void import('@/shared/components/ui/bottom-toast').then(
+            ({ showBottomToast }) => {
+              showBottomToast('학습노트가 저장되었어요');
+            }
+          );
         },
       }
     );

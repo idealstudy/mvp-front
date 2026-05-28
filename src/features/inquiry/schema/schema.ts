@@ -1,5 +1,5 @@
 import { extractText } from '@/shared/lib';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { z } from 'zod';
 
 // 문의 등록

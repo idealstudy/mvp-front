@@ -13,15 +13,6 @@ export function Session1() {
         'desktop:w-[912px] desktop:my-20 desktop:gap-8'
       )}
     >
-      <Image
-        src="/character/img_intro01.png"
-        width={200}
-        height={200}
-        alt="인트로 이미지"
-        priority
-        className="tablet:hidden"
-      />
-
       <div className={cn('flex w-full justify-between', 'max-tablet:contents')}>
         <div
           className={cn(
@@ -60,6 +51,17 @@ export function Session1() {
             연결되는 경험을 만들어갑니다
           </p>
         </div>
+
+        <Image
+          src="/character/img_intro01_mobile.webp"
+          width={200}
+          height={200}
+          alt="인트로 이미지"
+          unoptimized
+          loading="eager"
+          fetchPriority="high"
+          className="tablet:hidden max-tablet:mx-auto"
+        />
 
         <Image
           src="/character/img_intro01.png"

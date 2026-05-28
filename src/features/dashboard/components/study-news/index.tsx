@@ -11,7 +11,7 @@ import type {
 import {
   useParentDashboardConnectedStudentQuery,
   useParentDashboardStudyNewsQuery,
-} from '@/features/dashboard/hooks/use-dashboard-query';
+} from '@/features/dashboard/hooks/use-parent-dashboard-query';
 
 import { MoreContentsHeader } from '../more-contents-header';
 import { StudyNewsList } from './study-news-list';

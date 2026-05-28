@@ -1,12 +1,12 @@
 import { StudyNoteQueryKey } from '@/entities/study-note';
 import { teacherKeys } from '@/entities/teacher';
+import type { TeacherStudyRoomRequests } from '@/features/study-rooms/api/room.api.base';
 import {
   InvitationQueryKey,
   StudyRoomsQueryKey,
-  TeacherStudyRoomRequests,
-  createTeacherStudyRoomQueryOptions,
-} from '@/features/study-rooms/api';
-import type { StudyRoomSubmitValues } from '@/features/study-rooms/model';
+} from '@/features/study-rooms/api/room.query.keys';
+import { createTeacherStudyRoomQueryOptions } from '@/features/study-rooms/api/room.query.options.teacher';
+import type { StudyRoomSubmitValues } from '@/features/study-rooms/model/room.create.schema';
 import { BaseQueryOptions } from '@/shared/lib/query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -18,7 +18,7 @@ export const createTeacherStudyRoomHooks = (
 ) => {
   const qo = createTeacherStudyRoomQueryOptions(api, base);
 
-  // 스터디룸 목록 조회 (강사용 - 임시: 추후 위의 useDashboardQuery 필요 예상)
+  // 스터디룸 목록 조회 (강사용)
   const useTeacherStudyRoomsQuery = (options?: { enabled?: boolean }) =>
     useQuery({
       ...qo.teacherList(),

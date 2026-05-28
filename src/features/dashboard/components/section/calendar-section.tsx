@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -12,13 +13,13 @@ import {
   useStudentNoteUpdate,
   useStudyNoteMonthly,
 } from '@/features/student-study-note/hooks';
+import { TextEditor } from '@/shared/components/editor/ui/text-editor';
+import { TextViewer } from '@/shared/components/editor/ui/text-viewer';
 import {
-  TextEditor,
-  TextViewer,
   mergeResolvedContentWithMediaIds,
   parseEditorContent,
   prepareContentForSave,
-} from '@/shared/components/editor';
+} from '@/shared/components/editor/utils';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog } from '@/shared/components/ui/dialog';
 import {
@@ -29,16 +30,20 @@ import {
 import { PRIVATE } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { useMemberStore } from '@/store';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-import { TimerModal } from '../timer';
 import {
   SUBJECT_TO_KOREAN,
   formatHHMMSS,
   formatMinSec,
   formatStudyTime,
 } from '../timer/constants';
+
+const TimerModal = dynamic(
+  () => import('../timer').then((mod) => mod.TimerModal),
+  { ssr: false }
+);
 
 const getBadgeStyle = (
   seconds: number
@@ -683,10 +688,12 @@ const CalendarSection = () => {
             타이머 켜기
           </Button>
         </div>
-        <TimerModal
-          isOpen={timerOpen}
-          onClose={() => setTimerOpen(false)}
-        />
+        {timerOpen && (
+          <TimerModal
+            isOpen={timerOpen}
+            onClose={() => setTimerOpen(false)}
+          />
+        )}
         <MonthCalendar
           year={selectedYear}
           month={selectedMonth}

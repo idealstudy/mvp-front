@@ -1,7 +1,7 @@
 import { ReactNode, Suspense } from 'react';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
-import { SessionGuard } from '@/providers';
+import { SessionGuard } from '@/providers/session/session-guard';
 import { fetchMemberRole } from '@/shared/lib/server';
 
 import { RoleRedirect } from './components/role-redirect';

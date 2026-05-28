@@ -21,7 +21,7 @@ import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
 import { useRole } from '@/shared/hooks/use-role';
 import { classifyHomeworkError, handleApiError } from '@/shared/lib/errors';
 import { getRelativeTimeString } from '@/shared/lib/utils';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 
 import { HomeworkDialog } from '../../dialog';
 

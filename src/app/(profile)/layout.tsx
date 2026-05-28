@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { PRIVATE } from '@/shared/constants';
 import { fetchMemberRole } from '@/shared/lib/server';
 
 const ASSIGNED_ROLES = new Set(['ROLE_STUDENT', 'ROLE_TEACHER', 'ROLE_PARENT']);
@@ -16,7 +17,7 @@ export default async function ProfileLayout({
 
   // 역할이 이미 있는 사용자(학생·선생님·학부모) → 대시보드
   if (session.status === 'authenticated' && ASSIGNED_ROLES.has(session.role))
-    redirect('/dashboard');
+    redirect(PRIVATE.DASHBOARD.INDEX);
 
   return <>{children}</>;
 }

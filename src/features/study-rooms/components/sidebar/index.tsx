@@ -24,6 +24,7 @@ import { SidebarButton } from '@/shared/components/sidebar';
 import { Toggle } from '@/shared/components/ui';
 import { StudyroomStatusToggle } from '@/shared/components/ui';
 import { showBottomToast } from '@/shared/components/ui/bottom-toast';
+import { PRIVATE } from '@/shared/constants';
 import { useRole } from '@/shared/hooks/use-role';
 import { Info } from 'lucide-react';
 
@@ -121,7 +122,7 @@ export const StudyroomSidebar = ({
     );
   };
   const onConfirmDelete = () => {
-    router.push('/dashboard');
+    router.push(PRIVATE.DASHBOARD.TEACHER);
   };
 
   // 썸네일 핸들러

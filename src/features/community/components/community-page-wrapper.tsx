@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardSidebar } from '@/features/dashboard/components/dashboard-sidebar';
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { cn } from '@/shared/lib';
 
 export default function CommunityPageWrapper({

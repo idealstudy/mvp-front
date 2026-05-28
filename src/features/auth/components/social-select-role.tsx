@@ -8,9 +8,9 @@ import { ProfileForm } from '@/features/auth/components/profile-form';
 import { SocialRegisterForm } from '@/features/auth/schemas/social-register';
 import { useUpdateProfile } from '@/features/auth/services/query';
 import { useAcceptInvitation } from '@/features/invite/hooks';
-import { useSession } from '@/providers';
+import { useSession } from '@/providers/session/session-context';
 import { Form } from '@/shared/components/ui';
-import { PUBLIC } from '@/shared/constants';
+import { PRIVATE, PUBLIC } from '@/shared/constants';
 import {
   trackAuthSignupFail,
   trackAuthSignupSuccess,
@@ -48,7 +48,9 @@ export const SocialSelectRole = () => {
             router.push(PUBLIC.CORE.INVITE.ERROR('ROLE_NOT_MATCH'));
           }
         } else {
-          router.push(from ? decodeURIComponent(from) : '/dashboard');
+          router.push(
+            from ? decodeURIComponent(from) : PRIVATE.DASHBOARD.INDEX
+          );
         }
       },
       onError: () => {

@@ -21,7 +21,7 @@ import {
 } from '@/shared/components/editor';
 import { Button, Dialog } from '@/shared/components/ui';
 import { classifyMypageError, handleApiError } from '@/shared/lib/errors';
-import { JSONContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import { Pen } from 'lucide-react';
 
 type EditHighlightDialogProps = {
