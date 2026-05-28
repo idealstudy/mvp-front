@@ -10,10 +10,11 @@ type PageProps = {
 };
 
 export default async function ChallengeResultPage({ params }: PageProps) {
-  await params;
+  const { id } = await params;
 
   return (
     <ChallengeResult
+      challengeId={id}
       result={MOCK_RESULT}
       solutions={MOCK_SOLUTIONS}
       nextChallenge={MOCK_NEXT_CHALLENGE}

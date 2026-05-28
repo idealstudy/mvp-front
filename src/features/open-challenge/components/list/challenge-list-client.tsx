@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Pagination } from '@/shared/components/ui';
 import { Inbox } from 'lucide-react';
 
+import { useOpenChallengeListQuery } from '../../hooks/use-open-challenge';
 import { ChallengeCard, type ChallengeCardData } from './challenge-card';
 import { StreakBanner } from './streak-banner';
 import {
@@ -28,7 +29,13 @@ export const ChallengeListClient = ({
   const [selectedSort, setSelectedSort] = useState<SortOption>('latest');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredChallenges = challenges.filter(
+  const { data: apiChallenges } = useOpenChallengeListQuery({
+    subject: selectedSubject,
+    sort: selectedSort,
+  });
+
+  const sourceChallenges = apiChallenges ?? challenges;
+  const filteredChallenges = sourceChallenges.filter(
     (challenge) =>
       selectedSubject === 'ALL' || challenge.subject === selectedSubject
   );

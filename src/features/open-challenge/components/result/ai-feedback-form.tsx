@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 
-import { Button } from '@/shared/components/ui';
+import { Button, showBottomToast } from '@/shared/components/ui';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { cn } from '@/shared/lib';
-import { Heart, Star } from 'lucide-react';
+import { Check, Heart, Star } from 'lucide-react';
+
+import { useSubmitChallengeFeedbackMutation } from '../../hooks/use-open-challenge';
 
 const RATING_LABELS = [
   '전혀 도움안됨',
@@ -16,10 +18,16 @@ const RATING_LABELS = [
 ];
 const MAX_COMMENT_LENGTH = 200;
 
-export const AiFeedbackForm = () => {
+type AiFeedbackFormProps = {
+  attemptId?: string;
+};
+
+export const AiFeedbackForm = ({ attemptId }: AiFeedbackFormProps) => {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const submitFeedbackMutation = useSubmitChallengeFeedbackMutation();
 
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -27,8 +35,21 @@ export const AiFeedbackForm = () => {
     setComment(event.target.value.slice(0, MAX_COMMENT_LENGTH));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (attemptId) {
+      try {
+        await submitFeedbackMutation.mutateAsync({
+          attemptId,
+          rating,
+          comment,
+        });
+      } catch {
+        return;
+      }
+    }
+
     setIsSubmitted(true);
+    showBottomToast('AI 만족도 피드백이 제출되었어요.');
   };
 
   if (isSubmitted) {
@@ -103,9 +124,14 @@ export const AiFeedbackForm = () => {
 
       <Button
         onClick={handleSubmit}
+        disabled={submitFeedbackMutation.isPending}
         className="w-full"
       >
-        피드백 제출하기
+        <Check
+          size={16}
+          className="mr-1"
+        />
+        {submitFeedbackMutation.isPending ? '제출 중...' : '피드백 제출하기'}
       </Button>
     </div>
   );

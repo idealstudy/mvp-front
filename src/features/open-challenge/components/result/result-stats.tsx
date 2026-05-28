@@ -39,7 +39,7 @@ export const ResultStats = ({
           </p>
         </div>
         <p className="text-gray-8 text-xs">
-          {isCorrect ? '정답을 맞혔어요! 🎉' : '다음엔 맞힐 수 있어요!'}
+          {isCorrect ? '정답을 맞혔어요!' : '다음엔 맞힐 수 있어요!'}
         </p>
       </div>
 

@@ -1,6 +1,14 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 import { BackButton } from '@/shared/components/ui';
 import { Bot } from 'lucide-react';
 
+import {
+  useChallengeReviewsQuery,
+  useNextChallengeQuery,
+} from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { NextChallengeCard } from './next-challenge-card';
 import { ResultStats } from './result-stats';
@@ -11,6 +19,7 @@ const MOCK_AI_COMMENT =
   '잘했어요! 기본 개념을 정확히 이해하고 계산도 깔끔하게 마무리했어요. 👏 이런 문제는 자신감 포인트예요!';
 
 type ChallengeResultProps = {
+  challengeId: string;
   result: {
     isCorrect: boolean;
     correctAnswer: string;
@@ -29,10 +38,30 @@ type ChallengeResultProps = {
 };
 
 export const ChallengeResult = ({
+  challengeId,
   result,
   solutions,
   nextChallenge,
 }: ChallengeResultProps) => {
+  const [submittedResult, setSubmittedResult] = useState<
+    (typeof result & { attemptId?: string }) | null
+  >(null);
+
+  const { data: apiSolutions } = useChallengeReviewsQuery(challengeId);
+  const { data: apiNextChallenge } = useNextChallengeQuery(challengeId);
+
+  const activeResult = submittedResult ?? result;
+  const activeSolutions = apiSolutions ?? solutions;
+  const activeNextChallenge = apiNextChallenge ?? nextChallenge;
+
+  useEffect(() => {
+    const rawResult = window.sessionStorage.getItem(
+      `open-challenge-result:${challengeId}`
+    );
+    if (!rawResult) return;
+    setSubmittedResult(JSON.parse(rawResult));
+  }, [challengeId]);
+
   return (
     <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
       <div className="mb-6">
@@ -42,14 +71,14 @@ export const ChallengeResult = ({
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           <ResultStats
-            isCorrect={result.isCorrect}
-            correctAnswer={result.correctAnswer}
-            passRate={result.passRate}
-            participantCount={result.participantCount}
+            isCorrect={activeResult.isCorrect}
+            correctAnswer={activeResult.correctAnswer}
+            passRate={activeResult.passRate}
+            participantCount={activeResult.participantCount}
           />
           <SolutionList
-            solutions={solutions}
-            totalCount={MOCK_TOTAL_SOLUTION_COUNT}
+            solutions={activeSolutions}
+            totalCount={activeSolutions.length || MOCK_TOTAL_SOLUTION_COUNT}
           />
         </div>
 
@@ -73,8 +102,10 @@ export const ChallengeResult = ({
             </div>
           </div>
 
-          <AiFeedbackForm />
-          <NextChallengeCard {...nextChallenge} />
+          <AiFeedbackForm attemptId={submittedResult?.attemptId} />
+          {activeNextChallenge && (
+            <NextChallengeCard {...activeNextChallenge} />
+          )}
         </aside>
       </div>
     </main>

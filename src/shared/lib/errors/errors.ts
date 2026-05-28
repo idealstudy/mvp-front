@@ -123,6 +123,30 @@ export function classifyColumnError(code?: string): ApiErrorType {
   }
 }
 
+// open challenge 관련 에러
+export function classifyOpenChallengeError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'CHALLENGE_NOT_FOUND':
+    case 'CHALLENGE_ATTEMPT_NOT_FOUND':
+    case 'CHALLENGE_REVIEW_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'ANSWER_NOT_SELECTED':
+    case 'CHALLENGE_ALREADY_COMPLETED':
+    case 'CHALLENGE_REVIEW_ALREADY_EXISTS':
+    case 'CHALLENGE_FEEDBACK_ALREADY_EXISTS':
+      return 'FIELD';
+
+    case 'MEMBER_NOT_EXIST':
+    case 'CHALLENGE_ATTEMPT_FORBIDDEN':
+    case 'CHALLENGE_REVIEW_FORBIDDEN':
+      return 'AUTH';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 // inquiry 관련 에러
 export function classifyInquiryError(code?: string): ApiErrorType {
   switch (code) {

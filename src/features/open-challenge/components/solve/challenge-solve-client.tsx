@@ -10,10 +10,15 @@ import {
   type TextEditorValue,
   initialTextEditorValue,
 } from '@/shared/components/editor';
-import { BackButton, Button } from '@/shared/components/ui';
+import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
-import { ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
+import {
+  useOpenChallengeDetailQuery,
+  useStartChallengeAttemptMutation,
+  useSubmitChallengeAnswerMutation,
+} from '../../hooks/use-open-challenge';
 import { type ChallengeDetailMock } from '../../mock/challenge-detail';
 import { AiCoachPanel } from './ai-coach-panel';
 import { ChoiceList } from './choice-list';
@@ -35,10 +40,26 @@ export const ChallengeSolveClient = ({
     initialTextEditorValue
   );
   const [isQuestionOpen, setIsQuestionOpen] = useState(true);
+  const [submitError, setSubmitError] = useState('');
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = () => {
+  const { data: apiChallenge } = useOpenChallengeDetailQuery(challengeId);
+  const startAttemptMutation = useStartChallengeAttemptMutation();
+  const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
+  const activeChallenge = apiChallenge ?? challenge;
+  const isSubmitting =
+    startAttemptMutation.isPending || submitAnswerMutation.isPending;
+
+  const handleSubmit = async () => {
+    if (!isLoggedIn) {
+      setIsLoginDialogOpen(true);
+      return;
+    }
+
     if (!selectedAnswer) {
+      setSubmitError('답을 먼저 선택해 주세요.');
       choiceSectionRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
@@ -46,14 +67,46 @@ export const ChallengeSolveClient = ({
       choiceSectionRef.current?.focus();
       return;
     }
-    router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
+
+    try {
+      const attempt = await startAttemptMutation.mutateAsync({ challengeId });
+      const result = await submitAnswerMutation.mutateAsync({
+        attemptId: attempt.attemptId,
+        params: { selectedAnswer },
+      });
+
+      window.sessionStorage.setItem(
+        `open-challenge-result:${challengeId}`,
+        JSON.stringify({ ...result, attemptId: attempt.attemptId })
+      );
+      router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
+    } catch {
+      // mutation hook에서 공통 API 에러 처리를 수행한다.
+    }
+  };
+
+  const handleAnswerSelect = (answer: string) => {
+    setSelectedAnswer(answer);
+    setSubmitError('');
+  };
+
+  const focusChoiceSection = () => {
+    setIsMobileAiOpen(false);
+    choiceSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+    choiceSectionRef.current?.focus();
   };
 
   return (
     <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
       {/* AI 코치 — 모바일에서 숨김 */}
       <aside className="border-line-line1 hidden w-[380px] shrink-0 border-r p-4 lg:block">
-        <AiCoachPanel isLoggedIn={isLoggedIn} />
+        <AiCoachPanel
+          isLoggedIn={isLoggedIn}
+          onReturnToProblem={focusChoiceSection}
+        />
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -64,10 +117,10 @@ export const ChallengeSolveClient = ({
           </div>
 
           <div className="text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm">
-            <span>{challenge.subject}</span>
+            <span>{activeChallenge.subject}</span>
             <span>›</span>
             <span className="text-text-main truncate font-semibold">
-              {challenge.topic}
+              {activeChallenge.topic}
             </span>
           </div>
 
@@ -84,10 +137,10 @@ export const ChallengeSolveClient = ({
             >
               <div className="min-w-0">
                 <p className="text-gray-8 text-xs font-semibold">
-                  문제 {challenge.questionNumber}
+                  문제 {activeChallenge.questionNumber}
                 </p>
                 <p className="text-text-main mt-1 truncate text-base font-bold">
-                  {challenge.topic}
+                  {activeChallenge.topic}
                 </p>
               </div>
               {isQuestionOpen ? (
@@ -107,15 +160,15 @@ export const ChallengeSolveClient = ({
               <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
                 <p className="font-body1-heading text-text-main text-lg leading-relaxed whitespace-pre-line">
                   <span className="text-orange-7 mr-2">
-                    {challenge.questionNumber}.
+                    {activeChallenge.questionNumber}.
                   </span>
-                  {challenge.questionText}
+                  {activeChallenge.questionText}
                 </p>
-                {challenge.questionImageUrl && (
+                {activeChallenge.questionImageUrl && (
                   <div className="border-line-line2 bg-gray-1 mt-5 overflow-hidden rounded-lg border p-3">
                     <Image
-                      src={challenge.questionImageUrl}
-                      alt={`${challenge.topic} 문제 이미지`}
+                      src={activeChallenge.questionImageUrl}
+                      alt={`${activeChallenge.topic} 문제 이미지`}
                       width={760}
                       height={420}
                       className="max-h-[420px] w-full object-contain"
@@ -149,24 +202,130 @@ export const ChallengeSolveClient = ({
             tabIndex={-1}
             className="flex scroll-mt-6 flex-col gap-3 outline-none"
           >
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-body1-heading text-text-main">
+                답을 직접 선택해 주세요
+              </p>
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={() => setIsMobileAiOpen(true)}
+                className="h-9 px-3 text-sm lg:hidden"
+              >
+                <Bot
+                  size={16}
+                  className="mr-1"
+                />
+                AI 힌트
+              </Button>
+            </div>
             <ChoiceList
-              choices={challenge.choices}
+              choices={activeChallenge.choices}
               selected={selectedAnswer}
-              onSelect={setSelectedAnswer}
+              onSelect={handleAnswerSelect}
             />
+            {submitError && (
+              <p className="text-system-warning text-sm font-semibold">
+                {submitError}
+              </p>
+            )}
           </div>
         </div>
 
         {/* 하단 제출 바 */}
-        <div className="border-line-line1 flex items-center justify-end border-t bg-white px-4 py-2 sm:px-6">
+        <div className="border-line-line1 flex items-center justify-between gap-3 border-t bg-white px-4 py-2 sm:px-6">
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => setIsMobileAiOpen(true)}
+            className="h-9 px-3 text-sm lg:hidden"
+          >
+            <Bot
+              size={16}
+              className="mr-1"
+            />
+            AI 힌트
+          </Button>
           <Button
             onClick={handleSubmit}
+            disabled={!selectedAnswer || isSubmitting}
             className="h-9 px-5 text-sm"
           >
-            제출하기
+            {isSubmitting ? '제출 중...' : '제출하기'}
           </Button>
         </div>
       </div>
+
+      <Dialog
+        isOpen={isMobileAiOpen}
+        onOpenChange={setIsMobileAiOpen}
+      >
+        <Dialog.Content className="h-[82vh] w-full max-w-[calc(100%-2rem)] gap-3 p-4 sm:max-w-[480px]">
+          <Dialog.Header>
+            <div className="flex items-center justify-between gap-3">
+              <Dialog.Title className="text-text-main text-base font-bold">
+                AI 힌트
+              </Dialog.Title>
+              <button
+                type="button"
+                onClick={() => setIsMobileAiOpen(false)}
+                className="hover:bg-gray-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full"
+                aria-label="AI 힌트 닫기"
+              >
+                <X
+                  size={18}
+                  className="text-gray-7"
+                />
+              </button>
+            </div>
+          </Dialog.Header>
+          <Dialog.Body>
+            <AiCoachPanel
+              isLoggedIn={isLoggedIn}
+              onReturnToProblem={focusChoiceSection}
+            />
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog
+        isOpen={isLoginDialogOpen}
+        onOpenChange={setIsLoginDialogOpen}
+      >
+        <Dialog.Content className="w-full max-w-[360px] gap-5 p-6 text-center">
+          <Dialog.Header className="items-center">
+            <div className="bg-orange-1 flex h-14 w-14 items-center justify-center rounded-full">
+              <Bot
+                size={28}
+                className="text-orange-7"
+              />
+            </div>
+            <Dialog.Title className="text-text-main text-lg font-bold">
+              로그인이 필요해요
+            </Dialog.Title>
+            <Dialog.Description className="text-gray-8 text-sm leading-relaxed">
+              문제를 풀고 기록을 남기려면 로그인이 필요해요.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Footer className="flex-col">
+            <Button
+              type="button"
+              onClick={() => router.push(PUBLIC.CORE.LOGIN)}
+              className="w-full"
+            >
+              로그인하기
+            </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={() => setIsLoginDialogOpen(false)}
+              className="w-full"
+            >
+              계속 둘러보기
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </div>
   );
 };
