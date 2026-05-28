@@ -35,10 +35,10 @@ hook은 반드시 `features/` 안에 위치한다. `entities/` 안에 두지 않
 
 ## onError 처리 위치 선택
 
-| 상황 | 위치 | 이유 |
-| ---- | ---- | ---- |
-| 폼 없는 액션 (토글, 상태 변경, 삭제) | 훅 내부 `useMutation.onError` | `setError` 불필요 |
-| 폼 있는 mutation (작성/수정) | 컴포넌트의 `mutate(data, { onError })` | `setError`가 `useForm` 인스턴스에 묶여 훅에서 접근 불가 |
+| 상황                                 | 위치                                   | 이유                                                    |
+| ------------------------------------ | -------------------------------------- | ------------------------------------------------------- |
+| 폼 없는 액션 (토글, 상태 변경, 삭제) | 훅 내부 `useMutation.onError`          | `setError` 불필요                                       |
+| 폼 있는 mutation (작성/수정)         | 컴포넌트의 `mutate(data, { onError })` | `setError`가 `useForm` 인스턴스에 묶여 훅에서 접근 불가 |
 
 ---
 
@@ -219,7 +219,7 @@ onSuccess: () => {
 [ ] handleApiError 처리: 폼 없으면 훅 내부 onError, 폼 있으면 컴포넌트 mutate 호출부
 [ ] classify{Domain}Error가 errors.ts에 존재함
 [ ] hook 파일이 features/ 에 위치함 (entities/ 아님)
-[ ] yarn tsc --noEmit 통과
+[ ] npm run check-types 통과
 ```
 
 ---
