@@ -52,6 +52,8 @@ const SUBJECT_CONFIG: Record<ChallengeSubject, SubjectConfig> = {
 };
 
 const PASS_RATE_DENOMINATOR = 10;
+const HANDWRITING_FONT =
+  '"Nanum Pen Script", "Nanum Brush Script", "KyoboHandwriting2020A", "Cafe24 Ssurround air", "Segoe Print", "Comic Sans MS", cursive';
 
 export const ChallengeCard = ({
   challenge,
@@ -80,7 +82,7 @@ export const ChallengeCard = ({
       >
         <span
           className={cn(
-            'absolute top-3 left-3 rounded-md px-2 py-0.5 text-xs font-semibold',
+            'absolute top-3 left-3 z-10 rounded-md px-2 py-0.5 text-xs font-semibold',
             config.tagClass
           )}
         >
@@ -96,9 +98,18 @@ export const ChallengeCard = ({
           />
         ) : (
           <div className="flex h-[160px] w-full items-center justify-center">
-            <p className="text-gray-8 text-center text-sm italic">
-              미리보기 없음
-            </p>
+            <div className="border-line-line2 relative h-full w-full max-w-[260px] rotate-[-1deg] overflow-hidden rounded-sm border bg-white px-5 py-4 shadow-sm">
+              <div className="absolute inset-x-0 top-8 border-t border-blue-100" />
+              <div className="absolute inset-x-0 top-16 border-t border-blue-100" />
+              <div className="absolute inset-x-0 top-24 border-t border-blue-100" />
+              <div className="absolute inset-y-0 left-8 border-l border-red-100" />
+              <p
+                className="text-text-main line-clamp-2 pt-6 text-center text-xl leading-[1.65] font-normal"
+                style={{ fontFamily: HANDWRITING_FONT }}
+              >
+                {challenge.title}
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -110,7 +121,7 @@ export const ChallengeCard = ({
             통과율 {challenge.passRate}% — 10명 중 {correctCountOutOf10}명만
             맞혔어요
           </p>
-          <h3 className="text-text-main mt-1 text-base font-bold">
+          <h3 className="text-text-main mt-1 line-clamp-2">
             {challenge.title}
           </h3>
           <p className="text-gray-8 mt-0.5 text-sm">{challenge.sourceText}</p>

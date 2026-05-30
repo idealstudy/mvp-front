@@ -235,12 +235,12 @@ export const ChallengeSolveClient = ({
         </div>
 
         {/* 하단 제출 바 */}
-        <div className="border-line-line1 flex items-center justify-between gap-3 border-t bg-white px-4 py-2 sm:px-6">
+        <div className="border-line-line1 flex items-center justify-end gap-3 border-t bg-white px-4 py-2 sm:px-6">
           <Button
             type="button"
             variant="outlined"
             onClick={() => setIsMobileAiOpen(true)}
-            className="h-9 px-3 text-sm lg:hidden"
+            className="mr-auto h-9 px-3 text-sm lg:hidden"
           >
             <Bot
               size={16}

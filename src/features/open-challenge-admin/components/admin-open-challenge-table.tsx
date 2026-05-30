@@ -10,7 +10,7 @@ import {
   type ChallengeSubject,
 } from '@/entities/open-challenge';
 import { MiniSpinner } from '@/shared/components/loading';
-import { Button, Input, Select } from '@/shared/components/ui';
+import { Button, Input, Pagination, Select } from '@/shared/components/ui';
 import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react';
 
@@ -21,19 +21,10 @@ import {
   useShowAdminOpenChallengeMutation,
 } from '../hooks/use-admin-open-challenge';
 
-type SubjectFilter = ChallengeSubject | 'ALL';
 type DifficultyFilter = AdminChallengeDifficulty | 'ALL';
 type SortFilter = NonNullable<ChallengeListParams['sort']>;
 
 const PAGE_SIZE = 10;
-
-const SUBJECT_OPTIONS: Array<{ value: SubjectFilter; label: string }> = [
-  { value: 'ALL', label: '전체 과목' },
-  { value: 'MATH', label: '수학' },
-  { value: 'KOREAN', label: '국어' },
-  { value: 'ENGLISH', label: '영어' },
-  { value: 'SCIENCE', label: '탐구' },
-];
 
 const DIFFICULTY_OPTIONS: Array<{ value: DifficultyFilter; label: string }> = [
   { value: 'ALL', label: '전체 난이도' },
@@ -67,7 +58,6 @@ const toListDifficulty = (
 
 export const AdminOpenChallengeTable = () => {
   const [page, setPage] = useState(0);
-  const [subject, setSubject] = useState<SubjectFilter>('ALL');
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('ALL');
   const [sort, setSort] = useState<SortFilter>('latest');
   const [showTargetId, setShowTargetId] = useState('');
@@ -75,7 +65,7 @@ export const AdminOpenChallengeTable = () => {
   const { data, isLoading } = useAdminOpenChallengeListQuery({
     page,
     size: PAGE_SIZE,
-    subject,
+    subject: 'ALL',
     difficulty: toListDifficulty(difficulty),
     sort,
   });
@@ -84,10 +74,12 @@ export const AdminOpenChallengeTable = () => {
   const deleteMutation = useDeleteAdminOpenChallengeMutation();
 
   const challenges = data?.content ?? [];
+  const currentPage = page + 1;
+  const totalPages = data?.hasNext ? currentPage + 1 : currentPage;
 
   useEffect(() => {
     setPage(0);
-  }, [subject, difficulty, sort]);
+  }, [difficulty, sort]);
 
   const handleShowHiddenChallenge = () => {
     const id = showTargetId.trim();
@@ -125,24 +117,7 @@ export const AdminOpenChallengeTable = () => {
           </Button>
         </div>
 
-        <div className="border-line-line2 grid gap-3 rounded-md border bg-white p-4 md:grid-cols-3">
-          <Select
-            value={subject}
-            onValueChange={(value) => setSubject(value as SubjectFilter)}
-          >
-            <Select.Trigger placeholder="과목" />
-            <Select.Content>
-              {SUBJECT_OPTIONS.map((option) => (
-                <Select.Option
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </Select.Option>
-              ))}
-            </Select.Content>
-          </Select>
-
+        <div className="border-line-line2 grid gap-3 rounded-md border bg-white p-4 md:grid-cols-2">
           <Select
             value={difficulty}
             onValueChange={(value) => setDifficulty(value as DifficultyFilter)}
@@ -183,10 +158,10 @@ export const AdminOpenChallengeTable = () => {
             <thead className="border-line-line2 bg-gray-1 border-b text-left">
               <tr className="*:px-5 *:py-4">
                 <th>문제</th>
-                <th>과목</th>
-                <th>통계</th>
-                <th>상태</th>
-                <th>관리</th>
+                <th className="whitespace-nowrap">과목</th>
+                <th className="whitespace-nowrap">통계</th>
+                <th className="whitespace-nowrap">상태</th>
+                <th className="whitespace-nowrap">관리</th>
               </tr>
             </thead>
             <tbody className="divide-line-line1 divide-y">
@@ -198,7 +173,7 @@ export const AdminOpenChallengeTable = () => {
                   <td className="px-5 py-4">
                     <Link
                       href={PUBLIC.OPEN_CHALLENGE.DETAIL(challenge.id)}
-                      className="font-body2-heading hover:underline"
+                      className="text-text-main line-clamp-2 font-normal hover:underline"
                     >
                       {challenge.title}
                     </Link>
@@ -206,22 +181,22 @@ export const AdminOpenChallengeTable = () => {
                       {challenge.sourceText}
                     </p>
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     {SUBJECT_LABEL[challenge.subject]}
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     <p className="text-sm">통과율 {challenge.passRate}%</p>
                     <p className="text-gray-8 text-sm">
                       {challenge.participantCount.toLocaleString()}명 참여
                     </p>
                   </td>
-                  <td className="px-5 py-4">
-                    <span className="bg-system-success-alt text-system-success rounded-md px-2.5 py-1 text-sm">
+                  <td className="px-5 py-4 whitespace-nowrap">
+                    <span className="bg-system-success-alt text-system-success rounded-md px-2.5 py-1 text-sm whitespace-nowrap">
                       게시
                     </span>
                   </td>
-                  <td className="px-5 py-4">
-                    <div className="flex flex-wrap gap-2">
+                  <td className="px-5 py-4 whitespace-nowrap">
+                    <div className="flex flex-nowrap gap-2">
                       <Button
                         asChild
                         variant="outlined"
@@ -283,25 +258,12 @@ export const AdminOpenChallengeTable = () => {
           </table>
         </div>
 
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outlined"
-            size="xsmall"
-            disabled={page === 0}
-            onClick={() => setPage((previousPage) => previousPage - 1)}
-          >
-            이전
-          </Button>
-          <span className="text-gray-8 px-3 text-sm">{page + 1}페이지</span>
-          <Button
-            variant="outlined"
-            size="xsmall"
-            disabled={!data?.hasNext}
-            onClick={() => setPage((previousPage) => previousPage + 1)}
-          >
-            다음
-          </Button>
-        </div>
+        <Pagination
+          page={currentPage}
+          totalPages={totalPages}
+          onPageChange={(nextPage) => setPage(nextPage - 1)}
+          className="justify-center"
+        />
       </section>
 
       <section className="border-line-line2 rounded-md border bg-white p-5">

@@ -122,7 +122,7 @@ const toDetail = (raw: unknown): ChallengeDetail => {
     passRate: parsed.passRate,
     wrongAnswerRate: parsed.wrongAnswerRate,
     participantCount: parsed.participantCount,
-    isAiSupported: parsed.isAiSupported,
+    isAiSupported: parsed.isAiSupported ?? parsed.aiSupported ?? true,
   });
 };
 

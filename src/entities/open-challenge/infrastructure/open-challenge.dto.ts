@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 const IdSchema = z.union([z.string(), z.number()]).transform(String);
+const QUESTION_TEXT_FALLBACK = '문제 이미지를 보고 답을 선택해 주세요.';
 
 const NullableNumberSchema = z
   .number()
@@ -43,7 +44,7 @@ const ChallengeListItemDtoSchema = z.object({
   wrongAnswerRate: z.number().optional().default(0),
   title: z.string().optional().default('오픈 챌린지 문제'),
   sourceText: z.string().optional().default('출처 정보'),
-  questionText: z.string().optional(),
+  questionText: z.string().nullable().optional(),
   questionImageUrl: z.string().nullable().optional().default(null),
   participantCount: z.number().optional().default(0),
   passRate: NullableNumberSchema,
@@ -54,11 +55,13 @@ const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
   questionNumber: z.number().optional().default(1),
   questionText: z
     .string()
+    .nullable()
     .optional()
-    .default('문제 이미지를 보고 답을 선택해 주세요.'),
+    .transform((value) => value ?? QUESTION_TEXT_FALLBACK),
   choices: z.array(z.string()).default([]),
   correctAnswer: z.string().optional(),
   type: z.string().nullable().optional(),
+  aiSupported: z.boolean().optional(),
   isAiSupported: z.boolean().optional().default(true),
   status: z.string().optional(),
   createdAt: z.string().optional(),
@@ -70,12 +73,20 @@ const AttemptDtoSchema = z.object({
   status: z.string(),
 });
 
-const AnswerResultDtoSchema = z.object({
-  isCorrect: z.boolean(),
-  correctAnswer: z.string(),
-  participantCount: z.number(),
-  passRate: z.number(),
-});
+const AnswerResultDtoSchema = z
+  .object({
+    isCorrect: z.boolean().optional(),
+    correct: z.boolean().optional(),
+    correctAnswer: z.string(),
+    participantCount: z.number(),
+    passRate: NullableNumberSchema,
+  })
+  .transform((value) => ({
+    isCorrect: value.isCorrect ?? value.correct ?? false,
+    correctAnswer: value.correctAnswer,
+    participantCount: value.participantCount,
+    passRate: value.passRate,
+  }));
 
 const ChallengeReviewDtoSchema = z.object({
   id: IdSchema.optional(),

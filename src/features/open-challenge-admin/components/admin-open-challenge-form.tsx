@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,7 @@ import { PRIVATE, PUBLIC } from '@/shared/constants';
 import { handleApiError } from '@/shared/lib/errors/error-handler';
 import { classifyOpenChallengeError } from '@/shared/lib/errors/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Save } from 'lucide-react';
 
 import {
   useCreateAdminOpenChallengeMutation,
@@ -33,12 +33,7 @@ type AdminOpenChallengeFormProps = {
 };
 
 const SUBJECT_OPTIONS: Array<{ value: AdminChallengeSubject; label: string }> =
-  [
-    { value: 'MATH', label: '수학' },
-    { value: 'KOREAN', label: '국어' },
-    { value: 'ENGLISH', label: '영어' },
-    { value: 'SCIENCE', label: '탐구' },
-  ];
+  [{ value: 'MATH', label: '수학' }];
 
 const DIFFICULTY_OPTIONS: Array<{
   value: AdminChallengeDifficulty;
@@ -51,6 +46,8 @@ const DIFFICULTY_OPTIONS: Array<{
 ];
 
 const ERROR_REDIRECT_DELAY_MS = 1500;
+const CHOICE_LABELS = ['①', '②', '③', '④', '⑤'] as const;
+const CHOICE_LABEL_PATTERN = /^[①②③④⑤]\s*/;
 
 const DEFAULT_VALUES: AdminChallengeForm = {
   subject: 'MATH',
@@ -60,9 +57,21 @@ const DEFAULT_VALUES: AdminChallengeForm = {
   sourceText: '',
   questionText: '',
   questionMediaId: '',
-  choicesText: ['①', '②', '③', '④', '⑤'].join('\n'),
-  correctAnswer: '①',
+  choices: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }],
+  correctChoiceIndex: 0,
   type: '',
+};
+
+const stripChoiceLabel = (value: string) =>
+  value.replace(CHOICE_LABEL_PATTERN, '').trim();
+
+const findCorrectChoiceIndex = (choices: string[], correctAnswer: string) => {
+  const normalizedCorrectAnswer = stripChoiceLabel(correctAnswer);
+  const index = choices.findIndex(
+    (choice) => stripChoiceLabel(choice) === normalizedCorrectAnswer
+  );
+
+  return index >= 0 ? index : 0;
 };
 
 const toFormValues = (challenge?: AdminChallengeDetail): AdminChallengeForm => {
@@ -76,27 +85,35 @@ const toFormValues = (challenge?: AdminChallengeDetail): AdminChallengeForm => {
     sourceText: challenge.sourceText,
     questionText: challenge.questionText,
     questionMediaId: '',
-    choicesText: challenge.choices.join('\n'),
-    correctAnswer: challenge.correctAnswer,
+    choices: challenge.choices.map((choice) => ({
+      value: stripChoiceLabel(choice),
+    })),
+    correctChoiceIndex: findCorrectChoiceIndex(
+      challenge.choices,
+      challenge.correctAnswer
+    ),
     type: challenge.type,
   };
 };
 
-const toPayload = (data: AdminChallengeForm): AdminChallengePayload => ({
-  subject: data.subject,
-  difficulty: data.difficulty,
-  wrongAnswerRate: data.wrongAnswerRate,
-  title: data.title.trim(),
-  sourceText: data.sourceText.trim(),
-  questionText: data.questionText.trim() || null,
-  questionMediaId: data.questionMediaId.trim() || null,
-  choices: data.choicesText
-    .split('\n')
-    .map((choice) => choice.trim())
-    .filter(Boolean),
-  correctAnswer: data.correctAnswer.trim(),
-  type: data.type.trim() || null,
-});
+const toPayload = (data: AdminChallengeForm): AdminChallengePayload => {
+  const choices = data.choices
+    .map((choice) => choice.value.trim())
+    .filter(Boolean);
+
+  return {
+    subject: data.subject,
+    difficulty: data.difficulty,
+    wrongAnswerRate: data.wrongAnswerRate,
+    title: data.title.trim(),
+    sourceText: data.sourceText.trim(),
+    questionText: data.questionText.trim() || null,
+    questionMediaId: data.questionMediaId.trim() || null,
+    choices,
+    correctAnswer: choices[data.correctChoiceIndex] ?? '',
+    type: data.type.trim() || null,
+  };
+};
 
 export const AdminOpenChallengeForm = ({
   challenge,
@@ -115,15 +132,43 @@ export const AdminOpenChallengeForm = ({
     register,
     reset,
     setError,
+    setValue,
+    watch,
     formState: { errors, isDirty },
   } = useForm<AdminChallengeForm>({
     resolver: zodResolver(AdminChallengeFormSchema),
     defaultValues: toFormValues(challenge),
   });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'choices',
+  });
+  const selectedCorrectIndex = watch('correctChoiceIndex');
+  const choices = watch('choices');
+  const selectedCorrectAnswer =
+    choices?.[selectedCorrectIndex]?.value?.trim() ?? '';
 
   useEffect(() => {
     reset(toFormValues(challenge));
   }, [challenge, reset]);
+
+  const handleRemoveChoice = (index: number) => {
+    remove(index);
+    if (selectedCorrectIndex === index) {
+      setValue('correctChoiceIndex', 0, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    if (selectedCorrectIndex > index) {
+      setValue('correctChoiceIndex', selectedCorrectIndex - 1, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  };
 
   const onSubmit = (data: AdminChallengeForm) => {
     mutation.mutate(toPayload(data), {
@@ -131,7 +176,7 @@ export const AdminOpenChallengeForm = ({
         router.replace(
           isEditMode
             ? PRIVATE.ADMIN.OPEN_CHALLENGE.LIST
-            : PRIVATE.ADMIN.OPEN_CHALLENGE.EDIT(createdId as string)
+            : PUBLIC.OPEN_CHALLENGE.DETAIL(createdId as string)
         );
       },
       onError: (error) => {
@@ -330,23 +375,83 @@ export const AdminOpenChallengeForm = ({
       <section className="border-line-line2 grid gap-5 rounded-md border bg-white p-5 lg:grid-cols-[1fr_240px]">
         <Field
           label="선지"
-          error={errors.choicesText?.message}
+          error={errors.choices?.message}
         >
-          <Textarea
-            {...register('choicesText')}
-            rows={7}
-            aria-invalid={!!errors.choicesText}
-          />
+          <div className="flex flex-col gap-2">
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex items-start gap-2"
+              >
+                <div className="flex min-w-0 flex-1 items-center">
+                  <span className="border-line-line2 bg-gray-1 text-gray-8 flex h-[56px] w-[52px] shrink-0 items-center justify-center rounded-l-[4px] border border-r-0 text-lg font-bold">
+                    {CHOICE_LABELS[index]}
+                  </span>
+                  <Input
+                    {...register(`choices.${index}.value`)}
+                    placeholder="선지 내용을 입력해주세요."
+                    aria-invalid={!!errors.choices?.[index]?.value}
+                    className="rounded-l-none"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant={
+                    selectedCorrectIndex === index ? 'primary' : 'outlined'
+                  }
+                  size="small"
+                  className="h-[56px] w-[78px] shrink-0 px-0"
+                  onClick={() =>
+                    setValue('correctChoiceIndex', index, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                >
+                  정답
+                </Button>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  size="small"
+                  className="h-[56px] w-[56px] shrink-0 px-0"
+                  onClick={() => handleRemoveChoice(index)}
+                  disabled={fields.length <= 1}
+                  aria-label={`선지 ${index + 1} 삭제`}
+                >
+                  <Minus size={16} />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outlined"
+              size="small"
+              className="w-fit"
+              onClick={() => append({ value: '' })}
+              disabled={fields.length >= 5}
+            >
+              <Plus
+                size={16}
+                className="mr-1"
+              />
+              선지 추가
+            </Button>
+          </div>
         </Field>
 
         <Field
-          label="정답"
-          error={errors.correctAnswer?.message}
+          label="선택된 정답"
+          error={errors.correctChoiceIndex?.message}
         >
-          <Input
-            {...register('correctAnswer')}
-            aria-invalid={!!errors.correctAnswer}
-          />
+          <div className="border-line-line2 bg-gray-1 flex min-h-[56px] flex-col justify-center rounded-[4px] border px-4">
+            <p className="text-gray-8 text-xs">
+              {CHOICE_LABELS[selectedCorrectIndex] ?? '-'}
+            </p>
+            <p className="text-text-main mt-1 text-sm font-semibold break-words">
+              {selectedCorrectAnswer || '정답 선지를 선택해주세요.'}
+            </p>
+          </div>
         </Field>
       </section>
     </form>

@@ -2,22 +2,19 @@
 
 import { useState } from 'react';
 
-import { Pagination } from '@/shared/components/ui';
+import { Pagination, Select } from '@/shared/components/ui';
 import { Inbox } from 'lucide-react';
 
 import { useOpenChallengeListQuery } from '../../hooks/use-open-challenge';
 import { ChallengeCard, type ChallengeCardData } from './challenge-card';
 import { StreakBanner } from './streak-banner';
-import {
-  type SortOption,
-  type SubjectFilter,
-  SubjectFilterBar,
-} from './subject-filter';
 
 type ChallengeListClientProps = {
   challenges: ChallengeCardData[];
   streak: { streakDays: number; todayCompleted: boolean };
 };
+
+type SortOption = 'latest' | 'popular';
 
 const PAGE_SIZE = 3;
 
@@ -25,12 +22,11 @@ export const ChallengeListClient = ({
   challenges,
   streak,
 }: ChallengeListClientProps) => {
-  const [selectedSubject, setSelectedSubject] = useState<SubjectFilter>('ALL');
   const [selectedSort, setSelectedSort] = useState<SortOption>('latest');
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: apiChallenges } = useOpenChallengeListQuery({
-    subject: selectedSubject,
+    subject: 'ALL',
     sort: selectedSort,
   });
 
@@ -40,11 +36,6 @@ export const ChallengeListClient = ({
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
-
-  const handleSubjectChange = (subject: SubjectFilter) => {
-    setSelectedSubject(subject);
-    setCurrentPage(1);
-  };
 
   const handleSortChange = (sort: SortOption) => {
     setSelectedSort(sort);
@@ -67,12 +58,28 @@ export const ChallengeListClient = ({
         todayCompleted={streak.todayCompleted}
       />
 
-      <SubjectFilterBar
-        subject={selectedSubject}
-        sort={selectedSort}
-        onSubjectChange={handleSubjectChange}
-        onSortChange={handleSortChange}
-      />
+      <div className="flex justify-end">
+        <Select
+          value={selectedSort}
+          onValueChange={(value) => handleSortChange(value as SortOption)}
+        >
+          <Select.Trigger
+            className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
+            placeholder="최신순"
+          />
+          <Select.Content>
+            {SORT_OPTIONS.map((sortOption) => (
+              <Select.Option
+                key={sortOption.value}
+                value={sortOption.value}
+                className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
+              >
+                {sortOption.label}
+              </Select.Option>
+            ))}
+          </Select.Content>
+        </Select>
+      </div>
 
       {visibleChallenges.length > 0 ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -92,7 +99,9 @@ export const ChallengeListClient = ({
           <p className="font-body1-heading text-text-main">
             아직 등록된 문제가 없어요.
           </p>
-          <p className="text-gray-8 text-sm">다른 과목을 선택해보세요.</p>
+          <p className="text-gray-8 text-sm">
+            새 문제가 등록되면 이곳에 보여요.
+          </p>
         </div>
       )}
 
@@ -107,3 +116,8 @@ export const ChallengeListClient = ({
     </div>
   );
 };
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'latest', label: '최신순' },
+  { value: 'popular', label: '인기순' },
+];

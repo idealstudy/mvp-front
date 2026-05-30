@@ -16,8 +16,15 @@ export const AdminChallengeFormSchema = z
     sourceText: z.string().min(1, '출처를 입력해주세요.'),
     questionText: z.string(),
     questionMediaId: z.string(),
-    choicesText: z.string().min(1, '선지를 한 줄에 하나씩 입력해주세요.'),
-    correctAnswer: z.string().min(1, '정답을 입력해주세요.'),
+    choices: z
+      .array(
+        z.object({
+          value: z.string().min(1, '선지를 입력해주세요.'),
+        })
+      )
+      .min(1, '선지는 최소 1개 필요합니다.')
+      .max(5, '선지는 최대 5개까지 등록할 수 있습니다.'),
+    correctChoiceIndex: z.number().int().min(0, '정답을 선택해주세요.'),
     type: z.string(),
   })
   .superRefine((value, context) => {
@@ -29,16 +36,15 @@ export const AdminChallengeFormSchema = z
       });
     }
 
-    const choices = value.choicesText
-      .split('\n')
-      .map((choice) => choice.trim())
+    const choices = value.choices
+      .map((choice) => choice.value.trim())
       .filter(Boolean);
 
-    if (!choices.includes(value.correctAnswer.trim())) {
+    if (!choices[value.correctChoiceIndex]) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['correctAnswer'],
-        message: '정답은 선지 중 하나와 정확히 일치해야 합니다.',
+        path: ['correctChoiceIndex'],
+        message: '정답 선지를 선택해주세요.',
       });
     }
   });
