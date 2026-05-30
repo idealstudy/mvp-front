@@ -366,3 +366,39 @@ const useMyData = () => {
 ```
 
 래퍼가 필요한 경우: 레이아웃·스타일 추가, Context 제공, 에러 바운더리, 로직 조합.
+
+## 18. 로그인 유도 + 임시 저장 패턴
+
+비로그인 사용자가 인증이 필요한 액션을 시도할 때 작성 중인 내용을 sessionStorage에 보존하고, 로그인 후 복귀 시 복원합니다.
+
+```tsx
+// 상수 (컴포넌트 외부)
+const DRAFT_KEY_PREFIX = 'my-feature-draft';
+
+// 컴포넌트 내부
+const draftKey = `${DRAFT_KEY_PREFIX}:${id}`;
+
+// mount 시 복원
+useEffect(() => {
+  const saved = sessionStorage.getItem(draftKey);
+  if (saved) {
+    setContent(JSON.parse(saved));
+    sessionStorage.removeItem(draftKey);
+  }
+}, [draftKey]);
+
+// 로그인 유도 시
+sessionStorage.setItem(draftKey, JSON.stringify(content));
+const from = encodeURIComponent(currentPath);
+router.replace(`${PUBLIC.CORE.LOGIN}?from=${from}`);
+```
+
+**주의**
+
+- 카카오 소셜 로그인: `from`을 OAuth state로 전달 → 백엔드가 리다이렉션 처리
+- 이메일 로그인: `from` 리다이렉션 미구현 (소셜 로그인만 복귀 동작)
+
+**참고 컴포넌트**
+
+- `src/features/inquiry/components/inquiry-write-area.tsx`
+- `src/features/open-challenge/components/solve/challenge-solve-client.tsx`

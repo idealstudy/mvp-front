@@ -22,6 +22,25 @@ type SolutionListProps = {
 };
 
 const CONTENT_EXPAND_THRESHOLD = 150;
+const CONTENT_LINE_THRESHOLD = 4;
+
+const countContentLines = (jsonString: string): number => {
+  try {
+    const doc = JSON.parse(jsonString);
+    let count = 0;
+    const traverse = (node: { type?: string; content?: unknown[] }) => {
+      if (node.type === 'hardBreak') count++;
+      if (node.type === 'paragraph') count++;
+      node.content?.forEach((child) => traverse(child as typeof node));
+    };
+    doc.content?.forEach((node: unknown) =>
+      traverse(node as { type?: string; content?: unknown[] })
+    );
+    return count;
+  } catch {
+    return 0;
+  }
+};
 
 export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
   const [sort, setSort] = useState<'recommend' | 'latest'>('recommend');
@@ -74,7 +93,9 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
         {visibleSolutions.map((solution) => {
           const parsedContent = parseEditorContent(solution.content);
           const plainText = extractText(solution.content);
-          const isLong = plainText.length > CONTENT_EXPAND_THRESHOLD;
+          const isLong =
+            plainText.length > CONTENT_EXPAND_THRESHOLD ||
+            countContentLines(solution.content) > CONTENT_LINE_THRESHOLD;
           const isContentExpanded = expandedIds.has(solution.id);
 
           return (

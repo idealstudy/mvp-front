@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -32,6 +32,7 @@ type ChallengeSolveClientProps = {
 };
 
 const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
+const DRAFT_KEY_PREFIX = 'open-challenge-draft';
 
 export const ChallengeSolveClient = ({
   challengeId,
@@ -48,6 +49,15 @@ export const ChallengeSolveClient = ({
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
+  const draftKey = `${DRAFT_KEY_PREFIX}:${challengeId}`;
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(draftKey);
+    if (saved) {
+      setSolutionContent(JSON.parse(saved));
+      sessionStorage.removeItem(draftKey);
+    }
+  }, [draftKey]);
 
   const { data: challenge, isLoading: isChallengeLoading } =
     useOpenChallengeDetailQuery(challengeId);
@@ -83,7 +93,10 @@ export const ChallengeSolveClient = ({
       });
 
       const { contentString } = prepareContentForSave(solutionContent);
-      if (extractText(JSON.stringify(solutionContent)).trim().length > 0) {
+      if (
+        result.isCorrect &&
+        extractText(JSON.stringify(solutionContent)).trim().length > 0
+      ) {
         createReviewMutation.mutate({
           challengeId,
           attemptId,
@@ -178,7 +191,7 @@ export const ChallengeSolveClient = ({
 
             {isQuestionOpen && (
               <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
-                <p className="font-body1-heading text-text-main text-lg leading-relaxed whitespace-pre-line">
+                <p className="text-text-main text-lg leading-relaxed whitespace-pre-line">
                   {challenge.questionText}
                 </p>
                 {challenge.questionImageUrl && (
@@ -331,7 +344,16 @@ export const ChallengeSolveClient = ({
           <Dialog.Footer className="flex-col">
             <Button
               type="button"
-              onClick={() => router.push(PUBLIC.CORE.LOGIN)}
+              onClick={() => {
+                sessionStorage.setItem(
+                  draftKey,
+                  JSON.stringify(solutionContent)
+                );
+                const from = encodeURIComponent(
+                  PUBLIC.OPEN_CHALLENGE.DETAIL(challengeId)
+                );
+                router.replace(`${PUBLIC.CORE.LOGIN}?from=${from}`);
+              }}
               className="w-full"
             >
               로그인하기
