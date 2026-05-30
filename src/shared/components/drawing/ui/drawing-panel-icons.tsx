@@ -21,15 +21,15 @@ export function PanelToolBtn({
   return (
     <button
       onClick={onClick}
-      className="flex h-12 min-w-[2.75rem] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 transition-colors hover:bg-gray-50"
+      className="hover:bg-gray-1 flex h-12 min-w-[2.75rem] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 transition-colors"
     >
-      <span className={cn(active ? 'text-orange-500' : 'text-gray-400')}>
+      <span className={cn(active ? 'text-orange-7' : 'text-gray-6')}>
         {children}
       </span>
       <span
         className={cn(
           'text-[10px] leading-none font-medium whitespace-nowrap',
-          active ? 'text-orange-500' : 'text-gray-400'
+          active ? 'text-orange-7' : 'text-gray-6'
         )}
       >
         {label}
@@ -113,7 +113,7 @@ export function EmptyPencilIcon() {
       height="32"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#d1d5db"
+      stroke="#c8c8c8"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -151,7 +151,7 @@ export function PanelPenIcon({ active }: { active: boolean }) {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
+      stroke={active ? '#ff4805' : '#adadad'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -169,7 +169,7 @@ export function PanelHighlighterIcon({ active }: { active: boolean }) {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
+      stroke={active ? '#ff4805' : '#adadad'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -187,7 +187,7 @@ export function PanelEraserIcon({ active }: { active: boolean }) {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={active ? '#f97316' : '#9ca3af'}
+      stroke={active ? '#ff4805' : '#adadad'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

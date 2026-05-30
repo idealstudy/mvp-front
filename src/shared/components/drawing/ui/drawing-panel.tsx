@@ -54,6 +54,10 @@ const PEN_SIZES = [2, 4, 7] as const;
 const DEFAULT_PANEL_HEIGHT = 400;
 const DEFAULT_EXPAND_RATIO = 0.3;
 const AUTO_SAVE_DELAY_MS = 700;
+/** 저장 실패 시 자동 재시도 간격 (성공할 때까지 반복) */
+const SAVE_RETRY_DELAY_MS = 2000;
+/** "저장됨" 표시를 유지하는 시간 — 이후 자동으로 숨김(idle) */
+const SAVED_VISIBLE_MS = 1500;
 /** IndexedDB에서 복원할 최대 캔버스 높이 — 비정상 값으로 흰 화면 방지 */
 const MAX_CANVAS_HEIGHT = 8000;
 
@@ -101,6 +105,10 @@ export function DrawingPanel({
   const abortDrawingRef = useRef<(() => void) | null>(null);
   const loadGenerationRef = useRef(0);
   const loadCompletedRef = useRef(false);
+
+  // 펜·형광펜이 각각 마지막으로 쓰던 색을 기억(툴 전환 시 복원)
+  const penColorRef = useRef<string>(PANEL_COLORS[0]);
+  const highlighterColorRef = useRef<string>(HIGHLIGHTER_COLORS[0]);
 
   const {
     strokes,
@@ -239,6 +247,8 @@ export function DrawingPanel({
     [documentId]
   );
 
+  // 재시도는 자기 자신을 다시 예약하므로 ref로 최신 함수를 참조한다
+  const scheduleSaveRetryRef = useRef<() => void>(() => {});
   const scheduleSaveRetry = useCallback(() => {
     if (saveRetryTimerRef.current) clearTimeout(saveRetryTimerRef.current);
     saveRetryTimerRef.current = setTimeout(async () => {
@@ -247,9 +257,12 @@ export function DrawingPanel({
         await persistStrokes(strokesForSaveRef.current);
       } catch {
         setSaveStatus('error');
+        // 성공할 때까지 계속 재시도
+        scheduleSaveRetryRef.current();
       }
-    }, 2000);
+    }, SAVE_RETRY_DELAY_MS);
   }, [persistStrokes]);
+  scheduleSaveRetryRef.current = scheduleSaveRetry;
 
   useEffect(() => {
     return () => {
@@ -258,33 +271,40 @@ export function DrawingPanel({
     };
   }, []);
 
-  const scheduleSave = useCallback(
-    (getNextStrokes: (prev: Stroke[]) => Stroke[]) => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      setSaveStatus('saving');
-      saveTimerRef.current = setTimeout(async () => {
-        saveTimerRef.current = null;
-        const nextStrokes = getNextStrokes(strokesForSaveRef.current);
-        try {
-          await persistStrokes(nextStrokes);
-        } catch {
-          setSaveStatus('error');
-          scheduleSaveRetry();
-        }
-      }, AUTO_SAVE_DELAY_MS);
-    },
-    [persistStrokes, scheduleSaveRetry]
-  );
+  // "저장됨"은 일정 시간 후 자동으로 숨김(캔버스 좌하단을 계속 가리지 않도록)
+  useEffect(() => {
+    if (saveStatus !== 'saved') return;
+    const t = setTimeout(() => setSaveStatus('idle'), SAVED_VISIBLE_MS);
+    return () => clearTimeout(t);
+  }, [saveStatus]);
 
-  const scheduleSaveCurrent = useCallback(() => {
-    scheduleSave((prev) => prev);
-  }, [scheduleSave]);
+  /**
+   * 디바운스 자동저장. 타이머 발화 시점의 최신 strokes(`strokesForSaveRef`)를
+   * 그대로 저장한다. 상태가 이미 반영돼 있으므로 별도 가공이 필요 없다.
+   */
+  const scheduleSave = useCallback(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (saveRetryTimerRef.current) {
+      clearTimeout(saveRetryTimerRef.current);
+      saveRetryTimerRef.current = null;
+    }
+    setSaveStatus('saving');
+    saveTimerRef.current = setTimeout(async () => {
+      saveTimerRef.current = null;
+      try {
+        await persistStrokes(strokesForSaveRef.current);
+      } catch {
+        setSaveStatus('error');
+        scheduleSaveRetry();
+      }
+    }, AUTO_SAVE_DELAY_MS);
+  }, [persistStrokes, scheduleSaveRetry]);
 
   const handleStrokeAdd = useCallback(
     (stroke: Stroke) => {
       userDrewBeforeLoadRef.current = true;
       addStroke(stroke);
-      scheduleSave((prev) => [...prev, stroke]);
+      scheduleSave();
     },
     [addStroke, scheduleSave]
   );
@@ -292,7 +312,7 @@ export function DrawingPanel({
   const handleStrokeErase = useCallback(
     (ids: string[]) => {
       eraseStrokes(ids);
-      scheduleSave((prev) => prev.filter((s) => !ids.includes(s.id)));
+      scheduleSave();
     },
     [eraseStrokes, scheduleSave]
   );
@@ -319,18 +339,29 @@ export function DrawingPanel({
 
   const handleUndo = useCallback(() => {
     undo();
-    scheduleSaveCurrent();
-  }, [undo, scheduleSaveCurrent]);
+    scheduleSave();
+  }, [undo, scheduleSave]);
 
   const handleRedo = useCallback(() => {
     redo();
-    scheduleSaveCurrent();
-  }, [redo, scheduleSaveCurrent]);
+    scheduleSave();
+  }, [redo, scheduleSave]);
 
+  // 색 선택 시 현재 툴의 마지막 색으로 기억
+  const handleColorSelect = useCallback(
+    (c: string) => {
+      setColor(c);
+      if (tool === 'highlighter') highlighterColorRef.current = c;
+      else penColorRef.current = c;
+    },
+    [tool]
+  );
+
+  // 툴 전환 시 해당 툴이 마지막으로 쓰던 색을 복원(지우개는 색 변경 없음)
   const handleToolChange = useCallback((next: DrawingTool) => {
     setTool(next);
-    if (next === 'pen') setColor(PANEL_COLORS[0]);
-    else if (next === 'highlighter') setColor(HIGHLIGHTER_COLORS[0]);
+    if (next === 'pen') setColor(penColorRef.current);
+    else if (next === 'highlighter') setColor(highlighterColorRef.current);
   }, []);
 
   const paletteColors =
@@ -356,7 +387,7 @@ export function DrawingPanel({
         오버레이는 이 컨테이너 기준 absolute로 캔버스 위에 떠 있음.
       */}
       <div
-        className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white"
+        className="border-gray-3 relative overflow-hidden rounded-2xl border-2 border-dashed bg-white"
         style={{ height: panelHeight }}
       >
         <div
@@ -423,13 +454,13 @@ export function DrawingPanel({
               aria-hidden={!showExpandHint}
             >
               {showExpandHint && (
-                <div className="sticky bottom-0 z-20 flex h-full flex-col items-center justify-center gap-2.5 bg-gray-50 px-4 text-center">
-                  <p className="text-[13px] font-medium text-gray-800">
+                <div className="bg-gray-1 sticky bottom-0 z-20 flex h-full flex-col items-center justify-center gap-2.5 px-4 text-center">
+                  <p className="text-gray-11 text-[13px] font-medium">
                     1초간 유지 · 캔버스 확장
                   </p>
-                  <div className="h-1 w-full max-w-[180px] overflow-hidden rounded-full bg-gray-200">
+                  <div className="bg-gray-3 h-1 w-full max-w-[180px] overflow-hidden rounded-full">
                     <div
-                      className="h-full rounded-full bg-orange-500 transition-[width] duration-75 ease-linear"
+                      className="bg-orange-7 h-full rounded-full transition-[width] duration-75 ease-linear"
                       style={{ width: `${expandHoldProgress}%` }}
                     />
                   </div>
@@ -442,7 +473,7 @@ export function DrawingPanel({
         {/* 줌 % 배지 — 확대 상태에서만 (핀치 중 DOM 직접 갱신) */}
         <div
           ref={zoomBadgeRef}
-          className="pointer-events-none absolute top-2 left-2 z-50 rounded-full bg-gray-900/80 px-2.5 py-1 text-xs font-semibold text-white tabular-nums backdrop-blur-sm transition-opacity duration-150"
+          className="bg-gray-12/80 pointer-events-none absolute top-2 left-2 z-50 rounded-full px-2.5 py-1 text-xs font-semibold text-white tabular-nums backdrop-blur-sm transition-opacity duration-150"
           style={{ opacity: 0 }}
           aria-hidden
         >
@@ -452,7 +483,7 @@ export function DrawingPanel({
         {/* 미니맵 — 확장/확대로 화면 밖 영역이 있을 때 현재 보이는 위치 표시 */}
         {minimap.visible && (
           <div
-            className="pointer-events-none absolute top-2 right-2 z-50 rounded-md border border-gray-300/80 bg-white/85 shadow-sm backdrop-blur-sm"
+            className="border-gray-4/80 pointer-events-none absolute top-2 right-2 z-50 rounded-md border bg-white/85 shadow-sm backdrop-blur-sm"
             data-testid="drawing-minimap"
             style={{ width: minimap.boxW, height: minimap.boxH }}
             aria-hidden
@@ -465,7 +496,7 @@ export function DrawingPanel({
               boxH={minimap.boxH}
             />
             <div
-              className="absolute rounded-[2px] border-[1.5px] border-orange-500 bg-orange-500/15"
+              className="border-orange-7 bg-orange-7/15 absolute rounded-[2px] border-[1.5px]"
               style={{
                 left: minimap.rectLeft,
                 top: minimap.rectTop,
@@ -482,7 +513,7 @@ export function DrawingPanel({
             className="pointer-events-none absolute inset-x-0 bottom-4 z-50 flex justify-center"
             role="status"
           >
-            <div className="flex items-center gap-2.5 rounded-full bg-gray-900/85 px-4 py-2.5 text-white shadow-lg backdrop-blur-sm">
+            <div className="bg-gray-12/85 flex items-center gap-2.5 rounded-full px-4 py-2.5 text-white shadow-lg backdrop-blur-sm">
               <TwoFingerIcon />
               <span className="text-[13px] leading-snug font-medium">
                 두 손가락으로 확대 · 이동하세요
@@ -522,13 +553,13 @@ export function DrawingPanel({
           </PanelToolBtn>
         </div>
 
-        <div className="h-5 w-px shrink-0 bg-gray-200" />
+        <div className="bg-gray-3 h-5 w-px shrink-0" />
 
         {tool === 'eraser' ? (
           /* 전체 지우기 — 지우개를 선택했을 때만 노출 */
           <button
             onClick={() => setShowClearConfirm(true)}
-            className="flex shrink-0 items-center gap-1.5 text-sm whitespace-nowrap text-gray-500 transition-colors hover:text-gray-700"
+            className="text-gray-9 hover:text-gray-11 flex shrink-0 items-center gap-1.5 text-sm whitespace-nowrap transition-colors"
           >
             <ToolbarTrashIcon />
             <span>전체 지우기</span>
@@ -540,18 +571,18 @@ export function DrawingPanel({
               {paletteColors.map((c) => (
                 <button
                   key={c}
-                  onClick={() => setColor(c)}
+                  onClick={() => handleColorSelect(c)}
                   className={cn(
                     'size-6 rounded-full transition-transform hover:scale-110',
                     color === c &&
-                      'scale-110 ring-2 ring-white ring-offset-2 ring-offset-gray-50'
+                      'ring-offset-gray-1 scale-110 ring-2 ring-white ring-offset-2'
                   )}
                   style={{ backgroundColor: c }}
                 />
               ))}
             </div>
 
-            <div className="h-5 w-px shrink-0 bg-gray-200" />
+            <div className="bg-gray-3 h-5 w-px shrink-0" />
 
             {/* 굵기 선택 (3단계) */}
             <div className="flex shrink-0 items-center gap-1">
@@ -563,7 +594,7 @@ export function DrawingPanel({
                   className={cn(
                     'flex size-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
                     size === s
-                      ? 'border-orange-500'
+                      ? 'border-orange-7'
                       : 'border-gray-3 hover:bg-gray-1'
                   )}
                 >
@@ -571,7 +602,7 @@ export function DrawingPanel({
                   <span
                     className={cn(
                       'block rounded-full',
-                      size === s ? 'bg-orange-500' : 'bg-gray-7'
+                      size === s ? 'bg-orange-7' : 'bg-gray-7'
                     )}
                     style={{ width: s * 2 + 2, height: s * 2 + 2 }}
                   />
@@ -588,7 +619,7 @@ export function DrawingPanel({
           <button
             onClick={handleUndo}
             disabled={!canUndo}
-            className="flex size-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+            className="text-gray-6 hover:bg-gray-1 flex size-7 items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-30"
             title="실행 취소"
           >
             <UndoIcon />
@@ -596,7 +627,7 @@ export function DrawingPanel({
           <button
             onClick={handleRedo}
             disabled={!canRedo}
-            className="flex size-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+            className="text-gray-6 hover:bg-gray-1 flex size-7 items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-30"
             title="다시 실행"
           >
             <RedoIcon />
@@ -610,15 +641,15 @@ export function DrawingPanel({
       {showClearConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-            <h2 className="text-base font-bold text-gray-900">전체 지우기</h2>
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">
+            <h2 className="text-gray-12 text-base font-bold">전체 지우기</h2>
+            <p className="text-gray-9 mt-3 text-sm leading-relaxed">
               모든 필기를 삭제합니다.
               <br />이 작업은 되돌릴 수 없어요.
             </p>
             <div className="mt-5 flex gap-2">
               <button
                 onClick={() => setShowClearConfirm(false)}
-                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                className="border-gray-3 text-gray-9 hover:bg-gray-1 flex-1 rounded-xl border py-2.5 text-sm font-medium transition-colors"
               >
                 취소
               </button>
