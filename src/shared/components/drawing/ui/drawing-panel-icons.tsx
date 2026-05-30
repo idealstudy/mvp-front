@@ -21,14 +21,14 @@ export function PanelToolBtn({
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-0.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50"
+      className="flex h-12 min-w-[2.75rem] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 transition-colors hover:bg-gray-50"
     >
       <span className={cn(active ? 'text-orange-500' : 'text-gray-400')}>
         {children}
       </span>
       <span
         className={cn(
-          'text-[10px] font-medium',
+          'text-[10px] leading-none font-medium whitespace-nowrap',
           active ? 'text-orange-500' : 'text-gray-400'
         )}
       >
@@ -40,29 +40,31 @@ export function PanelToolBtn({
 
 // ─── 저장 상태 표시 ────────────────────────────────────────────────────────────
 
+// 캔버스 좌하단에 absolute 오버레이로 표시한다. absolute라 idle 시 null 을 반환해도
+// 툴바·캔버스 레이아웃에 영향을 주지 않는다(레이아웃 시프트 없음).
 export function SaveStatusIndicator({ status }: { status: SaveStatus }) {
   if (status === 'idle') return null;
-  if (status === 'error') {
-    return (
-      <span
-        className="text-[11px] font-medium text-red-500"
-        title="IndexedDB 저장 실패 — 2초 후 자동 재시도"
-        role="status"
-      >
-        저장 실패
-      </span>
-    );
-  }
   const saving = status === 'saving';
   return (
-    <span
-      className="flex items-center gap-1 text-[11px] font-medium text-gray-400"
+    <div
+      className="border-gray-3 pointer-events-none absolute bottom-2 left-2 z-50 flex h-6 items-center gap-1 rounded-full border bg-white/85 px-2.5 text-[11px] font-medium whitespace-nowrap shadow-sm backdrop-blur-sm"
       role="status"
       aria-live="polite"
+      title={
+        status === 'error'
+          ? 'IndexedDB 저장 실패 — 2초 후 자동 재시도'
+          : undefined
+      }
     >
-      {saving ? <SpinnerIcon /> : <CheckIcon />}
-      {saving ? '저장 중' : '저장됨'}
-    </span>
+      {status === 'error' ? (
+        <span className="text-red-500">저장 실패</span>
+      ) : (
+        <span className="text-gray-9 flex items-center gap-1">
+          {saving ? <SpinnerIcon /> : <CheckIcon />}
+          {saving ? '저장 중' : '저장됨'}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -156,6 +158,24 @@ export function PanelPenIcon({ active }: { active: boolean }) {
     >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+
+export function PanelHighlighterIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={active ? '#f97316' : '#9ca3af'}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 11-6 6v3h9l3-3" />
+      <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
     </svg>
   );
 }

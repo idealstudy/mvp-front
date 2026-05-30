@@ -14,9 +14,11 @@ import { EXPAND_HINT_HEIGHT_PX, usePanZoom } from '../model/use-pan-zoom';
 import { useStrokes } from '../model/use-strokes';
 import type { DrawingTool, Stroke } from '../types';
 import { DrawingCanvas } from './drawing-canvas';
+import { MinimapStrokes } from './drawing-minimap-strokes';
 import {
   EmptyPencilIcon,
   PanelEraserIcon,
+  PanelHighlighterIcon,
   PanelPenIcon,
   PanelToolBtn,
   RedoIcon,
@@ -36,6 +38,18 @@ const PANEL_COLORS = [
   '#16a34a',
   '#6b7280',
 ] as const;
+
+/** 형광펜 전용 팔레트 (파스텔 — alpha 0.4로 렌더) */
+const HIGHLIGHTER_COLORS = [
+  '#fde047',
+  '#86efac',
+  '#93c5fd',
+  '#f9a8d4',
+  '#fdba74',
+] as const;
+
+/** 펜·형광펜 굵기 옵션 */
+const PEN_SIZES = [2, 4, 7] as const;
 
 const DEFAULT_PANEL_HEIGHT = 400;
 const DEFAULT_EXPAND_RATIO = 0.3;
@@ -73,8 +87,8 @@ export function DrawingPanel({
 
   const [tool, setTool] = useState<DrawingTool>('pen');
   const [color, setColor] = useState<string>(PANEL_COLORS[0]);
-  // 펜 굵기 — 추후 굵기 선택 UI 추가 예정(그때 setter 추출). 현재는 고정 4
-  const [size] = useState(4);
+  // 펜·형광펜 굵기 (툴바 굵기 선택에서 변경)
+  const [size, setSize] = useState<number>(PEN_SIZES[1]);
   const [canvasHeight, setCanvasHeight] = useState(emptyCanvasHeight);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -316,7 +330,11 @@ export function DrawingPanel({
   const handleToolChange = useCallback((next: DrawingTool) => {
     setTool(next);
     if (next === 'pen') setColor(PANEL_COLORS[0]);
+    else if (next === 'highlighter') setColor(HIGHLIGHTER_COLORS[0]);
   }, []);
+
+  const paletteColors =
+    tool === 'highlighter' ? HIGHLIGHTER_COLORS : PANEL_COLORS;
 
   const pageSize = useMemo(
     () => ({ width: canvasWidth, height: canvasHeight }),
@@ -439,6 +457,13 @@ export function DrawingPanel({
             style={{ width: minimap.boxW, height: minimap.boxH }}
             aria-hidden
           >
+            <MinimapStrokes
+              strokes={strokes}
+              canvasWidth={canvasWidth}
+              canvasHeight={canvasHeight}
+              boxW={minimap.boxW}
+              boxH={minimap.boxH}
+            />
             <div
               className="absolute rounded-[2px] border-[1.5px] border-orange-500 bg-orange-500/15"
               style={{
@@ -465,18 +490,28 @@ export function DrawingPanel({
             </div>
           </div>
         )}
+
+        {/* 저장 상태 — 캔버스 좌하단 오버레이 (툴바 밖) */}
+        <SaveStatusIndicator status={saveStatus} />
       </div>
 
-      {/* ── 하단 툴바 (점선 밖) ── */}
-      <div className="flex items-center gap-3 bg-white px-4 py-3">
+      {/* ── 하단 툴바 (점선 밖) — 폭 부족 시 아랫줄로 wrap ── */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 bg-white px-4 py-3">
         {/* 도구 버튼 그룹 */}
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <PanelToolBtn
             active={tool === 'pen'}
             onClick={() => handleToolChange('pen')}
             label="펜"
           >
             <PanelPenIcon active={tool === 'pen'} />
+          </PanelToolBtn>
+          <PanelToolBtn
+            active={tool === 'highlighter'}
+            onClick={() => handleToolChange('highlighter')}
+            label="형광펜"
+          >
+            <PanelHighlighterIcon active={tool === 'highlighter'} />
           </PanelToolBtn>
           <PanelToolBtn
             active={tool === 'eraser'}
@@ -487,39 +522,69 @@ export function DrawingPanel({
           </PanelToolBtn>
         </div>
 
-        {/* 색상 팔레트 */}
-        {tool !== 'eraser' && (
-          <div className="flex items-center gap-1.5">
-            {PANEL_COLORS.map((c) => (
-              <button
-                key={c}
-                onClick={() => setColor(c)}
-                className={cn(
-                  'size-6 rounded-full transition-transform hover:scale-110',
-                  color === c &&
-                    'scale-110 ring-2 ring-white ring-offset-2 ring-offset-gray-50'
-                )}
-                style={{ backgroundColor: c }}
-              />
-            ))}
-          </div>
-        )}
-
         <div className="h-5 w-px shrink-0 bg-gray-200" />
 
-        {/* 전체 지우기 */}
-        <button
-          onClick={() => setShowClearConfirm(true)}
-          className="flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700"
-        >
-          <ToolbarTrashIcon />
-          <span>전체 지우기</span>
-        </button>
+        {tool === 'eraser' ? (
+          /* 전체 지우기 — 지우개를 선택했을 때만 노출 */
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            className="flex shrink-0 items-center gap-1.5 text-sm whitespace-nowrap text-gray-500 transition-colors hover:text-gray-700"
+          >
+            <ToolbarTrashIcon />
+            <span>전체 지우기</span>
+          </button>
+        ) : (
+          <>
+            {/* 색상 팔레트 (펜·형광펜에 따라 다른 팔레트) */}
+            <div className="flex shrink-0 items-center gap-1.5">
+              {paletteColors.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setColor(c)}
+                  className={cn(
+                    'size-6 rounded-full transition-transform hover:scale-110',
+                    color === c &&
+                      'scale-110 ring-2 ring-white ring-offset-2 ring-offset-gray-50'
+                  )}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+
+            <div className="h-5 w-px shrink-0 bg-gray-200" />
+
+            {/* 굵기 선택 (3단계) */}
+            <div className="flex shrink-0 items-center gap-1">
+              {PEN_SIZES.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSize(s)}
+                  title={`굵기 ${s}`}
+                  className={cn(
+                    'flex size-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
+                    size === s
+                      ? 'border-orange-500'
+                      : 'border-gray-3 hover:bg-gray-1'
+                  )}
+                >
+                  {/* 굵기 미리보기 점 (width/height만 동적 px로 인라인) */}
+                  <span
+                    className={cn(
+                      'block rounded-full',
+                      size === s ? 'bg-orange-500' : 'bg-gray-7'
+                    )}
+                    style={{ width: s * 2 + 2, height: s * 2 + 2 }}
+                  />
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className="flex-1" />
 
         {/* Undo / Redo */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex shrink-0 items-center gap-0.5">
           <button
             onClick={handleUndo}
             disabled={!canUndo}
@@ -537,8 +602,6 @@ export function DrawingPanel({
             <RedoIcon />
           </button>
         </div>
-
-        <SaveStatusIndicator status={saveStatus} />
 
         {actionButton}
       </div>
