@@ -86,11 +86,18 @@ const AnswerResultDtoSchema = z
 
 const ChallengeReviewDtoSchema = z.object({
   id: IdSchema.optional(),
-  nickname: z.string().optional().default('익명'),
+  reviewId: IdSchema.optional(),
+  nickname: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((v) => v ?? '익명'),
   subject: z.string().optional().default('수학'),
   content: z.string(),
   recommendCount: z.number().optional().default(0),
-  isBest: z.boolean().optional().default(false),
+  isBest: z.boolean().optional(),
+  best: z.boolean().optional(),
+  recommendedByMe: z.boolean().optional().default(false),
 });
 
 const UserRankingDtoSchema = z.object({

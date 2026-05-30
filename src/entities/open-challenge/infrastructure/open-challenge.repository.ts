@@ -162,12 +162,15 @@ const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
 const toReview = (raw: unknown): ChallengeReview => {
   const parsed = dto.review.parse(raw);
   return domain.review.parse({
-    id: parsed.id ?? `${parsed.nickname}-${parsed.recommendCount}`,
+    id:
+      parsed.id ??
+      parsed.reviewId ??
+      `${parsed.nickname}-${parsed.recommendCount}`,
     nickname: parsed.nickname,
     subject: parsed.subject,
     content: parsed.content,
     recommendCount: parsed.recommendCount,
-    isBest: parsed.isBest,
+    isBest: parsed.isBest ?? parsed.best ?? false,
   });
 };
 
