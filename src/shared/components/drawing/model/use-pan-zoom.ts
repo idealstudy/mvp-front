@@ -251,9 +251,15 @@ export function usePanZoom({
       }
 
       const fracX = contentW > 0 ? scrollLeft / contentW : 0;
-      const fracY = contentH > 0 ? scrollTop / contentH : 0;
       const fracW = contentW > 0 ? Math.min(1, viewW / contentW) : 1;
-      const fracH = contentH > 0 ? Math.min(1, viewH / contentH) : 1;
+
+      // 세로: 하단 확장 슬롯(캔버스 아래 여백)은 제외한다.
+      // 뷰포트와 캔버스가 실제로 겹치는 구간만 [0, contentH]로 클램프해서,
+      // 슬롯까지 내려가도 사각형이 캔버스 아래를 넘지 않고 맨 아래에 멈춘다.
+      const visTop = Math.min(Math.max(scrollTop, 0), contentH);
+      const visBottom = Math.min(Math.max(scrollTop + viewH, 0), contentH);
+      const fracY = contentH > 0 ? visTop / contentH : 0;
+      const fracH = contentH > 0 ? (visBottom - visTop) / contentH : 1;
 
       setMinimap({
         visible: true,
