@@ -218,12 +218,15 @@ subjects.map((subject) => <Tab key={subject.value} />)
 
 ## 12. 컴포넌트 파일 선언 순서
 
-새 컴포넌트 파일은 읽기 흐름을 일정하게 유지하기 위해 아래 순서로 작성합니다.
+컴포넌트 파일은 반드시 아래 순서로 작성합니다. 순서가 다르면 수정 대상입니다.
 
 1. 타입
 2. 상수
 3. 내부 helper 함수 / 내부 컴포넌트
-4. `export` 컴포넌트 함수
+4. `export const` 컴포넌트 함수
+
+> `page.tsx` / `layout.tsx` 등 Next.js 규약 파일은 `export default function`을 사용합니다.
+> 그 외 feature 컴포넌트는 `export const`를 사용합니다.
 
 ```tsx
 type ExampleProps = {

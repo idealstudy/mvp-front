@@ -14,11 +14,6 @@ import { NextChallengeCard } from './next-challenge-card';
 import { ResultStats } from './result-stats';
 import { type SolutionItem, SolutionList } from './solution-list';
 
-const MOCK_TOTAL_SOLUTION_COUNT = 36;
-const MOCK_AI_COMMENT =
-  '잘했어요! 기본 개념을 정확히 이해하고 계산도 깔끔하게 마무리했어요. 👏 이런 문제는 자신감 포인트예요!';
-const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
-
 type ChallengeResultProps = {
   challengeId: string;
   result: {
@@ -37,6 +32,11 @@ type ChallengeResultProps = {
     questionImageUrl: string | null;
   };
 };
+
+const MOCK_TOTAL_SOLUTION_COUNT = 36;
+const MOCK_AI_COMMENT =
+  '잘했어요! 기본 개념을 정확히 이해하고 계산도 깔끔하게 마무리했어요. 👏 이런 문제는 자신감 포인트예요!';
+const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 
 export const ChallengeResult = ({
   challengeId,

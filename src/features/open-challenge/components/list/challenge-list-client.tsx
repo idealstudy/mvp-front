@@ -18,6 +18,11 @@ type SortOption = 'latest' | 'popular';
 
 const PAGE_SIZE = 3;
 
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'latest', label: '최신순' },
+  { value: 'popular', label: '인기순' },
+];
+
 export const ChallengeListClient = ({
   challenges,
   streak,
@@ -116,8 +121,3 @@ export const ChallengeListClient = ({
     </div>
   );
 };
-
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'latest', label: '최신순' },
-  { value: 'popular', label: '인기순' },
-];

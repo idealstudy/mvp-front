@@ -48,8 +48,6 @@ type AiCoachMessage = {
   step?: AiCoachProgressStep;
 };
 
-const MAX_COMMENT_LENGTH = 200;
-
 type AiCoachPanelProps = {
   challengeId: string;
   attemptId: string | null;
@@ -57,6 +55,119 @@ type AiCoachPanelProps = {
   onAttemptCreated: (attemptId: string) => void;
   onAttemptCleared: () => void;
   onReturnToProblem?: () => void;
+};
+
+const MAX_COMMENT_LENGTH = 200;
+
+const toSettings = (
+  preference: NonNullable<AiCoachingPreference>
+): AiCoachSettings => ({
+  subject: '수학',
+  learningStage:
+    (preference.learningStage?.code as AiCoachSettings['learningStage']) ??
+    'CONCEPT_FOCUSED',
+  learningGoal:
+    (preference.learningGoal?.code as AiCoachSettings['learningGoal']) ??
+    'CSAT',
+  difficultAreas: preference.difficultAreas.map(
+    (area) => area.code as AiCoachSettings['difficultAreas'][number]
+  ),
+  customText: preference.customText ?? '',
+  skipped: false,
+});
+
+const toPreferencePayload = (settings: AiCoachSettings) => ({
+  learningStage: settings.learningStage,
+  learningGoal: settings.learningGoal,
+  difficultAreas: settings.difficultAreas,
+  customText: settings.customText,
+});
+
+const toDialogOptions = <TValue extends string>(
+  options?: { code: string; label: string }[]
+): AiCoachSettingOption<TValue>[] | undefined =>
+  options?.map((option) => ({
+    value: option.code as TValue,
+    label: option.label,
+  }));
+
+const toProgressStep = (
+  progressionStep?: number | null
+): AiCoachProgressStep | undefined => {
+  switch (progressionStep) {
+    case 1:
+      return 'concept';
+    case 2:
+      return 'approach';
+    case 3:
+      return 'hint';
+    case 4:
+      return 'final';
+    default:
+      return undefined;
+  }
+};
+
+const getDifficultAreaLabel = (
+  area: AiCoachSettings['difficultAreas'][number]
+) => {
+  switch (area) {
+    case 'CONCEPT':
+      return '개념 이해';
+    case 'INTERPRET':
+      return '문제 해석';
+    case 'APPLICATION':
+      return '개념 적용';
+    case 'CALCULATION':
+      return '계산';
+  }
+};
+
+const getIntroMessage = (settings: AiCoachSettings) => {
+  if (settings.skipped) return MOCK_AI_COACH_INITIAL_MESSAGE;
+
+  const goalLabel =
+    settings.learningGoal === 'CSAT' ? '수능형 접근' : '내신형 정확성';
+  const stageLabel =
+    settings.learningStage === 'CONCEPT_FOCUSED' ? '개념 설명' : '풀이 접근';
+  const difficultAreaText =
+    settings.difficultAreas.length > 0
+      ? ` 특히 ${settings.difficultAreas
+          .map(getDifficultAreaLabel)
+          .join(', ')} 부분을 더 신경 쓸게요.`
+      : '';
+
+  return `${MOCK_AI_COACH_INITIAL_MESSAGE}\n${stageLabel}과 ${goalLabel}에 맞춰 힌트를 줄게요.${difficultAreaText}`;
+};
+
+const getProgressStepLabel = (step: AiCoachProgressStep) => {
+  switch (step) {
+    case 'concept':
+      return '1단계 · 개념 이해';
+    case 'approach':
+      return '2단계 · 접근 방향';
+    case 'hint':
+      return '3단계 · 풀이 힌트';
+    case 'final':
+      return '4단계 · 답 직전 힌트';
+  }
+};
+
+const getStatusLabel = (status: AiCoachStatus) => {
+  switch (status) {
+    case 'READY':
+      return '시작 전';
+    case 'COACHING':
+      return '코칭 중';
+    case 'WAITING_ANSWER':
+      return '답변 대기';
+    case 'GUIDE_TO_PROBLEM':
+      return '답 선택 유도';
+    case 'FINISHED':
+      return '종료';
+    case 'ABANDONED':
+      return '중단';
+  }
 };
 
 export const AiCoachPanel = ({
@@ -510,115 +621,4 @@ export const AiCoachPanel = ({
       />
     </>
   );
-};
-
-const toSettings = (
-  preference: NonNullable<AiCoachingPreference>
-): AiCoachSettings => ({
-  subject: '수학',
-  learningStage:
-    (preference.learningStage?.code as AiCoachSettings['learningStage']) ??
-    'CONCEPT_FOCUSED',
-  learningGoal:
-    (preference.learningGoal?.code as AiCoachSettings['learningGoal']) ??
-    'CSAT',
-  difficultAreas: preference.difficultAreas.map(
-    (area) => area.code as AiCoachSettings['difficultAreas'][number]
-  ),
-  customText: preference.customText ?? '',
-  skipped: false,
-});
-
-const toPreferencePayload = (settings: AiCoachSettings) => ({
-  learningStage: settings.learningStage,
-  learningGoal: settings.learningGoal,
-  difficultAreas: settings.difficultAreas,
-  customText: settings.customText,
-});
-
-const toDialogOptions = <TValue extends string>(
-  options?: { code: string; label: string }[]
-): AiCoachSettingOption<TValue>[] | undefined =>
-  options?.map((option) => ({
-    value: option.code as TValue,
-    label: option.label,
-  }));
-
-const toProgressStep = (
-  progressionStep?: number | null
-): AiCoachProgressStep | undefined => {
-  switch (progressionStep) {
-    case 1:
-      return 'concept';
-    case 2:
-      return 'approach';
-    case 3:
-      return 'hint';
-    case 4:
-      return 'final';
-    default:
-      return undefined;
-  }
-};
-
-const getIntroMessage = (settings: AiCoachSettings) => {
-  if (settings.skipped) return MOCK_AI_COACH_INITIAL_MESSAGE;
-
-  const goalLabel =
-    settings.learningGoal === 'CSAT' ? '수능형 접근' : '내신형 정확성';
-  const stageLabel =
-    settings.learningStage === 'CONCEPT_FOCUSED' ? '개념 설명' : '풀이 접근';
-  const difficultAreaText =
-    settings.difficultAreas.length > 0
-      ? ` 특히 ${settings.difficultAreas
-          .map(getDifficultAreaLabel)
-          .join(', ')} 부분을 더 신경 쓸게요.`
-      : '';
-
-  return `${MOCK_AI_COACH_INITIAL_MESSAGE}\n${stageLabel}과 ${goalLabel}에 맞춰 힌트를 줄게요.${difficultAreaText}`;
-};
-
-const getDifficultAreaLabel = (
-  area: AiCoachSettings['difficultAreas'][number]
-) => {
-  switch (area) {
-    case 'CONCEPT':
-      return '개념 이해';
-    case 'INTERPRET':
-      return '문제 해석';
-    case 'APPLICATION':
-      return '개념 적용';
-    case 'CALCULATION':
-      return '계산';
-  }
-};
-
-const getProgressStepLabel = (step: AiCoachProgressStep) => {
-  switch (step) {
-    case 'concept':
-      return '1단계 · 개념 이해';
-    case 'approach':
-      return '2단계 · 접근 방향';
-    case 'hint':
-      return '3단계 · 풀이 힌트';
-    case 'final':
-      return '4단계 · 답 직전 힌트';
-  }
-};
-
-const getStatusLabel = (status: AiCoachStatus) => {
-  switch (status) {
-    case 'READY':
-      return '시작 전';
-    case 'COACHING':
-      return '코칭 중';
-    case 'WAITING_ANSWER':
-      return '답변 대기';
-    case 'GUIDE_TO_PROBLEM':
-      return '답 선택 유도';
-    case 'FINISHED':
-      return '종료';
-    case 'ABANDONED':
-      return '중단';
-  }
 };

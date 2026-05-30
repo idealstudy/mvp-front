@@ -9,6 +9,10 @@ import { Check, Heart, Star } from 'lucide-react';
 
 import { useSubmitChallengeFeedbackMutation } from '../../hooks/use-open-challenge';
 
+type AiFeedbackFormProps = {
+  attemptId?: string;
+};
+
 const RATING_LABELS = [
   '전혀 도움안됨',
   '별로 도움안됨',
@@ -17,10 +21,6 @@ const RATING_LABELS = [
   '매우 도움됨',
 ];
 const MAX_COMMENT_LENGTH = 200;
-
-type AiFeedbackFormProps = {
-  attemptId?: string;
-};
 
 export const AiFeedbackForm = ({ attemptId }: AiFeedbackFormProps) => {
   const [rating, setRating] = useState<number | null>(null);
