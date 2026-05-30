@@ -21,10 +21,6 @@ import {
   useUpdateMyAiCoachingPreferenceMutation,
 } from '../../hooks/use-open-challenge';
 import {
-  MOCK_AI_COACH_INITIAL_MESSAGE,
-  MOCK_AI_COACH_QUICK_REPLIES,
-} from '../../mock/ai-coach';
-import {
   type AiCoachSettingOption,
   type AiCoachSettings,
   AiCoachSettingsDialog,
@@ -58,6 +54,11 @@ type AiCoachPanelProps = {
 };
 
 const MAX_COMMENT_LENGTH = 200;
+
+const AI_COACH_INITIAL_MESSAGE =
+  '좋아요. 정답을 바로 고르기보다, 먼저 문제에서 무엇을 묻는지 같이 정리해볼게요.';
+
+const AI_COACH_QUICK_REPLIES = ['잘 모르겠어요', '더 쉽게요', '다음 힌트'];
 
 const toSettings = (
   preference: NonNullable<AiCoachingPreference>
@@ -124,7 +125,7 @@ const getDifficultAreaLabel = (
 };
 
 const getIntroMessage = (settings: AiCoachSettings) => {
-  if (settings.skipped) return MOCK_AI_COACH_INITIAL_MESSAGE;
+  if (settings.skipped) return AI_COACH_INITIAL_MESSAGE;
 
   const goalLabel =
     settings.learningGoal === 'CSAT' ? '수능형 접근' : '내신형 정확성';
@@ -137,7 +138,7 @@ const getIntroMessage = (settings: AiCoachSettings) => {
           .join(', ')} 부분을 더 신경 쓸게요.`
       : '';
 
-  return `${MOCK_AI_COACH_INITIAL_MESSAGE}\n${stageLabel}과 ${goalLabel}에 맞춰 힌트를 줄게요.${difficultAreaText}`;
+  return `${AI_COACH_INITIAL_MESSAGE}\n${stageLabel}과 ${goalLabel}에 맞춰 힌트를 줄게요.${difficultAreaText}`;
 };
 
 const getProgressStepLabel = (step: AiCoachProgressStep) => {
@@ -564,7 +565,7 @@ export const AiCoachPanel = ({
             )}
 
             <div className="flex gap-2 px-4 pb-2">
-              {MOCK_AI_COACH_QUICK_REPLIES.map((replyOption) => (
+              {AI_COACH_QUICK_REPLIES.map((replyOption) => (
                 <button
                   key={replyOption}
                   type="button"

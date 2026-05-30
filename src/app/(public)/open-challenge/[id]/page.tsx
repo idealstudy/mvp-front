@@ -1,21 +1,18 @@
 import { ChallengeSolveClient } from '@/features/open-challenge/components/solve/challenge-solve-client';
-import { MOCK_CHALLENGE_DETAIL } from '@/features/open-challenge/mock/challenge-detail';
+import { fetchMemberRole } from '@/shared/lib/server';
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-// TODO: isLoggedIn → 실제 인증 상태로 교체 (fetchMemberRole 사용)
-const IS_LOGGED_IN_PLACEHOLDER = true;
-
 export default async function ChallengeDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const session = await fetchMemberRole();
 
   return (
     <ChallengeSolveClient
       challengeId={id}
-      challenge={MOCK_CHALLENGE_DETAIL}
-      isLoggedIn={IS_LOGGED_IN_PLACEHOLDER}
+      isLoggedIn={session.status === 'authenticated'}
     />
   );
 }

@@ -19,13 +19,12 @@ import {
   useStartChallengeAttemptMutation,
   useSubmitChallengeAnswerMutation,
 } from '../../hooks/use-open-challenge';
-import { type ChallengeDetailMock } from '../../mock/challenge-detail';
 import { AiCoachPanel } from './ai-coach-panel';
+import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
 
 type ChallengeSolveClientProps = {
   challengeId: string;
-  challenge: ChallengeDetailMock;
   isLoggedIn: boolean;
 };
 
@@ -33,7 +32,6 @@ const RESULT_STORAGE_KEY_PREFIX = 'open-challenge-result';
 
 export const ChallengeSolveClient = ({
   challengeId,
-  challenge,
   isLoggedIn,
 }: ChallengeSolveClientProps) => {
   const router = useRouter();
@@ -48,10 +46,10 @@ export const ChallengeSolveClient = ({
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
 
-  const { data: apiChallenge } = useOpenChallengeDetailQuery(challengeId);
+  const { data: challenge, isLoading: isChallengeLoading } =
+    useOpenChallengeDetailQuery(challengeId);
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
-  const activeChallenge = apiChallenge ?? challenge;
   const isSubmitting =
     startAttemptMutation.isPending || submitAnswerMutation.isPending;
 
@@ -104,6 +102,9 @@ export const ChallengeSolveClient = ({
     choiceSectionRef.current?.focus();
   };
 
+  if (isChallengeLoading) return <ChallengeSolveSkeleton />;
+  if (!challenge) return null;
+
   return (
     <div className="flex h-[calc(100vh-var(--spacing-header-height,64px))] overflow-hidden">
       {/* AI 코치 — 모바일에서 숨김 */}
@@ -126,10 +127,10 @@ export const ChallengeSolveClient = ({
           </div>
 
           <div className="text-gray-8 mb-3 flex min-w-0 items-center gap-2 text-sm">
-            <span>{activeChallenge.subject}</span>
+            <span>{challenge.subject}</span>
             <span>›</span>
             <span className="text-text-main truncate font-semibold">
-              {activeChallenge.topic}
+              {challenge.topic}
             </span>
           </div>
 
@@ -146,10 +147,10 @@ export const ChallengeSolveClient = ({
             >
               <div className="min-w-0">
                 <p className="text-gray-8 text-xs font-semibold">
-                  문제 {activeChallenge.questionNumber}
+                  문제 {challenge.questionNumber}
                 </p>
                 <p className="text-text-main mt-1 truncate text-base font-bold">
-                  {activeChallenge.topic}
+                  {challenge.topic}
                 </p>
               </div>
               {isQuestionOpen ? (
@@ -169,15 +170,15 @@ export const ChallengeSolveClient = ({
               <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
                 <p className="font-body1-heading text-text-main text-lg leading-relaxed whitespace-pre-line">
                   <span className="text-orange-7 mr-2">
-                    {activeChallenge.questionNumber}.
+                    {challenge.questionNumber}.
                   </span>
-                  {activeChallenge.questionText}
+                  {challenge.questionText}
                 </p>
-                {activeChallenge.questionImageUrl && (
+                {challenge.questionImageUrl && (
                   <div className="border-line-line2 bg-gray-1 mt-5 overflow-hidden rounded-lg border p-3">
                     <Image
-                      src={activeChallenge.questionImageUrl}
-                      alt={`${activeChallenge.topic} 문제 이미지`}
+                      src={challenge.questionImageUrl}
+                      alt={`${challenge.topic} 문제 이미지`}
                       width={760}
                       height={420}
                       className="max-h-[420px] w-full object-contain"
@@ -229,7 +230,7 @@ export const ChallengeSolveClient = ({
               </Button>
             </div>
             <ChoiceList
-              choices={activeChallenge.choices}
+              choices={challenge.choices}
               selected={selectedAnswer}
               onSelect={handleAnswerSelect}
             />
