@@ -16,7 +16,7 @@ import { Sidebar } from '@/shared/components/sidebar';
 import { PRIVATE, PUBLIC } from '@/shared/constants/route';
 import { useRole } from '@/shared/hooks/use-role';
 import { trackGnbLogoutClick } from '@/shared/lib/analytics';
-import { LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
+import { Flame, LogOut, ShieldUserIcon, User2Icon } from 'lucide-react';
 
 export const DashboardSidebar = () => {
   // [CRITICAL TODO: API 구현 누락] useDashboardQuery의 데이터(data)를 사용할 수 있도록 백엔드 API 및 바인딩 작업을 즉시 진행해야 합니다.
@@ -116,6 +116,18 @@ export const DashboardSidebar = () => {
                 </Sidebar.Text>
               </Sidebar.Item>
             </li>
+            <li>
+              <Sidebar.Item
+                href={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
+                matchPath={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
+                className="h-12 items-center justify-start gap-[2px]"
+              >
+                <ListIcon />
+                <Sidebar.Text className="font-body2-normal">
+                  오픈챌린지 관리
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </li>
           </Sidebar.List>
         </>
       )}
@@ -134,6 +146,17 @@ export const DashboardSidebar = () => {
       >
         <NotepadIcon className="shrink-0" />
         <Sidebar.Text>게시판</Sidebar.Text>
+      </Sidebar.Item>
+
+      <Sidebar.Item
+        href={PUBLIC.OPEN_CHALLENGE.LIST}
+        matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
+      >
+        <Flame
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>오픈 챌린지</Sidebar.Text>
       </Sidebar.Item>
 
       <Sidebar.Item

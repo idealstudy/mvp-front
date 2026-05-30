@@ -124,6 +124,51 @@ export function classifyColumnError(code?: string): ApiErrorType {
   }
 }
 
+// open challenge 관련 에러
+export function classifyOpenChallengeError(code?: string): ApiErrorType {
+  switch (code) {
+    case 'CHALLENGE_NOT_FOUND':
+    case 'CHALLENGE_ATTEMPT_NOT_FOUND':
+    case 'CHALLENGE_REVIEW_NOT_FOUND':
+      return 'CONTEXT';
+
+    case 'ANSWER_NOT_SELECTED':
+    case 'CHALLENGE_ALREADY_COMPLETED':
+    case 'CHALLENGE_ATTEMPT_ANSWER_REQUIRED':
+    case 'CHALLENGE_ATTEMPT_INVALID_ANSWER':
+    case 'CHALLENGE_REVIEW_ALREADY_EXISTS':
+    case 'CHALLENGE_FEEDBACK_ALREADY_EXISTS':
+    case 'CHALLENGE_QUESTION_BODY_REQUIRED':
+    case 'CHALLENGE_INVALID_CHOICE':
+    case 'CHALLENGE_MEDIA_NOT_FOUND':
+    case 'CHALLENGE_NOT_EDITABLE':
+    case 'CHALLENGE_NOT_DELETABLE':
+    case 'AI_COACHING_MESSAGE_TOO_LONG':
+    case 'AI_COACHING_RATE_LIMITED':
+    case 'AI_COACHING_PREFERENCE_INVALID_VALUE':
+      return 'FIELD';
+
+    case 'MEMBER_NOT_EXIST':
+    case 'CHALLENGE_ATTEMPT_FORBIDDEN':
+    case 'CHALLENGE_ATTEMPT_NOT_OWNED':
+    case 'CHALLENGE_REVIEW_FORBIDDEN':
+    case 'AI_COACHING_SESSION_NOT_OWNED':
+    case 'AI_COACHING_ACCESS_DENIED_NOT_IN_STUDY_ROOM':
+      return 'AUTH';
+
+    case 'CHALLENGE_ATTEMPT_NOT_IN_PROGRESS':
+    case 'CHALLENGE_ATTEMPT_ALREADY_COMPLETED':
+    case 'AI_COACHING_SESSION_NOT_FOUND':
+    case 'AI_COACHING_SESSION_ALREADY_EXISTS':
+    case 'AI_COACHING_SESSION_FINISHED':
+    case 'AI_COACHING_PROVIDER_FAILED':
+      return 'CONTEXT';
+
+    default:
+      return 'UNKNOWN';
+  }
+}
+
 // inquiry 관련 에러
 export function classifyInquiryError(code?: string): ApiErrorType {
   switch (code) {

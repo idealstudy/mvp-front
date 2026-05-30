@@ -8,6 +8,7 @@ export { RadioGroup } from './radio-group';
 export { RadioCard } from './radio-card';
 export { Checkbox } from './checkbox';
 export { Button } from './button';
+export { BackButton } from './back-button';
 export { Input } from './input';
 export { Prompt } from './prompt';
 export { Pagination } from './pagination';

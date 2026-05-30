@@ -143,6 +143,25 @@ echo "=== AI Guardrails Check ==="
 echo "대상: 신규 생성 코드 기준 (기존 레거시 경로 제외)"
 echo ""
 
+# ── 0. Prettier 포매팅 ────────────────────────────────────────────────────────
+echo "0. 코드 포매팅 (Prettier)..."
+PRETTIER_TARGETS=()
+while IFS= read -r f; do
+  [[ "$f" == *.ts ]] || [[ "$f" == *.tsx ]] || continue
+  [ -f "$f" ] && PRETTIER_TARGETS+=("$f")
+done < <({
+  git diff --name-only HEAD 2>/dev/null
+  git ls-files --others --exclude-standard 2>/dev/null
+} | sort -u)
+
+if [ ${#PRETTIER_TARGETS[@]} -gt 0 ]; then
+  npx prettier --write "${PRETTIER_TARGETS[@]}" 2>/dev/null
+  echo "   ✅ 포매팅 완료 (${#PRETTIER_TARGETS[@]}개 파일)"
+else
+  echo "   ✅ 포매팅 대상 없음"
+fi
+echo ""
+
 # ── 레거시 경로 목록 (기존 위반이 이미 존재하는 경로 — 신규 작성 금지) ──────────
 LEGACY_FEATURE_PATHS=(
   "src/features/auth"

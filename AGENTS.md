@@ -10,13 +10,14 @@ Read this file first before touching any code.
 Read the following files **in order** before writing any code.
 All files are located in the `docs/` folder.
 
-| Order | File                     | What it covers                                            |
-| ----- | ------------------------ | --------------------------------------------------------- |
-| 1     | `docs/architecture.md`   | FSD architecture, layer structure, data flow, API clients |
-| 2     | `docs/entities.md`       | Entities structure                                        |
-| 3     | `docs/features.md`       | Features structure, notes on existing legacy code         |
-| 4     | `docs/error-handling.md` | Error handling layers, ApiErrorType, usage examples       |
-| 5     | `docs/e2e.md`            | Playwright setup, rules, and key flows for E2E testing    |
+| Order | File                            | What it covers                                            |
+| ----- | ------------------------------- | --------------------------------------------------------- |
+| 1     | `docs/architecture.md`          | FSD architecture, layer structure, data flow, API clients |
+| 2     | `docs/entities.md`              | Entities structure                                        |
+| 3     | `docs/features.md`              | Features structure, notes on existing legacy code         |
+| 4     | `docs/error-handling.md`        | Error handling layers, ApiErrorType, usage examples       |
+| 5     | `docs/e2e.md`                   | Playwright setup, rules, and key flows for E2E testing    |
+| 6     | `docs/ui-guidelines.md`         | UI coding rules: components, icons, tokens, a11y, responsive, loading patterns |
 
 ---
 
@@ -104,8 +105,11 @@ IF the task involves error handling in a mutation:
 IF the task involves writing or modifying E2E tests:
 → Read `docs/e2e.md`
 
+IF you are writing new UI components or pages:
+→ Read `docs/ui-guidelines.md`
+
 IF you are unfamiliar with the codebase or the task spans multiple areas:
-→ Read all 5 files in order (see Required Reading above)
+→ Read all files in order (see Required Reading above)
 
 ---
 

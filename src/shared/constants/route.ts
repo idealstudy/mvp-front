@@ -131,12 +131,26 @@ const INQUIRY = {
 } as const;
 
 /* ─────────────────────────────────────────────────────
+ * OPEN CHALLENGE
+ * ────────────────────────────────────────────────────*/
+const OPEN_CHALLENGE = {
+  LIST: '/open-challenge',
+  DETAIL: (id: string) => `/open-challenge/${id}`,
+  RESULT: (id: string) => `/open-challenge/${id}/result`,
+} as const;
+
+/* ─────────────────────────────────────────────────────
  * ADMIN
  * ────────────────────────────────────────────────────*/
 const ADMIN = {
   COLUMN: {
     LIST: '/admin/column',
     DETAIL: (id: number) => `/admin/column/${id}`,
+  },
+  OPEN_CHALLENGE: {
+    LIST: '/admin/open-challenge',
+    NEW: '/admin/open-challenge/new',
+    EDIT: (id: string) => `/admin/open-challenge/${id}/edit`,
   },
 } as const;
 
@@ -149,6 +163,7 @@ export const PUBLIC = {
   STUDY_ROOM_PREVIEW,
   COMMUNITY: PUBLIC_COMMUNITY,
   INQUIRY,
+  OPEN_CHALLENGE,
 } as const;
 
 /* ─────────────────────────────────────────────────────

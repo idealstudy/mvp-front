@@ -142,6 +142,17 @@ export const Header = () => {
               >
                 게시판
               </Link>
+              <Link
+                href={PUBLIC.OPEN_CHALLENGE.LIST}
+                className={cn(
+                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                  pathname.startsWith(PUBLIC.OPEN_CHALLENGE.LIST)
+                    ? 'bg-gray-11'
+                    : 'hover:bg-gray-11'
+                )}
+              >
+                오픈 챌린지
+              </Link>
             </div>
           )}
         </div>
@@ -235,6 +246,13 @@ export const Header = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     <span>게시판</span>
+                  </PopoverLink>
+
+                  <PopoverLink
+                    href={PUBLIC.OPEN_CHALLENGE.LIST}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>오픈 챌린지</span>
                   </PopoverLink>
 
                   {/* 스터디룸 섹션 */}
