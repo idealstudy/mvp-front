@@ -40,22 +40,36 @@ const toSubject = (subject: string): keyof typeof SUBJECT_LABELS => {
 
 const toApiParams = (params: ChallengeListParams) => ({
   subject:
-    !params.subject || params.subject === 'ALL'
-      ? undefined
-      : params.subject.toLowerCase(),
+    !params.subject || params.subject === 'ALL' ? undefined : params.subject,
   difficulty:
     !params.difficulty || params.difficulty === 'ALL'
       ? undefined
-      : params.difficulty,
-  sort: params.sort ?? 'latest',
+      : {
+          highest: 'TOP',
+          high: 'HIGH',
+          middle: 'MID',
+          low: 'LOW',
+        }[params.difficulty],
+  sort:
+    params.sort === 'latest'
+      ? 'LATEST'
+      : params.sort === 'popular'
+        ? 'POPULAR'
+        : undefined,
 });
 
 const toListItem = (raw: unknown): ChallengeListItem => {
   const parsed = dto.listItem.parse(raw);
+  const id = parsed.id ?? parsed.challengeId;
+
+  if (!id) {
+    throw new Error('Challenge id is missing.');
+  }
+
   return domain.listItem.parse({
-    id: parsed.id,
+    id,
     subject: toSubject(parsed.subject),
-    title: parsed.title,
+    title: parsed.questionText ?? parsed.title,
     sourceText: parsed.sourceText,
     questionImageUrl: parsed.questionImageUrl,
     passRate: parsed.passRate,
@@ -66,11 +80,16 @@ const toListItem = (raw: unknown): ChallengeListItem => {
 const toDetail = (raw: unknown): ChallengeDetail => {
   const parsed = dto.detail.parse(raw);
   const subject = toSubject(parsed.subject);
+  const id = parsed.id ?? parsed.challengeId;
+
+  if (!id) {
+    throw new Error('Challenge id is missing.');
+  }
 
   return domain.detail.parse({
-    id: parsed.id,
+    id,
     subject: SUBJECT_LABELS[subject],
-    topic: parsed.topic ?? parsed.title,
+    topic: parsed.topic ?? parsed.sourceText ?? parsed.title,
     questionNumber: parsed.questionNumber,
     questionText: parsed.questionText,
     questionImageUrl: parsed.questionImageUrl,
@@ -97,15 +116,15 @@ const toReview = (raw: unknown): ChallengeReview => {
 const getChallengeList = async (
   params: ChallengeListParams = {}
 ): Promise<ChallengeListItem[]> => {
-  const response = await api.public.get('/challenges', {
+  const response = await api.public.get('/public/challenges', {
     params: toApiParams(params),
   });
-  const list = unwrapEnvelope(response, dto.list);
-  return list.map(toListItem);
+  const page = unwrapEnvelope(response, dto.listPage);
+  return page.content.map(toListItem);
 };
 
 const getChallengeDetail = async (id: string): Promise<ChallengeDetail> => {
-  const response = await api.public.get(`/challenges/${id}`);
+  const response = await api.public.get(`/public/challenges/${id}`);
   const detail = unwrapEnvelope(response, dto.detail);
   return toDetail(detail);
 };
@@ -114,7 +133,10 @@ const startChallengeAttempt = async (
   params: StartChallengeAttemptPayload
 ): Promise<ChallengeAttempt> => {
   const validated = payload.startAttempt.parse(params);
-  const response = await api.private.post('/challenge-attempt', validated);
+  const response = await api.private.post(
+    '/common/challenge-attempts',
+    validated
+  );
   return unwrapEnvelope(response, dto.attempt);
 };
 
@@ -124,7 +146,7 @@ const submitChallengeAnswer = async (
 ) => {
   const validated = payload.submitAnswer.parse(params);
   const response = await api.private.patch(
-    `/challenge-attempt/${attemptId}/answer`,
+    `/common/challenge-attempts/${attemptId}/answer`,
     validated
   );
   return domain.answerResult.parse(unwrapEnvelope(response, dto.answerResult));
@@ -134,32 +156,34 @@ const getChallengeReviews = async (
   challengeId: string,
   sort = 'recommend'
 ): Promise<ChallengeReview[]> => {
-  const response = await api.public.get(`/challenge-reviews/${challengeId}`, {
-    params: { sort },
-  });
-  const reviews = unwrapEnvelope(response, dto.reviews);
-  return reviews.map(toReview);
+  const response = await api.private.get(
+    `/common/challenges/${challengeId}/reviews`,
+    {
+      params: { sort: sort === 'latest' ? 'LATEST' : 'RECOMMEND' },
+    }
+  );
+  const page = unwrapEnvelope(response, dto.reviewPage);
+  return page.content.map(toReview);
 };
 
 const createChallengeReview = async (
   params: CreateChallengeReviewPayload
 ): Promise<void> => {
   const validated = payload.createReview.parse(params);
-  await api.private.post('/challenge-review', validated);
+  await api.private.post('/common/challenge-reviews', validated);
 };
 
 const submitChallengeFeedback = async (
   params: SubmitChallengeFeedbackPayload
 ): Promise<void> => {
   const validated = payload.submitFeedback.parse(params);
-  await api.private.post('/challenge-feedback', validated);
+  await api.private.post('/common/challenge-feedbacks', validated);
 };
 
 const getChallengeRanking = async (): Promise<UserRanking[]> => {
-  const response = await api.public.get('/challenge-ranking');
-  return unwrapEnvelope(response, dto.rankings).map((ranking) =>
-    domain.ranking.parse(ranking)
-  );
+  const response = await api.public.get('/public/challenge-rankings');
+  const page = unwrapEnvelope(response, dto.rankingPage);
+  return page.content.map((ranking) => domain.ranking.parse(ranking));
 };
 
 const getNextChallenge = async (

@@ -2,6 +2,12 @@ import { z } from 'zod';
 
 const IdSchema = z.union([z.string(), z.number()]).transform(String);
 
+const NullableNumberSchema = z
+  .number()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? 0);
+
 const ChallengeSubjectDtoSchema = z
   .union([
     z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']),
@@ -21,15 +27,17 @@ const DifficultyDtoSchema = z
   .default('middle');
 
 const ChallengeListItemDtoSchema = z.object({
-  id: IdSchema,
+  id: IdSchema.optional(),
+  challengeId: IdSchema.optional(),
   subject: ChallengeSubjectDtoSchema,
   difficulty: DifficultyDtoSchema,
   wrongAnswerRate: z.number().optional().default(0),
   title: z.string().optional().default('오픈 챌린지 문제'),
   sourceText: z.string().optional().default('출처 정보'),
+  questionText: z.string().optional(),
   questionImageUrl: z.string().nullable().optional().default(null),
   participantCount: z.number().optional().default(0),
-  passRate: z.number().optional().default(0),
+  passRate: NullableNumberSchema,
 });
 
 const ChallengeDetailDtoSchema = ChallengeListItemDtoSchema.extend({
@@ -77,6 +85,12 @@ const UserRankingDtoSchema = z.object({
   correctRate: z.number(),
 });
 
+const page = <Item extends z.ZodTypeAny>(item: Item) =>
+  z.object({
+    content: z.array(item),
+    hasNext: z.boolean().optional().default(false),
+  });
+
 const StartAttemptPayloadSchema = z.object({
   challengeId: z.string().min(1),
 });
@@ -100,13 +114,16 @@ const SubmitFeedbackPayloadSchema = z.object({
 export const dto = {
   listItem: ChallengeListItemDtoSchema,
   list: z.array(ChallengeListItemDtoSchema),
+  listPage: page(ChallengeListItemDtoSchema),
   detail: ChallengeDetailDtoSchema,
   attempt: AttemptDtoSchema,
   answerResult: AnswerResultDtoSchema,
   review: ChallengeReviewDtoSchema,
   reviews: z.array(ChallengeReviewDtoSchema),
+  reviewPage: page(ChallengeReviewDtoSchema),
   ranking: UserRankingDtoSchema,
   rankings: z.array(UserRankingDtoSchema),
+  rankingPage: page(UserRankingDtoSchema),
 };
 
 export const payload = {
