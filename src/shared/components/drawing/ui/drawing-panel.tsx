@@ -38,22 +38,39 @@ const AUTO_SAVE_DELAY_MS = 700;
 const EXPAND_HOLD_MS = 1000;
 /** 확장 안내 바 높이(px) */
 const EXPAND_HINT_HEIGHT_PX = 72;
-/** 스크롤 thumb 최소 높이(px) */
-const SCROLL_THUMB_MIN_HEIGHT_PX = 40;
-/** 스크롤 thumb·트랙 너비(px) */
-const SCROLL_THUMB_WIDTH_PX = 8;
-/** 콘텐츠와 thumb 겹침 방지 패딩(px) */
-const SCROLL_THUMB_GUTTER_PX = 12;
+/** 미니맵 박스 최대 크기(px) — 캔버스 비율에 맞춰 이 안에 맞춤 */
+const MINIMAP_MAX_W = 64;
+const MINIMAP_MAX_H = 96;
+/** 한 손가락 시도 시 제스처 안내 UI 노출 시간(ms) */
+const GESTURE_HINT_MS = 1800;
 /** IndexedDB에서 복원할 최대 캔버스 높이 — 비정상 값으로 흰 화면 방지 */
 const MAX_CANVAS_HEIGHT = 8000;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
+/** 핀치를 줌으로 인정하는 최소 배율 변화 — 손가락 떨림을 줌으로 오인 방지 */
+const PINCH_ZOOM_DEADZONE = 0.02;
+/**
+ * 원래 크기 근처(1.0 ~ 1+threshold)는 MIN_ZOOM으로 스냅.
+ * 안 그러면 1.01 등에 끼어 overflow-x가 켜지고 좌우 이동이 생김.
+ */
+const ZOOM_SNAP_THRESHOLD = 0.05;
+/** 두 손가락 정지 중(줌 변화 없음) 스크롤 떨림을 무시하는 임계값(px) */
+const PAN_JITTER_DEADZONE_PX = 3;
+/** 제스처 의도 잠금: 손가락 간격이 이만큼 변하면 '줌'으로 확정(px) */
+const GESTURE_ZOOM_LOCK_PX = 16;
+/** 제스처 의도 잠금: 두 손가락 중심이 이만큼 이동하면 '이동'으로 확정(px) */
+const GESTURE_PAN_LOCK_PX = 8;
 
 type SaveStatus = 'idle' | 'saved' | 'error';
-type ScrollIndicatorState = {
+/** 미니맵: 박스 크기 + 현재 보이는 영역(뷰포트) 사각형 */
+type MinimapState = {
   visible: boolean;
-  top: number;
-  height: number;
+  boxW: number;
+  boxH: number;
+  rectLeft: number;
+  rectTop: number;
+  rectW: number;
+  rectH: number;
 };
 
 // ─── 타입 ────────────────────────────────────────────────────────────────────
@@ -100,13 +117,17 @@ export function DrawingPanel({
   const [isAtExpandScroll, setIsAtExpandScroll] = useState(false);
   /** iPad: touchstart는 손가락마다 따로 올 수 있어 state로 즉시 UI 반영 */
   const [fingerTouchCount, setFingerTouchCount] = useState(0);
-  const [isScrollable, setIsScrollable] = useState(false);
-  const [showScrollCoach, setShowScrollCoach] = useState(false);
-  const [scrollIndicator, setScrollIndicator] = useState<ScrollIndicatorState>({
+  const [minimap, setMinimap] = useState<MinimapState>({
     visible: false,
-    top: 0,
-    height: 0,
+    boxW: 0,
+    boxH: 0,
+    rectLeft: 0,
+    rectTop: 0,
+    rectW: 0,
+    rectH: 0,
   });
+  /** 한 손가락 시도 시 잠깐 뜨는 제스처 안내 */
+  const [showGestureHint, setShowGestureHint] = useState(false);
 
   const captureEnabled =
     capturePointerSession === true && process.env.NODE_ENV === 'development';
@@ -130,6 +151,11 @@ export function DrawingPanel({
   const abortDrawingRef = useRef<(() => void) | null>(null);
   const loadGenerationRef = useRef(0);
   const loadCompletedRef = useRef(false);
+  /** 줌 % 배지 — 핀치 중 리렌더 없이 DOM만 갱신 */
+  const zoomBadgeRef = useRef<HTMLDivElement>(null);
+  const gestureHintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   const {
     strokes,
@@ -160,7 +186,6 @@ export function DrawingPanel({
     const generation = ++loadGenerationRef.current;
     userDrewBeforeLoadRef.current = false;
     loadCompletedRef.current = false;
-    setShowScrollCoach(false);
     let cancelled = false;
 
     async function load() {
@@ -280,16 +305,6 @@ export function DrawingPanel({
 
   fingerTouchCountRef.current = fingerTouchCount;
 
-  useEffect(() => {
-    if (!loadCompletedRef.current || !hasExpandSlot) {
-      setShowScrollCoach(false);
-      return;
-    }
-    setShowScrollCoach(
-      isScrollable && fingerTouchCount === 0 && !isAtExpandScroll
-    );
-  }, [hasExpandSlot, isScrollable, fingerTouchCount, isAtExpandScroll]);
-
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -310,54 +325,61 @@ export function DrawingPanel({
     const el = scrollContainerRef.current;
     if (!el) return;
 
-    const TRACK_EDGE_PAD = 8;
-
-    const updateIndicator = () => {
-      const viewHeight = el.clientHeight > 0 ? el.clientHeight : panelHeight;
-      const { scrollTop } = el;
+    // 미니맵 + 확장 위치 갱신. (스크롤 thumb 제거 → 두 손가락 이동을 미니맵으로 안내)
+    const updateViewport = () => {
+      const viewW = el.clientWidth;
+      const viewH = el.clientHeight > 0 ? el.clientHeight : panelHeight;
+      const { scrollTop, scrollLeft } = el;
       const z = zoomRef.current;
-      const canvasH = canvasHeight * z;
+      const contentW = canvasWidth * z;
+      const contentH = canvasHeight * z;
       const expandSlot = hasExpandSlot ? EXPAND_HINT_HEIGHT_PX : 0;
-      const totalH = canvasH + expandSlot;
-      const maxScrollCanvas = Math.max(0, canvasH - viewHeight);
-      const scrollable = totalH > viewHeight + 1;
-      const canvasScrollable = canvasH > viewHeight + 1;
 
-      setIsScrollable(scrollable);
+      // 하단(확장 슬롯)에 도달 → 확장 힌트/홀드 조건
+      const scrollableForExpand = contentH + expandSlot > viewH + 1;
       setIsAtExpandScroll(
-        hasExpandSlot && scrollable && scrollTop + viewHeight >= canvasH + 1
+        hasExpandSlot &&
+          scrollableForExpand &&
+          scrollTop + viewH >= contentH + 1
       );
 
-      if (!scrollable) {
-        setScrollIndicator({ visible: false, top: 0, height: 0 });
+      // 보여줄 게 있을 때만(확장됐거나 확대됨) 미니맵 표시
+      const overflowX = contentW > viewW + 1;
+      const overflowY = contentH > viewH + 1;
+      if (!overflowX && !overflowY) {
+        setMinimap((prev) =>
+          prev.visible ? { ...prev, visible: false } : prev
+        );
         return;
       }
 
-      const trackHeight = Math.max(0, viewHeight - TRACK_EDGE_PAD * 2);
-      const scrollTopCanvas = Math.min(scrollTop, maxScrollCanvas);
+      // 캔버스 비율에 맞춰 미니맵 박스 크기 결정
+      const aspect = canvasWidth > 0 ? canvasWidth / canvasHeight : 1;
+      let boxW = MINIMAP_MAX_H * aspect;
+      let boxH = MINIMAP_MAX_H;
+      if (boxW > MINIMAP_MAX_W) {
+        boxW = MINIMAP_MAX_W;
+        boxH = MINIMAP_MAX_W / aspect;
+      }
 
-      // thumb 크기·위치: 캔버스 높이만 기준 (확장 슬롯 제외)
-      const thumbHeight = canvasScrollable
-        ? Math.max(
-            SCROLL_THUMB_MIN_HEIGHT_PX,
-            trackHeight * (viewHeight / canvasH)
-          )
-        : SCROLL_THUMB_MIN_HEIGHT_PX;
-      const maxTravel = Math.max(0, trackHeight - thumbHeight);
-      const thumbTop =
-        canvasScrollable && maxScrollCanvas > 0
-          ? maxTravel * (scrollTopCanvas / maxScrollCanvas)
-          : maxTravel;
+      const fracX = contentW > 0 ? scrollLeft / contentW : 0;
+      const fracY = contentH > 0 ? scrollTop / contentH : 0;
+      const fracW = contentW > 0 ? Math.min(1, viewW / contentW) : 1;
+      const fracH = contentH > 0 ? Math.min(1, viewH / contentH) : 1;
 
-      setScrollIndicator({
+      setMinimap({
         visible: true,
-        top: thumbTop,
-        height: thumbHeight,
+        boxW,
+        boxH,
+        rectLeft: fracX * boxW,
+        rectTop: fracY * boxH,
+        rectW: fracW * boxW,
+        rectH: fracH * boxH,
       });
     };
 
     const scheduleUpdate = () => {
-      requestAnimationFrame(updateIndicator);
+      requestAnimationFrame(updateViewport);
     };
 
     scheduleUpdate();
@@ -371,9 +393,9 @@ export function DrawingPanel({
     };
   }, [
     canvasHeight,
+    canvasWidth,
     zoom,
     hasExpandSlot,
-    getScrollMetrics,
     panelHeight,
     strokes.length,
   ]);
@@ -393,6 +415,24 @@ export function DrawingPanel({
   const syncFingerCount = useCallback((count: number) => {
     fingerTouchCountRef.current = count;
     setFingerTouchCount(count);
+  }, []);
+
+  /** 한 손가락 시도 시 "두 손가락으로" 안내를 잠깐 띄운다 */
+  const showGestureHintBriefly = useCallback(() => {
+    setShowGestureHint(true);
+    if (gestureHintTimerRef.current) clearTimeout(gestureHintTimerRef.current);
+    gestureHintTimerRef.current = setTimeout(() => {
+      setShowGestureHint(false);
+      gestureHintTimerRef.current = null;
+    }, GESTURE_HINT_MS);
+  }, []);
+
+  const hideGestureHint = useCallback(() => {
+    if (gestureHintTimerRef.current) {
+      clearTimeout(gestureHintTimerRef.current);
+      gestureHintTimerRef.current = null;
+    }
+    setShowGestureHint(false);
   }, []);
 
   const hideExpandHint = useCallback(() => {
@@ -445,6 +485,13 @@ export function DrawingPanel({
       scrollEl.classList.toggle('overflow-x-auto', allowPanX);
       scrollEl.classList.toggle('overflow-x-hidden', !allowPanX);
     }
+    // 줌 % 배지: 확대 상태에서만 표시 (리렌더 없이 DOM 직접 갱신)
+    const badge = zoomBadgeRef.current;
+    if (badge) {
+      const zoomedIn = z > MIN_ZOOM + 0.005;
+      badge.style.opacity = zoomedIn ? '1' : '0';
+      badge.textContent = `${Math.round(z * 100)}%`;
+    }
   }, []);
 
   const commitZoomState = useCallback(() => {
@@ -468,9 +515,24 @@ export function DrawingPanel({
     /** 제스처 시작 시 손가락 중심 아래 캔버스 좌표(논리 px) */
     let gestureWorldX = 0;
     let gestureWorldY = 0;
+    /** 제스처 시작 시 두 손가락 중심(스크린 px) — 의도 판정용 */
+    let gestureStartCenterX = 0;
+    let gestureStartCenterY = 0;
+    /** 'idle' 동안 줌/이동 의도 판정. 한 번 잠기면 제스처 끝까지 유지 */
+    let gestureMode: 'idle' | 'pan' | 'zoom' = 'idle';
     let wheelCommitRaf = 0;
 
     const metrics = () => getScrollMetrics(el.clientHeight);
+
+    /**
+     * 제스처 진행 중에는 state `zoom`이 아직 확정 전이므로 라이브 zoom으로
+     * 세로 스크롤 한계를 계산해야 확대된 영역 끝까지 이동할 수 있다.
+     */
+    const liveMaxScroll = (zoomVal: number) => {
+      const { height: ch } = canvasSizeRef.current;
+      const expandSlot = hasExpandSlot ? EXPAND_HINT_HEIGHT_PX : 0;
+      return Math.max(0, ch * zoomVal + expandSlot - el.clientHeight);
+    };
 
     const scheduleWheelZoomCommit = () => {
       cancelAnimationFrame(wheelCommitRaf);
@@ -548,7 +610,7 @@ export function DrawingPanel({
       const localX = Math.min(cw, Math.max(0, contentX / oldZoom));
       const localY = Math.min(ch, Math.max(0, contentY / oldZoom));
 
-      const { maxScrollFull } = metrics();
+      const maxScrollFull = liveMaxScroll(newZoom);
       const maxLeft = Math.max(0, cw * newZoom - el.clientWidth);
 
       applyZoomVisual(newZoom);
@@ -574,8 +636,11 @@ export function DrawingPanel({
       return Math.hypot(dx, dy);
     };
 
-    const clampZoom = (value: number) =>
-      Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+    const clampZoom = (value: number) => {
+      const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+      // 원래 크기 근처는 정확히 MIN_ZOOM으로 스냅 → overflow-x off, 좌우 이동 차단
+      return clamped < MIN_ZOOM + ZOOM_SNAP_THRESHOLD ? MIN_ZOOM : clamped;
+    };
 
     const atExpandScroll = () => {
       const { canvasH } = metrics();
@@ -617,6 +682,9 @@ export function DrawingPanel({
       const centerY = getCenterY(touches);
       gestureStartZoom = zoomRef.current;
       gestureStartDist = getPinchDistance(touches);
+      gestureStartCenterX = centerX;
+      gestureStartCenterY = centerY;
+      gestureMode = 'idle';
       const scrollRect = el.getBoundingClientRect();
       const focalX = centerX - scrollRect.left;
       const focalY = centerY - scrollRect.top;
@@ -631,7 +699,7 @@ export function DrawingPanel({
       abortDrawingRef.current?.();
       twoFingerActive = true;
       captureGestureBaseline(touches);
-      setShowScrollCoach(false);
+      hideGestureHint();
       return true;
     };
 
@@ -646,34 +714,85 @@ export function DrawingPanel({
       const centerY = getCenterY(touches);
       const dist = getPinchDistance(touches);
 
-      let newZoom = gestureStartZoom;
+      // ── 의도 잠금: 이동/줌 중 하나로 확정 (확정 전엔 데드존) ──
+      // 스크롤(이동)이 주 동작 → pan 우선. 줌은 손가락 간격 변화가
+      // 중심 이동보다 확실히 클 때만 잠금(평행 스크롤이 줌으로 새는 것 방지).
+      if (gestureMode === 'idle') {
+        const distDelta =
+          gestureStartDist > 0 ? Math.abs(dist - gestureStartDist) : 0;
+        const centerDelta = Math.hypot(
+          centerX - gestureStartCenterX,
+          centerY - gestureStartCenterY
+        );
+        if (centerDelta >= GESTURE_PAN_LOCK_PX && centerDelta >= distDelta) {
+          gestureMode = 'pan';
+        } else if (distDelta >= GESTURE_ZOOM_LOCK_PX) {
+          gestureMode = 'zoom';
+        } else {
+          // 아직 의도 불명 — 떨림 무시하고 아무것도 하지 않음
+          if (zoomRef.current <= MIN_ZOOM && atExpandScroll()) {
+            tryStartExpandHold();
+          }
+          return;
+        }
+      }
+
+      // ── 줌: '줌'으로 잠긴 동안만. 이동(pan) 중엔 손가락 간격 변화 무시 ──
+      const prevZoom = zoomRef.current;
+      let newZoom = prevZoom;
       if (
+        gestureMode === 'zoom' &&
         gestureStartDist > 0 &&
         dist > 0 &&
         isPinchCenterOnCanvas(centerX, centerY)
       ) {
-        newZoom = clampZoom(gestureStartZoom * (dist / gestureStartDist));
-        cancelExpandHold();
+        const target = clampZoom(gestureStartZoom * (dist / gestureStartDist));
+        // 경계(원래 크기/최대)에 닿으면 데드존 무시하고 정확히 스냅 —
+        // 안 그러면 1.01배 등에서 멈춰 원래 크기인데도 좌우 이동이 생김
+        const atBound = target === MIN_ZOOM || target === MAX_ZOOM;
+        if (
+          target !== prevZoom &&
+          (atBound || Math.abs(target - prevZoom) >= PINCH_ZOOM_DEADZONE)
+        ) {
+          newZoom = target;
+        }
       }
+      const zoomChanged = newZoom !== prevZoom;
 
       const { width: cw } = canvasSizeRef.current;
       const scrollRect = el.getBoundingClientRect();
       const focalX = centerX - scrollRect.left;
       const focalY = centerY - scrollRect.top;
-      const { maxScrollFull } = metrics();
+      const maxScrollFull = liveMaxScroll(newZoom);
       const maxLeft = Math.max(0, cw * newZoom - el.clientWidth);
 
-      applyZoomVisual(newZoom);
-      el.scrollLeft = Math.max(
+      if (zoomChanged) applyZoomVisual(newZoom);
+
+      const targetLeft = Math.max(
         0,
         Math.min(maxLeft, gestureWorldX * newZoom - focalX)
       );
-      el.scrollTop = Math.max(
+      const targetTop = Math.max(
         0,
         Math.min(maxScrollFull, gestureWorldY * newZoom - focalY)
       );
 
-      if (zoomRef.current <= MIN_ZOOM && atExpandScroll()) {
+      // ── 스크롤 적용: 줌이 바뀐 프레임은 focal 고정 위해 항상 반영,
+      //    줌 변화 없으면(=정지/순수 pan) 떨림 데드존 이상일 때만 반영 ──
+      if (
+        zoomChanged ||
+        Math.abs(targetLeft - el.scrollLeft) >= PAN_JITTER_DEADZONE_PX
+      ) {
+        el.scrollLeft = targetLeft;
+      }
+      if (
+        zoomChanged ||
+        Math.abs(targetTop - el.scrollTop) >= PAN_JITTER_DEADZONE_PX
+      ) {
+        el.scrollTop = targetTop;
+      }
+
+      if (newZoom <= MIN_ZOOM && atExpandScroll()) {
         tryStartExpandHold();
       } else {
         cancelExpandHold();
@@ -696,7 +815,11 @@ export function DrawingPanel({
       if (fingerCount === 1) {
         cancelExpandHold();
         const touch = e.touches[0];
-        if (touch && isFingerTouch(touch)) e.preventDefault();
+        if (touch && isFingerTouch(touch)) {
+          // 한 손가락은 인식하지 않음(펜 예약) → 두 손가락 안내를 잠깐 표시
+          showGestureHintBriefly();
+          e.preventDefault();
+        }
       }
     };
 
@@ -760,14 +883,20 @@ export function DrawingPanel({
         return;
       }
 
-      const { scrollable, maxScrollCanvas } = metrics();
-      if (!scrollable) return;
-      const next = Math.max(
+      const { maxScrollCanvas } = metrics();
+      const { width: cw } = canvasSizeRef.current;
+      // 가로 이동은 확대 상태에서만 여유가 생긴다(원래 크기에선 maxLeft=0).
+      const maxLeft = Math.max(0, cw * zoomRef.current - el.clientWidth);
+
+      const nextTop = Math.max(
         0,
         Math.min(maxScrollCanvas, el.scrollTop + e.deltaY)
       );
-      if (next === el.scrollTop) return;
-      el.scrollTop = next;
+      const nextLeft = Math.max(0, Math.min(maxLeft, el.scrollLeft + e.deltaX));
+
+      if (nextTop === el.scrollTop && nextLeft === el.scrollLeft) return;
+      el.scrollTop = nextTop;
+      el.scrollLeft = nextLeft;
       e.preventDefault();
     };
 
@@ -794,8 +923,11 @@ export function DrawingPanel({
     getScrollMetrics,
     hideExpandHint,
     syncFingerCount,
+    showGestureHintBriefly,
+    hideGestureHint,
     canvasWidth,
     canvasHeight,
+    hasExpandSlot,
   ]);
 
   // ── 자동 저장 ──────────────────────────────────────────────────────────────
@@ -824,6 +956,8 @@ export function DrawingPanel({
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       if (saveRetryTimerRef.current) clearTimeout(saveRetryTimerRef.current);
+      if (gestureHintTimerRef.current)
+        clearTimeout(gestureHintTimerRef.current);
       clearExpandHoldTimer();
     };
   }, [clearExpandHoldTimer]);
@@ -919,17 +1053,6 @@ export function DrawingPanel({
         className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white"
         style={{ height: panelHeight }}
       >
-        {showScrollCoach && (
-          <div
-            className="pointer-events-none absolute inset-x-3 bottom-3 z-20"
-            role="status"
-          >
-            <p className="rounded-lg bg-gray-900/80 px-3 py-2 text-center text-xs leading-snug text-white backdrop-blur-sm">
-              두 손가락으로 아래로 스크롤하세요
-            </p>
-          </div>
-        )}
-
         <div
           ref={scrollContainerRef}
           data-drawing-surface
@@ -945,9 +1068,6 @@ export function DrawingPanel({
             height: panelHeight,
             touchAction: 'none',
             overscrollBehavior: 'none',
-            paddingRight: scrollIndicator.visible
-              ? SCROLL_THUMB_GUTTER_PX
-              : undefined,
           }}
         >
           <div
@@ -1014,25 +1134,48 @@ export function DrawingPanel({
           )}
         </div>
 
-        {scrollIndicator.visible && (
+        {/* 줌 % 배지 — 확대 상태에서만 (핀치 중 DOM 직접 갱신) */}
+        <div
+          ref={zoomBadgeRef}
+          className="pointer-events-none absolute top-2 left-2 z-50 rounded-full bg-gray-900/80 px-2.5 py-1 text-xs font-semibold text-white tabular-nums backdrop-blur-sm transition-opacity duration-150"
+          style={{ opacity: 0 }}
+          aria-hidden
+        >
+          100%
+        </div>
+
+        {/* 미니맵 — 확장/확대로 화면 밖 영역이 있을 때 현재 보이는 위치 표시 */}
+        {minimap.visible && (
           <div
-            className="pointer-events-none absolute top-2 right-2 bottom-2 z-50"
-            data-testid="drawing-scroll-thumb"
-            style={{ width: SCROLL_THUMB_WIDTH_PX }}
+            className="pointer-events-none absolute top-2 right-2 z-50 rounded-md border border-gray-300/80 bg-white/85 shadow-sm backdrop-blur-sm"
+            data-testid="drawing-minimap"
+            style={{ width: minimap.boxW, height: minimap.boxH }}
             aria-hidden
           >
             <div
-              className="absolute inset-0 rounded-full"
-              style={{ backgroundColor: 'rgba(229, 231, 235, 0.95)' }}
-            />
-            <div
-              className="absolute right-0 left-0 rounded-full"
+              className="absolute rounded-[2px] border-[1.5px] border-orange-500 bg-orange-500/15"
               style={{
-                top: scrollIndicator.top,
-                height: scrollIndicator.height,
-                backgroundColor: 'rgba(107, 114, 128, 0.92)',
+                left: minimap.rectLeft,
+                top: minimap.rectTop,
+                width: minimap.rectW,
+                height: minimap.rectH,
               }}
             />
+          </div>
+        )}
+
+        {/* 제스처 안내 — 한 손가락 시도 시 잠깐 표시 */}
+        {showGestureHint && (
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-4 z-50 flex justify-center"
+            role="status"
+          >
+            <div className="flex items-center gap-2.5 rounded-full bg-gray-900/85 px-4 py-2.5 text-white shadow-lg backdrop-blur-sm">
+              <TwoFingerIcon />
+              <span className="text-[13px] leading-snug font-medium">
+                두 손가락으로 확대 · 이동하세요
+              </span>
+            </div>
           </div>
         )}
       </div>
@@ -1199,6 +1342,26 @@ function EmptyPencilIcon() {
     >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+
+function TwoFingerIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M8 11V5a1.5 1.5 0 0 1 3 0v5" />
+      <path d="M11 10V4a1.5 1.5 0 0 1 3 0v6" />
+      <path d="M14 10.5V7a1.5 1.5 0 0 1 3 0v6.5a6 6 0 0 1-6 6h-1.2a4 4 0 0 1-3-1.4l-3-3.4a1.5 1.5 0 0 1 2.2-2L8 14" />
     </svg>
   );
 }
