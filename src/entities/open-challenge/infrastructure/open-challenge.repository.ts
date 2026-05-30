@@ -1,5 +1,8 @@
 import { domain } from '@/entities/open-challenge/core';
 import {
+  type AdminChallengeDetail,
+  type AdminChallengeDifficulty,
+  type AdminChallengePayload,
   type ChallengeAttempt,
   type ChallengeDetail,
   type ChallengeListItem,
@@ -38,6 +41,26 @@ const toSubject = (subject: string): keyof typeof SUBJECT_LABELS => {
   }
 };
 
+const toAdminDifficulty = (difficulty: string): AdminChallengeDifficulty => {
+  switch (difficulty.toUpperCase()) {
+    case 'TOP':
+    case 'HIGHEST':
+    case '최상':
+      return 'TOP';
+    case 'HIGH':
+    case '상':
+      return 'HIGH';
+    case 'LOW':
+    case '하':
+      return 'LOW';
+    case 'MID':
+    case 'MIDDLE':
+    case '중':
+    default:
+      return 'MID';
+  }
+};
+
 const toApiParams = (params: ChallengeListParams) => ({
   subject:
     !params.subject || params.subject === 'ALL' ? undefined : params.subject,
@@ -56,6 +79,8 @@ const toApiParams = (params: ChallengeListParams) => ({
       : params.sort === 'popular'
         ? 'POPULAR'
         : undefined,
+  page: params.page,
+  size: params.size,
 });
 
 const toListItem = (raw: unknown): ChallengeListItem => {
@@ -101,6 +126,31 @@ const toDetail = (raw: unknown): ChallengeDetail => {
   });
 };
 
+const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
+  const parsed = dto.detail.parse(raw);
+  const id = parsed.id ?? parsed.challengeId;
+
+  if (!id) {
+    throw new Error('Challenge id is missing.');
+  }
+
+  return {
+    id,
+    subject: toSubject(parsed.subject),
+    difficulty: toAdminDifficulty(parsed.difficulty),
+    wrongAnswerRate: parsed.wrongAnswerRate,
+    title: parsed.title,
+    sourceText: parsed.sourceText,
+    questionText: parsed.questionText,
+    questionImageUrl: parsed.questionImageUrl,
+    choices: parsed.choices,
+    correctAnswer: parsed.correctAnswer ?? '',
+    type: parsed.type ?? '',
+    participantCount: parsed.participantCount,
+    passRate: parsed.passRate,
+  };
+};
+
 const toReview = (raw: unknown): ChallengeReview => {
   const parsed = dto.review.parse(raw);
   return domain.review.parse({
@@ -123,10 +173,59 @@ const getChallengeList = async (
   return page.content.map(toListItem);
 };
 
+const getAdminChallengeList = async (params: ChallengeListParams = {}) => {
+  const response = await api.public.get('/public/challenges', {
+    params: toApiParams(params),
+  });
+  const page = unwrapEnvelope(response, dto.listPage);
+
+  return {
+    ...page,
+    content: page.content.map(toListItem),
+  };
+};
+
 const getChallengeDetail = async (id: string): Promise<ChallengeDetail> => {
   const response = await api.public.get(`/public/challenges/${id}`);
   const detail = unwrapEnvelope(response, dto.detail);
   return toDetail(detail);
+};
+
+const getAdminChallengeDetail = async (
+  id: string
+): Promise<AdminChallengeDetail> => {
+  const response = await api.public.get(`/public/challenges/${id}`);
+  const detail = unwrapEnvelope(response, dto.detail);
+  return toAdminDetail(detail);
+};
+
+const createAdminChallenge = async (
+  params: AdminChallengePayload
+): Promise<string> => {
+  const validated = payload.adminChallenge.parse(params);
+  const response = await api.private.post('/admin/challenges', validated);
+  const result = unwrapEnvelope(response, dto.challengeId);
+  return result.challengeId;
+};
+
+const updateAdminChallenge = async (
+  id: string,
+  params: AdminChallengePayload
+): Promise<void> => {
+  const validated = payload.adminChallenge.parse(params);
+  await api.private.put(`/admin/challenges/${id}`, validated);
+};
+
+const hideAdminChallenge = async (id: string): Promise<void> => {
+  await api.private.patch(`/admin/challenges/${id}/hide`);
+};
+
+const showAdminChallenge = async (id: string): Promise<void> => {
+  await api.private.patch(`/admin/challenges/${id}/show`);
+};
+
+const deleteAdminChallenge = async (id: string): Promise<void> => {
+  await api.private.delete(`/admin/challenges/${id}`);
 };
 
 const startChallengeAttempt = async (
@@ -195,7 +294,14 @@ const getNextChallenge = async (
 
 export const repository = {
   getList: getChallengeList,
+  getAdminList: getAdminChallengeList,
   getDetail: getChallengeDetail,
+  getAdminDetail: getAdminChallengeDetail,
+  createAdmin: createAdminChallenge,
+  updateAdmin: updateAdminChallenge,
+  hideAdmin: hideAdminChallenge,
+  showAdmin: showAdminChallenge,
+  deleteAdmin: deleteAdminChallenge,
   startAttempt: startChallengeAttempt,
   submitAnswer: submitChallengeAnswer,
   getReviews: getChallengeReviews,

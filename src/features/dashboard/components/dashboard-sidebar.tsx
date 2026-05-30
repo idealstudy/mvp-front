@@ -116,6 +116,18 @@ export const DashboardSidebar = () => {
                 </Sidebar.Text>
               </Sidebar.Item>
             </li>
+            <li>
+              <Sidebar.Item
+                href={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
+                matchPath={PRIVATE.ADMIN.OPEN_CHALLENGE.LIST}
+                className="h-12 items-center justify-start gap-[2px]"
+              >
+                <ListIcon />
+                <Sidebar.Text className="font-body2-normal">
+                  오픈챌린지 관리
+                </Sidebar.Text>
+              </Sidebar.Item>
+            </li>
           </Sidebar.List>
         </>
       )}

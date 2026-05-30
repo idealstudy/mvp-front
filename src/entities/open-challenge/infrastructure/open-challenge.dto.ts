@@ -17,6 +17,13 @@ const ChallengeSubjectDtoSchema = z
   .optional()
   .default('math');
 
+const AdminChallengeSubjectSchema = z.enum([
+  'MATH',
+  'KOREAN',
+  'ENGLISH',
+  'SCIENCE',
+]);
+
 const DifficultyDtoSchema = z
   .union([
     z.enum(['highest', 'high', 'middle', 'low']),
@@ -25,6 +32,8 @@ const DifficultyDtoSchema = z
   ])
   .optional()
   .default('middle');
+
+const AdminChallengeDifficultySchema = z.enum(['TOP', 'HIGH', 'MID', 'LOW']);
 
 const ChallengeListItemDtoSchema = z.object({
   id: IdSchema.optional(),
@@ -111,6 +120,23 @@ const SubmitFeedbackPayloadSchema = z.object({
   comment: z.string().optional(),
 });
 
+const AdminChallengePayloadSchema = z.object({
+  subject: AdminChallengeSubjectSchema,
+  difficulty: AdminChallengeDifficultySchema,
+  wrongAnswerRate: z.number().min(0).max(100).nullable(),
+  title: z.string().min(1),
+  sourceText: z.string().min(1),
+  questionText: z.string().nullable(),
+  questionMediaId: z.string().nullable(),
+  choices: z.array(z.string().min(1)).min(1),
+  correctAnswer: z.string().min(1),
+  type: z.string().nullable(),
+});
+
+const ChallengeIdResponseSchema = z.object({
+  challengeId: IdSchema,
+});
+
 export const dto = {
   listItem: ChallengeListItemDtoSchema,
   list: z.array(ChallengeListItemDtoSchema),
@@ -124,6 +150,7 @@ export const dto = {
   ranking: UserRankingDtoSchema,
   rankings: z.array(UserRankingDtoSchema),
   rankingPage: page(UserRankingDtoSchema),
+  challengeId: ChallengeIdResponseSchema,
 };
 
 export const payload = {
@@ -131,4 +158,5 @@ export const payload = {
   submitAnswer: SubmitAnswerPayloadSchema,
   createReview: CreateReviewPayloadSchema,
   submitFeedback: SubmitFeedbackPayloadSchema,
+  adminChallenge: AdminChallengePayloadSchema,
 };

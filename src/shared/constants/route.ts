@@ -147,6 +147,11 @@ const ADMIN = {
     LIST: '/admin/column',
     DETAIL: (id: number) => `/admin/column/${id}`,
   },
+  OPEN_CHALLENGE: {
+    LIST: '/admin/open-challenge',
+    NEW: '/admin/open-challenge/new',
+    EDIT: (id: string) => `/admin/open-challenge/${id}/edit`,
+  },
 } as const;
 
 /* ─────────────────────────────────────────────────────

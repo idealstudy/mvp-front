@@ -14,11 +14,32 @@ export type ChallengeListParams = {
   subject?: ChallengeSubject | 'ALL';
   difficulty?: 'highest' | 'high' | 'middle' | 'low' | 'ALL';
   sort?: 'latest' | 'popular';
+  page?: number;
+  size?: number;
 };
+
+export type AdminChallengeSubject = 'MATH' | 'KOREAN' | 'ENGLISH' | 'SCIENCE';
+export type AdminChallengeDifficulty = 'TOP' | 'HIGH' | 'MID' | 'LOW';
 
 export type ChallengeAttempt = {
   attemptId: string;
   status: string;
+};
+
+export type AdminChallengeDetail = {
+  id: string;
+  subject: AdminChallengeSubject;
+  difficulty: AdminChallengeDifficulty;
+  wrongAnswerRate: number;
+  title: string;
+  sourceText: string;
+  questionText: string;
+  questionImageUrl: string | null;
+  choices: string[];
+  correctAnswer: string;
+  type: string;
+  participantCount: number;
+  passRate: number;
 };
 
 export type StartChallengeAttemptPayload = z.infer<typeof payload.startAttempt>;
@@ -27,3 +48,4 @@ export type CreateChallengeReviewPayload = z.infer<typeof payload.createReview>;
 export type SubmitChallengeFeedbackPayload = z.infer<
   typeof payload.submitFeedback
 >;
+export type AdminChallengePayload = z.infer<typeof payload.adminChallenge>;

@@ -135,6 +135,11 @@ export function classifyOpenChallengeError(code?: string): ApiErrorType {
     case 'CHALLENGE_ALREADY_COMPLETED':
     case 'CHALLENGE_REVIEW_ALREADY_EXISTS':
     case 'CHALLENGE_FEEDBACK_ALREADY_EXISTS':
+    case 'CHALLENGE_QUESTION_BODY_REQUIRED':
+    case 'CHALLENGE_INVALID_CHOICE':
+    case 'CHALLENGE_MEDIA_NOT_FOUND':
+    case 'CHALLENGE_NOT_EDITABLE':
+    case 'CHALLENGE_NOT_DELETABLE':
       return 'FIELD';
 
     case 'MEMBER_NOT_EXIST':
