@@ -3,13 +3,21 @@ import {
   type AdminChallengeDetail,
   type AdminChallengeDifficulty,
   type AdminChallengePayload,
+  type AiCoachingEnums,
+  type AiCoachingMessage,
+  type AiCoachingMessageResponse,
+  type AiCoachingPreference,
+  type AiCoachingPreferencePayload,
+  type AiCoachingSession,
   type ChallengeAttempt,
   type ChallengeDetail,
   type ChallengeListItem,
   type ChallengeListParams,
   type ChallengeReview,
+  type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
   type NextChallenge,
+  type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
   type SubmitChallengeFeedbackPayload,
@@ -279,6 +287,69 @@ const submitChallengeFeedback = async (
   await api.private.post('/common/challenge-feedbacks', validated);
 };
 
+const getAiCoachingPreferenceEnums = async (): Promise<AiCoachingEnums> => {
+  const response = await api.private.get(
+    '/common/ai-coaching-preferences/enums'
+  );
+  return unwrapEnvelope(response, dto.aiCoachingEnums);
+};
+
+const getMyAiCoachingPreference = async (): Promise<AiCoachingPreference> => {
+  const response = await api.private.get('/common/ai-coaching-preferences/me');
+  return unwrapEnvelope(response, dto.aiCoachingPreference);
+};
+
+const updateMyAiCoachingPreference = async (
+  params: AiCoachingPreferencePayload
+): Promise<AiCoachingPreference> => {
+  const validated = payload.aiCoachingPreference.parse(params);
+  const response = await api.private.put(
+    '/common/ai-coaching-preferences/me',
+    validated
+  );
+  return unwrapEnvelope(response, dto.aiCoachingPreference);
+};
+
+const createAiCoachingSession = async (
+  params: CreateAiCoachingSessionPayload
+): Promise<AiCoachingSession> => {
+  const validated = payload.createAiCoachingSession.parse(params);
+  const response = await api.private.post(
+    '/common/ai-coaching-sessions',
+    validated
+  );
+  return unwrapEnvelope(response, dto.aiCoachingSession);
+};
+
+const sendAiCoachingMessage = async (
+  sessionId: string,
+  params: SendAiCoachingMessagePayload
+): Promise<AiCoachingMessageResponse> => {
+  const validated = payload.sendAiCoachingMessage.parse(params);
+  const response = await api.private.post(
+    `/common/ai-coaching-sessions/${sessionId}/messages`,
+    validated
+  );
+  return unwrapEnvelope(response, dto.aiCoachingMessageResponse);
+};
+
+const getAiCoachingMessages = async (
+  sessionId: string
+): Promise<AiCoachingMessage[]> => {
+  const response = await api.private.get(
+    `/common/ai-coaching-sessions/${sessionId}/messages`
+  );
+  return unwrapEnvelope(response, dto.aiCoachingMessages);
+};
+
+const finishAiCoachingSession = async (sessionId: string): Promise<void> => {
+  await api.private.patch(`/common/ai-coaching-sessions/${sessionId}/finish`);
+};
+
+const abandonAiCoachingSession = async (sessionId: string): Promise<void> => {
+  await api.private.patch(`/common/ai-coaching-sessions/${sessionId}/abandon`);
+};
+
 const getChallengeRanking = async (): Promise<UserRanking[]> => {
   const response = await api.public.get('/public/challenge-rankings');
   const page = unwrapEnvelope(response, dto.rankingPage);
@@ -309,4 +380,12 @@ export const repository = {
   submitFeedback: submitChallengeFeedback,
   getRanking: getChallengeRanking,
   getNextChallenge,
+  getAiCoachingPreferenceEnums,
+  getMyAiCoachingPreference,
+  updateMyAiCoachingPreference,
+  createAiCoachingSession,
+  sendAiCoachingMessage,
+  getAiCoachingMessages,
+  finishAiCoachingSession,
+  abandonAiCoachingSession,
 };

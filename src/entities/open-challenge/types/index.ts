@@ -10,6 +10,58 @@ export type ChallengeReview = z.infer<typeof domain.review>;
 export type NextChallenge = z.infer<typeof domain.nextChallenge>;
 export type UserRanking = z.infer<typeof domain.ranking>;
 
+export type AiCoachingSessionStatus =
+  | 'READY'
+  | 'COACHING'
+  | 'WAITING_ANSWER'
+  | 'GUIDE_TO_PROBLEM'
+  | 'FINISHED'
+  | 'ABANDONED';
+
+export type AiCoachingMessageRole = 'STUDENT' | 'ASSISTANT' | 'SYSTEM';
+
+export type AiCoachingEnumOption = {
+  code: string;
+  label: string;
+};
+
+export type AiCoachingEnums = {
+  learningStage: AiCoachingEnumOption[];
+  learningGoal: AiCoachingEnumOption[];
+  difficultArea: AiCoachingEnumOption[];
+};
+
+export type AiCoachingPreference = {
+  learningStage?: AiCoachingEnumOption | null;
+  learningGoal?: AiCoachingEnumOption | null;
+  difficultAreas: AiCoachingEnumOption[];
+  customText?: string | null;
+  modDate?: string | null;
+} | null;
+
+export type AiCoachingSession = {
+  sessionId: string;
+  status: AiCoachingSessionStatus;
+  startedAt?: string | null;
+};
+
+export type AiCoachingMessage = {
+  role: AiCoachingMessageRole;
+  content: string;
+  progressionStep?: number | null;
+  regDate?: string | null;
+};
+
+export type AiCoachingMessageResponse = {
+  sessionId: string;
+  studentMessageId: string;
+  assistantMessageId: string;
+  reply: string;
+  progressionStep?: number | null;
+  status: AiCoachingSessionStatus;
+  maxUsedHintStep?: number | null;
+};
+
 export type ChallengeListParams = {
   subject?: ChallengeSubject | 'ALL';
   difficulty?: 'highest' | 'high' | 'middle' | 'low' | 'ALL';
@@ -49,3 +101,12 @@ export type SubmitChallengeFeedbackPayload = z.infer<
   typeof payload.submitFeedback
 >;
 export type AdminChallengePayload = z.infer<typeof payload.adminChallenge>;
+export type AiCoachingPreferencePayload = z.infer<
+  typeof payload.aiCoachingPreference
+>;
+export type CreateAiCoachingSessionPayload = z.infer<
+  typeof payload.createAiCoachingSession
+>;
+export type SendAiCoachingMessagePayload = z.infer<
+  typeof payload.sendAiCoachingMessage
+>;

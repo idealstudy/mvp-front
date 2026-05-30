@@ -1,8 +1,11 @@
 import { useRouter } from 'next/navigation';
 
 import {
+  type AiCoachingPreferencePayload,
   type ChallengeListParams,
+  type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
   type SubmitChallengeAnswerPayload,
   type SubmitChallengeFeedbackPayload,
@@ -50,6 +53,34 @@ export const useNextChallengeQuery = (
     queryKey: openChallengeKeys.next(challengeId),
     queryFn: () => repository.getNextChallenge(challengeId),
     enabled: (options?.enabled ?? true) && challengeId.length > 0,
+  });
+
+export const useAiCoachingPreferenceEnumsQuery = (options?: {
+  enabled?: boolean;
+}) =>
+  useQuery({
+    queryKey: openChallengeKeys.aiCoachingEnums(),
+    queryFn: repository.getAiCoachingPreferenceEnums,
+    enabled: options?.enabled,
+  });
+
+export const useMyAiCoachingPreferenceQuery = (options?: {
+  enabled?: boolean;
+}) =>
+  useQuery({
+    queryKey: openChallengeKeys.aiCoachingPreference(),
+    queryFn: repository.getMyAiCoachingPreference,
+    enabled: options?.enabled,
+  });
+
+export const useAiCoachingMessagesQuery = (
+  sessionId: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: openChallengeKeys.aiCoachingMessages(sessionId),
+    queryFn: () => repository.getAiCoachingMessages(sessionId),
+    enabled: (options?.enabled ?? true) && sessionId.length > 0,
   });
 
 export const useStartChallengeAttemptMutation = () => {
@@ -156,6 +187,106 @@ export const useSubmitChallengeFeedbackMutation = () => {
             ERROR_REDIRECT_DELAY_MS
           ),
       });
+    },
+  });
+};
+
+export const useUpdateMyAiCoachingPreferenceMutation = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (params: AiCoachingPreferencePayload) =>
+      repository.updateMyAiCoachingPreference(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: openChallengeKeys.aiCoachingPreference(),
+      });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+export const useCreateAiCoachingSessionMutation = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (params: CreateAiCoachingSessionPayload) =>
+      repository.createAiCoachingSession(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: openChallengeKeys.all });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+export const useSendAiCoachingMessageMutation = (sessionId: string) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (params: SendAiCoachingMessagePayload) =>
+      repository.sendAiCoachingMessage(sessionId, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: openChallengeKeys.aiCoachingMessages(sessionId),
+      });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+export const useFinishAiCoachingSessionMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      repository.finishAiCoachingSession(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: openChallengeKeys.all });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {});
+    },
+  });
+};
+
+export const useAbandonAiCoachingSessionMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      repository.abandonAiCoachingSession(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: openChallengeKeys.all });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {});
     },
   });
 };

@@ -4,30 +4,41 @@ import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
+import { type AiCoachingPreference } from '@/entities/open-challenge';
 import { Button } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { Bot, RotateCcw, Send, Settings } from 'lucide-react';
 
 import {
-  type AiCoachProgressStep,
+  useAbandonAiCoachingSessionMutation,
+  useAiCoachingPreferenceEnumsQuery,
+  useCreateAiCoachingSessionMutation,
+  useFinishAiCoachingSessionMutation,
+  useMyAiCoachingPreferenceQuery,
+  useSendAiCoachingMessageMutation,
+  useStartChallengeAttemptMutation,
+  useUpdateMyAiCoachingPreferenceMutation,
+} from '../../hooks/use-open-challenge';
+import {
   MOCK_AI_COACH_INITIAL_MESSAGE,
-  MOCK_AI_COACH_PROGRESS_MESSAGES,
   MOCK_AI_COACH_QUICK_REPLIES,
-  MOCK_AI_COACH_STUCK_MESSAGE,
 } from '../../mock/ai-coach';
 import {
+  type AiCoachSettingOption,
   type AiCoachSettings,
   AiCoachSettingsDialog,
 } from './ai-coach-settings-dialog';
 
+type AiCoachProgressStep = 'concept' | 'approach' | 'hint' | 'final';
 type AiCoachMessageRole = 'ai' | 'user';
 type AiCoachStatus =
   | 'READY'
   | 'COACHING'
   | 'WAITING_ANSWER'
   | 'GUIDE_TO_PROBLEM'
-  | 'FINISHED';
+  | 'FINISHED'
+  | 'ABANDONED';
 
 type AiCoachMessage = {
   id: string;
@@ -38,34 +49,60 @@ type AiCoachMessage = {
 };
 
 const MAX_COMMENT_LENGTH = 200;
-const STORAGE_KEY = 'open-challenge-ai-coach-settings';
-const MOCK_AI_RESPONSE_DELAY_MS = 350;
 
 type AiCoachPanelProps = {
+  challengeId: string;
+  attemptId: string | null;
   isLoggedIn: boolean;
+  onAttemptCreated: (attemptId: string) => void;
+  onAttemptCleared: () => void;
   onReturnToProblem?: () => void;
 };
 
 export const AiCoachPanel = ({
+  challengeId,
+  attemptId,
   isLoggedIn,
+  onAttemptCreated,
+  onAttemptCleared,
   onReturnToProblem,
 }: AiCoachPanelProps) => {
   const [messages, setMessages] = useState<AiCoachMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [status, setStatus] = useState<AiCoachStatus>('READY');
-  const [progressIndex, setProgressIndex] = useState(0);
   const [settings, setSettings] = useState<AiCoachSettings | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
+  const [sessionId, setSessionId] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  const preferenceEnumsQuery = useAiCoachingPreferenceEnumsQuery({
+    enabled: isLoggedIn,
+  });
+  const myPreferenceQuery = useMyAiCoachingPreferenceQuery({
+    enabled: isLoggedIn,
+  });
+  const startAttemptMutation = useStartChallengeAttemptMutation();
+  const updatePreferenceMutation = useUpdateMyAiCoachingPreferenceMutation();
+  const createSessionMutation = useCreateAiCoachingSessionMutation();
+  const sendMessageMutation = useSendAiCoachingMessageMutation(sessionId);
+  const finishSessionMutation = useFinishAiCoachingSessionMutation();
+  const abandonSessionMutation = useAbandonAiCoachingSessionMutation();
+
+  const hasLoadedSettings =
+    !isLoggedIn || myPreferenceQuery.isFetched || myPreferenceQuery.isError;
+  const isBusy =
+    startAttemptMutation.isPending ||
+    updatePreferenceMutation.isPending ||
+    createSessionMutation.isPending ||
+    sendMessageMutation.isPending ||
+    finishSessionMutation.isPending ||
+    abandonSessionMutation.isPending;
+
   useEffect(() => {
-    const rawSettings = window.localStorage.getItem(STORAGE_KEY);
-    if (rawSettings) {
-      setSettings(JSON.parse(rawSettings) as AiCoachSettings);
+    if (myPreferenceQuery.data && !settings) {
+      setSettings(toSettings(myPreferenceQuery.data));
     }
-    setHasLoadedSettings(true);
-  }, []);
+  }, [myPreferenceQuery.data, settings]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -90,43 +127,38 @@ export const AiCoachPanel = ({
     step,
   });
 
-  const appendNextCoachMessage = (nextProgressIndex: number) => {
-    const nextTemplate = MOCK_AI_COACH_PROGRESS_MESSAGES[nextProgressIndex];
-    if (!nextTemplate) {
-      setStatus('GUIDE_TO_PROBLEM');
-      setMessages((previousMessages) => [
-        ...previousMessages,
-        createAiMessage(
-          '좋아요. 지금까지 정리한 흐름으로 문제로 돌아가 직접 답을 선택해보세요.',
-          'final'
-        ),
-      ]);
-      return;
+  const startCoach = async (nextSettings: AiCoachSettings) => {
+    try {
+      setSettings(nextSettings);
+      if (!nextSettings.skipped) {
+        await updatePreferenceMutation.mutateAsync(
+          toPreferencePayload(nextSettings)
+        );
+      }
+
+      const currentAttemptId =
+        attemptId ??
+        (
+          await startAttemptMutation.mutateAsync({
+            challengeId,
+          })
+        ).attemptId;
+
+      if (!attemptId) {
+        onAttemptCreated(currentAttemptId);
+      }
+
+      const session = await createSessionMutation.mutateAsync({
+        challengeAttemptId: currentAttemptId,
+      });
+
+      setSessionId(session.sessionId);
+      setMessages([createAiMessage(getIntroMessage(nextSettings))]);
+      setStatus('WAITING_ANSWER');
+      setIsSettingsOpen(false);
+    } catch {
+      // mutation hook에서 공통 API 에러 처리를 수행한다.
     }
-
-    setMessages((previousMessages) => [
-      ...previousMessages,
-      createAiMessage(nextTemplate.content, nextTemplate.step),
-    ]);
-    setProgressIndex(nextProgressIndex);
-    setStatus(
-      nextTemplate.step === 'final' ? 'GUIDE_TO_PROBLEM' : 'WAITING_ANSWER'
-    );
-  };
-
-  const startCoach = (nextSettings: AiCoachSettings) => {
-    const firstTemplate = MOCK_AI_COACH_PROGRESS_MESSAGES[0];
-    if (!firstTemplate) return;
-
-    setSettings(nextSettings);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSettings));
-    setMessages([
-      createAiMessage(getIntroMessage(nextSettings)),
-      createAiMessage(firstTemplate.content, firstTemplate.step),
-    ]);
-    setProgressIndex(0);
-    setStatus('WAITING_ANSWER');
-    setIsSettingsOpen(false);
   };
 
   const handleStartClick = () => {
@@ -141,17 +173,34 @@ export const AiCoachPanel = ({
   const handleSkipSettings = () => {
     startCoach({
       subject: '수학',
-      learningStage: 'concept',
-      learningGoal: 'exam',
+      learningStage: 'CONCEPT_FOCUSED',
+      learningGoal: 'CSAT',
       difficultAreas: [],
       customText: '',
       skipped: true,
     });
   };
 
+  const handleSettingsSubmit = async (nextSettings: AiCoachSettings) => {
+    if (status === 'READY') {
+      await startCoach(nextSettings);
+      return;
+    }
+
+    try {
+      setSettings(nextSettings);
+      await updatePreferenceMutation.mutateAsync(
+        toPreferencePayload(nextSettings)
+      );
+      setIsSettingsOpen(false);
+    } catch {
+      // mutation hook에서 공통 API 에러 처리를 수행한다.
+    }
+  };
+
   const handleSendMessage = () => {
     const trimmedMessage = inputMessage.trim();
-    if (!trimmedMessage || status === 'READY') return;
+    if (!trimmedMessage || status === 'READY' || !sessionId) return;
     setMessages((previousMessages) => [
       ...previousMessages,
       {
@@ -164,20 +213,54 @@ export const AiCoachPanel = ({
     setInputMessage('');
     setStatus('COACHING');
 
-    // TODO: AI 코치 대화 API가 준비되면 이 mock progression 응답을 서버 호출로 교체한다.
-    window.setTimeout(() => {
-      if (isStuckMessage(trimmedMessage)) {
-        setMessages((previousMessages) => [
-          ...previousMessages,
-          createAiMessage(MOCK_AI_COACH_STUCK_MESSAGE, 'concept'),
-        ]);
-        setProgressIndex(0);
-        setStatus('WAITING_ANSWER');
-        return;
+    sendMessageMutation.mutate(
+      { message: trimmedMessage },
+      {
+        onSuccess: (response) => {
+          setMessages((previousMessages) => [
+            ...previousMessages,
+            createAiMessage(
+              response.reply,
+              toProgressStep(response.progressionStep)
+            ),
+          ]);
+          setStatus(response.status);
+        },
+        onError: () => {
+          setMessages((previousMessages) => [
+            ...previousMessages,
+            createAiMessage(
+              '지금은 AI 코치 응답을 불러오지 못했어요. 잠시 후 다시 보내주세요.'
+            ),
+          ]);
+          setStatus('WAITING_ANSWER');
+        },
       }
+    );
+  };
 
-      appendNextCoachMessage(progressIndex + 1);
-    }, MOCK_AI_RESPONSE_DELAY_MS);
+  const handleFinishAndReturn = () => {
+    if (!sessionId) {
+      onReturnToProblem?.();
+      return;
+    }
+
+    finishSessionMutation.mutate(sessionId, {
+      onSuccess: () => {
+        setStatus('FINISHED');
+        onReturnToProblem?.();
+      },
+    });
+  };
+
+  const handleRestart = () => {
+    if (sessionId && status !== 'FINISHED' && status !== 'ABANDONED') {
+      abandonSessionMutation.mutate(sessionId);
+    }
+    setMessages([]);
+    setSessionId('');
+    setStatus('READY');
+    onAttemptCleared();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,11 +275,7 @@ export const AiCoachPanel = ({
     setInputMessage(replyText);
   };
 
-  const handleRestart = () => {
-    setMessages([]);
-    setProgressIndex(0);
-    setStatus('READY');
-  };
+  const enumOptions = preferenceEnumsQuery.data;
 
   if (!isLoggedIn) {
     return (
@@ -292,10 +371,10 @@ export const AiCoachPanel = ({
             <Button
               type="button"
               onClick={handleStartClick}
-              disabled={!hasLoadedSettings}
+              disabled={!hasLoadedSettings || isBusy}
               className="w-full"
             >
-              AI 힌트 받기
+              {isBusy ? 'AI 코치 준비 중...' : 'AI 힌트 받기'}
             </Button>
             {settings && (
               <button
@@ -364,10 +443,8 @@ export const AiCoachPanel = ({
               <div className="border-line-line1 border-t px-4 py-3">
                 <Button
                   type="button"
-                  onClick={() => {
-                    setStatus('FINISHED');
-                    onReturnToProblem?.();
-                  }}
+                  onClick={handleFinishAndReturn}
+                  disabled={finishSessionMutation.isPending}
                   className="w-full"
                 >
                   문제로 돌아가 답 선택하기
@@ -393,7 +470,7 @@ export const AiCoachPanel = ({
                 value={inputMessage}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                disabled={status === 'COACHING'}
+                disabled={status === 'COACHING' || isBusy}
                 placeholder={
                   status === 'COACHING'
                     ? 'AI 코치가 생각 중이에요...'
@@ -404,7 +481,9 @@ export const AiCoachPanel = ({
               <button
                 type="button"
                 onClick={handleSendMessage}
-                disabled={!inputMessage.trim() || status === 'COACHING'}
+                disabled={
+                  !inputMessage.trim() || status === 'COACHING' || isBusy
+                }
                 className="bg-orange-7 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="AI 코치에게 메시지 보내기"
               >
@@ -418,33 +497,100 @@ export const AiCoachPanel = ({
       <AiCoachSettingsDialog
         isOpen={isSettingsOpen}
         initialSettings={settings}
+        learningStageOptions={toDialogOptions(enumOptions?.learningStage)}
+        learningGoalOptions={toDialogOptions(enumOptions?.learningGoal)}
+        difficultAreaOptions={toDialogOptions(enumOptions?.difficultArea)}
         onClose={() => setIsSettingsOpen(false)}
-        onSubmit={startCoach}
-        onSkip={handleSkipSettings}
+        onSubmit={handleSettingsSubmit}
+        onSkip={
+          status === 'READY'
+            ? handleSkipSettings
+            : () => setIsSettingsOpen(false)
+        }
       />
     </>
   );
+};
+
+const toSettings = (
+  preference: NonNullable<AiCoachingPreference>
+): AiCoachSettings => ({
+  subject: '수학',
+  learningStage:
+    (preference.learningStage?.code as AiCoachSettings['learningStage']) ??
+    'CONCEPT_FOCUSED',
+  learningGoal:
+    (preference.learningGoal?.code as AiCoachSettings['learningGoal']) ??
+    'CSAT',
+  difficultAreas: preference.difficultAreas.map(
+    (area) => area.code as AiCoachSettings['difficultAreas'][number]
+  ),
+  customText: preference.customText ?? '',
+  skipped: false,
+});
+
+const toPreferencePayload = (settings: AiCoachSettings) => ({
+  learningStage: settings.learningStage,
+  learningGoal: settings.learningGoal,
+  difficultAreas: settings.difficultAreas,
+  customText: settings.customText,
+});
+
+const toDialogOptions = <TValue extends string>(
+  options?: { code: string; label: string }[]
+): AiCoachSettingOption<TValue>[] | undefined =>
+  options?.map((option) => ({
+    value: option.code as TValue,
+    label: option.label,
+  }));
+
+const toProgressStep = (
+  progressionStep?: number | null
+): AiCoachProgressStep | undefined => {
+  switch (progressionStep) {
+    case 1:
+      return 'concept';
+    case 2:
+      return 'approach';
+    case 3:
+      return 'hint';
+    case 4:
+      return 'final';
+    default:
+      return undefined;
+  }
 };
 
 const getIntroMessage = (settings: AiCoachSettings) => {
   if (settings.skipped) return MOCK_AI_COACH_INITIAL_MESSAGE;
 
   const goalLabel =
-    settings.learningGoal === 'exam' ? '수능형 접근' : '내신형 정확성';
+    settings.learningGoal === 'CSAT' ? '수능형 접근' : '내신형 정확성';
   const stageLabel =
-    settings.learningStage === 'concept' ? '개념 설명' : '풀이 접근';
+    settings.learningStage === 'CONCEPT_FOCUSED' ? '개념 설명' : '풀이 접근';
   const difficultAreaText =
     settings.difficultAreas.length > 0
-      ? ` 특히 ${settings.difficultAreas.join(', ')} 부분을 더 신경 쓸게요.`
+      ? ` 특히 ${settings.difficultAreas
+          .map(getDifficultAreaLabel)
+          .join(', ')} 부분을 더 신경 쓸게요.`
       : '';
 
   return `${MOCK_AI_COACH_INITIAL_MESSAGE}\n${stageLabel}과 ${goalLabel}에 맞춰 힌트를 줄게요.${difficultAreaText}`;
 };
 
-const isStuckMessage = (message: string) => {
-  return ['모르', '어려', '헷갈', '쉽게', '이해'].some((keyword) =>
-    message.includes(keyword)
-  );
+const getDifficultAreaLabel = (
+  area: AiCoachSettings['difficultAreas'][number]
+) => {
+  switch (area) {
+    case 'CONCEPT':
+      return '개념 이해';
+    case 'INTERPRET':
+      return '문제 해석';
+    case 'APPLICATION':
+      return '개념 적용';
+    case 'CALCULATION':
+      return '계산';
+  }
 };
 
 const getProgressStepLabel = (step: AiCoachProgressStep) => {
@@ -472,5 +618,7 @@ const getStatusLabel = (status: AiCoachStatus) => {
       return '답 선택 유도';
     case 'FINISHED':
       return '종료';
+    case 'ABANDONED':
+      return '중단';
   }
 };

@@ -45,6 +45,7 @@ export const ChallengeSolveClient = ({
   const [submitError, setSubmitError] = useState('');
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
+  const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
 
   const { data: apiChallenge } = useOpenChallengeDetailQuery(challengeId);
@@ -71,15 +72,17 @@ export const ChallengeSolveClient = ({
     }
 
     try {
-      const attempt = await startAttemptMutation.mutateAsync({ challengeId });
+      const attemptId =
+        aiAttemptId ??
+        (await startAttemptMutation.mutateAsync({ challengeId })).attemptId;
       const result = await submitAnswerMutation.mutateAsync({
-        attemptId: attempt.attemptId,
+        attemptId,
         params: { selectedAnswer },
       });
 
       window.sessionStorage.setItem(
         `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`,
-        JSON.stringify({ ...result, attemptId: attempt.attemptId })
+        JSON.stringify({ ...result, attemptId })
       );
       router.push(PUBLIC.OPEN_CHALLENGE.RESULT(challengeId));
     } catch {
@@ -106,7 +109,11 @@ export const ChallengeSolveClient = ({
       {/* AI 코치 — 모바일에서 숨김 */}
       <aside className="border-line-line1 hidden w-[380px] shrink-0 border-r p-4 lg:block">
         <AiCoachPanel
+          challengeId={challengeId}
+          attemptId={aiAttemptId}
           isLoggedIn={isLoggedIn}
+          onAttemptCreated={setAiAttemptId}
+          onAttemptCleared={() => setAiAttemptId(null)}
           onReturnToProblem={focusChoiceSection}
         />
       </aside>
@@ -283,7 +290,11 @@ export const ChallengeSolveClient = ({
           </Dialog.Header>
           <Dialog.Body>
             <AiCoachPanel
+              challengeId={challengeId}
+              attemptId={aiAttemptId}
               isLoggedIn={isLoggedIn}
+              onAttemptCreated={setAiAttemptId}
+              onAttemptCleared={() => setAiAttemptId(null)}
               onReturnToProblem={focusChoiceSection}
             />
           </Dialog.Body>

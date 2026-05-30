@@ -25,4 +25,10 @@ export const openChallengeKeys = {
     ] as const,
   adminDetail: (id: string) =>
     [...openChallengeKeys.all, 'admin-detail', id] as const,
+  aiCoachingEnums: () =>
+    [...openChallengeKeys.all, 'ai-coaching-enums'] as const,
+  aiCoachingPreference: () =>
+    [...openChallengeKeys.all, 'ai-coaching-preference', 'me'] as const,
+  aiCoachingMessages: (sessionId: string) =>
+    [...openChallengeKeys.all, 'ai-coaching-messages', sessionId] as const,
 };

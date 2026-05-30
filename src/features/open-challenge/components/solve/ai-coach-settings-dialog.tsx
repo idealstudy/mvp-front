@@ -1,23 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button, Dialog, Textarea } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
 import { BookOpen, Check, Target, X } from 'lucide-react';
 
+type AiCoachLearningStage = 'CONCEPT_FOCUSED' | 'APPROACH_FOCUSED';
+type AiCoachLearningGoal = 'CSAT' | 'EXAM';
+type AiCoachDifficultArea =
+  | 'CONCEPT'
+  | 'INTERPRET'
+  | 'APPLICATION'
+  | 'CALCULATION';
+
 export type AiCoachSettings = {
   subject: '수학';
-  learningStage: 'concept' | 'approach';
-  learningGoal: 'exam' | 'school';
-  difficultAreas: string[];
+  learningStage: AiCoachLearningStage;
+  learningGoal: AiCoachLearningGoal;
+  difficultAreas: AiCoachDifficultArea[];
   customText: string;
   skipped: boolean;
+};
+
+export type AiCoachSettingOption<TValue extends string = string> = {
+  value: TValue;
+  label: string;
+  description?: string;
 };
 
 type AiCoachSettingsDialogProps = {
   isOpen: boolean;
   initialSettings: AiCoachSettings | null;
+  learningStageOptions?: AiCoachSettingOption<AiCoachLearningStage>[];
+  learningGoalOptions?: AiCoachSettingOption<AiCoachLearningGoal>[];
+  difficultAreaOptions?: AiCoachSettingOption<AiCoachDifficultArea>[];
   onClose: () => void;
   onSubmit: (settings: AiCoachSettings) => void;
   onSkip: () => void;
@@ -25,37 +42,42 @@ type AiCoachSettingsDialogProps = {
 
 const LEARNING_STAGES = [
   {
-    value: 'concept',
+    value: 'CONCEPT_FOCUSED',
     label: '개념 설명 강화',
     description: '개념을 먼저 짚고 천천히 접근해요.',
   },
   {
-    value: 'approach',
+    value: 'APPROACH_FOCUSED',
     label: '풀이 접근 중심',
     description: '풀이 방향과 단서를 먼저 잡아요.',
   },
-] as const;
+] satisfies AiCoachSettingOption<AiCoachLearningStage>[];
 
 const LEARNING_GOALS = [
   {
-    value: 'exam',
+    value: 'CSAT',
     label: '수능 중심',
     description: '낯선 문제 접근과 응용 사고를 강조해요.',
   },
   {
-    value: 'school',
+    value: 'EXAM',
     label: '내신 중심',
     description: '정확한 풀이 패턴과 실수 방지를 강조해요.',
   },
-] as const;
+] satisfies AiCoachSettingOption<AiCoachLearningGoal>[];
 
-const DIFFICULT_AREAS = ['개념 이해', '문제 해석', '응용 문제', '계산'];
+const DIFFICULT_AREAS = [
+  { value: 'CONCEPT', label: '개념 이해' },
+  { value: 'INTERPRET', label: '문제 해석' },
+  { value: 'APPLICATION', label: '개념 적용' },
+  { value: 'CALCULATION', label: '계산' },
+] satisfies AiCoachSettingOption<AiCoachDifficultArea>[];
 const MAX_CUSTOM_TEXT_LENGTH = 120;
 
 const DEFAULT_SETTINGS: AiCoachSettings = {
   subject: '수학',
-  learningStage: 'concept',
-  learningGoal: 'exam',
+  learningStage: 'CONCEPT_FOCUSED',
+  learningGoal: 'CSAT',
   difficultAreas: [],
   customText: '',
   skipped: false,
@@ -110,6 +132,9 @@ const OptionButton = ({
 export const AiCoachSettingsDialog = ({
   isOpen,
   initialSettings,
+  learningStageOptions,
+  learningGoalOptions,
+  difficultAreaOptions,
   onClose,
   onSubmit,
   onSkip,
@@ -118,7 +143,21 @@ export const AiCoachSettingsDialog = ({
     initialSettings ?? DEFAULT_SETTINGS
   );
 
-  const handleAreaToggle = (area: string) => {
+  useEffect(() => {
+    setSettings(initialSettings ?? DEFAULT_SETTINGS);
+  }, [initialSettings, isOpen]);
+
+  const stageOptions = learningStageOptions?.length
+    ? learningStageOptions
+    : LEARNING_STAGES;
+  const goalOptions = learningGoalOptions?.length
+    ? learningGoalOptions
+    : LEARNING_GOALS;
+  const areaOptions = difficultAreaOptions?.length
+    ? difficultAreaOptions
+    : DIFFICULT_AREAS;
+
+  const handleAreaToggle = (area: AiCoachDifficultArea) => {
     setSettings((previousSettings) => {
       const hasArea = previousSettings.difficultAreas.includes(area);
       return {
@@ -184,11 +223,11 @@ export const AiCoachSettingsDialog = ({
           <section className="flex flex-col gap-3">
             <p className="text-text-main text-sm font-semibold">학습 단계</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {LEARNING_STAGES.map((stage) => (
+              {stageOptions.map((stage) => (
                 <OptionButton
                   key={stage.value}
                   label={stage.label}
-                  description={stage.description}
+                  description={stage.description ?? ''}
                   selected={settings.learningStage === stage.value}
                   onClick={() =>
                     setSettings((previousSettings) => ({
@@ -204,11 +243,11 @@ export const AiCoachSettingsDialog = ({
           <section className="flex flex-col gap-3">
             <p className="text-text-main text-sm font-semibold">학습 목적</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {LEARNING_GOALS.map((goal) => (
+              {goalOptions.map((goal) => (
                 <OptionButton
                   key={goal.value}
                   label={goal.label}
-                  description={goal.description}
+                  description={goal.description ?? ''}
                   selected={settings.learningGoal === goal.value}
                   onClick={() =>
                     setSettings((previousSettings) => ({
@@ -224,13 +263,13 @@ export const AiCoachSettingsDialog = ({
           <section className="flex flex-col gap-3">
             <p className="text-text-main text-sm font-semibold">어려운 부분</p>
             <div className="flex flex-wrap gap-2">
-              {DIFFICULT_AREAS.map((area) => {
-                const isSelected = settings.difficultAreas.includes(area);
+              {areaOptions.map((area) => {
+                const isSelected = settings.difficultAreas.includes(area.value);
                 return (
                   <button
                     type="button"
-                    key={area}
-                    onClick={() => handleAreaToggle(area)}
+                    key={area.value}
+                    onClick={() => handleAreaToggle(area.value)}
                     className={cn(
                       'flex cursor-pointer items-center gap-1 rounded-full border px-3 py-2 text-sm transition-colors',
                       isSelected
@@ -239,7 +278,7 @@ export const AiCoachSettingsDialog = ({
                     )}
                   >
                     {isSelected && <Check size={14} />}
-                    {area}
+                    {area.label}
                   </button>
                 );
               })}

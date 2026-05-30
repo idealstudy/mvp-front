@@ -105,6 +105,61 @@ const UserRankingDtoSchema = z.object({
   correctRate: z.number(),
 });
 
+const AiCoachingSessionStatusSchema = z.enum([
+  'READY',
+  'COACHING',
+  'WAITING_ANSWER',
+  'GUIDE_TO_PROBLEM',
+  'FINISHED',
+  'ABANDONED',
+]);
+
+const AiCoachingMessageRoleSchema = z.enum(['STUDENT', 'ASSISTANT', 'SYSTEM']);
+
+const AiCoachingEnumOptionSchema = z.object({
+  code: z.string(),
+  label: z.string(),
+});
+
+const AiCoachingPreferenceSchema = z
+  .object({
+    learningStage: AiCoachingEnumOptionSchema.nullable().optional(),
+    learningGoal: AiCoachingEnumOptionSchema.nullable().optional(),
+    difficultAreas: z.array(AiCoachingEnumOptionSchema).optional().default([]),
+    customText: z.string().nullable().optional(),
+    modDate: z.string().nullable().optional(),
+  })
+  .nullable();
+
+const AiCoachingEnumResponseSchema = z.object({
+  learningStage: z.array(AiCoachingEnumOptionSchema),
+  learningGoal: z.array(AiCoachingEnumOptionSchema),
+  difficultArea: z.array(AiCoachingEnumOptionSchema),
+});
+
+const AiCoachingSessionSchema = z.object({
+  sessionId: IdSchema,
+  status: AiCoachingSessionStatusSchema,
+  startedAt: z.string().nullable().optional(),
+});
+
+const AiCoachingMessageSchema = z.object({
+  role: AiCoachingMessageRoleSchema,
+  content: z.string(),
+  progressionStep: z.number().nullable().optional(),
+  regDate: z.string().nullable().optional(),
+});
+
+const AiCoachingMessageResponseSchema = z.object({
+  sessionId: IdSchema,
+  studentMessageId: IdSchema,
+  assistantMessageId: IdSchema,
+  reply: z.string(),
+  progressionStep: z.number().nullable().optional(),
+  status: AiCoachingSessionStatusSchema,
+  maxUsedHintStep: z.number().nullable().optional(),
+});
+
 const page = <Item extends z.ZodTypeAny>(item: Item) =>
   z.object({
     content: z.array(item),
@@ -144,6 +199,21 @@ const AdminChallengePayloadSchema = z.object({
   type: z.string().nullable(),
 });
 
+const AiCoachingPreferencePayloadSchema = z.object({
+  learningStage: z.string().nullable().optional(),
+  learningGoal: z.string().nullable().optional(),
+  difficultAreas: z.array(z.string()).optional(),
+  customText: z.string().max(500).nullable().optional(),
+});
+
+const CreateAiCoachingSessionPayloadSchema = z.object({
+  challengeAttemptId: z.string().min(1),
+});
+
+const SendAiCoachingMessagePayloadSchema = z.object({
+  message: z.string().trim().min(1).max(1000),
+});
+
 const ChallengeIdResponseSchema = z.object({
   challengeId: IdSchema,
 });
@@ -162,6 +232,12 @@ export const dto = {
   rankings: z.array(UserRankingDtoSchema),
   rankingPage: page(UserRankingDtoSchema),
   challengeId: ChallengeIdResponseSchema,
+  aiCoachingEnums: AiCoachingEnumResponseSchema,
+  aiCoachingPreference: AiCoachingPreferenceSchema,
+  aiCoachingSession: AiCoachingSessionSchema,
+  aiCoachingMessage: AiCoachingMessageSchema,
+  aiCoachingMessages: z.array(AiCoachingMessageSchema),
+  aiCoachingMessageResponse: AiCoachingMessageResponseSchema,
 };
 
 export const payload = {
@@ -170,4 +246,7 @@ export const payload = {
   createReview: CreateReviewPayloadSchema,
   submitFeedback: SubmitFeedbackPayloadSchema,
   adminChallenge: AdminChallengePayloadSchema,
+  aiCoachingPreference: AiCoachingPreferencePayloadSchema,
+  createAiCoachingSession: CreateAiCoachingSessionPayloadSchema,
+  sendAiCoachingMessage: SendAiCoachingMessagePayloadSchema,
 };
