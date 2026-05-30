@@ -13,7 +13,7 @@ export type ChallengeCardData = {
   title: string;
   sourceText: string;
   questionImageUrl: string | null;
-  passRate: number;
+  passRate: number | null;
   participantCount: number;
 };
 
@@ -61,9 +61,10 @@ export const ChallengeCard = ({
   challenge: ChallengeCardData;
 }) => {
   const config = SUBJECT_CONFIG[challenge.subject];
-  const correctCountOutOf10 = Math.round(
-    (challenge.passRate / 100) * PASS_RATE_DENOMINATOR
-  );
+  const correctCountOutOf10 =
+    challenge.passRate !== null
+      ? Math.round((challenge.passRate / 100) * PASS_RATE_DENOMINATOR)
+      : null;
 
   return (
     <Link
@@ -118,8 +119,9 @@ export const ChallengeCard = ({
         <div>
           <p className="text-orange-7 flex items-center gap-1 text-sm font-semibold">
             <Flame size={14} />
-            통과율 {challenge.passRate}% — 10명 중 {correctCountOutOf10}명만
-            맞혔어요
+            {challenge.passRate !== null
+              ? `통과율 ${challenge.passRate}% — 10명 중 ${correctCountOutOf10}명만 맞혔어요`
+              : '집계 중'}
           </p>
           <h3 className="text-text-main mt-1 line-clamp-2">
             {challenge.title}
@@ -130,7 +132,9 @@ export const ChallengeCard = ({
         <div className="border-line-line1 mt-auto flex items-center justify-between border-t pt-3">
           <div className="flex items-center gap-3 text-sm">
             <span className="text-text-main font-semibold">
-              통과율 {challenge.passRate}%
+              {challenge.passRate !== null
+                ? `통과율 ${challenge.passRate}%`
+                : '집계 중'}
             </span>
             <span className="text-gray-4">|</span>
             <span className="text-gray-8 flex items-center gap-1">

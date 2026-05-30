@@ -9,12 +9,15 @@ import {
   TextEditor,
   type TextEditorValue,
   initialTextEditorValue,
+  prepareContentForSave,
 } from '@/shared/components/editor';
 import { BackButton, Button, Dialog } from '@/shared/components/ui';
 import { PUBLIC } from '@/shared/constants';
+import { extractText } from '@/shared/lib';
 import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
+  useCreateChallengeReviewMutation,
   useOpenChallengeDetailQuery,
   useStartChallengeAttemptMutation,
   useSubmitChallengeAnswerMutation,
@@ -50,6 +53,7 @@ export const ChallengeSolveClient = ({
     useOpenChallengeDetailQuery(challengeId);
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
+  const createReviewMutation = useCreateChallengeReviewMutation();
   const isSubmitting =
     startAttemptMutation.isPending || submitAnswerMutation.isPending;
 
@@ -77,6 +81,15 @@ export const ChallengeSolveClient = ({
         attemptId,
         params: { selectedAnswer },
       });
+
+      const { contentString } = prepareContentForSave(solutionContent);
+      if (extractText(JSON.stringify(solutionContent)).trim().length > 0) {
+        createReviewMutation.mutate({
+          challengeId,
+          attemptId,
+          content: contentString,
+        });
+      }
 
       window.sessionStorage.setItem(
         `${RESULT_STORAGE_KEY_PREFIX}:${challengeId}`,
@@ -146,10 +159,7 @@ export const ChallengeSolveClient = ({
               aria-expanded={isQuestionOpen}
             >
               <div className="min-w-0">
-                <p className="text-gray-8 text-xs font-semibold">
-                  문제 {challenge.questionNumber}
-                </p>
-                <p className="text-text-main mt-1 truncate text-base font-bold">
+                <p className="text-text-main truncate text-base font-bold">
                   {challenge.topic}
                 </p>
               </div>
@@ -169,9 +179,6 @@ export const ChallengeSolveClient = ({
             {isQuestionOpen && (
               <div className="border-line-line1 border-t px-5 py-5 sm:px-6">
                 <p className="font-body1-heading text-text-main text-lg leading-relaxed whitespace-pre-line">
-                  <span className="text-orange-7 mr-2">
-                    {challenge.questionNumber}.
-                  </span>
                   {challenge.questionText}
                 </p>
                 {challenge.questionImageUrl && (

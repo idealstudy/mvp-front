@@ -8,7 +8,7 @@ const ChallengeListItemSchema = z.object({
   title: z.string(),
   sourceText: z.string(),
   questionImageUrl: z.string().nullable(),
-  passRate: z.number(),
+  passRate: z.number().nullable(),
   participantCount: z.number(),
 });
 
@@ -20,7 +20,7 @@ const ChallengeDetailSchema = z.object({
   questionText: z.string(),
   questionImageUrl: z.string().nullable(),
   choices: z.array(z.string()),
-  passRate: z.number(),
+  passRate: z.number().nullable(),
   wrongAnswerRate: z.number(),
   participantCount: z.number(),
   isAiSupported: z.boolean(),
@@ -30,7 +30,7 @@ const ChallengeAnswerResultSchema = z.object({
   isCorrect: z.boolean(),
   correctAnswer: z.string(),
   participantCount: z.number(),
-  passRate: z.number(),
+  passRate: z.number().nullable(),
 });
 
 const ChallengeReviewSchema = z.object({

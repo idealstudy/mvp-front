@@ -17,7 +17,7 @@ import { type SolutionItem, SolutionList } from './solution-list';
 type SubmittedResult = {
   isCorrect: boolean;
   correctAnswer: string;
-  passRate: number;
+  passRate: number | null;
   participantCount: number;
   attemptId?: string;
 };

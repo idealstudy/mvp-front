@@ -91,7 +91,7 @@ export type AdminChallengeDetail = {
   correctAnswer: string;
   type: string;
   participantCount: number;
-  passRate: number;
+  passRate: number | null;
 };
 
 export type StartChallengeAttemptPayload = z.infer<typeof payload.startAttempt>;

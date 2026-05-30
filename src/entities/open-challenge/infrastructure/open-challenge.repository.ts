@@ -155,7 +155,7 @@ const toAdminDetail = (raw: unknown): AdminChallengeDetail => {
     correctAnswer: parsed.correctAnswer ?? '',
     type: parsed.type ?? '',
     participantCount: parsed.participantCount,
-    passRate: parsed.passRate,
+    passRate: parsed.passRate ?? null,
   };
 };
 

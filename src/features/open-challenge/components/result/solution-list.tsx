@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 
+import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { Select } from '@/shared/components/ui';
-import { cn } from '@/shared/lib';
+import { cn, extractText } from '@/shared/lib';
 import { ThumbsUp, User } from 'lucide-react';
 
 export type SolutionItem = {
@@ -20,11 +21,23 @@ type SolutionListProps = {
   totalCount: number;
 };
 
+const CONTENT_EXPAND_THRESHOLD = 150;
+
 export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
   const [sort, setSort] = useState<'recommend' | 'latest'>('recommend');
   const [expanded, setExpanded] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const visibleSolutions = expanded ? solutions : solutions.slice(0, 3);
+
+  const toggleContentExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,54 +71,75 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
       </div>
 
       <div className="flex flex-col gap-3">
-        {visibleSolutions.map((solution) => (
-          <div
-            key={solution.id}
-            className={cn(
-              'rounded-xl border bg-white p-5',
-              solution.isBest ? 'border-orange-7' : 'border-line-line1'
-            )}
-          >
-            {solution.isBest && (
-              <span className="bg-orange-7 mb-3 inline-block rounded-md px-2 py-0.5 text-xs font-semibold text-white">
-                베스트 풀이
-              </span>
-            )}
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex min-w-0 items-start gap-3">
-                <div className="bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
-                  <User
-                    size={16}
-                    className="text-gray-7"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-body2-heading text-text-main text-sm">
-                    {solution.nickname}
-                  </p>
-                  <p className="text-gray-8 text-xs">{solution.subject}</p>
-                  <p className="text-text-main mt-3 text-sm leading-relaxed whitespace-pre-line">
-                    {solution.content}
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 flex-col items-center gap-1">
-                <button className="text-gray-6 hover:text-orange-7 cursor-pointer transition-colors">
-                  <ThumbsUp size={16} />
-                </button>
-                <span className="font-body2-heading text-text-main text-sm">
-                  {solution.recommendCount}
+        {visibleSolutions.map((solution) => {
+          const parsedContent = parseEditorContent(solution.content);
+          const plainText = extractText(solution.content);
+          const isLong = plainText.length > CONTENT_EXPAND_THRESHOLD;
+          const isContentExpanded = expandedIds.has(solution.id);
+
+          return (
+            <div
+              key={solution.id}
+              className={cn(
+                'rounded-xl border bg-white p-5',
+                solution.isBest ? 'border-orange-7' : 'border-line-line1'
+              )}
+            >
+              {solution.isBest && (
+                <span className="bg-orange-7 mb-3 inline-block rounded-md px-2 py-0.5 text-xs font-semibold text-white">
+                  베스트 풀이
                 </span>
-                <span className="text-gray-6 text-xs">추천</span>
+              )}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <div className="bg-gray-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+                    <User
+                      size={16}
+                      className="text-gray-7"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-body2-heading text-text-main text-sm">
+                      {solution.nickname}
+                    </p>
+                    <p className="text-gray-8 text-xs">{solution.subject}</p>
+                    <div
+                      className={cn(
+                        'mt-3',
+                        !isContentExpanded && isLong && 'line-clamp-4'
+                      )}
+                    >
+                      <TextViewer value={parsedContent} />
+                    </div>
+                    {isLong && (
+                      <button
+                        type="button"
+                        onClick={() => toggleContentExpand(solution.id)}
+                        className="text-gray-7 hover:text-text-main mt-2 cursor-pointer text-xs font-semibold"
+                      >
+                        {isContentExpanded ? '접기' : '더보기'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex shrink-0 flex-col items-center gap-1">
+                  <button className="text-gray-6 hover:text-orange-7 cursor-pointer transition-colors">
+                    <ThumbsUp size={16} />
+                  </button>
+                  <span className="font-body2-heading text-text-main text-sm">
+                    {solution.recommendCount}
+                  </span>
+                  <span className="text-gray-6 text-xs">추천</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {solutions.length > 3 && (
         <button
-          onClick={() => setExpanded((previousExpanded) => !previousExpanded)}
+          onClick={() => setExpanded((prev) => !prev)}
           className="border-line-line1 text-text-main hover:bg-gray-1 w-full cursor-pointer rounded-xl border bg-white py-4 text-sm font-semibold"
         >
           {expanded ? '접기' : '더 많은 풀이 보기'}

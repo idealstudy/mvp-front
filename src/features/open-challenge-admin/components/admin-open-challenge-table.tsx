@@ -185,7 +185,11 @@ export const AdminOpenChallengeTable = () => {
                     {SUBJECT_LABEL[challenge.subject]}
                   </td>
                   <td className="px-5 py-4 whitespace-nowrap">
-                    <p className="text-sm">통과율 {challenge.passRate}%</p>
+                    <p className="text-sm">
+                      {challenge.passRate !== null
+                        ? `통과율 ${challenge.passRate}%`
+                        : '집계 중'}
+                    </p>
                     <p className="text-gray-8 text-sm">
                       {challenge.participantCount.toLocaleString()}명 참여
                     </p>

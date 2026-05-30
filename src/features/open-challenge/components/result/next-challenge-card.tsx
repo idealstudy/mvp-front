@@ -7,7 +7,7 @@ type NextChallengeCardProps = {
   id: string;
   subject: string;
   title: string;
-  passRate: number;
+  passRate: number | null;
   participantCount: number;
   questionImageUrl: string | null;
 };
@@ -42,7 +42,8 @@ export const NextChallengeCard = ({
             {title}
           </p>
           <p className="text-gray-7 text-xs">
-            통과율 {passRate}% · {participantCount.toLocaleString()}명 도전 중
+            {passRate !== null ? `통과율 ${passRate}% · ` : '집계 중 · '}
+            {participantCount.toLocaleString()}명 도전 중
           </p>
         </div>
       </div>

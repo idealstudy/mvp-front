@@ -3,11 +3,7 @@ import { z } from 'zod';
 const IdSchema = z.union([z.string(), z.number()]).transform(String);
 const QUESTION_TEXT_FALLBACK = '문제 이미지를 보고 답을 선택해 주세요.';
 
-const NullableNumberSchema = z
-  .number()
-  .nullable()
-  .optional()
-  .transform((value) => value ?? 0);
+const NullableNumberSchema = z.number().nullable().optional();
 
 const ChallengeSubjectDtoSchema = z
   .union([
@@ -79,13 +75,13 @@ const AnswerResultDtoSchema = z
     correct: z.boolean().optional(),
     correctAnswer: z.string(),
     participantCount: z.number(),
-    passRate: NullableNumberSchema,
+    passRate: z.number().nullable().optional(),
   })
   .transform((value) => ({
     isCorrect: value.isCorrect ?? value.correct ?? false,
     correctAnswer: value.correctAnswer,
     participantCount: value.participantCount,
-    passRate: value.passRate,
+    passRate: value.passRate ?? null,
   }));
 
 const ChallengeReviewDtoSchema = z.object({
