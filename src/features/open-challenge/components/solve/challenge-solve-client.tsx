@@ -255,7 +255,7 @@ export const ChallengeSolveClient = ({
               placeholder="식, 풀이 과정, 떠오른 단서를 자유롭게 적어보세요."
               minHeight="420px"
               maxHeight="none"
-              ariaLabel="오픈 챌린지 풀이 입력"
+              ariaLabel="오픈챌린지 풀이 입력"
             />
           </div>
 
@@ -356,6 +356,7 @@ export const ChallengeSolveClient = ({
 
       <ChallengeHistoryDialog
         challengeId={challengeId}
+        challenge={challenge}
         isOpen={isHistoryOpen}
         onOpenChange={setIsHistoryOpen}
       />

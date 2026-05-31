@@ -5,6 +5,7 @@ const ChallengeSubjectSchema = z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']);
 const ChallengeListItemSchema = z.object({
   id: z.string(),
   subject: ChallengeSubjectSchema,
+  difficulty: z.enum(['TOP', 'HIGH', 'MID', 'LOW']),
   title: z.string(),
   sourceText: z.string(),
   questionImageUrl: z.string().nullable(),

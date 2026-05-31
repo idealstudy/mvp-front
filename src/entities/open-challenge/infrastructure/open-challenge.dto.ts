@@ -38,7 +38,7 @@ const ChallengeListItemDtoSchema = z.object({
   subject: ChallengeSubjectDtoSchema,
   difficulty: DifficultyDtoSchema,
   wrongAnswerRate: z.number().optional().default(0),
-  title: z.string().optional().default('오픈 챌린지 문제'),
+  title: z.string().optional().default('오픈챌린지 문제'),
   sourceText: z.string().optional().default('출처 정보'),
   questionText: z.string().nullable().optional(),
   questionImageUrl: z.string().nullable().optional().default(null),

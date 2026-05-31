@@ -105,6 +105,7 @@ const toListItem = (raw: unknown): ChallengeListItem => {
   return domain.listItem.parse({
     id,
     subject: toSubject(parsed.subject),
+    difficulty: toAdminDifficulty(parsed.difficulty),
     title: parsed.questionText ?? parsed.title,
     sourceText: parsed.sourceText,
     questionImageUrl: parsed.questionImageUrl,
