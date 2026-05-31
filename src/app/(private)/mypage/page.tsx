@@ -1,6 +1,7 @@
 import MyColumnList from '@/features/mypage/column/components/my-column-list';
 import MyInquiryList from '@/features/mypage/inquiry/components/my-inquiry-list';
 import ReceivedInquiryList from '@/features/mypage/inquiry/components/received-inquiry-list';
+import { MyOpenChallengeList } from '@/features/mypage/open-challenge/components/my-open-challenge-list';
 import ProfileMain from '@/features/mypage/profile/components/profile-main';
 
 export default async function MypagePage({
@@ -12,6 +13,9 @@ export default async function MypagePage({
 
   // TEACHER, STUDENT, PARENT
   if (tab === 'profile') return <ProfileMain />;
+
+  // TEACHER, STUDENT, PARENT
+  if (tab === 'open-challenges') return <MyOpenChallengeList />;
 
   // STUDENT, PARENT
   if (tab === 'inquiries') return <MyInquiryList />;

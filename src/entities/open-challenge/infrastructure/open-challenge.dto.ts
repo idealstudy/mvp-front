@@ -108,6 +108,45 @@ const UserRankingDtoSchema = z.object({
   correctRate: z.number(),
 });
 
+const MyChallengeResultFilterSchema = z.enum(['ALL', 'CORRECT', 'WRONG']);
+
+const MyChallengeListItemDtoSchema = z.object({
+  challengeId: IdSchema,
+  subject: ChallengeSubjectDtoSchema,
+  difficulty: AdminChallengeDifficultySchema,
+  sourceText: z.string().optional().default('출처 정보'),
+  questionText: z.string().nullable().optional(),
+  questionImageUrl: z.string().nullable().optional().default(null),
+  isCorrect: z.boolean().nullable(),
+  usedAi: z.boolean().optional().default(false),
+  completedAt: z.string(),
+});
+
+const MyChallengeAttemptDtoSchema = z.object({
+  attemptId: IdSchema,
+  status: z.enum(['IN_PROGRESS', 'AI_COACHING', 'UNRESOLVED', 'COMPLETED']),
+  isCorrect: z.boolean().nullable(),
+  selectedAnswer: z.string().nullable(),
+  usedAi: z.boolean().optional().default(false),
+  maxUsedHintStep: z.number().nullable().optional(),
+  startedAt: z.string().nullable().optional(),
+  completedAt: z.string().nullable().optional(),
+});
+
+const MyChallengeReviewDtoSchema = z.object({
+  reviewId: IdSchema,
+  content: z.string(),
+  isActive: z.boolean().optional(),
+  active: z.boolean().optional(),
+  recommendCount: z.number().optional().default(0),
+});
+
+const MyChallengeDetailDtoSchema = z.object({
+  challengeId: IdSchema,
+  attempts: z.array(MyChallengeAttemptDtoSchema),
+  reviews: z.array(MyChallengeReviewDtoSchema),
+});
+
 const AiCoachingSessionStatusSchema = z.enum([
   'READY',
   'COACHING',
@@ -234,6 +273,9 @@ export const dto = {
   ranking: UserRankingDtoSchema,
   rankings: z.array(UserRankingDtoSchema),
   rankingPage: page(UserRankingDtoSchema),
+  myChallengeListItem: MyChallengeListItemDtoSchema,
+  myChallengeListPage: page(MyChallengeListItemDtoSchema),
+  myChallengeDetail: MyChallengeDetailDtoSchema,
   challengeId: ChallengeIdResponseSchema,
   aiCoachingEnums: AiCoachingEnumResponseSchema,
   aiCoachingPreference: AiCoachingPreferenceSchema,
@@ -252,4 +294,8 @@ export const payload = {
   aiCoachingPreference: AiCoachingPreferencePayloadSchema,
   createAiCoachingSession: CreateAiCoachingSessionPayloadSchema,
   sendAiCoachingMessage: SendAiCoachingMessagePayloadSchema,
+};
+
+export const params = {
+  myChallengeResultFilter: MyChallengeResultFilterSchema,
 };

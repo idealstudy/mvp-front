@@ -18,11 +18,13 @@ import { Bot, ChevronDown, ChevronUp, Pencil, X } from 'lucide-react';
 
 import {
   useCreateChallengeReviewMutation,
+  useMyOpenChallengeDetailQuery,
   useOpenChallengeDetailQuery,
   useStartChallengeAttemptMutation,
   useSubmitChallengeAnswerMutation,
 } from '../../hooks/use-open-challenge';
 import { AiCoachPanel } from './ai-coach-panel';
+import { ChallengeHistoryDialog } from './challenge-history-dialog';
 import { ChallengeSolveSkeleton } from './challenge-solve-skeleton';
 import { ChoiceList } from './choice-list';
 
@@ -47,6 +49,7 @@ export const ChallengeSolveClient = ({
   const [submitError, setSubmitError] = useState('');
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isMobileAiOpen, setIsMobileAiOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [aiAttemptId, setAiAttemptId] = useState<string | null>(null);
   const choiceSectionRef = useRef<HTMLDivElement>(null);
   const draftKey = `${DRAFT_KEY_PREFIX}:${challengeId}`;
@@ -61,11 +64,19 @@ export const ChallengeSolveClient = ({
 
   const { data: challenge, isLoading: isChallengeLoading } =
     useOpenChallengeDetailQuery(challengeId);
+  const { data: challengeHistory } = useMyOpenChallengeDetailQuery(
+    challengeId,
+    { enabled: isLoggedIn }
+  );
   const startAttemptMutation = useStartChallengeAttemptMutation();
   const submitAnswerMutation = useSubmitChallengeAnswerMutation(challengeId);
   const createReviewMutation = useCreateChallengeReviewMutation();
   const isSubmitting =
     startAttemptMutation.isPending || submitAnswerMutation.isPending;
+  const hasChallengeHistory =
+    !!challengeHistory &&
+    (challengeHistory.attempts.length > 0 ||
+      challengeHistory.reviews.length > 0);
 
   const handleSubmit = async () => {
     if (!isLoggedIn) {
@@ -159,6 +170,27 @@ export const ChallengeSolveClient = ({
               {challenge.topic}
             </span>
           </div>
+
+          {hasChallengeHistory && (
+            <div className="border-line-line1 bg-orange-1 mb-5 flex flex-col gap-3 rounded-xl border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-text-main font-semibold">
+                  전에 도전했던 문제예요.
+                </p>
+                <p className="text-gray-8 mt-1 text-sm">
+                  이전 답안과 공유한 풀이를 다시 확인할 수 있어요.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setIsHistoryOpen(true)}
+                className="h-9 shrink-0 px-4 text-sm"
+              >
+                도전 내역 보기
+              </Button>
+            </div>
+          )}
 
           <div className="border-line-line1 mb-5 overflow-hidden rounded-xl border bg-white">
             <button
@@ -321,6 +353,12 @@ export const ChallengeSolveClient = ({
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
+
+      <ChallengeHistoryDialog
+        challengeId={challengeId}
+        isOpen={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
+      />
 
       <Dialog
         isOpen={isLoginDialogOpen}

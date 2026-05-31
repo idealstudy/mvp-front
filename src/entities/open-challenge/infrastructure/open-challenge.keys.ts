@@ -1,4 +1,4 @@
-import { type ChallengeListParams } from '../types';
+import { type ChallengeListParams, type MyChallengeListParams } from '../types';
 
 const normalizeListParams = (params: ChallengeListParams = {}) => ({
   subject: params.subject ?? 'ALL',
@@ -6,6 +6,14 @@ const normalizeListParams = (params: ChallengeListParams = {}) => ({
   sort: params.sort ?? 'latest',
   page: params.page ?? 0,
   size: params.size ?? 20,
+});
+
+const normalizeMyChallengeListParams = (
+  params: MyChallengeListParams = {}
+) => ({
+  result: params.result ?? 'ALL',
+  page: params.page ?? 0,
+  size: params.size ?? 10,
 });
 
 export const openChallengeKeys = {
@@ -17,6 +25,14 @@ export const openChallengeKeys = {
   reviews: (challengeId: string, sort = 'recommend') =>
     [...openChallengeKeys.all, 'reviews', challengeId, sort] as const,
   ranking: () => [...openChallengeKeys.all, 'ranking'] as const,
+  myList: (params: MyChallengeListParams = {}) =>
+    [
+      ...openChallengeKeys.all,
+      'my-list',
+      normalizeMyChallengeListParams(params),
+    ] as const,
+  myDetail: (challengeId: string) =>
+    [...openChallengeKeys.all, 'my-detail', challengeId] as const,
   adminList: (params: ChallengeListParams = {}) =>
     [
       ...openChallengeKeys.all,

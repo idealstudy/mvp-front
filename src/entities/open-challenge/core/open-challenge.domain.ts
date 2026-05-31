@@ -52,6 +52,42 @@ const UserRankingSchema = z.object({
   correctRate: z.number(),
 });
 
+const MyChallengeListItemSchema = z.object({
+  challengeId: z.string(),
+  subject: ChallengeSubjectSchema,
+  difficulty: z.enum(['TOP', 'HIGH', 'MID', 'LOW']),
+  sourceText: z.string(),
+  questionText: z.string(),
+  questionImageUrl: z.string().nullable(),
+  isCorrect: z.boolean().nullable(),
+  usedAi: z.boolean(),
+  completedAt: z.string(),
+});
+
+const MyChallengeAttemptSchema = z.object({
+  attemptId: z.string(),
+  status: z.enum(['IN_PROGRESS', 'AI_COACHING', 'UNRESOLVED', 'COMPLETED']),
+  isCorrect: z.boolean().nullable(),
+  selectedAnswer: z.string().nullable(),
+  usedAi: z.boolean(),
+  maxUsedHintStep: z.number().nullable(),
+  startedAt: z.string().nullable(),
+  completedAt: z.string().nullable(),
+});
+
+const MyChallengeReviewSchema = z.object({
+  reviewId: z.string(),
+  content: z.string(),
+  isActive: z.boolean(),
+  recommendCount: z.number(),
+});
+
+const MyChallengeDetailSchema = z.object({
+  challengeId: z.string(),
+  attempts: z.array(MyChallengeAttemptSchema),
+  reviews: z.array(MyChallengeReviewSchema),
+});
+
 export const domain = {
   subject: ChallengeSubjectSchema,
   listItem: ChallengeListItemSchema,
@@ -60,4 +96,6 @@ export const domain = {
   review: ChallengeReviewSchema,
   nextChallenge: NextChallengeSchema,
   ranking: UserRankingSchema,
+  myChallengeListItem: MyChallengeListItemSchema,
+  myChallengeDetail: MyChallengeDetailSchema,
 };

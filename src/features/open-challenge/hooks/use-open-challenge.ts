@@ -55,6 +55,16 @@ export const useNextChallengeQuery = (
     enabled: (options?.enabled ?? true) && challengeId.length > 0,
   });
 
+export const useMyOpenChallengeDetailQuery = (
+  challengeId: string,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: openChallengeKeys.myDetail(challengeId),
+    queryFn: () => repository.getMyDetail(challengeId),
+    enabled: (options?.enabled ?? true) && challengeId.length > 0,
+  });
+
 export const useAiCoachingPreferenceEnumsQuery = (options?: {
   enabled?: boolean;
 }) =>

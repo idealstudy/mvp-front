@@ -16,6 +16,9 @@ import {
   type ChallengeReview,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
+  type MyChallengeDetail,
+  type MyChallengeListItem,
+  type MyChallengeListParams,
   type NextChallenge,
   type SendAiCoachingMessagePayload,
   type StartChallengeAttemptPayload,
@@ -171,6 +174,42 @@ const toReview = (raw: unknown): ChallengeReview => {
     content: parsed.content,
     recommendCount: parsed.recommendCount,
     isBest: parsed.isBest ?? parsed.best ?? false,
+  });
+};
+
+const toMyChallengeListItem = (raw: unknown): MyChallengeListItem => {
+  const parsed = dto.myChallengeListItem.parse(raw);
+
+  return domain.myChallengeListItem.parse({
+    challengeId: parsed.challengeId,
+    subject: toSubject(parsed.subject),
+    difficulty: parsed.difficulty,
+    sourceText: parsed.sourceText,
+    questionText: parsed.questionText ?? '문제 이미지를 보고 답을 선택했어요.',
+    questionImageUrl: parsed.questionImageUrl,
+    isCorrect: parsed.isCorrect,
+    usedAi: parsed.usedAi,
+    completedAt: parsed.completedAt,
+  });
+};
+
+const toMyChallengeDetail = (raw: unknown): MyChallengeDetail => {
+  const parsed = dto.myChallengeDetail.parse(raw);
+
+  return domain.myChallengeDetail.parse({
+    challengeId: parsed.challengeId,
+    attempts: parsed.attempts.map((attempt) => ({
+      ...attempt,
+      maxUsedHintStep: attempt.maxUsedHintStep ?? null,
+      startedAt: attempt.startedAt ?? null,
+      completedAt: attempt.completedAt ?? null,
+    })),
+    reviews: parsed.reviews.map((review) => ({
+      reviewId: review.reviewId,
+      content: review.content,
+      isActive: review.isActive ?? review.active ?? false,
+      recommendCount: review.recommendCount,
+    })),
   });
 };
 
@@ -359,6 +398,31 @@ const getChallengeRanking = async (): Promise<UserRanking[]> => {
   return page.content.map((ranking) => domain.ranking.parse(ranking));
 };
 
+const getMyChallengeList = async (params: MyChallengeListParams = {}) => {
+  const response = await api.private.get('/common/me/challenges', {
+    params: {
+      result: params.result ?? 'ALL',
+      page: params.page ?? 0,
+      size: params.size ?? 10,
+    },
+  });
+  const page = unwrapEnvelope(response, dto.myChallengeListPage);
+
+  return {
+    ...page,
+    content: page.content.map(toMyChallengeListItem),
+  };
+};
+
+const getMyChallengeDetail = async (
+  challengeId: string
+): Promise<MyChallengeDetail> => {
+  const response = await api.private.get(
+    `/common/me/challenges/${challengeId}`
+  );
+  return toMyChallengeDetail(unwrapEnvelope(response, dto.myChallengeDetail));
+};
+
 const getNextChallenge = async (
   currentChallengeId: string
 ): Promise<NextChallenge | null> => {
@@ -382,6 +446,8 @@ export const repository = {
   createReview: createChallengeReview,
   submitFeedback: submitChallengeFeedback,
   getRanking: getChallengeRanking,
+  getMyList: getMyChallengeList,
+  getMyDetail: getMyChallengeDetail,
   getNextChallenge,
   getAiCoachingPreferenceEnums,
   getMyAiCoachingPreference,

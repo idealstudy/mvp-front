@@ -1,5 +1,8 @@
 import { domain } from '@/entities/open-challenge/core';
-import { payload } from '@/entities/open-challenge/infrastructure/open-challenge.dto';
+import {
+  params,
+  payload,
+} from '@/entities/open-challenge/infrastructure/open-challenge.dto';
 import { z } from 'zod';
 
 export type ChallengeSubject = z.infer<typeof domain.subject>;
@@ -9,6 +12,8 @@ export type ChallengeAnswerResult = z.infer<typeof domain.answerResult>;
 export type ChallengeReview = z.infer<typeof domain.review>;
 export type NextChallenge = z.infer<typeof domain.nextChallenge>;
 export type UserRanking = z.infer<typeof domain.ranking>;
+export type MyChallengeListItem = z.infer<typeof domain.myChallengeListItem>;
+export type MyChallengeDetail = z.infer<typeof domain.myChallengeDetail>;
 
 export type AiCoachingSessionStatus =
   | 'READY'
@@ -66,6 +71,16 @@ export type ChallengeListParams = {
   subject?: ChallengeSubject | 'ALL';
   difficulty?: 'highest' | 'high' | 'middle' | 'low' | 'ALL';
   sort?: 'latest' | 'popular';
+  page?: number;
+  size?: number;
+};
+
+export type MyChallengeResultFilter = z.infer<
+  typeof params.myChallengeResultFilter
+>;
+
+export type MyChallengeListParams = {
+  result?: MyChallengeResultFilter;
   page?: number;
   size?: number;
 };
