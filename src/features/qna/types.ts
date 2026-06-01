@@ -39,6 +39,7 @@ export interface QnADetailResponse {
   relatedTeachingNote: TeachingNote;
   viewCount: number;
   authorName: string;
+  authorProfileImageUrl: string | null;
   regDate: string;
   messages: QnAMessage[];
 }
@@ -48,6 +49,7 @@ export interface QnAMessage {
   content: string;
   authorType: Role;
   authorName: string;
+  authorProfileImageUrl: string | null;
   regDate: string;
 }
 

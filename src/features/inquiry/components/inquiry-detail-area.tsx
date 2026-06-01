@@ -9,6 +9,8 @@ import InquiryAnswerArea from '@/features/inquiry/components/inquiry-answer-area
 import { useInquiry } from '@/features/inquiry/hooks/use-inquiry';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { MiniSpinner } from '@/shared/components/loading';
+import { ProfileAvatar } from '@/shared/components/ui/profile-avatar';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 import { PUBLIC } from '@/shared/constants';
 import { cn } from '@/shared/lib';
 import { classifyInquiryError, handleApiError } from '@/shared/lib/errors';
@@ -51,7 +53,15 @@ export default function InquiryDetailArea({ id }: { id: number }) {
           <div className="flex flex-col gap-5">
             {/* 프로필 */}
             <div className="flex flex-row items-center gap-3">
-              <div className="bg-gray-scale-gray-10 h-10 w-10 rounded-full" />
+              <ProfileAvatar
+                src={null}
+                fallbackSrc={DEFAULT_PROFILE_IMAGE.STUDENT}
+                alt={`${inquiry.inquirerName} 프로필`}
+                size={40}
+                memberId={inquiry.inquirerId}
+                role="ROLE_STUDENT"
+                className="h-10 w-10"
+              />
               <span className="font-body2-heading">{inquiry.inquirerName}</span>
             </div>
 

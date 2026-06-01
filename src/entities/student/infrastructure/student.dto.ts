@@ -1,12 +1,19 @@
 import { z } from 'zod';
 
+const NullableProfileImageUrlSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? null);
+
 /* ─────────────────────────────────────────────────────
  * 학생 기본 정보 DTO
  * ──────────────────────────────────────────────────── */
 const BasicInfoDtoSchema = z.object({
   name: z.string(),
   email: z.string(),
-  isProfilePublic: z.boolean(),
+  profileImageUrl: NullableProfileImageUrlSchema,
+  isProfilePublic: z.boolean().nullable(),
   learningGoal: z.string().nullable(),
 });
 
@@ -119,6 +126,8 @@ const StudentProfileStudyRoomListDtoSchema = z.array(
     studentCount: z.number(),
     qnaCount: z.number(),
     state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+    enrollmentStatus: z.string(),
+    thumbnailUrl: z.string().nullable(),
   })
 );
 

@@ -56,6 +56,7 @@ const StudyRoomPreviewCoreSchema = z.object({
   subjectType: base.subject,
   schoolInfo: PreviewSchoolInfoSchema,
   enrollmentStatus: z.enum(['OPEN', 'OPERATING']),
+  masked: z.boolean().optional(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -88,6 +89,7 @@ const PreviewOtherStudyRoomItemSchema = z.object({
 const StudyRoomPreviewSideDataSchema = z.object({
   id: z.number().int(),
   name: z.string(),
+  teacherName: z.string(),
   otherStudyRooms: z.array(PreviewOtherStudyRoomItemSchema),
   numberOfTeachingNotes: z.number().int(),
   numberOfStudents: z.number().int(),
@@ -115,6 +117,9 @@ const PreviewInquiryItemSchema = z.object({
   status: z.enum(['PENDING', 'ANSWERED']),
   regDate: z.string(),
   masked: z.boolean(),
+  title: z.string().nullable().optional(),
+  inquirerName: z.string().nullable().optional(),
+  isWrittenByMe: z.boolean().optional(),
 });
 
 const PreviewInquiryListSchema = z.object({

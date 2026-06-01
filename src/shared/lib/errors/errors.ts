@@ -112,6 +112,7 @@ export function classifyColumnError(code?: string): ApiErrorType {
     case 'COLUMN_ARTICLE_NOT_EXIST':
     case 'COLUMN_ARTICLE_ALREADY_APPROVED':
     case 'COLUMN_ARTICLE_NOT_OWNED':
+    case 'COLUMN_ARTICLE_LIKE_FORBIDDEN':
       return 'CONTEXT';
 
     // AUTH (권한 문제)

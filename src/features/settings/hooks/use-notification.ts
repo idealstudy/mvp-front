@@ -62,3 +62,58 @@ export const useUpdateNotificationSetting = () => {
     },
   });
 };
+
+/**
+ * [GET] 마케팅 수신 동의 여부 조회
+ */
+export const useMarketingConsent = () => {
+  return useQuery({
+    queryKey: notificationKeys.marketingConsent(),
+    queryFn: repository.notification.getMarketingConsent,
+  });
+};
+
+/**
+ * [PATCH] 마케팅 수신 동의 여부 변경
+ * 낙관적 업데이트 적용
+ */
+export const useToggleMarketingConsent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: repository.notification.toggleMarketingConsent,
+
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: notificationKeys.marketingConsent(),
+      });
+      const previous = queryClient.getQueryData<boolean>(
+        notificationKeys.marketingConsent()
+      );
+      queryClient.setQueryData<boolean>(
+        notificationKeys.marketingConsent(),
+        (old) => !old
+      );
+      return { previous };
+    },
+
+    onSuccess: (newValue) => {
+      queryClient.setQueryData(notificationKeys.marketingConsent(), newValue);
+    },
+
+    onError: (_err, _vars, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(
+          notificationKeys.marketingConsent(),
+          context.previous
+        );
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.marketingConsent(),
+      });
+    },
+  });
+};

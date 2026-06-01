@@ -30,8 +30,22 @@ export const createSessionCookieHeader = (setCookies: string[]): string => {
     .join('; ');
 };
 
+const isLocalRuntime = () => {
+  const appUrl = process.env.NEXT_PUBLIC_BASE_URL ?? '';
+  const isLocalGtmDisabled = process.env.NEXT_PUBLIC_ENABLE_GTM === 'false';
+  const isLocalSentryDisabled =
+    process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'false';
+
+  return (
+    appUrl.includes('localhost') ||
+    appUrl.includes('127.0.0.1') ||
+    (isLocalGtmDisabled && isLocalSentryDisabled)
+  );
+};
+
 const sanitizeCookieForLocalhost = (cookie: string) => {
-  if (process.env.NODE_ENV === 'production') {
+  // 로컬 production 실행에서는 dev 백엔드 Domain 쿠키를 localhost에 저장할 수 없다.
+  if (!isLocalRuntime() && process.env.NODE_ENV === 'production') {
     return cookie;
   }
 

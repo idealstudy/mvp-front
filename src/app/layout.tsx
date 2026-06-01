@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   title: 'THE EDU',
   description:
     'THE EDU는 과외와 일정 관리를 하나의 플랫폼에서 제공합니다. 실시간 피드백, 스케줄 조정 기능을 경험해보세요.',
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      'naver-site-verification':
+        process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION ?? '',
+    },
+  },
 };
 
 export default function RootLayout({
@@ -22,6 +29,9 @@ export default function RootLayout({
 }>) {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
 
+  const shouldLoadGtm =
+    Boolean(gtmId) && process.env.NEXT_PUBLIC_ENABLE_GTM === 'true';
+
   return (
     <html
       lang="ko"
@@ -30,7 +40,8 @@ export default function RootLayout({
     >
       <body className="bg-[#F9F9F9] antialiased">
         {/* GTM Head 스니펫 */}
-        {gtmId && (
+        {/* 배포환경일때만 작동되게 */}
+        {shouldLoadGtm && (
           <>
             <Script
               id="gtm-init"
@@ -57,7 +68,7 @@ export default function RootLayout({
           </>
         )}
         {/* GTM Body 스니펫 (noscript) */}
-        {gtmId && (
+        {shouldLoadGtm && (
           <noscript>
             <iframe
               src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}

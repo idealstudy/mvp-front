@@ -144,7 +144,7 @@ export const DashboardSidebar = () => {
       )}
 
       <Sidebar.Item
-        href={PUBLIC.CORE.LIST.TEACHERS}
+        href={PUBLIC.CORE.LIST.STUDY_ROOMS}
         matchPath={PUBLIC.CORE.LIST.BASE}
       >
         <FindingIcon className="shrink-0" />

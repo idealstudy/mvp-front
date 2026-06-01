@@ -17,6 +17,7 @@ const StudentDashboardHomeworkListShape = dto.dashboard.homeworkList;
 const BasicInfoDomainSchema = z.object({
   name: z.string(),
   email: z.string(),
+  profileImageUrl: z.string().nullable(),
   isProfilePublic: z.boolean(),
   learningGoal: z.string().nullable(),
   role: z.literal('ROLE_STUDENT'),
@@ -120,6 +121,8 @@ const StudentProfileStudyRoomListItemDomainSchema = z.object({
   studentCount: z.number(),
   qnaCount: z.number(),
   state: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'TERMINATED']),
+  enrollmentStatus: z.string(),
+  thumbnailUrl: z.string().nullable(),
 });
 
 const StudentProfileStudyRoomListDomainSchema = z.array(

@@ -25,6 +25,7 @@ const PUBLIC_PATHS = new Set<string>([
   '/register',
   '/api/v1/auth/login',
   '/api/v1/member/info', // 자체 인증 처리 (쿠키 없으면 204 반환)
+  '/api/drawing-session-ingest', // dev: iPad 필기 캡처 (route는 production에서 404)
 ]);
 
 // next.js 인프라 내부로의 요청인지 판단
@@ -93,6 +94,11 @@ export function middleware(req: NextRequest) {
 
   // 공개 경로 통과
   if (PUBLIC_PATHS.has(pathname)) {
+    return NextResponse.next();
+  }
+
+  // 백엔드 공개 API 경로는 인증 없이 통과 (BFF에서 쿠키는 자동으로 붙음)
+  if (pathname.startsWith('/api/v1/public/')) {
     return NextResponse.next();
   }
 

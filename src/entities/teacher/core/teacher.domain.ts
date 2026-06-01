@@ -16,8 +16,10 @@ const TeacherDashboardHomeworkListShape = dto.dashboard.homeworkList;
  * ────────────────────────────────────────────────────*/
 const BasicInfoDomainSchema = z.object({
   name: z.string(),
-  email: z.string(),
+  email: z.string().nullable(),
+  profileImageUrl: z.string().nullable(),
   isProfilePublic: z.boolean(),
+  isEmailPublic: z.boolean(),
   simpleIntroduction: z.string().nullable(),
   role: z.literal('ROLE_TEACHER'),
   profilePublicKorean: z.enum(['공개', '비공개']),

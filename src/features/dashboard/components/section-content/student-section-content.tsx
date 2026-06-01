@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { TeacherDashboardMemberListItemDTO } from '@/entities/teacher';
 import { Pagination } from '@/shared/components/ui';
-import { PRIVATE } from '@/shared/constants';
+import { DEFAULT_PROFILE_IMAGE, PRIVATE } from '@/shared/constants';
 import { cn, getDaysSince } from '@/shared/lib';
 
 export interface StudentsSectionContentProps {
@@ -76,7 +76,7 @@ const StudentsSectionContent = ({
               {/* 아바타 */}
               <div className="border-gray-12 flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border">
                 <Image
-                  src={'/character/img_profile_student01.png'}
+                  src={DEFAULT_PROFILE_IMAGE.STUDENT}
                   alt={`${student.name} 프로필`}
                   width={36}
                   height={36}

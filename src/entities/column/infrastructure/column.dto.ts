@@ -11,6 +11,7 @@ const ColumnListItemDtoSchema = z.object({
   tags: z.array(z.string()),
   thumbnailUrl: z.string().nullable(),
   viewCount: z.number(),
+  likeCount: z.number(),
   regDate: z.string(),
 });
 
@@ -38,6 +39,8 @@ const ColumnDetailDtoSchema = z.object({
     expiresAt: z.string().nullable(),
   }),
   viewCount: z.number(),
+  likeCount: z.number(),
+  liked: z.boolean().nullable(),
   regDate: z.string(),
   modDate: z.string(),
 });
@@ -52,6 +55,7 @@ const MyColumnListItemDtoSchema = z.object({
   status: z.enum(['PENDING_APPROVAL', 'APPROVED']),
   thumbnailUrl: z.string().nullable(),
   viewCount: z.number(),
+  likeCount: z.number(),
   regDate: z.string(),
   modDate: z.string(),
 });
@@ -76,6 +80,7 @@ const AdminColumnListItemDtoSchema = z.object({
   status: z.enum(['PENDING_APPROVAL', 'APPROVED']),
   thumbnailUrl: z.string().nullable(),
   viewCount: z.number(),
+  likeCount: z.number(),
   regDate: z.string(),
   modDate: z.string(),
 });
@@ -86,6 +91,14 @@ const AdminColumnPageDtoSchema = z.object({
   totalElements: z.number(),
   totalPages: z.number(),
   content: z.array(AdminColumnListItemDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * 좋아요 토클 응답 스키마
+ * ────────────────────────────────────────────────────*/
+const LikeToggleDtoSchema = z.object({
+  liked: z.boolean().nullable(),
+  likeCount: z.number(),
 });
 
 /* ─────────────────────────────────────────────────────
@@ -124,6 +137,7 @@ export const dto = {
   myPage: MyColumnPageDtoSchema,
   adminListItem: AdminColumnListItemDtoSchema,
   adminPage: AdminColumnPageDtoSchema,
+  likeToggle: LikeToggleDtoSchema,
 };
 
 export const payload = {

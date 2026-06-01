@@ -41,14 +41,17 @@ export async function generateMetadata({
 export default async function TeacherProfilePage({ params }: PageProps) {
   const { teacherId } = await params;
 
+  const id = Number(teacherId);
+  if (isNaN(id)) notFound();
+
   // 클라이언트 훅으로 패칭하면 비공개/미존재 케이스를 렌더링 전에 처리할 수 없으므로,
   // 서버 컴포넌트에서 직접 호출해 에러 코드에 따라 페이지 분기를 결정합니다.
   try {
-    const basicInfo = await getBasicInfo(Number(teacherId));
+    const basicInfo = await getBasicInfo(id);
     return (
       <ProfileMain
         basicInfo={basicInfo}
-        memberId={Number(teacherId)}
+        memberId={id}
         role="ROLE_TEACHER"
       />
     );

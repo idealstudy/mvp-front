@@ -1,5 +1,6 @@
 export { TextField } from './text-field';
 export { DropdownMenu } from './dropdown-menu';
+export { ProfileAvatar } from './profile-avatar';
 export { TagInput } from './tag-input';
 export { Select } from './select';
 export { SearchInput } from './search-input';

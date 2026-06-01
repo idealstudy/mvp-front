@@ -1,7 +1,7 @@
 import { repository, teacherKeys } from '@/entities/teacher';
 import { useQuery } from '@tanstack/react-query';
 
-export const useProfileReport = (
+export const useTeacherProfileReport = (
   teacherId: number,
   options?: { enabled?: boolean }
 ) =>

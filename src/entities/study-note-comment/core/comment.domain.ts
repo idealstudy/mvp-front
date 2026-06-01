@@ -1,4 +1,5 @@
 import type { Role } from '@/entities/member';
+import { DEFAULT_PROFILE_IMAGE, getProfileImageSrc } from '@/shared/constants';
 import { z } from 'zod';
 
 import { dto } from '../infrastructure';
@@ -22,27 +23,27 @@ const ROLE_META: Record<
 > = {
   ROLE_STUDENT: {
     label: '학생',
-    profileImageSrc: '/character/img_profile_student01.png',
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.STUDENT,
     isStudent: true,
   },
   ROLE_TEACHER: {
     label: '선생님',
-    profileImageSrc: '/character/img_profile_teacher01.png',
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.TEACHER,
     isStudent: false,
   },
   ROLE_PARENT: {
     label: '부모님',
-    profileImageSrc: '/character/img_profile_teacher01.png',
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.PARENT,
     isStudent: false,
   },
   ROLE_ADMIN: {
     label: '관리자',
-    profileImageSrc: '/character/img_profile_teacher01.png',
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.COMMON,
     isStudent: false,
   },
   ROLE_MEMBER: {
     label: '회원',
-    profileImageSrc: '/character/img_profile_student02.png',
+    profileImageSrc: DEFAULT_PROFILE_IMAGE.MEMBER,
     isStudent: false,
   },
 };
@@ -52,15 +53,26 @@ export const getCommentRoleLabel = (role?: Role): string => {
 };
 
 export const getCommentProfileImageSrc = (role?: Role): string => {
-  return role
-    ? ROLE_META[role].profileImageSrc
-    : '/character/img_profile_teacher01.png';
+  return role ? ROLE_META[role].profileImageSrc : DEFAULT_PROFILE_IMAGE.TEACHER;
+};
+
+export const getCommentProfileImageSrcByRoleLabel = (
+  roleLabel: string
+): string => {
+  const roleMeta = Object.values(ROLE_META).find(
+    (meta) => meta.label === roleLabel
+  );
+
+  return roleMeta?.profileImageSrc ?? DEFAULT_PROFILE_IMAGE.COMMON;
 };
 
 const toCommentAuthorInfo = (authorInfo: z.infer<typeof dto.authorInfo>) => ({
   ...authorInfo,
   roleLabel: getCommentRoleLabel(authorInfo.role),
-  profileImageSrc: ROLE_META[authorInfo.role].profileImageSrc,
+  profileImageSrc: getProfileImageSrc(
+    authorInfo.profileImageUrl,
+    ROLE_META[authorInfo.role].profileImageSrc
+  ),
   isStudent: ROLE_META[authorInfo.role].isStudent,
 });
 

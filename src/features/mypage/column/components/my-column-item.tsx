@@ -49,7 +49,7 @@ export default function MyColumnItem({ column }: { column: MyColumnListItem }) {
             ? `${PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)}?preview=true`
             : PUBLIC.COMMUNITY.COLUMN.DETAIL(column.id)
         }
-        subtitle={`조회수 ${column.viewCount} | 작성일 ${getRelativeTimeString(column.regDate)}`}
+        subtitle={`조회수 ${column.viewCount} | 작성일 ${getRelativeTimeString(column.regDate)} | 좋아요 ${column.likeCount}`}
         rightTitle={
           <StatusBadge
             label={COLUMN_STATUS_LABEL[column.status]}

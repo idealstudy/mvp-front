@@ -45,6 +45,7 @@ export interface MemberInfo {
   id: number;
   name: string;
   email: string;
+  profileImageUrl: string | null;
   joinDate: string;
   outDate: string | null;
   consultationCount?: number;

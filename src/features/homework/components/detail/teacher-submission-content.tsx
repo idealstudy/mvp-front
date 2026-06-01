@@ -6,6 +6,8 @@ import { HOMEWORK_SUBMIT_STATUS_LABEL } from '@/entities/homework/core';
 import type { HomeworkSubmitStatus } from '@/entities/homework/types';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { DropdownMenu } from '@/shared/components/ui/dropdown-menu';
+import { ProfileAvatar } from '@/shared/components/ui/profile-avatar';
+import { DEFAULT_PROFILE_IMAGE } from '@/shared/constants';
 import { getRelativeTimeString } from '@/shared/lib/utils';
 
 import { FeedbackFormProvider } from '../write/components/feedback-form-provider';
@@ -14,22 +16,26 @@ type Props = {
   homeworkStudentId: number;
   content: string;
   authorName: string;
+  profileImageUrl: string | null;
   regDate: string;
   submitStatus: HomeworkSubmitStatus;
   homeworkId: number;
   studyRoomId: number;
   hasFeedback: boolean;
+  studentMemberId?: number;
 };
 
 export const TeacherHomeworkSubmissionContent = ({
   homeworkStudentId,
   content,
   authorName,
+  profileImageUrl,
   regDate,
   submitStatus,
   homeworkId,
   studyRoomId,
   hasFeedback,
+  studentMemberId,
 }: Props) => {
   const parsedContent = parseEditorContent(content);
   const [isClicked, setIsClicked] = useState(false);
@@ -39,7 +45,14 @@ export const TeacherHomeworkSubmissionContent = ({
       <div className="border-line-line1 flex flex-col gap-5 rounded-xl border bg-white p-10">
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gray-100" />
+            <ProfileAvatar
+              src={profileImageUrl}
+              fallbackSrc={DEFAULT_PROFILE_IMAGE.STUDENT}
+              alt={`${authorName} 프로필`}
+              memberId={studentMemberId}
+              role="ROLE_STUDENT"
+              className="h-10 w-10"
+            />
             <span className="font-body2-heading">{authorName}</span>
 
             <span className="rounded-full border px-3 py-1 text-xs">

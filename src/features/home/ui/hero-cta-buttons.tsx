@@ -23,10 +23,10 @@ export function HeroCtaButtons() {
         )}
       >
         <Link
-          href={PUBLIC.CORE.LIST.TEACHERS}
+          href={PUBLIC.CORE.LIST.STUDY_ROOMS}
           onClick={() => trackHomeDedu101Click('hero')}
         >
-          등록된 선생님 보러가기
+          스터디룸 보러가기
         </Link>
       </Button>
       <Button

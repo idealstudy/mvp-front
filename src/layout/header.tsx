@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { NotificationPopover } from '@/features/notifications/components/notification-popover';
+import { useProfileImage } from '@/features/profile-image/hooks/use-profile-image';
 import {
   useStudentStudyRoomsQuery,
   useTeacherStudyRoomsQuery,
@@ -35,9 +36,11 @@ import {
 } from '@/shared/components/ui/popover';
 import {
   BUTTON_BASE,
+  DEFAULT_PROFILE_IMAGE,
   PRIVATE,
   PUBLIC,
   ROLE_META_MAP,
+  getProfileImageSrc,
   link,
 } from '@/shared/constants';
 import { cn } from '@/shared/lib';
@@ -54,6 +57,13 @@ export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { data: profileImageData } = useProfileImage({
+    enabled: !!session,
+  });
+  const profileImageSrc = getProfileImageSrc(
+    profileImageData?.imageUrl,
+    DEFAULT_PROFILE_IMAGE.HEADER
+  );
 
   // 역할에 따라 조건부로 API 호출
   const { data: teacherStudyRoomList } = useTeacherStudyRoomsQuery({
@@ -110,7 +120,7 @@ export const Header = () => {
 
           <div className="ml-5 flex gap-2">
             <Link
-              href={PUBLIC.CORE.LIST.TEACHERS}
+              href={PUBLIC.CORE.LIST.STUDY_ROOMS}
               className={cn(
                 'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
                 pathname.startsWith(PUBLIC.CORE.LIST.BASE)
@@ -158,11 +168,11 @@ export const Header = () => {
                 }}
               >
                 <Image
-                  src={'/img_header_profile.svg'}
+                  src={profileImageSrc}
                   alt="프로필 사진"
                   width={36}
                   height={36}
-                  className="desktop:flex hidden cursor-pointer rounded-full"
+                  className="desktop:flex hidden h-9 w-9 cursor-pointer rounded-full object-cover"
                 />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
@@ -228,14 +238,6 @@ export const Header = () => {
                     <span>대시보드</span>
                   </PopoverLink>
 
-                  {/* 강사 프로필 링크 */}
-                  <PopoverLink
-                    href={PUBLIC.CORE.LIST.TEACHERS}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>강사 프로필</span>
-                  </PopoverLink>
-
                   {/* 게시판 */}
                   <PopoverLink
                     href={PUBLIC.COMMUNITY.COLUMN.LIST}
@@ -292,7 +294,7 @@ export const Header = () => {
                     )}
                   </div>
                   <PopoverLink
-                    href={PUBLIC.CORE.LIST.TEACHERS}
+                    href={PUBLIC.CORE.LIST.STUDY_ROOMS}
                     onClick={() => setIsOpen(false)}
                   >
                     <FindingIcon />
@@ -305,11 +307,11 @@ export const Header = () => {
                   <div className="flex items-center justify-between px-3 py-2">
                     <div className="flex items-center gap-3">
                       <Image
-                        src={'/img_header_profile.svg'}
+                        src={profileImageSrc}
                         alt="프로필 사진"
                         width={40}
                         height={40}
-                        className="rounded-full"
+                        className="h-10 w-10 rounded-full object-cover"
                       />
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-900">

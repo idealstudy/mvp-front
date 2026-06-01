@@ -35,7 +35,7 @@ const getPreviewInquiries = async (
   studyRoomId: number,
   params: { page: number; size: number }
 ): Promise<PreviewInquiryList> => {
-  const response = await api.public.get(
+  const response = await api.private.get(
     `/public/study-rooms/${studyRoomId}/inquiries`,
     { params }
   );

@@ -10,7 +10,7 @@ import { trackHomeDedu101Click } from '@/shared/lib/analytics';
 export default function FloatingCTA() {
   return (
     <div
-      aria-label="선생님 목록 바로가기"
+      aria-label="스터디룸 목록 바로가기"
       className={cn(
         'bg-gray-11/80 fixed inset-x-4.5 bottom-6 z-10 flex items-center justify-between rounded-lg p-3',
         'tablet:inset-x-15 tablet:bottom-8 tablet:px-6 tablet:py-4',
@@ -23,11 +23,9 @@ export default function FloatingCTA() {
           'tablet:font-headline1-normal'
         )}
       >
-        <span className="tablet:hidden">
-          등록된 디에듀 선생님이 궁금하다면?
-        </span>
+        <span className="tablet:hidden">모집 중인 스터디룸이 궁금하다면?</span>
         <span className="max-tablet:hidden">
-          디에듀에 등록된 선생님이 궁금하다면?
+          모집 중인 스터디룸이 궁금하다면?
         </span>
       </p>
       <Button
@@ -38,7 +36,7 @@ export default function FloatingCTA() {
         asChild
       >
         <Link
-          href={PUBLIC.CORE.LIST.TEACHERS}
+          href={PUBLIC.CORE.LIST.STUDY_ROOMS}
           onClick={() => trackHomeDedu101Click('floating_cta')}
         >
           보러가기
