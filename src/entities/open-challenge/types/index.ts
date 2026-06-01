@@ -5,6 +5,9 @@ import {
 } from '@/entities/open-challenge/infrastructure/open-challenge.dto';
 import { z } from 'zod';
 
+/* ─────────────────────────────────────────────────────
+ * Frontend Type
+ * ────────────────────────────────────────────────────*/
 export type ChallengeSubject = z.infer<typeof domain.subject>;
 export type ChallengeListItem = z.infer<typeof domain.listItem>;
 export type ChallengeDetail = z.infer<typeof domain.detail>;
@@ -15,6 +18,9 @@ export type UserRanking = z.infer<typeof domain.ranking>;
 export type MyChallengeListItem = z.infer<typeof domain.myChallengeListItem>;
 export type MyChallengeDetail = z.infer<typeof domain.myChallengeDetail>;
 
+/* ─────────────────────────────────────────────────────
+ * AI 코칭 Type
+ * ────────────────────────────────────────────────────*/
 export type AiCoachingSessionStatus =
   | 'READY'
   | 'COACHING'
@@ -67,6 +73,9 @@ export type AiCoachingMessageResponse = {
   maxUsedHintStep?: number | null;
 };
 
+/* ─────────────────────────────────────────────────────
+ * Query Params
+ * ────────────────────────────────────────────────────*/
 export type ChallengeListParams = {
   subject?: ChallengeSubject | 'ALL';
   difficulty?: 'highest' | 'high' | 'middle' | 'low' | 'ALL';
@@ -87,6 +96,9 @@ export type MyChallengeListParams = {
   size?: number;
 };
 
+/* ─────────────────────────────────────────────────────
+ * 관리자 Type
+ * ────────────────────────────────────────────────────*/
 export type AdminChallengeSubject = 'MATH' | 'KOREAN' | 'ENGLISH' | 'SCIENCE';
 export type AdminChallengeDifficulty = 'TOP' | 'HIGH' | 'MID' | 'LOW';
 
@@ -111,6 +123,9 @@ export type AdminChallengeDetail = {
   passRate: number | null;
 };
 
+/* ─────────────────────────────────────────────────────
+ * Payload
+ * ────────────────────────────────────────────────────*/
 export type StartChallengeAttemptPayload = z.infer<typeof payload.startAttempt>;
 export type SubmitChallengeAnswerPayload = z.infer<typeof payload.submitAnswer>;
 export type CreateChallengeReviewPayload = z.infer<typeof payload.createReview>;

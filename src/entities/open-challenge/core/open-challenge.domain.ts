@@ -1,7 +1,13 @@
 import { z } from 'zod';
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 과목 Domain
+ * ────────────────────────────────────────────────────*/
 const ChallengeSubjectSchema = z.enum(['MATH', 'KOREAN', 'ENGLISH', 'SCIENCE']);
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 목록 / 상세 Domain
+ * ────────────────────────────────────────────────────*/
 const ChallengeListItemSchema = z.object({
   id: z.string(),
   subject: ChallengeSubjectSchema,
@@ -27,6 +33,9 @@ const ChallengeDetailSchema = z.object({
   isAiSupported: z.boolean(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 풀이 결과 Domain
+ * ────────────────────────────────────────────────────*/
 const ChallengeAnswerResultSchema = z.object({
   isCorrect: z.boolean(),
   correctAnswer: z.string(),
@@ -34,6 +43,9 @@ const ChallengeAnswerResultSchema = z.object({
   passRate: z.number().nullable(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 리뷰 Domain
+ * ────────────────────────────────────────────────────*/
 const ChallengeReviewSchema = z.object({
   id: z.string(),
   nickname: z.string(),
@@ -46,6 +58,9 @@ const ChallengeReviewSchema = z.object({
 
 const NextChallengeSchema = ChallengeListItemSchema;
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 랭킹 Domain
+ * ────────────────────────────────────────────────────*/
 const UserRankingSchema = z.object({
   userId: z.string().optional(),
   nickname: z.string(),
@@ -54,6 +69,9 @@ const UserRankingSchema = z.object({
   correctRate: z.number(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 마이페이지 오픈챌린지 Domain
+ * ────────────────────────────────────────────────────*/
 const MyChallengeListItemSchema = z.object({
   challengeId: z.string(),
   subject: ChallengeSubjectSchema,
@@ -90,6 +108,9 @@ const MyChallengeDetailSchema = z.object({
   reviews: z.array(MyChallengeReviewSchema),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 내보내기
+ * ────────────────────────────────────────────────────*/
 export const domain = {
   subject: ChallengeSubjectSchema,
   listItem: ChallengeListItemSchema,

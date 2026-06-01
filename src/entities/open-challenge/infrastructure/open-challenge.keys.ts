@@ -1,5 +1,8 @@
 import { type ChallengeListParams, type MyChallengeListParams } from '../types';
 
+/* ─────────────────────────────────────────────────────
+ * Query Key 파라미터 정규화
+ * ────────────────────────────────────────────────────*/
 const normalizeListParams = (params: ChallengeListParams = {}) => ({
   subject: params.subject ?? 'ALL',
   difficulty: params.difficulty ?? 'ALL',
@@ -16,6 +19,9 @@ const normalizeMyChallengeListParams = (
   size: params.size ?? 10,
 });
 
+/* ─────────────────────────────────────────────────────
+ * Query Keys
+ * ────────────────────────────────────────────────────*/
 export const openChallengeKeys = {
   all: ['open-challenge'] as const,
   list: (params: ChallengeListParams = {}) =>
