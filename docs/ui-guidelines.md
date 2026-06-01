@@ -108,6 +108,22 @@ import { Button } from '@/shared/components/ui';
 <Button>제출</Button>
 ```
 
+### 페이지네이션 규칙
+
+목록 페이지나 목록형 모달에서 페이지 이동이 필요하면 직접 `이전` / `다음` 버튼을 만들지 않고 `@/shared/components/ui`의 `Pagination` 컴포넌트를 사용합니다.
+
+```tsx
+import { Pagination } from '@/shared/components/ui';
+
+<Pagination
+  page={currentPage}
+  totalPages={totalPages}
+  onPageChange={handlePageChange}
+/>;
+```
+
+API가 `hasNext`만 내려주는 경우에는 현재 페이지와 `hasNext`로 표시 가능한 `totalPages`를 계산해 `Pagination`에 전달합니다.
+
 ## 6. 이모지 대신 `lucide-react` 아이콘 사용
 
 UI 아이콘은 이모지 문자 대신 `lucide-react`를 사용합니다. 프로젝트에 이미 설치되어 있습니다.
