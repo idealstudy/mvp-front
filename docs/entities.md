@@ -16,6 +16,29 @@ entities/{domain}/
 
 ---
 
+## Entity File Comments
+
+New or newly organized entity files should use section comments like `src/entities/column` so DTOs, repositories, keys, domain schemas, and exported types are easy to scan.
+
+Use this format:
+
+```ts
+/* ─────────────────────────────────────────────────────
+ * [READ] 칼럼 목록 조회 (공개, APPROVED만)
+ * ────────────────────────────────────────────────────*/
+```
+
+Guidelines:
+
+- In `*.dto.ts`, group schemas by API purpose: list/detail, my page, admin, payload, export.
+- In `*.repository.ts`, add a comment above each repository function with the HTTP action tag (`[READ]`, `[CREATE]`, `[UPDATE]`, `[PATCH]`, `[DELETE]`) and a short Korean description.
+- In `*.keys.ts`, group query key helpers under a `Query Keys` section. If params are normalized, add a separate normalization section.
+- In `core/*.domain.ts`, group domain schemas by UI/domain purpose.
+- In `types/index.ts`, group final UI-ready types, query params, admin types, and payload types.
+- Keep comments structural and concise. Do not add comments that merely repeat a single variable or type name.
+
+---
+
 ## DTO and Domain
 
 DTOs represent raw API responses.

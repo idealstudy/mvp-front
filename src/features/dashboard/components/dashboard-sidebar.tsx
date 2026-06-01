@@ -60,6 +60,17 @@ export const DashboardSidebar = () => {
         <Sidebar.Text>대시보드</Sidebar.Text>
       </Sidebar.Item>
 
+      <Sidebar.Item
+        href={PUBLIC.OPEN_CHALLENGE.LIST}
+        matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
+      >
+        <Flame
+          size={20}
+          className="shrink-0"
+        />
+        <Sidebar.Text>오픈챌린지</Sidebar.Text>
+      </Sidebar.Item>
+
       {/* 부모에겐 보여주지 않기 */}
       {role !== 'ROLE_PARENT' && (
         <Sidebar.Header>
@@ -146,17 +157,6 @@ export const DashboardSidebar = () => {
       >
         <NotepadIcon className="shrink-0" />
         <Sidebar.Text>게시판</Sidebar.Text>
-      </Sidebar.Item>
-
-      <Sidebar.Item
-        href={PUBLIC.OPEN_CHALLENGE.LIST}
-        matchPath={PUBLIC.OPEN_CHALLENGE.LIST}
-      >
-        <Flame
-          size={20}
-          className="shrink-0"
-        />
-        <Sidebar.Text>오픈 챌린지</Sidebar.Text>
       </Sidebar.Item>
 
       <Sidebar.Item
