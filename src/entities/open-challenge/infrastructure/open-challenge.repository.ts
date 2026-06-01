@@ -14,6 +14,7 @@ import {
   type ChallengeListItem,
   type ChallengeListParams,
   type ChallengeReview,
+  type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
   type MyChallengeDetail,
@@ -175,6 +176,8 @@ const toReview = (raw: unknown): ChallengeReview => {
     content: parsed.content,
     recommendCount: parsed.recommendCount,
     isBest: parsed.isBest ?? parsed.best ?? false,
+    isRecommendedByMe:
+      parsed.isRecommendedByMe ?? parsed.recommendedByMe ?? false,
   });
 };
 
@@ -304,7 +307,7 @@ const submitChallengeAnswer = async (
 
 const getChallengeReviews = async (
   challengeId: string,
-  sort = 'recommend'
+  sort: ChallengeReviewSort = 'recommend'
 ): Promise<ChallengeReview[]> => {
   const response = await api.private.get(
     `/common/challenges/${challengeId}/reviews`,
@@ -321,6 +324,16 @@ const createChallengeReview = async (
 ): Promise<void> => {
   const validated = payload.createReview.parse(params);
   await api.private.post('/common/challenge-reviews', validated);
+};
+
+const recommendChallengeReview = async (reviewId: string): Promise<void> => {
+  await api.private.post(`/common/challenge-reviews/${reviewId}/recommends`);
+};
+
+const cancelChallengeReviewRecommend = async (
+  reviewId: string
+): Promise<void> => {
+  await api.private.delete(`/common/challenge-reviews/${reviewId}/recommends`);
 };
 
 const submitChallengeFeedback = async (
@@ -445,6 +458,8 @@ export const repository = {
   submitAnswer: submitChallengeAnswer,
   getReviews: getChallengeReviews,
   createReview: createChallengeReview,
+  recommendReview: recommendChallengeReview,
+  cancelReviewRecommend: cancelChallengeReviewRecommend,
   submitFeedback: submitChallengeFeedback,
   getRanking: getChallengeRanking,
   getMyList: getMyChallengeList,

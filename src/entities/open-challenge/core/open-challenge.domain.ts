@@ -41,6 +41,7 @@ const ChallengeReviewSchema = z.object({
   content: z.string(),
   recommendCount: z.number(),
   isBest: z.boolean(),
+  isRecommendedByMe: z.boolean(),
 });
 
 const NextChallengeSchema = ChallengeListItemSchema;

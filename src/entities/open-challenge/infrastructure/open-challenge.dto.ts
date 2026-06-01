@@ -97,6 +97,7 @@ const ChallengeReviewDtoSchema = z.object({
   recommendCount: z.number().optional().default(0),
   isBest: z.boolean().optional(),
   best: z.boolean().optional(),
+  isRecommendedByMe: z.boolean().optional(),
   recommendedByMe: z.boolean().optional().default(false),
 });
 

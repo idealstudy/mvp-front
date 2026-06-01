@@ -22,8 +22,10 @@ export const openChallengeKeys = {
     [...openChallengeKeys.all, 'list', normalizeListParams(params)] as const,
   detail: (id: string) => [...openChallengeKeys.all, 'detail', id] as const,
   next: (id: string) => [...openChallengeKeys.all, 'next', id] as const,
+  reviewsBase: (challengeId: string) =>
+    [...openChallengeKeys.all, 'reviews', challengeId] as const,
   reviews: (challengeId: string, sort = 'recommend') =>
-    [...openChallengeKeys.all, 'reviews', challengeId, sort] as const,
+    [...openChallengeKeys.reviewsBase(challengeId), sort] as const,
   ranking: () => [...openChallengeKeys.all, 'ranking'] as const,
   myList: (params: MyChallengeListParams = {}) =>
     [

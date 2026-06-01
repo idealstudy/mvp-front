@@ -75,6 +75,8 @@ export type ChallengeListParams = {
   size?: number;
 };
 
+export type ChallengeReviewSort = 'recommend' | 'latest';
+
 export type MyChallengeResultFilter = z.infer<
   typeof params.myChallengeResultFilter
 >;

@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import {
   type AiCoachingPreferencePayload,
   type ChallengeListParams,
+  type ChallengeReviewSort,
   type CreateAiCoachingSessionPayload,
   type CreateChallengeReviewPayload,
   type SendAiCoachingMessagePayload,
@@ -37,11 +38,12 @@ export const useOpenChallengeDetailQuery = (
 
 export const useChallengeReviewsQuery = (
   challengeId: string,
+  sort: ChallengeReviewSort = 'recommend',
   options?: { enabled?: boolean }
 ) =>
   useQuery({
-    queryKey: openChallengeKeys.reviews(challengeId),
-    queryFn: () => repository.getReviews(challengeId),
+    queryKey: openChallengeKeys.reviews(challengeId, sort),
+    queryFn: () => repository.getReviews(challengeId, sort),
     enabled: (options?.enabled ?? true) && challengeId.length > 0,
   });
 
@@ -165,6 +167,55 @@ export const useCreateChallengeReviewMutation = () => {
     onSuccess: (_, params) => {
       queryClient.invalidateQueries({
         queryKey: openChallengeKeys.reviews(params.challengeId),
+      });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+export const useRecommendChallengeReviewMutation = (challengeId: string) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (reviewId: string) => repository.recommendReview(reviewId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: openChallengeKeys.reviewsBase(challengeId),
+      });
+    },
+    onError: (error) => {
+      handleApiError(error, classifyOpenChallengeError, {
+        onAuth: () =>
+          setTimeout(
+            () => router.replace(PUBLIC.CORE.LOGIN),
+            ERROR_REDIRECT_DELAY_MS
+          ),
+      });
+    },
+  });
+};
+
+export const useCancelChallengeReviewRecommendMutation = (
+  challengeId: string
+) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (reviewId: string) =>
+      repository.cancelReviewRecommend(reviewId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: openChallengeKeys.reviewsBase(challengeId),
       });
     },
     onError: (error) => {
