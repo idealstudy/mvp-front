@@ -380,12 +380,12 @@ textarea,
   -webkit-touch-callout: none;
 }
 
-/* 드로잉 패널 네이티브 스크롤바 숨김 (커스텀 thumb 사용) */
-.drawing-scroll-container {
+/* 드로잉 패널: 두 손가락 pan으로 이동하므로 네이티브 스크롤바 숨김 */
+.drawing-pan-container {
   scrollbar-width: none;
 }
 
-.drawing-scroll-container::-webkit-scrollbar {
+.drawing-pan-container::-webkit-scrollbar {
   width: 0;
   height: 0;
   display: none;
