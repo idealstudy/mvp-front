@@ -9,6 +9,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '1',
     subject: 'MATH',
+    difficulty: 'HIGH',
     title: '함수의 극한, 이 조건에서 수렴할까?',
     sourceText: '고등 수학 (상) · 함수의 극한',
     questionImageUrl: null,
@@ -18,6 +19,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '2',
     subject: 'KOREAN',
+    difficulty: 'MID',
     title: '서술 방식 파악, 이 문장의 핵심은?',
     sourceText: '고등 국어 · 문학',
     questionImageUrl: null,
@@ -27,6 +29,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '3',
     subject: 'MATH',
+    difficulty: 'TOP',
     title: '도형의 성질, 숨겨진 조건을 찾아라',
     sourceText: '고등 수학 (하) · 도형의 방정식',
     questionImageUrl: null,
@@ -36,6 +39,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '4',
     subject: 'ENGLISH',
+    difficulty: 'MID',
     title: '빈칸 추론, 문맥의 흐름을 읽어라',
     sourceText: '고등 영어 · 빈칸 추론',
     questionImageUrl: null,
@@ -45,6 +49,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '5',
     subject: 'SCIENCE',
+    difficulty: 'TOP',
     title: '전기력과 자기력의 관계를 밝혀라',
     sourceText: '고등 물리학 Ⅰ · 전기와 자기',
     questionImageUrl: null,
@@ -54,6 +59,7 @@ export const MOCK_CHALLENGES: ChallengeCardData[] = [
   {
     id: '6',
     subject: 'MATH',
+    difficulty: 'HIGH',
     title: '수열의 합, 이 점화식의 일반항은?',
     sourceText: '고등 수학 (상) · 수열',
     questionImageUrl: null,

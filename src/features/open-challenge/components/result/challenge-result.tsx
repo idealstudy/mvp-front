@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 
+import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { BackButton } from '@/shared/components/ui';
 
 import {
+  useCancelChallengeReviewRecommendMutation,
   useChallengeReviewsQuery,
   useNextChallengeQuery,
+  useRecommendChallengeReviewMutation,
 } from '../../hooks/use-open-challenge';
 import { AiFeedbackForm } from './ai-feedback-form';
 import { ChallengeResultSkeleton } from './challenge-result-skeleton';
@@ -32,11 +35,16 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
   const [isResultLoaded, setIsResultLoaded] = useState(false);
   const [submittedResult, setSubmittedResult] =
     useState<SubmittedResult | null>(null);
+  const [reviewSort, setReviewSort] =
+    useState<ChallengeReviewSort>('recommend');
 
   const { data: solutions, isLoading: isSolutionsLoading } =
-    useChallengeReviewsQuery(challengeId);
+    useChallengeReviewsQuery(challengeId, reviewSort);
   const { data: nextChallenge, isLoading: isNextChallengeLoading } =
     useNextChallengeQuery(challengeId);
+  const recommendMutation = useRecommendChallengeReviewMutation(challengeId);
+  const cancelRecommendMutation =
+    useCancelChallengeReviewRecommendMutation(challengeId);
 
   useEffect(() => {
     const rawResult = window.sessionStorage.getItem(
@@ -49,6 +57,15 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
   if (!isResultLoaded || isSolutionsLoading || isNextChallengeLoading) {
     return <ChallengeResultSkeleton />;
   }
+
+  const handleRecommendToggle = (solution: SolutionItem) => {
+    if (solution.isRecommendedByMe) {
+      cancelRecommendMutation.mutate(solution.id);
+      return;
+    }
+
+    recommendMutation.mutate(solution.id);
+  };
 
   return (
     <main className="tablet:px-8 mx-auto w-full max-w-[1200px] px-4 py-8">
@@ -69,6 +86,12 @@ export const ChallengeResult = ({ challengeId }: ChallengeResultProps) => {
           <SolutionList
             solutions={solutions ?? ([] as SolutionItem[])}
             totalCount={solutions?.length ?? 0}
+            sort={reviewSort}
+            isRecommendPending={
+              recommendMutation.isPending || cancelRecommendMutation.isPending
+            }
+            onSortChange={setReviewSort}
+            onRecommendToggle={handleRecommendToggle}
           />
         </div>
 

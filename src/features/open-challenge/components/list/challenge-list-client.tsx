@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useTransition } from 'react';
 
-import { Pagination, Select } from '@/shared/components/ui';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { Pagination } from '@/shared/components/ui';
 import { Inbox } from 'lucide-react';
 
 import { useOpenChallengeListQuery } from '../../hooks/use-open-challenge';
@@ -11,73 +13,50 @@ import { ChallengeListSkeleton } from './challenge-list-skeleton';
 
 type SortOption = 'latest' | 'popular';
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 12;
 
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'latest', label: '최신순' },
-  { value: 'popular', label: '인기순' },
-];
+type ChallengeListClientProps = {
+  sort: SortOption;
+  page: number;
+};
 
-export const ChallengeListClient = () => {
-  const [selectedSort, setSelectedSort] = useState<SortOption>('latest');
-  const [currentPage, setCurrentPage] = useState(1);
+export const ChallengeListClient = ({
+  sort,
+  page,
+}: ChallengeListClientProps) => {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [, startTransition] = useTransition();
 
   const { data: challenges, isLoading } = useOpenChallengeListQuery({
     subject: 'ALL',
-    sort: selectedSort,
+    sort,
   });
-
-  const handleSortChange = (sort: SortOption) => {
-    setSelectedSort(sort);
-    setCurrentPage(1);
-  };
 
   const totalPages = Math.ceil((challenges?.length ?? 0) / PAGE_SIZE);
   const visibleChallenges = (challenges ?? []).slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
   );
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-text-main text-2xl font-bold">오픈 챌린지</h1>
-          <p className="text-gray-8 mt-1 text-sm">
-            전국의 학생들과 실력을 겨뤄보세요!
-          </p>
-        </div>
-      </div>
+  const handlePageChange = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(nextPage));
 
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, { scroll: true });
+    });
+  };
+
+  return (
+    <>
       {isLoading ? (
         <ChallengeListSkeleton />
       ) : (
         <>
-          <div className="flex justify-end">
-            <Select
-              value={selectedSort}
-              onValueChange={(value) => handleSortChange(value as SortOption)}
-            >
-              <Select.Trigger
-                className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
-                placeholder="최신순"
-              />
-              <Select.Content>
-                {SORT_OPTIONS.map((sortOption) => (
-                  <Select.Option
-                    key={sortOption.value}
-                    value={sortOption.value}
-                    className="font-body2-normal flex h-[32px] w-full items-center justify-center border-b-0 text-center"
-                  >
-                    {sortOption.label}
-                  </Select.Option>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
-
           {visibleChallenges.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))] gap-6">
               {visibleChallenges.map((challenge) => (
                 <ChallengeCard
                   key={challenge.id}
@@ -102,14 +81,14 @@ export const ChallengeListClient = () => {
 
           {(challenges?.length ?? 0) > PAGE_SIZE && (
             <Pagination
-              page={currentPage}
+              page={page}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              className="justify-center pt-2"
+              onPageChange={handlePageChange}
+              className="mt-10 justify-center"
             />
           )}
         </>
       )}
-    </div>
+    </>
   );
 };

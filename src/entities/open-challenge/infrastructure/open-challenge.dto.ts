@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+/* ─────────────────────────────────────────────────────
+ * 공통 스키마
+ * ────────────────────────────────────────────────────*/
 const IdSchema = z.union([z.string(), z.number()]).transform(String);
 const QUESTION_TEXT_FALLBACK = '문제 이미지를 보고 답을 선택해 주세요.';
 
@@ -32,13 +35,16 @@ const DifficultyDtoSchema = z
 
 const AdminChallengeDifficultySchema = z.enum(['TOP', 'HIGH', 'MID', 'LOW']);
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 목록 / 상세 DTO (공개)
+ * ────────────────────────────────────────────────────*/
 const ChallengeListItemDtoSchema = z.object({
   id: IdSchema.optional(),
   challengeId: IdSchema.optional(),
   subject: ChallengeSubjectDtoSchema,
   difficulty: DifficultyDtoSchema,
   wrongAnswerRate: z.number().optional().default(0),
-  title: z.string().optional().default('오픈 챌린지 문제'),
+  title: z.string().optional().default('오픈챌린지 문제'),
   sourceText: z.string().optional().default('출처 정보'),
   questionText: z.string().nullable().optional(),
   questionImageUrl: z.string().nullable().optional().default(null),
@@ -69,6 +75,9 @@ const AttemptDtoSchema = z.object({
   status: z.string(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 풀이 결과 DTO
+ * ────────────────────────────────────────────────────*/
 const AnswerResultDtoSchema = z
   .object({
     isCorrect: z.boolean().optional(),
@@ -84,6 +93,9 @@ const AnswerResultDtoSchema = z
     passRate: value.passRate ?? null,
   }));
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 리뷰 DTO
+ * ────────────────────────────────────────────────────*/
 const ChallengeReviewDtoSchema = z.object({
   id: IdSchema.optional(),
   reviewId: IdSchema.optional(),
@@ -97,9 +109,13 @@ const ChallengeReviewDtoSchema = z.object({
   recommendCount: z.number().optional().default(0),
   isBest: z.boolean().optional(),
   best: z.boolean().optional(),
+  isRecommendedByMe: z.boolean().optional(),
   recommendedByMe: z.boolean().optional().default(false),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 랭킹 DTO
+ * ────────────────────────────────────────────────────*/
 const UserRankingDtoSchema = z.object({
   userId: IdSchema.optional(),
   nickname: z.string(),
@@ -108,6 +124,51 @@ const UserRankingDtoSchema = z.object({
   correctRate: z.number(),
 });
 
+const MyChallengeResultFilterSchema = z.enum(['ALL', 'CORRECT', 'WRONG']);
+
+/* ─────────────────────────────────────────────────────
+ * 마이페이지 오픈챌린지 DTO
+ * ────────────────────────────────────────────────────*/
+const MyChallengeListItemDtoSchema = z.object({
+  challengeId: IdSchema,
+  subject: ChallengeSubjectDtoSchema,
+  difficulty: AdminChallengeDifficultySchema,
+  sourceText: z.string().optional().default('출처 정보'),
+  questionText: z.string().nullable().optional(),
+  questionImageUrl: z.string().nullable().optional().default(null),
+  isCorrect: z.boolean().nullable(),
+  usedAi: z.boolean().optional().default(false),
+  completedAt: z.string(),
+});
+
+const MyChallengeAttemptDtoSchema = z.object({
+  attemptId: IdSchema,
+  status: z.enum(['IN_PROGRESS', 'AI_COACHING', 'UNRESOLVED', 'COMPLETED']),
+  isCorrect: z.boolean().nullable(),
+  selectedAnswer: z.string().nullable(),
+  usedAi: z.boolean().optional().default(false),
+  maxUsedHintStep: z.number().nullable().optional(),
+  startedAt: z.string().nullable().optional(),
+  completedAt: z.string().nullable().optional(),
+});
+
+const MyChallengeReviewDtoSchema = z.object({
+  reviewId: IdSchema,
+  content: z.string(),
+  isActive: z.boolean().optional(),
+  active: z.boolean().optional(),
+  recommendCount: z.number().optional().default(0),
+});
+
+const MyChallengeDetailDtoSchema = z.object({
+  challengeId: IdSchema,
+  attempts: z.array(MyChallengeAttemptDtoSchema),
+  reviews: z.array(MyChallengeReviewDtoSchema),
+});
+
+/* ─────────────────────────────────────────────────────
+ * AI 코칭 DTO
+ * ────────────────────────────────────────────────────*/
 const AiCoachingSessionStatusSchema = z.enum([
   'READY',
   'COACHING',
@@ -163,12 +224,18 @@ const AiCoachingMessageResponseSchema = z.object({
   maxUsedHintStep: z.number().nullable().optional(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 페이지 응답 DTO
+ * ────────────────────────────────────────────────────*/
 const page = <Item extends z.ZodTypeAny>(item: Item) =>
   z.object({
     content: z.array(item),
     hasNext: z.boolean().optional().default(false),
   });
 
+/* ─────────────────────────────────────────────────────
+ * 오픈챌린지 풀이 / 리뷰 Payload
+ * ────────────────────────────────────────────────────*/
 const StartAttemptPayloadSchema = z.object({
   challengeId: z.string().min(1),
 });
@@ -189,6 +256,9 @@ const SubmitFeedbackPayloadSchema = z.object({
   comment: z.string().optional(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * 관리자 오픈챌린지 Payload
+ * ────────────────────────────────────────────────────*/
 const AdminChallengePayloadSchema = z.object({
   subject: AdminChallengeSubjectSchema,
   difficulty: AdminChallengeDifficultySchema,
@@ -202,6 +272,9 @@ const AdminChallengePayloadSchema = z.object({
   type: z.string().nullable(),
 });
 
+/* ─────────────────────────────────────────────────────
+ * AI 코칭 Payload
+ * ────────────────────────────────────────────────────*/
 const AiCoachingPreferencePayloadSchema = z.object({
   learningStage: z.string().nullable().optional(),
   learningGoal: z.string().nullable().optional(),
@@ -221,6 +294,9 @@ const ChallengeIdResponseSchema = z.object({
   challengeId: IdSchema,
 });
 
+/* ─────────────────────────────────────────────────────
+ * 내보내기
+ * ────────────────────────────────────────────────────*/
 export const dto = {
   listItem: ChallengeListItemDtoSchema,
   list: z.array(ChallengeListItemDtoSchema),
@@ -234,6 +310,9 @@ export const dto = {
   ranking: UserRankingDtoSchema,
   rankings: z.array(UserRankingDtoSchema),
   rankingPage: page(UserRankingDtoSchema),
+  myChallengeListItem: MyChallengeListItemDtoSchema,
+  myChallengeListPage: page(MyChallengeListItemDtoSchema),
+  myChallengeDetail: MyChallengeDetailDtoSchema,
   challengeId: ChallengeIdResponseSchema,
   aiCoachingEnums: AiCoachingEnumResponseSchema,
   aiCoachingPreference: AiCoachingPreferenceSchema,
@@ -252,4 +331,8 @@ export const payload = {
   aiCoachingPreference: AiCoachingPreferencePayloadSchema,
   createAiCoachingSession: CreateAiCoachingSessionPayloadSchema,
   sendAiCoachingMessage: SendAiCoachingMessagePayloadSchema,
+};
+
+export const params = {
+  myChallengeResultFilter: MyChallengeResultFilterSchema,
 };

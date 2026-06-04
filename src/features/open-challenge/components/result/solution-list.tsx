@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { type ChallengeReviewSort } from '@/entities/open-challenge';
 import { TextViewer, parseEditorContent } from '@/shared/components/editor';
 import { Select } from '@/shared/components/ui';
 import { cn, extractText } from '@/shared/lib';
@@ -14,11 +15,16 @@ export type SolutionItem = {
   content: string;
   recommendCount: number;
   isBest: boolean;
+  isRecommendedByMe: boolean;
 };
 
 type SolutionListProps = {
   solutions: SolutionItem[];
   totalCount: number;
+  sort: ChallengeReviewSort;
+  isRecommendPending?: boolean;
+  onSortChange: (sort: ChallengeReviewSort) => void;
+  onRecommendToggle: (solution: SolutionItem) => void;
 };
 
 const CONTENT_EXPAND_THRESHOLD = 150;
@@ -42,8 +48,14 @@ const countContentLines = (jsonString: string): number => {
   }
 };
 
-export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
-  const [sort, setSort] = useState<'recommend' | 'latest'>('recommend');
+export const SolutionList = ({
+  solutions,
+  totalCount,
+  sort,
+  isRecommendPending = false,
+  onSortChange,
+  onRecommendToggle,
+}: SolutionListProps) => {
   const [expanded, setExpanded] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
@@ -66,7 +78,7 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
         </h2>
         <Select
           value={sort}
-          onValueChange={(value) => setSort(value as 'recommend' | 'latest')}
+          onValueChange={(value) => onSortChange(value as ChallengeReviewSort)}
         >
           <Select.Trigger
             className="border-line-line2 font-label-normal h-[36px] w-auto min-w-[90px] rounded-[8px] px-3 pr-8 text-sm whitespace-nowrap focus:ring-0 focus:outline-none"
@@ -144,7 +156,20 @@ export const SolutionList = ({ solutions, totalCount }: SolutionListProps) => {
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-center gap-1">
-                  <button className="text-gray-6 hover:text-orange-7 cursor-pointer transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => onRecommendToggle(solution)}
+                    disabled={isRecommendPending}
+                    className={cn(
+                      'cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+                      solution.isRecommendedByMe
+                        ? 'text-orange-7'
+                        : 'text-gray-6 hover:text-orange-7'
+                    )}
+                    aria-label={
+                      solution.isRecommendedByMe ? '추천 취소' : '풀이 추천'
+                    }
+                  >
                     <ThumbsUp size={16} />
                   </button>
                   <span className="font-body2-heading text-text-main text-sm">

@@ -11,9 +11,9 @@ import { useMemberStore } from '@/store';
 
 // 접근 가능 탭
 const VALID_TABS: Partial<Record<string, string[]>> = {
-  ROLE_TEACHER: ['profile', 'columns', 'received-inquiries'],
-  ROLE_STUDENT: ['profile', 'inquiries'],
-  ROLE_PARENT: ['profile', 'inquiries'],
+  ROLE_TEACHER: ['profile', 'open-challenges', 'columns', 'received-inquiries'],
+  ROLE_STUDENT: ['profile', 'open-challenges', 'inquiries'],
+  ROLE_PARENT: ['profile', 'open-challenges', 'inquiries'],
 };
 
 // 기본 탭

@@ -32,6 +32,7 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
       'f(x) = 2x + 1 에서 x = 3 을 대입하면\nf(3) = 2 × 3 + 1\n     = 6 + 1\n     = 7',
     recommendCount: 12,
     isBest: true,
+    isRecommendedByMe: false,
   },
   {
     id: '2',
@@ -40,6 +41,7 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     content: 'f(3) = 2 × 3 + 1 = 6 + 1 = 7\n따라서 f(3)의 값은 7입니다.',
     recommendCount: 8,
     isBest: false,
+    isRecommendedByMe: false,
   },
   {
     id: '3',
@@ -48,6 +50,7 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     content: 'f(x) = 2x + 1\nx = 3 을 대입하면  f(3) = 2 · 3 + 1 = 7',
     recommendCount: 5,
     isBest: false,
+    isRecommendedByMe: false,
   },
   {
     id: '4',
@@ -56,6 +59,7 @@ export const MOCK_SOLUTIONS: SolutionItem[] = [
     content: '2/3 ÷ 3/5 = 2/3 × 5/3 = 10/9',
     recommendCount: 3,
     isBest: false,
+    isRecommendedByMe: false,
   },
 ];
 

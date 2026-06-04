@@ -10,15 +10,18 @@ type NavItem = { key: string; label: string };
 const NAV_ITEMS: Partial<Record<string, NavItem[]>> = {
   ROLE_TEACHER: [
     { key: 'profile', label: '내 프로필 수정' },
+    { key: 'open-challenges', label: '내 오픈챌린지 목록' },
     { key: 'columns', label: '내 칼럼 목록' },
     { key: 'received-inquiries', label: '받은 문의 목록' },
   ],
   ROLE_STUDENT: [
     { key: 'profile', label: '내 프로필 수정' },
+    { key: 'open-challenges', label: '내 오픈챌린지 목록' },
     { key: 'inquiries', label: '내 문의 목록' },
   ],
   ROLE_PARENT: [
     { key: 'profile', label: '내 프로필 수정' },
+    { key: 'open-challenges', label: '내 오픈챌린지 목록' },
     { key: 'inquiries', label: '내 문의 목록' },
   ],
 };

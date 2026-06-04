@@ -18,7 +18,7 @@ export default function CommunityPageWrapper({
       <main
         className={cn(
           'flex-1 transition-all duration-300',
-          isAuthenticated ? 'desktop:ml-[250px]' : 'pl-0'
+          isAuthenticated ? 'desktop:ml-sidebar-width' : 'pl-0'
         )}
       >
         {children}

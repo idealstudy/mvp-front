@@ -118,43 +118,41 @@ export const Header = () => {
             height={20}
           />
 
-          {!session && (
-            <div className="ml-5 flex gap-2">
-              <Link
-                href={PUBLIC.CORE.LIST.STUDY_ROOMS}
-                className={cn(
-                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith(PUBLIC.CORE.LIST.BASE)
-                    ? 'bg-gray-11'
-                    : 'hover:bg-gray-11'
-                )}
-              >
-                탐색하기
-              </Link>
-              <Link
-                href={PUBLIC.COMMUNITY.COLUMN.LIST}
-                className={cn(
-                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith(PUBLIC.COMMUNITY.BASE)
-                    ? 'bg-gray-11'
-                    : 'hover:bg-gray-11'
-                )}
-              >
-                게시판
-              </Link>
-              <Link
-                href={PUBLIC.OPEN_CHALLENGE.LIST}
-                className={cn(
-                  'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
-                  pathname.startsWith(PUBLIC.OPEN_CHALLENGE.LIST)
-                    ? 'bg-gray-11'
-                    : 'hover:bg-gray-11'
-                )}
-              >
-                오픈 챌린지
-              </Link>
-            </div>
-          )}
+          <div className="ml-5 flex gap-2">
+            <Link
+              href={PUBLIC.CORE.LIST.STUDY_ROOMS}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.CORE.LIST.BASE)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              탐색하기
+            </Link>
+            <Link
+              href={PUBLIC.COMMUNITY.COLUMN.LIST}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.COMMUNITY.BASE)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              게시판
+            </Link>
+            <Link
+              href={PUBLIC.OPEN_CHALLENGE.LIST}
+              className={cn(
+                'max-desktop:hidden rounded-xl px-2.5 py-2 text-white',
+                pathname.startsWith(PUBLIC.OPEN_CHALLENGE.LIST)
+                  ? 'bg-gray-11'
+                  : 'hover:bg-gray-11'
+              )}
+            >
+              오픈챌린지
+            </Link>
+          </div>
         </div>
 
         {session && (
@@ -252,7 +250,7 @@ export const Header = () => {
                     href={PUBLIC.OPEN_CHALLENGE.LIST}
                     onClick={() => setIsOpen(false)}
                   >
-                    <span>오픈 챌린지</span>
+                    <span>오픈챌린지</span>
                   </PopoverLink>
 
                   {/* 스터디룸 섹션 */}
