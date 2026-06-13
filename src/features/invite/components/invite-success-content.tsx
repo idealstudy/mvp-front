@@ -10,7 +10,10 @@ export const InviteSuccessContent = ({
   studyRoomId: number;
 }) => {
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div
+      data-testid="invite-success-content"
+      className="flex flex-col items-center gap-3"
+    >
       <Image
         src="/character/img_intro01.png"
         alt="스터디룸 참여 완료"
@@ -28,6 +31,7 @@ export const InviteSuccessContent = ({
           className="tablet:mt-1 mt-3"
         >
           <Button
+            data-testid="invite-success-go-to-room-button"
             variant="primary"
             className="h-[46px] rounded-sm px-8"
           >

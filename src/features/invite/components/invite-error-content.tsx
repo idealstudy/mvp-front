@@ -40,7 +40,10 @@ export const InviteErrorContent = ({ reason }: { reason: ErrorReason }) => {
     : '/invite/img_invite_fail.png';
 
   return (
-    <div className="tablet:gap-0 flex h-fit flex-col items-center gap-3">
+    <div
+      data-testid="invite-error-content"
+      className="tablet:gap-0 flex h-fit flex-col items-center gap-3"
+    >
       <Image
         src={errorCardImageSrc}
         alt="error-card"
@@ -49,7 +52,10 @@ export const InviteErrorContent = ({ reason }: { reason: ErrorReason }) => {
         className="tablet:w-75 tablet:h-75 h-40 w-40"
       />
       <div className="flex flex-col items-center gap-3">
-        <h2 className="font-body1-heading tablet:font-headline1-heading text-gray-12">
+        <h2
+          data-testid="invite-error-title"
+          className="font-body1-heading tablet:font-headline1-heading text-gray-12"
+        >
           {reasonText[reason].title}
         </h2>
         <p className="font-label-normal tablet:font-body1-normal text-gray-8 tablet:text-left text-center whitespace-pre-line">
@@ -61,6 +67,7 @@ export const InviteErrorContent = ({ reason }: { reason: ErrorReason }) => {
           className="tablet:mt-1 mt-3"
         >
           <Button
+            data-testid="invite-error-go-home-button"
             variant="primary"
             className="h-[46px] rounded-sm px-8"
           >
